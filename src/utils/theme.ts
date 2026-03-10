@@ -32,7 +32,7 @@ const palette = {
 export const colors = {
   // Brand palette (direct access)
   ink: palette.ink,
-  red: palette.orange,
+  orange: palette.orange,
   slate: palette.slate,
   rule: palette.rule,
   rule2: palette.rule2,
