@@ -1,5 +1,6 @@
 import { CategoryId, FlagItem } from '../types';
 import { countries } from './countries';
+import { twinPairs } from './countryAliases';
 
 export function getFlagsForCategory(categoryId: CategoryId): FlagItem[] {
   return countries.filter((flag) => flag.tags.includes(categoryId));
@@ -17,4 +18,8 @@ export function getTotalFlagCount(): number {
   return countries.length;
 }
 
-export { countries };
+export function getTwins(countryName: string): string[] {
+  return twinPairs[countryName] || [];
+}
+
+export { countries, twinPairs };
