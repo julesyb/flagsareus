@@ -146,6 +146,10 @@ export default function GameScreen({ route, navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.progressBar}>
+        <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+      </View>
+
       <View style={styles.topBar}>
         <TouchableOpacity
           onPress={() => navigation.popToTop()}
@@ -153,27 +157,23 @@ export default function GameScreen({ route, navigation }: Props) {
         >
           <Text style={styles.quitText}>Quit</Text>
         </TouchableOpacity>
-        <Text style={styles.counter}>
-          {currentIndex + 1} / {questions.length}
-        </Text>
-        <View style={styles.streakContainer}>
-          {currentStreak >= 2 && (
+        <View style={styles.centerInfo}>
+          <Text style={styles.counter}>
+            {currentIndex + 1} / {questions.length}
+          </Text>
+          {currentStreak >= 2 ? (
             <Animated.Text
               style={[styles.streakText, { transform: [{ scale: streakScale }] }]}
             >
               {currentStreak}x streak
             </Animated.Text>
-          )}
-          {currentStreak < 2 && (
+          ) : (
             <Text style={styles.score}>
               {results.filter((r) => r.correct).length} correct
             </Text>
           )}
         </View>
-      </View>
-
-      <View style={styles.progressBar}>
-        <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+        <View style={styles.quitSpacer} />
       </View>
 
       <Animated.View
@@ -192,9 +192,9 @@ export default function GameScreen({ route, navigation }: Props) {
 
         <Text style={styles.regionHint}>{currentQuestion.flag.region}</Text>
 
-        <Text style={styles.questionText}>
-          {isHard ? 'Type the name of this flag:' : 'Which flag is this?'}
-        </Text>
+        {isHard && (
+          <Text style={styles.questionText}>Type the name of this flag:</Text>
+        )}
 
         {isHard ? (
           <View style={styles.inputContainer}>
@@ -274,7 +274,7 @@ export default function GameScreen({ route, navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.white,
   },
   loadingContainer: {
     flex: 1,
@@ -284,6 +284,14 @@ const styles = StyleSheet.create({
   loadingText: {
     ...typography.body,
     color: colors.textSecondary,
+  },
+  progressBar: {
+    height: 3,
+    backgroundColor: colors.border,
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: colors.ink,
   },
   topBar: {
     flexDirection: 'row',
@@ -297,33 +305,26 @@ const styles = StyleSheet.create({
     width: 60,
   },
   quitText: {
-    ...typography.label,
-    color: colors.error,
+    ...typography.caption,
+    color: colors.textTertiary,
+  },
+  centerInfo: {
+    alignItems: 'center',
   },
   counter: {
     ...typography.bodyBold,
     color: colors.text,
   },
-  streakContainer: {
-    width: 60,
-    alignItems: 'flex-end',
-  },
   streakText: {
-    ...typography.bodyBold,
+    ...typography.caption,
     color: colors.accent,
   },
   score: {
-    ...typography.label,
+    ...typography.caption,
     color: colors.success,
   },
-  progressBar: {
-    height: 3,
-    backgroundColor: colors.border,
-    marginHorizontal: spacing.lg,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: colors.ink,
+  quitSpacer: {
+    width: 60,
   },
   questionContainer: {
     flex: 1,
@@ -332,29 +333,29 @@ const styles = StyleSheet.create({
   },
   flagContainer: {
     alignItems: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   regionHint: {
     ...typography.captionBold,
     color: colors.textTertiary,
     textAlign: 'center',
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
   },
   questionText: {
-    ...typography.body,
-    color: colors.textSecondary,
+    ...typography.caption,
+    color: colors.textTertiary,
     textAlign: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   optionsContainer: {
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
   optionButton: {
-    backgroundColor: colors.surface,
-    padding: spacing.md,
-    paddingVertical: spacing.lg,
+    backgroundColor: colors.white,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
     alignItems: 'center',
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.border,
   },
   optionCorrect: {
