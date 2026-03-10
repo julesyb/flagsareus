@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserStats, Difficulty, FlagCategory } from '../types';
+import { UserStats, GameMode, CategoryId } from '../types';
 
 const STATS_KEY = '@flagsareus_stats';
 
@@ -8,30 +8,26 @@ const DEFAULT_STATS: UserStats = {
   totalCorrect: 0,
   totalAnswered: 0,
   bestStreak: 0,
-  categoryStats: {
-    countries: { correct: 0, total: 0 },
-    us_states: { correct: 0, total: 0 },
-    canadian_provinces: { correct: 0, total: 0 },
-    australian_states: { correct: 0, total: 0 },
-    brazilian_states: { correct: 0, total: 0 },
-    german_states: { correct: 0, total: 0 },
-    indian_states: { correct: 0, total: 0 },
-    japanese_prefectures: { correct: 0, total: 0 },
-    mexican_states: { correct: 0, total: 0 },
-    spanish_communities: { correct: 0, total: 0 },
-  },
-  difficultyStats: {
+  modeStats: {
     easy: { correct: 0, total: 0 },
+    medium: { correct: 0, total: 0 },
     hard: { correct: 0, total: 0 },
-    extreme: { correct: 0, total: 0 },
+    headsup: { correct: 0, total: 0 },
   },
+  categoryStats: {},
 };
 
 export async function getStats(): Promise<UserStats> {
   try {
     const json = await AsyncStorage.getItem(STATS_KEY);
     if (json) {
-      return { ...DEFAULT_STATS, ...JSON.parse(json) };
+      const parsed = JSON.parse(json);
+      return {
+        ...DEFAULT_STATS,
+        ...parsed,
+        modeStats: { ...DEFAULT_STATS.modeStats, ...(parsed.modeStats || {}) },
+        categoryStats: { ...parsed.categoryStats },
+      };
     }
     return { ...DEFAULT_STATS };
   } catch {
@@ -43,8 +39,8 @@ export async function updateStats(
   correct: number,
   total: number,
   streak: number,
-  difficulty: Difficulty,
-  categories: FlagCategory[],
+  mode: GameMode,
+  category: CategoryId,
 ): Promise<void> {
   try {
     const stats = await getStats();
@@ -53,15 +49,14 @@ export async function updateStats(
     stats.totalAnswered += total;
     stats.bestStreak = Math.max(stats.bestStreak, streak);
 
-    stats.difficultyStats[difficulty].correct += correct;
-    stats.difficultyStats[difficulty].total += total;
+    stats.modeStats[mode].correct += correct;
+    stats.modeStats[mode].total += total;
 
-    for (const cat of categories) {
-      if (stats.categoryStats[cat]) {
-        stats.categoryStats[cat].correct += correct;
-        stats.categoryStats[cat].total += total;
-      }
+    if (!stats.categoryStats[category]) {
+      stats.categoryStats[category] = { correct: 0, total: 0 };
     }
+    stats.categoryStats[category]!.correct += correct;
+    stats.categoryStats[category]!.total += total;
 
     await AsyncStorage.setItem(STATS_KEY, JSON.stringify(stats));
   } catch {

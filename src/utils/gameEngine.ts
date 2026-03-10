@@ -1,5 +1,5 @@
-import { Difficulty, FlagCategory, FlagItem, GameQuestion, GameResult, GameSession, GameConfig } from '../types';
-import { getFlagsForCategories } from '../data';
+import { GameMode, FlagItem, GameQuestion, GameResult, GameConfig } from '../types';
+import { getFlagsForCategory, getAllFlags } from '../data';
 
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
@@ -11,29 +11,32 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 export function generateQuestions(config: GameConfig): GameQuestion[] {
-  const allFlags = getFlagsForCategories(config.categories);
+  const categoryFlags = getFlagsForCategory(config.category);
 
-  if (allFlags.length === 0) return [];
+  if (categoryFlags.length === 0) return [];
 
-  const shuffledFlags = shuffleArray(allFlags);
-  const selectedFlags = shuffledFlags.slice(0, Math.min(config.questionCount, allFlags.length));
+  const shuffledFlags = shuffleArray(categoryFlags);
+  const count = Math.min(config.questionCount, categoryFlags.length);
+  const selectedFlags = shuffledFlags.slice(0, count);
+
+  // For options, pull from all flags to make it interesting
+  const allFlags = getAllFlags();
 
   return selectedFlags.map((flag) => {
-    const options = generateOptions(flag, allFlags, config.difficulty);
+    const options = generateOptions(flag, allFlags, config.mode);
     return { flag, options };
   });
 }
 
-function generateOptions(correctFlag: FlagItem, allFlags: FlagItem[], difficulty: Difficulty): string[] {
-  if (difficulty === 'extreme') return [];
+function generateOptions(correctFlag: FlagItem, allFlags: FlagItem[], mode: GameMode): string[] {
+  if (mode === 'hard' || mode === 'headsup') return [];
 
-  const choiceCount = difficulty === 'easy' ? 2 : 4;
+  const choiceCount = mode === 'easy' ? 2 : 4;
   const otherFlags = allFlags.filter((f) => f.id !== correctFlag.id);
   const shuffledOthers = shuffleArray(otherFlags);
   const wrongOptions = shuffledOthers.slice(0, choiceCount - 1).map((f) => f.name);
-  const options = shuffleArray([correctFlag.name, ...wrongOptions]);
 
-  return options;
+  return shuffleArray([correctFlag.name, ...wrongOptions]);
 }
 
 export function checkAnswer(userAnswer: string, correctName: string): boolean {
@@ -45,16 +48,6 @@ export function checkAnswer(userAnswer: string, correctName: string): boolean {
       .replace(/\s+/g, ' ');
 
   return normalize(userAnswer) === normalize(correctName);
-}
-
-export function createGameSession(config: GameConfig): GameSession {
-  return {
-    config,
-    results: [],
-    startTime: Date.now(),
-    score: 0,
-    totalQuestions: config.questionCount,
-  };
 }
 
 export function calculateAccuracy(results: GameResult[]): number {

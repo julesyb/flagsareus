@@ -9,41 +9,35 @@ import {
   TextInput,
 } from 'react-native';
 import { colors, spacing, borderRadius, typography, shadows } from '../utils/theme';
-import { FlagCategory, FlagItem, CATEGORY_LABELS } from '../types';
+import { FlagItem } from '../types';
 import { getAllFlags } from '../data';
+
+const REGIONS = ['All', 'Africa', 'Asia', 'Europe', 'Americas', 'Oceania'];
 
 export default function BrowseScreen() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<FlagCategory | 'all'>('all');
+  const [selectedRegion, setSelectedRegion] = useState('All');
 
   const allFlags = useMemo(() => getAllFlags(), []);
 
   const filteredFlags = useMemo(() => {
     let flags = allFlags;
-    if (selectedCategory !== 'all') {
-      flags = flags.filter((f) => f.category === selectedCategory);
+    if (selectedRegion !== 'All') {
+      flags = flags.filter((f) => f.region === selectedRegion);
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
-      flags = flags.filter(
-        (f) =>
-          f.name.toLowerCase().includes(q) ||
-          (f.region && f.region.toLowerCase().includes(q)),
-      );
+      flags = flags.filter((f) => f.name.toLowerCase().includes(q));
     }
     return flags.sort((a, b) => a.name.localeCompare(b.name));
-  }, [allFlags, selectedCategory, searchQuery]);
-
-  const categories: (FlagCategory | 'all')[] = ['all', ...(Object.keys(CATEGORY_LABELS) as FlagCategory[])];
+  }, [allFlags, selectedRegion, searchQuery]);
 
   const renderItem = ({ item }: { item: FlagItem }) => (
     <View style={styles.flagItem}>
       <Text style={styles.flagEmoji}>{item.emoji}</Text>
       <View style={styles.flagInfo}>
         <Text style={styles.flagName}>{item.name}</Text>
-        {item.region && (
-          <Text style={styles.flagRegion}>{item.region}</Text>
-        )}
+        <Text style={styles.flagRegion}>{item.region}</Text>
       </View>
     </View>
   );
@@ -63,27 +57,27 @@ export default function BrowseScreen() {
 
       <FlatList
         horizontal
-        data={categories}
+        data={REGIONS}
         keyExtractor={(item) => item}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoryList}
-        style={styles.categoryScroll}
-        renderItem={({ item: cat }) => (
+        contentContainerStyle={styles.regionList}
+        style={styles.regionScroll}
+        renderItem={({ item: region }) => (
           <TouchableOpacity
             style={[
-              styles.categoryChip,
-              selectedCategory === cat && styles.categoryChipActive,
+              styles.regionChip,
+              selectedRegion === region && styles.regionChipActive,
             ]}
-            onPress={() => setSelectedCategory(cat)}
+            onPress={() => setSelectedRegion(region)}
             activeOpacity={0.7}
           >
             <Text
               style={[
-                styles.categoryLabel,
-                selectedCategory === cat && styles.categoryLabelActive,
+                styles.regionLabel,
+                selectedRegion === region && styles.regionLabelActive,
               ]}
             >
-              {cat === 'all' ? 'All' : CATEGORY_LABELS[cat]}
+              {region}
             </Text>
           </TouchableOpacity>
         )}
@@ -121,15 +115,15 @@ const styles = StyleSheet.create({
     color: colors.text,
     ...shadows.small,
   },
-  categoryScroll: {
+  regionScroll: {
     maxHeight: 48,
     marginTop: spacing.md,
   },
-  categoryList: {
+  regionList: {
     paddingHorizontal: spacing.lg,
     gap: spacing.sm,
   },
-  categoryChip: {
+  regionChip: {
     backgroundColor: colors.surface,
     borderRadius: borderRadius.full,
     paddingHorizontal: spacing.md,
@@ -137,15 +131,15 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: colors.border,
   },
-  categoryChipActive: {
+  regionChipActive: {
     borderColor: colors.accent,
     backgroundColor: colors.accent + '10',
   },
-  categoryLabel: {
+  regionLabel: {
     ...typography.captionBold,
     color: colors.text,
   },
-  categoryLabelActive: {
+  regionLabelActive: {
     color: colors.accent,
   },
   resultCount: {

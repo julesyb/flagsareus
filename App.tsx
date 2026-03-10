@@ -7,6 +7,7 @@ import GameScreen from './src/screens/GameScreen';
 import ResultsScreen from './src/screens/ResultsScreen';
 import StatsScreen from './src/screens/StatsScreen';
 import BrowseScreen from './src/screens/BrowseScreen';
+import HeadsUpScreen from './src/screens/HeadsUpScreen';
 import { RootStackParamList } from './src/types/navigation';
 import { colors, typography } from './src/utils/theme';
 
@@ -44,6 +45,11 @@ export default function App() {
         <Stack.Screen
           name="Game"
           component={GameScreen}
+          options={{ headerShown: false, gestureEnabled: false }}
+        />
+        <Stack.Screen
+          name="HeadsUp"
+          component={HeadsUpScreen}
           options={{ headerShown: false, gestureEnabled: false }}
         />
         <Stack.Screen

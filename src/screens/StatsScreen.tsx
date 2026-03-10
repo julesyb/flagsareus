@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, spacing, borderRadius, typography, shadows } from '../utils/theme';
-import { UserStats, CATEGORY_LABELS, DIFFICULTY_CONFIG, FlagCategory, Difficulty } from '../types';
+import { UserStats, GAME_MODES, CATEGORIES, GameMode } from '../types';
 import { getStats, resetStats } from '../utils/storage';
 
 export default function StatsScreen() {
@@ -25,7 +25,7 @@ export default function StatsScreen() {
   const handleReset = () => {
     Alert.alert(
       'Reset Statistics',
-      'Are you sure you want to reset all your statistics? This cannot be undone.',
+      'Are you sure? This cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -82,35 +82,35 @@ export default function StatsScreen() {
           </View>
         </View>
 
-        <Text style={styles.sectionTitle}>By Difficulty</Text>
-        {(Object.keys(DIFFICULTY_CONFIG) as Difficulty[]).map((d) => {
-          const s = stats.difficultyStats[d];
+        <Text style={styles.sectionTitle}>By Mode</Text>
+        {(Object.keys(GAME_MODES) as GameMode[]).map((m) => {
+          const s = stats.modeStats[m];
           const acc = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
           return (
-            <View key={d} style={styles.statRow}>
-              <Text style={styles.statRowLabel}>{DIFFICULTY_CONFIG[d].label}</Text>
+            <View key={m} style={styles.statRow}>
+              <Text style={styles.statRowLabel}>{GAME_MODES[m].label}</Text>
               <View style={styles.statBarContainer}>
                 <View style={[styles.statBar, { width: `${acc}%` }]} />
               </View>
               <Text style={styles.statRowValue}>
-                {s.total > 0 ? `${acc}%` : '—'}
+                {s.total > 0 ? `${acc}%` : '\u2014'}
               </Text>
             </View>
           );
         })}
 
         <Text style={styles.sectionTitle}>By Category</Text>
-        {(Object.keys(CATEGORY_LABELS) as FlagCategory[]).map((cat) => {
-          const s = stats.categoryStats[cat];
-          const acc = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
+        {CATEGORIES.map((cat) => {
+          const s = stats.categoryStats[cat.id];
+          const acc = s && s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
           return (
-            <View key={cat} style={styles.statRow}>
-              <Text style={styles.statRowLabel}>{CATEGORY_LABELS[cat]}</Text>
+            <View key={cat.id} style={styles.statRow}>
+              <Text style={styles.statRowLabel}>{cat.icon} {cat.label}</Text>
               <View style={styles.statBarContainer}>
                 <View style={[styles.statBar, { width: `${acc}%` }]} />
               </View>
               <Text style={styles.statRowValue}>
-                {s.total > 0 ? `${acc}%` : '—'}
+                {s && s.total > 0 ? `${acc}%` : '\u2014'}
               </Text>
             </View>
           );
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   statRowLabel: {
     ...typography.label,
     color: colors.text,
-    width: 120,
+    width: 130,
   },
   statBarContainer: {
     flex: 1,

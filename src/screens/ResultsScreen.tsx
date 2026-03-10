@@ -26,8 +26,16 @@ export default function ResultsScreen({ route, navigation }: Props) {
     : 0;
 
   useEffect(() => {
-    updateStats(correct, results.length, streak, config.difficulty, config.categories);
+    updateStats(correct, results.length, streak, config.mode, config.category);
   }, []);
+
+  const playAgain = () => {
+    if (config.mode === 'headsup') {
+      navigation.replace('HeadsUp', { config });
+    } else {
+      navigation.replace('Game', { config });
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -73,7 +81,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
                 </Text>
               )}
             </View>
-            <Text style={styles.reviewIcon}>
+            <Text style={[styles.reviewIcon, result.correct ? { color: colors.success } : { color: colors.error }]}>
               {result.correct ? '✓' : '✗'}
             </Text>
           </View>
@@ -89,7 +97,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.primaryButton}
-            onPress={() => navigation.replace('Game', { config })}
+            onPress={playAgain}
             activeOpacity={0.7}
           >
             <Text style={styles.primaryButtonText}>Play Again</Text>
@@ -183,7 +191,6 @@ const styles = StyleSheet.create({
   },
   reviewIcon: {
     ...typography.heading,
-    color: colors.textTertiary,
     marginLeft: spacing.sm,
   },
   buttonRow: {

@@ -1,24 +1,45 @@
-export type Difficulty = 'easy' | 'hard' | 'extreme';
+export type GameMode = 'easy' | 'medium' | 'hard' | 'headsup';
 
-export type FlagCategory = 'countries' | 'us_states' | 'canadian_provinces' | 'australian_states' | 'brazilian_states' | 'german_states' | 'indian_states' | 'japanese_prefectures' | 'mexican_states' | 'spanish_communities';
+export type CategoryType = 'location' | 'difficulty' | 'theme';
+
+export type CategoryId =
+  | 'africa'
+  | 'asia'
+  | 'europe'
+  | 'americas'
+  | 'oceania'
+  | 'easy_flags'
+  | 'tricky_twins'
+  | 'island_nations'
+  | 'top_travel'
+  | 'short_names';
+
+export interface CategoryInfo {
+  id: CategoryId;
+  label: string;
+  description: string;
+  type: CategoryType;
+  icon: string;
+}
 
 export interface FlagItem {
   id: string;
   name: string;
   emoji: string;
-  category: FlagCategory;
-  region?: string;
+  region: string;
+  tags: CategoryId[];
 }
 
 export interface GameConfig {
-  difficulty: Difficulty;
-  categories: FlagCategory[];
+  mode: GameMode;
+  category: CategoryId;
   questionCount: number;
+  timeLimit?: number; // seconds, for heads up
 }
 
 export interface GameQuestion {
   flag: FlagItem;
-  options: string[]; // Only used for easy/hard modes
+  options: string[];
 }
 
 export interface GameResult {
@@ -28,39 +49,42 @@ export interface GameResult {
   timeTaken: number;
 }
 
-export interface GameSession {
-  config: GameConfig;
-  results: GameResult[];
-  startTime: number;
-  endTime?: number;
-  score: number;
-  totalQuestions: number;
-}
-
 export interface UserStats {
   totalGamesPlayed: number;
   totalCorrect: number;
   totalAnswered: number;
   bestStreak: number;
-  categoryStats: Record<FlagCategory, { correct: number; total: number }>;
-  difficultyStats: Record<Difficulty, { correct: number; total: number }>;
+  modeStats: Record<GameMode, { correct: number; total: number }>;
+  categoryStats: Partial<Record<CategoryId, { correct: number; total: number }>>;
 }
 
-export const CATEGORY_LABELS: Record<FlagCategory, string> = {
-  countries: 'Countries',
-  us_states: 'US States',
-  canadian_provinces: 'Canadian Provinces',
-  australian_states: 'Australian States',
-  brazilian_states: 'Brazilian States',
-  german_states: 'German States',
-  indian_states: 'Indian States',
-  japanese_prefectures: 'Japanese Prefectures',
-  mexican_states: 'Mexican States',
-  spanish_communities: 'Spanish Communities',
+export const GAME_MODES: Record<GameMode, { label: string; description: string; icon: string }> = {
+  easy: { label: 'Easy', description: '50/50 - Pick from 2', icon: '🟢' },
+  medium: { label: 'Medium', description: 'Pick from 4', icon: '🟡' },
+  hard: { label: 'Hard', description: 'Type the answer', icon: '🔴' },
+  headsup: { label: 'Heads Up!', description: 'Party mode - tilt to play', icon: '🎉' },
 };
 
-export const DIFFICULTY_CONFIG: Record<Difficulty, { label: string; description: string; choiceCount: number }> = {
-  easy: { label: 'Easy', description: '2 choices', choiceCount: 2 },
-  hard: { label: 'Hard', description: '4 choices', choiceCount: 4 },
-  extreme: { label: 'Extreme', description: 'Type the answer', choiceCount: 0 },
+export const CATEGORIES: CategoryInfo[] = [
+  // Location-based
+  { id: 'africa', label: 'Africa', description: '54 countries', type: 'location', icon: '🌍' },
+  { id: 'asia', label: 'Asia', description: '49 countries', type: 'location', icon: '🌏' },
+  { id: 'europe', label: 'Europe', description: '45 countries', type: 'location', icon: '🏰' },
+  { id: 'americas', label: 'Americas', description: '35 countries', type: 'location', icon: '🌎' },
+  { id: 'oceania', label: 'Oceania', description: '14 countries', type: 'location', icon: '🏝' },
+
+  // Difficulty-based
+  { id: 'easy_flags', label: 'Famous Flags', description: 'The ones everyone knows', type: 'difficulty', icon: '⭐' },
+  { id: 'tricky_twins', label: 'Tricky Twins', description: 'Look-alike flags', type: 'difficulty', icon: '👯' },
+
+  // Theme-based
+  { id: 'island_nations', label: 'Island Nations', description: 'Surrounded by water', type: 'theme', icon: '🏖' },
+  { id: 'top_travel', label: 'Top Destinations', description: 'Most visited countries', type: 'theme', icon: '✈️' },
+  { id: 'short_names', label: 'Short Names', description: '5 letters or less', type: 'theme', icon: '🔤' },
+];
+
+export const CATEGORY_TYPE_LABELS: Record<CategoryType, string> = {
+  location: 'By Region',
+  difficulty: 'By Difficulty',
+  theme: 'By Theme',
 };

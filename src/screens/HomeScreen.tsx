@@ -29,7 +29,7 @@ export default function HomeScreen({ navigation }: Props) {
           <Text style={styles.logo}>Flags</Text>
           <Text style={styles.logoAccent}>Are Us</Text>
           <Text style={styles.subtitle}>
-            {totalFlags} flags from around the world
+            {totalFlags} country flags to master
           </Text>
         </View>
 
@@ -42,13 +42,13 @@ export default function HomeScreen({ navigation }: Props) {
             <View style={styles.cardContent}>
               <Text style={styles.cardEmoji}>🎮</Text>
               <View style={styles.cardText}>
-                <Text style={styles.cardTitle}>Play</Text>
-                <Text style={styles.cardDescription}>
-                  Test your flag knowledge
+                <Text style={[styles.cardTitle, styles.playCardText]}>Play</Text>
+                <Text style={[styles.cardDescription, styles.playCardDesc]}>
+                  Quiz, challenge, or party mode
                 </Text>
               </View>
             </View>
-            <Text style={styles.cardArrow}>→</Text>
+            <Text style={[styles.cardArrow, styles.playCardText]}>→</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -84,15 +84,6 @@ export default function HomeScreen({ navigation }: Props) {
             </View>
             <Text style={styles.cardArrow}>→</Text>
           </TouchableOpacity>
-        </View>
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Countries • US States • Canadian Provinces{'\n'}
-            Australian States • Brazilian States • German States{'\n'}
-            Indian States • Japanese Prefectures • Mexican States{'\n'}
-            Spanish Communities
-          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -143,6 +134,12 @@ const styles = StyleSheet.create({
   playCard: {
     backgroundColor: colors.primary,
   },
+  playCardText: {
+    color: colors.white,
+  },
+  playCardDesc: {
+    color: 'rgba(255,255,255,0.6)',
+  },
   cardContent: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -167,15 +164,5 @@ const styles = StyleSheet.create({
   cardArrow: {
     ...typography.heading,
     color: colors.textTertiary,
-  },
-  footer: {
-    marginTop: spacing.xxl,
-    alignItems: 'center',
-  },
-  footerText: {
-    ...typography.caption,
-    color: colors.textTertiary,
-    textAlign: 'center',
-    lineHeight: 20,
   },
 });

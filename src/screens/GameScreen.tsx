@@ -8,7 +8,6 @@ import {
   SafeAreaView,
   Animated,
   Keyboard,
-  Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, borderRadius, typography, shadows } from '../utils/theme';
@@ -36,7 +35,7 @@ export default function GameScreen({ route, navigation }: Props) {
   }, []);
 
   const currentQuestion = questions[currentIndex];
-  const isExtreme = config.difficulty === 'extreme';
+  const isHard = config.mode === 'hard';
   const progress = questions.length > 0 ? (currentIndex + 1) / questions.length : 0;
 
   const handleAnswer = useCallback(
@@ -81,17 +80,14 @@ export default function GameScreen({ route, navigation }: Props) {
           setQuestionStartTime(Date.now());
           Keyboard.dismiss();
         } else {
-          navigation.replace('Results', {
-            results: newResults,
-            config,
-          });
+          navigation.replace('Results', { results: newResults, config });
         }
       }, correct ? 600 : 1200);
     },
     [showFeedback, currentQuestion, questionStartTime, results, currentIndex, questions, fadeAnim, navigation, config],
   );
 
-  const handleSubmitExtreme = () => {
+  const handleSubmitHard = () => {
     if (textInput.trim().length > 0) {
       handleAnswer(textInput.trim());
     }
@@ -133,17 +129,13 @@ export default function GameScreen({ route, navigation }: Props) {
           <Text style={styles.flagEmoji}>{currentQuestion.flag.emoji}</Text>
         </View>
 
-        {currentQuestion.flag.category !== 'countries' && (
-          <Text style={styles.hint}>
-            {currentQuestion.flag.region}
-          </Text>
-        )}
+        <Text style={styles.regionHint}>{currentQuestion.flag.region}</Text>
 
         <Text style={styles.questionText}>
-          {isExtreme ? 'Type the name of this flag:' : 'Which flag is this?'}
+          {isHard ? 'Type the name of this flag:' : 'Which flag is this?'}
         </Text>
 
-        {isExtreme ? (
+        {isHard ? (
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.textInput}
@@ -154,7 +146,7 @@ export default function GameScreen({ route, navigation }: Props) {
               autoCapitalize="words"
               autoCorrect={false}
               returnKeyType="done"
-              onSubmitEditing={handleSubmitExtreme}
+              onSubmitEditing={handleSubmitHard}
               editable={!showFeedback}
             />
             <TouchableOpacity
@@ -162,7 +154,7 @@ export default function GameScreen({ route, navigation }: Props) {
                 styles.submitButton,
                 textInput.trim().length === 0 && styles.submitButtonDisabled,
               ]}
-              onPress={handleSubmitExtreme}
+              onPress={handleSubmitHard}
               disabled={textInput.trim().length === 0 || showFeedback}
               activeOpacity={0.7}
             >
@@ -277,9 +269,9 @@ const styles = StyleSheet.create({
   flagEmoji: {
     fontSize: 120,
   },
-  hint: {
+  regionHint: {
     ...typography.captionBold,
-    color: colors.textSecondary,
+    color: colors.textTertiary,
     textAlign: 'center',
     marginBottom: spacing.sm,
   },

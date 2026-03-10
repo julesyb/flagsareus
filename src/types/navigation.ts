@@ -4,6 +4,7 @@ export type RootStackParamList = {
   Home: undefined;
   GameSetup: undefined;
   Game: { config: GameConfig };
+  HeadsUp: { config: GameConfig };
   Results: { results: GameResult[]; config: GameConfig };
   Stats: undefined;
   Browse: undefined;
