@@ -12,16 +12,41 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, spacing, typography, fontFamily } from '../utils/theme';
 import { UserStats, GAME_MODES, CATEGORIES, GameMode } from '../types';
-import { getStats, resetStats } from '../utils/storage';
+import { getStats, resetStats, getFlagStats, FlagStats } from '../utils/storage';
+import { getAllFlags } from '../data';
 
 export default function StatsScreen() {
   const [stats, setStats] = useState<UserStats | null>(null);
+  const [flagStats, setFlagStats] = useState<FlagStats>({});
+
+  const flagNameMap = React.useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const f of getAllFlags()) {
+      map[f.id] = f.name;
+    }
+    return map;
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
       getStats().then(setStats);
+      getFlagStats().then(setFlagStats);
     }, []),
   );
+
+  const top10 = React.useMemo(() => {
+    return Object.entries(flagStats)
+      .filter(([, s]) => s.right > 0)
+      .sort(([, a], [, b]) => b.right - a.right)
+      .slice(0, 10);
+  }, [flagStats]);
+
+  const bottom10 = React.useMemo(() => {
+    return Object.entries(flagStats)
+      .filter(([, s]) => s.wrong > 0)
+      .sort(([, a], [, b]) => b.wrong - a.wrong)
+      .slice(0, 10);
+  }, [flagStats]);
 
   const handleReset = async () => {
     if (Platform.OS === 'web') {
@@ -125,6 +150,36 @@ export default function StatsScreen() {
           );
         })}
 
+        {top10.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>Top 10</Text>
+            {top10.map(([id, s], i) => (
+              <View key={id} style={styles.flagStatRow}>
+                <Text style={styles.flagStatRank}>{i + 1}</Text>
+                <Text style={styles.flagStatName}>{flagNameMap[id] || id}</Text>
+                <Text style={[styles.flagStatCount, { color: colors.success }]}>
+                  {s.right}x right
+                </Text>
+              </View>
+            ))}
+          </>
+        )}
+
+        {bottom10.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>Bottom 10</Text>
+            {bottom10.map(([id, s], i) => (
+              <View key={id} style={styles.flagStatRow}>
+                <Text style={styles.flagStatRank}>{i + 1}</Text>
+                <Text style={styles.flagStatName}>{flagNameMap[id] || id}</Text>
+                <Text style={[styles.flagStatCount, { color: colors.error }]}>
+                  {s.wrong}x wrong
+                </Text>
+              </View>
+            ))}
+          </>
+        )}
+
         <TouchableOpacity
           style={styles.resetButton}
           onPress={handleReset}
@@ -227,6 +282,30 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     width: 40,
     textAlign: 'right',
+  },
+  flagStatRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    marginBottom: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.border,
+    gap: spacing.md,
+  },
+  flagStatRank: {
+    ...typography.captionBold,
+    color: colors.textTertiary,
+    width: 20,
+    textAlign: 'center',
+  },
+  flagStatName: {
+    ...typography.bodyBold,
+    color: colors.text,
+    flex: 1,
+  },
+  flagStatCount: {
+    ...typography.captionBold,
   },
   resetButton: {
     marginTop: spacing.xl,
