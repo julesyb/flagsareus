@@ -8,16 +8,21 @@ import {
   SafeAreaView,
   TextInput,
 } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography } from '../utils/theme';
 import { FlagItem } from '../types';
+import { RootStackParamList } from '../types/navigation';
 import { getAllFlags } from '../data';
 import { FlagImageSmall } from '../components/FlagImage';
 
-const REGIONS = ['All', 'Africa', 'Asia', 'Europe', 'Americas', 'Oceania'];
+type Props = NativeStackScreenProps<RootStackParamList, 'Browse'>;
 
-export default function BrowseScreen() {
+const REGIONS = ['All', 'Africa', 'Asia', 'Europe', 'Americas', 'Oceania', 'Middle East'];
+
+export default function BrowseScreen({ route }: Props) {
+  const initialRegion = route.params?.region ?? 'All';
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRegion, setSelectedRegion] = useState('All');
+  const [selectedRegion, setSelectedRegion] = useState(initialRegion);
 
   const allFlags = useMemo(() => getAllFlags(), []);
 

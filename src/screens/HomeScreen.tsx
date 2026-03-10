@@ -282,7 +282,7 @@ export default function HomeScreen({ navigation }: Props) {
                     (i + 1) % 3 !== 0 && styles.regionItemBorderRight,
                     i < 3 && styles.regionItemBorderBottom,
                   ]}
-                  onPress={() => { hapticTap(); navigation.navigate('Browse'); }}
+                  onPress={() => { hapticTap(); navigation.navigate('Browse', { region: region.name }); }}
                   activeOpacity={0.7}
                 >
                   <Text style={styles.regionName}>{region.name}</Text>
@@ -293,6 +293,48 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         </FadeUp>
       </ScrollView>
+
+      {/* ── BOTTOM NAV BAR ── */}
+      <View style={styles.bottomNav}>
+        <View style={styles.bottomNavTopRule} />
+        <View style={styles.bottomNavInner}>
+          <TouchableOpacity
+            style={styles.bottomNavItem}
+            onPress={quickPlay}
+            activeOpacity={0.7}
+          >
+            <LightningIcon size={16} color={colors.ink} />
+            <Text style={styles.bottomNavLabel}>Quick Play</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.bottomNavItem}
+            onPress={() => { hapticTap(); navigation.navigate('GameSetup'); }}
+            activeOpacity={0.7}
+          >
+            <CrosshairIcon size={16} color={colors.ink} />
+            <Text style={styles.bottomNavLabel}>Custom</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.bottomNavItem}
+            onPress={() => { hapticTap(); navigation.navigate('Stats'); }}
+            activeOpacity={0.7}
+          >
+            <BarChartIcon size={16} color={colors.ink} />
+            <Text style={styles.bottomNavLabel}>Stats</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.bottomNavItem}
+            onPress={() => { hapticTap(); navigation.navigate('Browse'); }}
+            activeOpacity={0.7}
+          >
+            <GlobeIcon size={16} color={colors.ink} />
+            <Text style={styles.bottomNavLabel}>Browse</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -308,7 +350,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: '100%',
     paddingHorizontal: 40,
-    paddingBottom: 80,
+    paddingBottom: 24,
   },
 
   // Grid
@@ -642,5 +684,35 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.uiLabelLight,
     fontSize: 11,
     color: colors.slate,
+  },
+
+  // Bottom nav
+  bottomNav: {
+    backgroundColor: colors.background,
+    paddingBottom: 8,
+  },
+  bottomNavTopRule: {
+    height: 2,
+    backgroundColor: colors.ink,
+  },
+  bottomNavInner: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  bottomNavItem: {
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  bottomNavLabel: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: 9,
+    letterSpacing: 1.8,
+    textTransform: 'uppercase',
+    color: colors.ink,
   },
 });
