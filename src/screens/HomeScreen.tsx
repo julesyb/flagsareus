@@ -123,9 +123,6 @@ export default function HomeScreen({ navigation }: Props) {
           <View style={styles.headerTopRule} />
           <View style={styles.headerInner}>
             <View>
-              <Text style={styles.eyebrow}>
-                Flag Identification {'\u00B7'} {totalFlags} Countries
-              </Text>
               <Text style={styles.logotypeMain}>
                 Flag{'\n'}
                 <Text style={styles.logotypeItalic}>That</Text>
@@ -138,19 +135,6 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         </FadeUp>
 
-        {/* ── BYLINE ── */}
-        <FadeUp delay={80}>
-          <View style={styles.byline}>
-            <Text style={styles.bylineText}>
-              Geography {'\u00B7'} Cartography {'\u00B7'} Mastery
-            </Text>
-            <View style={styles.bylineDots}>
-              {[0, 1, 2, 3, 4].map((i) => (
-                <View key={i} style={styles.bylineDot} />
-              ))}
-            </View>
-          </View>
-        </FadeUp>
 
         {/* ── PROGRESS ── */}
         <FadeUp delay={140}>
@@ -309,14 +293,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: colors.ink,
   },
-  eyebrow: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: 10,
-    letterSpacing: 2.8,
-    textTransform: 'uppercase',
-    color: colors.slate,
-    marginBottom: 8,
-  },
   logotypeMain: {
     fontFamily: fontFamily.display,
     fontSize: 64,
@@ -346,34 +322,6 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     color: colors.slate,
     marginTop: 2,
-  },
-
-  // Byline
-  byline: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.rule,
-    marginBottom: 40,
-  },
-  bylineText: {
-    fontFamily: fontFamily.uiLabelMedium,
-    fontSize: 10,
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    color: colors.slate,
-  },
-  bylineDots: {
-    flexDirection: 'row',
-    gap: 4,
-    alignItems: 'center',
-  },
-  bylineDot: {
-    width: 4,
-    height: 4,
-    backgroundColor: colors.rule2,
   },
 
   // Progress
