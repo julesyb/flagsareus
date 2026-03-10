@@ -133,7 +133,6 @@ export const countryAliases: Record<string, string> = {
   // Gambia
   'gamia': 'Gambia',
   'the gambia': 'Gambia',
-  'gambia': 'Gambia',
 
   // Ghana
   'gana': 'Ghana',
@@ -253,7 +252,6 @@ export const countryAliases: Record<string, string> = {
   'southafrica': 'South Africa',
   'south afica': 'South Africa',
   'south afirca': 'South Africa',
-  'sa': 'South Africa',
 
   // South Sudan
   'southsudan': 'South Sudan',
@@ -310,7 +308,7 @@ export const countryAliases: Record<string, string> = {
   'azerbajan': 'Azerbaijan',
   'azerbijan': 'Azerbaijan',
   'azerbiajan': 'Azerbaijan',
-  'azerbajan': 'Azerbaijan',
+  'azarbaijan': 'Azerbaijan',
 
   // Bahrain
   'bahrien': 'Bahrain',
@@ -360,7 +358,6 @@ export const countryAliases: Record<string, string> = {
   'indoneisa': 'Indonesia',
 
   // Iran
-  'iran': 'Iran',
   'persia': 'Iran',
 
   // Iraq
@@ -571,7 +568,7 @@ export const countryAliases: Record<string, string> = {
 
   // Andorra
   'andora': 'Andorra',
-  'andora': 'Andorra',
+  'andoraa': 'Andorra',
 
   // Austria
   'austira': 'Austria',
@@ -656,7 +653,7 @@ export const countryAliases: Record<string, string> = {
   // Iceland
   'icelnd': 'Iceland',
   'icland': 'Iceland',
-  'island': 'Iceland',
+  'icleland': 'Iceland',
 
   // Ireland
   'irland': 'Ireland',
@@ -780,7 +777,6 @@ export const countryAliases: Record<string, string> = {
 
   // Spain
   'spian': 'Spain',
-  'spain': 'Spain',
   'espana': 'Spain',
   'españa': 'Spain',
 
@@ -873,7 +869,6 @@ export const countryAliases: Record<string, string> = {
 
   // Costa Rica
   'costarica': 'Costa Rica',
-  'costa rica': 'Costa Rica',
   'coasta rica': 'Costa Rica',
 
   // Cuba
@@ -888,7 +883,6 @@ export const countryAliases: Record<string, string> = {
   'dominicanrepublic': 'Dominican Republic',
   'domincan republic': 'Dominican Republic',
   'dominican replublic': 'Dominican Republic',
-  'dr': 'Dominican Republic',
 
   // Ecuador
   'equador': 'Ecuador',
