@@ -1,5 +1,5 @@
 // =====================
-// BRAND GUIDELINES — Flags Are Us
+// BRAND GUIDELINES — Flag That
 // Voice: Friendly. Modern. Clean.
 //
 // Rules:
