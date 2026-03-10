@@ -183,7 +183,7 @@ export default function HomeScreen({ navigation }: Props) {
             <View style={styles.cardHeroBar} />
             <View style={styles.heroLeft}>
               <View style={styles.heroIcon}>
-                <LightningIcon size={22} color={colors.white} />
+                <LightningIcon size={22} color={colors.white} filled />
               </View>
               <View>
                 <Text style={styles.heroTitle}>Play</Text>
