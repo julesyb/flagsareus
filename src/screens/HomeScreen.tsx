@@ -119,7 +119,7 @@ export default function HomeScreen({ navigation }: Props) {
             <View style={styles.cardHeroBar} />
             <View style={styles.heroLeft}>
               <View style={styles.heroIcon}>
-                <LightningIcon size={22} color={colors.white} />
+                <LightningIcon size={22} color={colors.white} filled />
               </View>
               <View>
                 <Text style={styles.heroTitle}>Play</Text>
@@ -253,14 +253,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 3,
     backgroundColor: colors.accent,
-    marginTop: 56,
-    marginBottom: 24,
+    marginBottom: 16,
   },
   headerInner: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    paddingBottom: 20,
+    paddingBottom: 14,
     borderBottomWidth: 2,
     borderBottomColor: colors.ink,
   },
@@ -301,8 +300,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.ink,
-    paddingVertical: 36,
-    paddingHorizontal: 32,
+    paddingVertical: 28,
+    paddingHorizontal: 28,
     position: 'relative',
   },
   cardHeroBar: {
@@ -390,6 +389,10 @@ const styles = StyleSheet.create({
   bottomNav: {
     backgroundColor: colors.background,
     paddingBottom: 8,
+    maxWidth: 700,
+    alignSelf: 'center',
+    width: '100%',
+    paddingHorizontal: 40,
   },
   bottomNavTopRule: {
     height: 2,
@@ -400,7 +403,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: 10,
-    paddingHorizontal: 16,
   },
   bottomNavItem: {
     alignItems: 'center',
