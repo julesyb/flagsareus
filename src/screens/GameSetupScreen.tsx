@@ -8,7 +8,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, borderRadius, typography, shadows } from '../utils/theme';
+import { colors, spacing, borderRadius, typography, fontFamily, shadows } from '../utils/theme';
 import {
   GameMode,
   CategoryId,
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl,
   },
   sectionTitle: {
-    ...typography.heading,
+    ...typography.headingUpper,
     color: colors.text,
     marginBottom: spacing.md,
     marginTop: spacing.lg,
@@ -217,7 +217,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: colors.border,
-    ...shadows.small,
   },
   modeCardActive: {
     borderColor: colors.accent,
@@ -226,7 +225,7 @@ const styles = StyleSheet.create({
   modeIconBadge: {
     width: 36,
     height: 36,
-    borderRadius: 10,
+    borderRadius: borderRadius.sm,
     backgroundColor: colors.surfaceSecondary,
     justifyContent: 'center',
     alignItems: 'center',
@@ -237,7 +236,7 @@ const styles = StyleSheet.create({
   },
   modeIconText: {
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: fontFamily.uiLabel,
     color: colors.textSecondary,
   },
   modeIconTextActive: {
@@ -253,7 +252,7 @@ const styles = StyleSheet.create({
   modeDesc: {
     ...typography.caption,
     color: colors.textSecondary,
-    marginTop: 2,
+    marginTop: spacing.xxs,
     textAlign: 'center',
   },
   modeDescActive: {
@@ -292,7 +291,7 @@ const styles = StyleSheet.create({
   categoryIconBadge: {
     width: 32,
     height: 32,
-    borderRadius: 8,
+    borderRadius: borderRadius.sm,
     backgroundColor: colors.surfaceSecondary,
     justifyContent: 'center',
     alignItems: 'center',
@@ -302,7 +301,7 @@ const styles = StyleSheet.create({
   },
   categoryIconText: {
     fontSize: 11,
-    fontWeight: '700',
+    fontFamily: fontFamily.uiLabel,
     color: colors.textSecondary,
     letterSpacing: 0.5,
   },
@@ -357,13 +356,12 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     alignItems: 'center',
     marginTop: spacing.xl,
-    ...shadows.medium,
   },
   startButtonParty: {
-    backgroundColor: '#FF6B35',
+    backgroundColor: colors.accentLight,
   },
   startButtonText: {
-    ...typography.heading,
+    ...typography.headingUpper,
     color: colors.white,
   },
 });

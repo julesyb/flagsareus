@@ -10,7 +10,7 @@ import {
   Keyboard,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, borderRadius, typography, shadows } from '../utils/theme';
+import { colors, spacing, borderRadius, typography, fontFamily } from '../utils/theme';
 import { GameQuestion, GameResult } from '../types';
 import { generateQuestions, checkAnswer } from '../utils/gameEngine';
 import { hapticCorrect, hapticWrong, hapticTap, playCorrectSound, playWrongSound } from '../utils/feedback';
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   },
   streakText: {
     ...typography.bodyBold,
-    color: '#FF6B35',
+    color: colors.accent,
   },
   score: {
     ...typography.label,
@@ -320,12 +320,12 @@ const styles = StyleSheet.create({
     height: 3,
     backgroundColor: colors.border,
     marginHorizontal: spacing.lg,
-    borderRadius: 2,
+    borderRadius: borderRadius.sm,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: colors.accent,
-    borderRadius: 2,
+    backgroundColor: colors.ink,
+    borderRadius: borderRadius.sm,
   },
   questionContainer: {
     flex: 1,
@@ -359,7 +359,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: colors.border,
-    ...shadows.small,
   },
   optionCorrect: {
     backgroundColor: colors.success,

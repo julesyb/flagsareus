@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { colors, spacing, borderRadius, typography, shadows } from '../utils/theme';
+import { colors, spacing, borderRadius, typography, fontFamily } from '../utils/theme';
 import { UserStats, GAME_MODES, CATEGORIES, GameMode } from '../types';
 import { getStats, resetStats } from '../utils/storage';
 
@@ -155,17 +155,15 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
     alignItems: 'center',
     marginBottom: spacing.sm,
-    ...shadows.medium,
   },
   bigStatValue: {
     fontSize: 48,
-    fontWeight: '800',
+    fontFamily: fontFamily.display,
     color: colors.white,
   },
   bigStatLabel: {
     ...typography.label,
-    color: colors.white,
-    opacity: 0.7,
+    color: colors.whiteAlpha70,
     marginTop: spacing.xs,
   },
   rowStats: {
@@ -178,7 +176,8 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     padding: spacing.md,
     alignItems: 'center',
-    ...shadows.small,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   smallStatValue: {
     ...typography.heading,
@@ -187,10 +186,10 @@ const styles = StyleSheet.create({
   smallStatLabel: {
     ...typography.caption,
     color: colors.textSecondary,
-    marginTop: 2,
+    marginTop: spacing.xxs,
   },
   sectionTitle: {
-    ...typography.heading,
+    ...typography.headingUpper,
     color: colors.text,
     marginBottom: spacing.md,
     marginTop: spacing.md,
@@ -210,13 +209,13 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 8,
     backgroundColor: colors.border,
-    borderRadius: 4,
+    borderRadius: borderRadius.sm,
     overflow: 'hidden',
   },
   statBar: {
     height: '100%',
-    backgroundColor: colors.accent,
-    borderRadius: 4,
+    backgroundColor: colors.ink,
+    borderRadius: borderRadius.sm,
   },
   statRowValue: {
     ...typography.captionBold,

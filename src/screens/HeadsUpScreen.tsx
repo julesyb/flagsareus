@@ -8,7 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, borderRadius, typography } from '../utils/theme';
+import { colors, spacing, borderRadius, typography, fontFamily } from '../utils/theme';
 import { GameQuestion, GameResult } from '../types';
 import { generateQuestions } from '../utils/gameEngine';
 import {
@@ -44,7 +44,6 @@ export default function HeadsUpScreen({ route, navigation }: Props) {
   const tiltCooldown = useRef(false);
   const resultsRef = useRef<GameResult[]>([]);
 
-  // Keep results ref in sync
   useEffect(() => {
     resultsRef.current = results;
   }, [results]);
@@ -69,7 +68,6 @@ export default function HeadsUpScreen({ route, navigation }: Props) {
     };
   }, []);
 
-  // Generate questions
   useEffect(() => {
     const q = generateQuestions(config);
     setQuestions(q);
@@ -363,7 +361,7 @@ export default function HeadsUpScreen({ route, navigation }: Props) {
       )}
 
       <View style={styles.bottomBar}>
-        <Text style={[styles.timerText, timeLeft <= 10 && { color: '#FFD700' }]}>
+        <Text style={[styles.timerText, timeLeft <= 10 && { color: colors.warning }]}>
           {timeLeft}s
         </Text>
         <Text style={styles.scoreText}>{correctCount} correct</Text>
@@ -387,13 +385,13 @@ const styles = StyleSheet.create({
   },
   tutorialTitle: {
     fontSize: 42,
-    fontWeight: '800',
+    fontFamily: fontFamily.display,
     color: colors.white,
     marginBottom: spacing.xs,
   },
   tutorialSubtitle: {
     ...typography.body,
-    color: 'rgba(255,255,255,0.5)',
+    color: colors.whiteAlpha50,
     marginBottom: spacing.xl,
   },
   tutorialSteps: {
@@ -410,8 +408,8 @@ const styles = StyleSheet.create({
   stepIconBox: {
     width: 44,
     height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: borderRadius.sm,
+    backgroundColor: colors.whiteAlpha15,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -442,7 +440,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
   },
   readyButtonText: {
-    ...typography.heading,
+    ...typography.headingUpper,
     color: colors.white,
   },
   // Countdown
@@ -454,12 +452,12 @@ const styles = StyleSheet.create({
   },
   countdownHint: {
     ...typography.heading,
-    color: 'rgba(255,255,255,0.6)',
+    color: colors.whiteAlpha60,
     marginBottom: spacing.xl,
   },
   countdownNumber: {
     fontSize: 120,
-    fontWeight: '800',
+    fontFamily: fontFamily.display,
     color: colors.white,
   },
   // Playing
@@ -471,8 +469,8 @@ const styles = StyleSheet.create({
   },
   timerBar: {
     height: 6,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    marginTop: 20,
+    backgroundColor: colors.whiteAlpha20,
+    marginTop: spacing.md + spacing.xs,
   },
   timerFill: {
     height: '100%',
@@ -487,7 +485,7 @@ const styles = StyleSheet.create({
   },
   flagName: {
     fontSize: 42,
-    fontWeight: '800',
+    fontFamily: fontFamily.display,
     color: colors.white,
     textAlign: 'center',
     letterSpacing: -0.5,
@@ -495,11 +493,11 @@ const styles = StyleSheet.create({
   },
   flagRegion: {
     ...typography.heading,
-    color: 'rgba(255,255,255,0.5)',
+    color: colors.whiteAlpha50,
   },
   feedbackText: {
     fontSize: 56,
-    fontWeight: '800',
+    fontFamily: fontFamily.display,
     color: colors.white,
     textAlign: 'center',
   },
@@ -533,15 +531,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: spacing.xl,
-    paddingBottom: 30,
+    paddingBottom: spacing.xl,
   },
   timerText: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: fontFamily.display,
     color: colors.white,
   },
   scoreText: {
     ...typography.heading,
-    color: 'rgba(255,255,255,0.7)',
+    color: colors.whiteAlpha70,
   },
 });

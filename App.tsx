@@ -1,4 +1,21 @@
 import React from 'react';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { useFonts } from 'expo-font';
+import {
+  LibreBaskerville_700Bold,
+  LibreBaskerville_400Regular_Italic,
+} from '@expo-google-fonts/libre-baskerville';
+import {
+  Barlow_300Light,
+  Barlow_400Regular,
+  Barlow_500Medium,
+  Barlow_600SemiBold,
+} from '@expo-google-fonts/barlow';
+import {
+  BarlowCondensed_500Medium,
+  BarlowCondensed_600SemiBold,
+  BarlowCondensed_700Bold,
+} from '@expo-google-fonts/barlow-condensed';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './src/screens/HomeScreen';
@@ -29,9 +46,8 @@ const screenOptions = {
   },
 };
 
-export default function App() {
+function AppContent() {
   return (
-    <ErrorBoundary>
     <NavigationContainer>
       <Stack.Navigator screenOptions={screenOptions}>
         <Stack.Screen
@@ -71,6 +87,50 @@ export default function App() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+  );
+}
+
+export default function App() {
+  const [fontsLoaded] = useFonts({
+    LibreBaskerville_700Bold,
+    LibreBaskerville_400Regular_Italic,
+    Barlow_300Light,
+    Barlow_400Regular,
+    Barlow_500Medium,
+    Barlow_600SemiBold,
+    BarlowCondensed_500Medium,
+    BarlowCondensed_600SemiBold,
+    BarlowCondensed_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={loadingStyles.container}>
+        <ActivityIndicator size="large" color={colors.ink} />
+        <Text style={loadingStyles.text}>Loading</Text>
+      </View>
+    );
+  }
+
+  return (
+    <ErrorBoundary>
+      <AppContent />
     </ErrorBoundary>
   );
 }
+
+const loadingStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.paper,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  text: {
+    fontSize: 13,
+    color: colors.slate,
+    letterSpacing: 3,
+    textTransform: 'uppercase',
+  },
+});

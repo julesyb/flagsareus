@@ -10,7 +10,7 @@ import {
   Share,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, borderRadius, typography, shadows } from '../utils/theme';
+import { colors, spacing, borderRadius, typography, fontFamily } from '../utils/theme';
 import { calculateAccuracy, getStreakFromResults, getGrade } from '../utils/gameEngine';
 import { updateStats } from '../utils/storage';
 import { hapticCorrect, playCelebrationSound } from '../utils/feedback';
@@ -37,7 +37,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
   useEffect(() => {
     updateStats(correct, results.length, streak, config.mode, config.category);
 
-    // Animate grade entrance
     Animated.spring(gradeScale, {
       toValue: 1,
       friction: 4,
@@ -96,7 +95,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* Celebration banner for perfect score */}
         {isPerfect && (
           <Animated.View style={[styles.celebrationBanner, { opacity: confettiOpacity }]}>
             <Text style={styles.celebrationText}>PERFECT SCORE</Text>
@@ -111,7 +109,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
         >
           <Text style={[styles.grade, { color: grade.color }]}>{grade.label}</Text>
           <Text style={styles.accuracy}>{accuracy}%</Text>
-          <Text style={styles.modeCategoryLabel}>{modeLabel} \u2022 {categoryLabel}</Text>
+          <Text style={styles.modeCategoryLabel}>{modeLabel} {'\u2022'} {categoryLabel}</Text>
         </Animated.View>
 
         <View style={styles.statsRow}>
@@ -129,7 +127,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
           </View>
         </View>
 
-        {/* Share button */}
         <TouchableOpacity
           style={styles.shareButton}
           onPress={handleShare}
@@ -163,7 +160,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
               )}
             </View>
             <Text style={[styles.reviewIcon, result.correct ? { color: colors.success } : { color: colors.error }]}>
-              {result.correct ? '✓' : '✗'}
+              {result.correct ? '\u2713' : '\u2717'}
             </Text>
           </View>
         ))}
@@ -199,14 +196,14 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl,
   },
   celebrationBanner: {
-    backgroundColor: '#FFD700',
+    backgroundColor: colors.warning,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     alignItems: 'center',
     marginBottom: spacing.md,
   },
   celebrationText: {
-    ...typography.heading,
+    ...typography.headingUpper,
     color: colors.primary,
   },
   gradeContainer: {
@@ -215,7 +212,7 @@ const styles = StyleSheet.create({
   },
   grade: {
     fontSize: 72,
-    fontWeight: '800',
+    fontFamily: fontFamily.display,
     letterSpacing: -1,
   },
   accuracy: {
@@ -239,7 +236,8 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     padding: spacing.md,
     alignItems: 'center',
-    ...shadows.small,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   statValue: {
     ...typography.heading,
@@ -248,7 +246,7 @@ const styles = StyleSheet.create({
   statLabel: {
     ...typography.caption,
     color: colors.textSecondary,
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
   shareButton: {
     backgroundColor: colors.surface,
@@ -264,7 +262,7 @@ const styles = StyleSheet.create({
     color: colors.accent,
   },
   reviewTitle: {
-    ...typography.heading,
+    ...typography.headingUpper,
     color: colors.text,
     marginBottom: spacing.md,
   },
@@ -294,7 +292,7 @@ const styles = StyleSheet.create({
   reviewAnswer: {
     ...typography.caption,
     color: colors.error,
-    marginTop: 2,
+    marginTop: spacing.xxs,
   },
   reviewIcon: {
     ...typography.heading,

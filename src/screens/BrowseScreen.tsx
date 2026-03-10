@@ -8,7 +8,7 @@ import {
   SafeAreaView,
   TextInput,
 } from 'react-native';
-import { colors, spacing, borderRadius, typography, shadows } from '../utils/theme';
+import { colors, spacing, borderRadius, typography } from '../utils/theme';
 import { FlagItem } from '../types';
 import { getAllFlags } from '../data';
 import { FlagImageSmall } from '../components/FlagImage';
@@ -114,7 +114,8 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     ...typography.body,
     color: colors.text,
-    ...shadows.small,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   regionScroll: {
     maxHeight: 48,
@@ -162,7 +163,8 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.sm,
     gap: spacing.md,
-    ...shadows.small,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   flagInfo: {
     flex: 1,
@@ -174,6 +176,6 @@ const styles = StyleSheet.create({
   flagRegion: {
     ...typography.caption,
     color: colors.textSecondary,
-    marginTop: 2,
+    marginTop: spacing.xxs,
   },
 });
