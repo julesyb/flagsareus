@@ -67,7 +67,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
 
   const handleShare = async () => {
     const message =
-      `Flags Are Us\n` +
+      `Flag That\n` +
       `${modeLabel} - ${categoryLabel}\n` +
       `Score: ${correct}/${results.length} (${accuracy}%)\n` +
       `Grade: ${grade.label} | Streak: ${streak}\n` +

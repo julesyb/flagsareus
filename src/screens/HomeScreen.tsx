@@ -54,8 +54,8 @@ export default function HomeScreen({ navigation }: Props) {
             <Text style={styles.logoIconText}>F</Text>
           </View>
           <View style={styles.logoTextRow}>
-            <Text style={styles.logoFlags}>Flags</Text>
-            <Text style={styles.logoAreUs}>Are Us</Text>
+            <Text style={styles.logoFlags}>Flag</Text>
+            <Text style={styles.logoAreUs}>That</Text>
           </View>
           <Text style={styles.subtitle}>{totalFlags} flags to master</Text>
         </View>
