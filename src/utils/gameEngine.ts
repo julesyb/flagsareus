@@ -1,5 +1,6 @@
 import { GameMode, FlagItem, GameQuestion, GameResult, GameConfig } from '../types';
 import { getFlagsForCategory, getAllFlags } from '../data';
+import { colors } from './theme';
 
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
@@ -73,11 +74,11 @@ export function getStreakFromResults(results: GameResult[]): number {
 }
 
 export function getGrade(accuracy: number): { label: string; color: string } {
-  if (accuracy >= 95) return { label: 'S', color: '#FFD700' };
-  if (accuracy >= 90) return { label: 'A+', color: '#34C759' };
-  if (accuracy >= 80) return { label: 'A', color: '#34C759' };
-  if (accuracy >= 70) return { label: 'B', color: '#4A90D9' };
-  if (accuracy >= 60) return { label: 'C', color: '#FF9500' };
-  if (accuracy >= 50) return { label: 'D', color: '#FF6B35' };
-  return { label: 'F', color: '#FF3B30' };
+  if (accuracy >= 95) return { label: 'S', color: colors.gradeS };
+  if (accuracy >= 90) return { label: 'A+', color: colors.gradeA };
+  if (accuracy >= 80) return { label: 'A', color: colors.gradeA };
+  if (accuracy >= 70) return { label: 'B', color: colors.gradeB };
+  if (accuracy >= 60) return { label: 'C', color: colors.gradeC };
+  if (accuracy >= 50) return { label: 'D', color: colors.gradeD };
+  return { label: 'F', color: colors.gradeF };
 }
