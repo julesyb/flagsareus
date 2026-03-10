@@ -59,28 +59,28 @@ export interface UserStats {
 }
 
 export const GAME_MODES: Record<GameMode, { label: string; description: string; icon: string }> = {
-  easy: { label: 'Easy', description: '50/50 - Pick from 2', icon: '🟢' },
-  medium: { label: 'Medium', description: 'Pick from 4', icon: '🟡' },
-  hard: { label: 'Hard', description: 'Type the answer', icon: '🔴' },
-  headsup: { label: 'Heads Up!', description: 'Party mode - tilt to play', icon: '🎉' },
+  easy: { label: 'Easy', description: '50/50 - Pick from 2', icon: 'E' },
+  medium: { label: 'Medium', description: 'Pick from 4', icon: 'M' },
+  hard: { label: 'Hard', description: 'Type the answer', icon: 'H' },
+  headsup: { label: 'Heads Up!', description: 'Party mode - tilt to play', icon: '!' },
 };
 
 export const CATEGORIES: CategoryInfo[] = [
   // Location-based
-  { id: 'africa', label: 'Africa', description: '54 countries', type: 'location', icon: '🌍' },
-  { id: 'asia', label: 'Asia', description: '49 countries', type: 'location', icon: '🌏' },
-  { id: 'europe', label: 'Europe', description: '45 countries', type: 'location', icon: '🏰' },
-  { id: 'americas', label: 'Americas', description: '35 countries', type: 'location', icon: '🌎' },
-  { id: 'oceania', label: 'Oceania', description: '14 countries', type: 'location', icon: '🏝' },
+  { id: 'africa', label: 'Africa', description: '54 countries', type: 'location', icon: 'AF' },
+  { id: 'asia', label: 'Asia', description: '49 countries', type: 'location', icon: 'AS' },
+  { id: 'europe', label: 'Europe', description: '45 countries', type: 'location', icon: 'EU' },
+  { id: 'americas', label: 'Americas', description: '35 countries', type: 'location', icon: 'AM' },
+  { id: 'oceania', label: 'Oceania', description: '14 countries', type: 'location', icon: 'OC' },
 
   // Difficulty-based
-  { id: 'easy_flags', label: 'Famous Flags', description: 'The ones everyone knows', type: 'difficulty', icon: '⭐' },
-  { id: 'tricky_twins', label: 'Tricky Twins', description: 'Look-alike flags', type: 'difficulty', icon: '👯' },
+  { id: 'easy_flags', label: 'Famous Flags', description: 'The ones everyone knows', type: 'difficulty', icon: '*' },
+  { id: 'tricky_twins', label: 'Tricky Twins', description: 'Look-alike flags', type: 'difficulty', icon: '~' },
 
   // Theme-based
-  { id: 'island_nations', label: 'Island Nations', description: 'Surrounded by water', type: 'theme', icon: '🏖' },
-  { id: 'top_travel', label: 'Top Destinations', description: 'Most visited countries', type: 'theme', icon: '✈️' },
-  { id: 'short_names', label: 'Short Names', description: '5 letters or less', type: 'theme', icon: '🔤' },
+  { id: 'island_nations', label: 'Island Nations', description: 'Surrounded by water', type: 'theme', icon: 'IS' },
+  { id: 'top_travel', label: 'Top Destinations', description: 'Most visited countries', type: 'theme', icon: 'TD' },
+  { id: 'short_names', label: 'Short Names', description: '5 letters or less', type: 'theme', icon: 'SN' },
 ];
 
 export const CATEGORY_TYPE_LABELS: Record<CategoryType, string> = {

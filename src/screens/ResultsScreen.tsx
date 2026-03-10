@@ -68,11 +68,11 @@ export default function ResultsScreen({ route, navigation }: Props) {
 
   const handleShare = async () => {
     const message =
-      `🏁 Flags Are Us\n` +
+      `Flags Are Us\n` +
       `${modeLabel} - ${categoryLabel}\n` +
       `Score: ${correct}/${results.length} (${accuracy}%)\n` +
       `Grade: ${grade.label} | Streak: ${streak}\n` +
-      (isPerfect ? '🎉 PERFECT SCORE! 🎉\n' : '') +
+      (isPerfect ? 'PERFECT SCORE!\n' : '') +
       `Can you beat my score?`;
 
     try {
@@ -99,7 +99,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
         {/* Celebration banner for perfect score */}
         {isPerfect && (
           <Animated.View style={[styles.celebrationBanner, { opacity: confettiOpacity }]}>
-            <Text style={styles.celebrationText}>🎉 PERFECT SCORE! 🎉</Text>
+            <Text style={styles.celebrationText}>PERFECT SCORE</Text>
           </Animated.View>
         )}
 

@@ -5,9 +5,8 @@ import {
   StyleSheet,
   StatusBar,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
-import { Accelerometer } from 'expo-sensors';
-import * as ScreenOrientation from 'expo-screen-orientation';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, borderRadius, typography } from '../utils/theme';
 import { GameQuestion, GameResult } from '../types';
@@ -29,6 +28,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'HeadsUp'>;
 type TiltState = 'neutral' | 'correct' | 'skip';
 type Phase = 'tutorial' | 'countdown' | 'playing';
 
+const isWeb = Platform.OS === 'web';
+
 export default function HeadsUpScreen({ route, navigation }: Props) {
   const { config } = route.params;
   const [questions, setQuestions] = useState<GameQuestion[]>([]);
@@ -48,11 +49,23 @@ export default function HeadsUpScreen({ route, navigation }: Props) {
     resultsRef.current = results;
   }, [results]);
 
-  // Lock to landscape
+  // Lock to landscape (native only)
   useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT);
+    if (isWeb) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const SO = require('expo-screen-orientation') as typeof import('expo-screen-orientation');
+    try {
+      SO.lockAsync(SO.OrientationLock.LANDSCAPE_RIGHT);
+    } catch {
+      // Screen orientation not available
+    }
     return () => {
-      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      try {
+        SO.lockAsync(SO.OrientationLock.PORTRAIT_UP);
+      } catch {
+        // Ignore cleanup errors
+      }
     };
   }, []);
 
@@ -92,24 +105,51 @@ export default function HeadsUpScreen({ route, navigation }: Props) {
     return () => clearInterval(interval);
   }, [phase, timeLeft]);
 
-  // Accelerometer for tilt detection
+  // Accelerometer for tilt detection (native only)
   useEffect(() => {
+    if (isWeb) return;
     if (phase !== 'playing') return;
 
-    Accelerometer.setUpdateInterval(100);
+    let subscription: { remove: () => void } | null = null;
+    try {
+      const { Accelerometer } = require('expo-sensors');
+      Accelerometer.setUpdateInterval(100);
 
-    const subscription = Accelerometer.addListener(({ z }) => {
-      if (isProcessing.current || tiltCooldown.current) return;
+      subscription = Accelerometer.addListener(({ z }: { z: number }) => {
+        if (isProcessing.current || tiltCooldown.current) return;
 
-      // In landscape, z axis detects tilting phone forward/backward
-      if (z < -0.6) {
+        if (z < -0.6) {
+          handleTilt('correct');
+        } else if (z > 0.6) {
+          handleTilt('skip');
+        }
+      });
+    } catch {
+      // Accelerometer not available
+    }
+
+    return () => {
+      if (subscription) subscription.remove();
+    };
+  }, [phase, currentIndex, questions]);
+
+  // Web keyboard controls
+  useEffect(() => {
+    if (!isWeb) return;
+    if (phase !== 'playing') return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+        e.preventDefault();
         handleTilt('correct');
-      } else if (z > 0.6) {
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+        e.preventDefault();
         handleTilt('skip');
       }
-    });
+    };
 
-    return () => subscription.remove();
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [phase, currentIndex, questions]);
 
   const handleTilt = useCallback(
@@ -173,26 +213,55 @@ export default function HeadsUpScreen({ route, navigation }: Props) {
         <Text style={styles.tutorialSubtitle}>How to play</Text>
 
         <View style={styles.tutorialSteps}>
-          <View style={styles.tutorialStep}>
-            <Text style={styles.stepIcon}>📱</Text>
-            <Text style={styles.stepText}>Hold phone on your forehead</Text>
-          </View>
-          <View style={styles.tutorialStep}>
-            <Text style={styles.stepIcon}>🗣</Text>
-            <Text style={styles.stepText}>Friends describe the flag to you</Text>
-          </View>
-          <View style={styles.tutorialStep}>
-            <View style={[styles.tiltDemo, { backgroundColor: colors.success }]}>
-              <Text style={styles.tiltDemoText}>⬇ TILT DOWN</Text>
-            </View>
-            <Text style={styles.stepText}>Got it right!</Text>
-          </View>
-          <View style={styles.tutorialStep}>
-            <View style={[styles.tiltDemo, { backgroundColor: colors.error }]}>
-              <Text style={styles.tiltDemoText}>⬆ TILT UP</Text>
-            </View>
-            <Text style={styles.stepText}>Skip / Pass</Text>
-          </View>
+          {isWeb ? (
+            <>
+              <View style={styles.tutorialStep}>
+                <View style={styles.stepIconBox}>
+                  <Text style={styles.stepIconText}>?</Text>
+                </View>
+                <Text style={styles.stepText}>A flag name appears on screen</Text>
+              </View>
+              <View style={styles.tutorialStep}>
+                <View style={[styles.tiltDemo, { backgroundColor: colors.success }]}>
+                  <Text style={styles.tiltDemoText}>CORRECT</Text>
+                </View>
+                <Text style={styles.stepText}>Click or press Left arrow</Text>
+              </View>
+              <View style={styles.tutorialStep}>
+                <View style={[styles.tiltDemo, { backgroundColor: colors.error }]}>
+                  <Text style={styles.tiltDemoText}>SKIP</Text>
+                </View>
+                <Text style={styles.stepText}>Click or press Right arrow</Text>
+              </View>
+            </>
+          ) : (
+            <>
+              <View style={styles.tutorialStep}>
+                <View style={styles.stepIconBox}>
+                  <Text style={styles.stepIconText}>1</Text>
+                </View>
+                <Text style={styles.stepText}>Hold phone on your forehead</Text>
+              </View>
+              <View style={styles.tutorialStep}>
+                <View style={styles.stepIconBox}>
+                  <Text style={styles.stepIconText}>2</Text>
+                </View>
+                <Text style={styles.stepText}>Friends describe the flag to you</Text>
+              </View>
+              <View style={styles.tutorialStep}>
+                <View style={[styles.tiltDemo, { backgroundColor: colors.success }]}>
+                  <Text style={styles.tiltDemoText}>TILT DOWN</Text>
+                </View>
+                <Text style={styles.stepText}>Got it right!</Text>
+              </View>
+              <View style={styles.tutorialStep}>
+                <View style={[styles.tiltDemo, { backgroundColor: colors.error }]}>
+                  <Text style={styles.tiltDemoText}>TILT UP</Text>
+                </View>
+                <Text style={styles.stepText}>Skip / Pass</Text>
+              </View>
+            </>
+          )}
         </View>
 
         <TouchableOpacity
@@ -211,7 +280,9 @@ export default function HeadsUpScreen({ route, navigation }: Props) {
     return (
       <View style={styles.countdownContainer}>
         <StatusBar hidden />
-        <Text style={styles.countdownHint}>Hold phone on forehead</Text>
+        <Text style={styles.countdownHint}>
+          {isWeb ? 'Get ready...' : 'Hold phone on forehead'}
+        </Text>
         <Text style={styles.countdownNumber}>{countdown}</Text>
       </View>
     );
@@ -271,6 +342,26 @@ export default function HeadsUpScreen({ route, navigation }: Props) {
         )}
       </View>
 
+      {/* Web button controls */}
+      {isWeb && tiltState === 'neutral' && (
+        <View style={styles.webControls}>
+          <TouchableOpacity
+            style={[styles.webButton, styles.webButtonCorrect]}
+            onPress={() => handleTilt('correct')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.webButtonText}>Correct</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.webButton, styles.webButtonSkip]}
+            onPress={() => handleTilt('skip')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.webButtonText}>Skip</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       <View style={styles.bottomBar}>
         <Text style={[styles.timerText, timeLeft <= 10 && { color: '#FFD700' }]}>
           {timeLeft}s
@@ -316,10 +407,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
   },
-  stepIcon: {
-    fontSize: 32,
+  stepIconBox: {
     width: 44,
-    textAlign: 'center',
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stepIconText: {
+    ...typography.bodyBold,
+    color: colors.white,
   },
   stepText: {
     ...typography.body,
@@ -404,6 +502,31 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: colors.white,
     textAlign: 'center',
+  },
+  // Web controls
+  webControls: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: spacing.lg,
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.md,
+  },
+  webButton: {
+    flex: 1,
+    maxWidth: 200,
+    borderRadius: borderRadius.md,
+    paddingVertical: spacing.md,
+    alignItems: 'center',
+  },
+  webButtonCorrect: {
+    backgroundColor: colors.success,
+  },
+  webButtonSkip: {
+    backgroundColor: colors.error,
+  },
+  webButtonText: {
+    ...typography.bodyBold,
+    color: colors.white,
   },
   bottomBar: {
     flexDirection: 'row',

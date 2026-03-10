@@ -161,12 +161,12 @@ export default function GameScreen({ route, navigation }: Props) {
             <Animated.Text
               style={[styles.streakText, { transform: [{ scale: streakScale }] }]}
             >
-              🔥 {currentStreak}
+              {currentStreak}x streak
             </Animated.Text>
           )}
           {currentStreak < 2 && (
             <Text style={styles.score}>
-              {results.filter((r) => r.correct).length} ✓
+              {results.filter((r) => r.correct).length} correct
             </Text>
           )}
         </View>
