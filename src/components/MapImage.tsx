@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useCallback } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Platform, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { colors, fontFamily } from '../utils/theme';
 import { countryCoordinates } from '../data/countryCoordinates';
@@ -10,11 +10,13 @@ interface MapImageProps {
   style?: object;
 }
 
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
 const SIZE_MAP = {
   small: { width: 64, height: 64 },
   medium: { width: 120, height: 120 },
   large: { width: 280, height: 200 },
-  hero: { width: 320, height: 240 },
+  hero: { width: Math.min(SCREEN_WIDTH - 48, 500), height: 340 },
 };
 
 // CartoDB no-labels basemap — free, no API key, no country names
@@ -98,6 +100,12 @@ export default function MapImage({ countryCode, size = 'hero', style }: MapImage
   const initialOffsetX = centerOffset.centerPxX - dimensions.width / 2;
   const initialOffsetY = centerOffset.centerPxY - dimensions.height / 2;
 
+  // Pin marker dimensions
+  const PIN_WIDTH = 24;
+  const PIN_HEIGHT = 32;
+  const pinLeft = centerOffset.centerPxX - PIN_WIDTH / 2;
+  const pinTop = centerOffset.centerPxY - PIN_HEIGHT;
+
   if (!isInteractive) {
     // Non-interactive: simple clipped view (small/medium sizes)
     return (
@@ -126,6 +134,11 @@ export default function MapImage({ countryCode, size = 'hero', style }: MapImage
               cachePolicy="disk"
             />
           ))}
+          {/* Pin marker on the country */}
+          <View style={[styles.pinMarker, { left: pinLeft, top: pinTop }]} pointerEvents="none">
+            <View style={styles.pinHead} />
+            <View style={styles.pinPoint} />
+          </View>
         </View>
       </View>
     );
@@ -161,12 +174,13 @@ export default function MapImage({ countryCode, size = 'hero', style }: MapImage
               cachePolicy="disk"
             />
           ))}
+          {/* Pin marker on the country — inside ScrollView so it stays on location */}
+          <View style={[styles.pinMarker, { left: pinLeft, top: pinTop }]} pointerEvents="none">
+            <View style={styles.pinHead} />
+            <View style={styles.pinPoint} />
+          </View>
         </View>
       </ScrollView>
-
-      {/* Crosshair marker */}
-      <View style={styles.crosshairH} pointerEvents="none" />
-      <View style={styles.crosshairV} pointerEvents="none" />
 
       {/* Zoom buttons — tile-level zoom (loads higher res tiles) */}
       <View style={styles.zoomControls}>
@@ -211,23 +225,36 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: colors.textTertiary,
   },
-  crosshairH: {
+  pinMarker: {
     position: 'absolute',
-    left: '45%',
-    right: '45%',
-    top: '50%',
-    height: 1,
-    backgroundColor: 'rgba(229, 39, 28, 0.35)',
-    pointerEvents: 'none',
+    width: 24,
+    height: 32,
+    alignItems: 'center',
+    zIndex: 10,
   },
-  crosshairV: {
-    position: 'absolute',
-    top: '45%',
-    bottom: '45%',
-    left: '50%',
-    width: 1,
-    backgroundColor: 'rgba(229, 39, 28, 0.35)',
-    pointerEvents: 'none',
+  pinHead: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: colors.accent,
+    borderWidth: 3,
+    borderColor: colors.white,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  pinPoint: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 6,
+    borderRightWidth: 6,
+    borderTopWidth: 10,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: colors.accent,
+    marginTop: -1,
   },
   zoomControls: {
     position: 'absolute',
