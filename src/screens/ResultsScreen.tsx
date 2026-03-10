@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,11 +6,16 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
+  Animated,
+  Share,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, borderRadius, typography, shadows } from '../utils/theme';
 import { calculateAccuracy, getStreakFromResults, getGrade } from '../utils/gameEngine';
 import { updateStats } from '../utils/storage';
+import { hapticCorrect, playCelebrationSound } from '../utils/feedback';
+import { FlagImageSmall } from '../components/FlagImage';
+import { GAME_MODES, CATEGORIES } from '../types';
 import { RootStackParamList } from '../types/navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
@@ -24,10 +29,53 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const avgTime = results.length > 0
     ? Math.round(results.reduce((sum, r) => sum + r.timeTaken, 0) / results.length / 1000 * 10) / 10
     : 0;
+  const isPerfect = accuracy === 100 && results.length > 0;
+
+  const gradeScale = useRef(new Animated.Value(0)).current;
+  const confettiOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     updateStats(correct, results.length, streak, config.mode, config.category);
+
+    // Animate grade entrance
+    Animated.spring(gradeScale, {
+      toValue: 1,
+      friction: 4,
+      tension: 80,
+      delay: 200,
+      useNativeDriver: true,
+    }).start();
+
+    if (isPerfect) {
+      hapticCorrect();
+      playCelebrationSound();
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(confettiOpacity, { toValue: 1, duration: 500, useNativeDriver: true }),
+          Animated.timing(confettiOpacity, { toValue: 0.3, duration: 500, useNativeDriver: true }),
+        ]),
+      ).start();
+    }
   }, []);
+
+  const categoryLabel = CATEGORIES.find((c) => c.id === config.category)?.label || '';
+  const modeLabel = GAME_MODES[config.mode].label;
+
+  const handleShare = async () => {
+    const message =
+      `🏁 Flags Are Us\n` +
+      `${modeLabel} - ${categoryLabel}\n` +
+      `Score: ${correct}/${results.length} (${accuracy}%)\n` +
+      `Grade: ${grade.label} | Streak: ${streak}\n` +
+      (isPerfect ? '🎉 PERFECT SCORE! 🎉\n' : '') +
+      `Can you beat my score?`;
+
+    try {
+      await Share.share({ message });
+    } catch {
+      // Share cancelled
+    }
+  };
 
   const playAgain = () => {
     if (config.mode === 'headsup') {
@@ -43,10 +91,23 @@ export default function ResultsScreen({ route, navigation }: Props) {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.gradeContainer}>
+        {/* Celebration banner for perfect score */}
+        {isPerfect && (
+          <Animated.View style={[styles.celebrationBanner, { opacity: confettiOpacity }]}>
+            <Text style={styles.celebrationText}>🎉 PERFECT SCORE! 🎉</Text>
+          </Animated.View>
+        )}
+
+        <Animated.View
+          style={[
+            styles.gradeContainer,
+            { transform: [{ scale: gradeScale }] },
+          ]}
+        >
           <Text style={[styles.grade, { color: grade.color }]}>{grade.label}</Text>
           <Text style={styles.accuracy}>{accuracy}%</Text>
-        </View>
+          <Text style={styles.modeCategoryLabel}>{modeLabel} \u2022 {categoryLabel}</Text>
+        </Animated.View>
 
         <View style={styles.statsRow}>
           <View style={styles.statCard}>
@@ -63,6 +124,15 @@ export default function ResultsScreen({ route, navigation }: Props) {
           </View>
         </View>
 
+        {/* Share button */}
+        <TouchableOpacity
+          style={styles.shareButton}
+          onPress={handleShare}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.shareButtonText}>Share Results</Text>
+        </TouchableOpacity>
+
         <Text style={styles.reviewTitle}>Review</Text>
         {results.map((result, index) => (
           <View
@@ -72,13 +142,19 @@ export default function ResultsScreen({ route, navigation }: Props) {
               result.correct ? styles.reviewCorrect : styles.reviewWrong,
             ]}
           >
-            <Text style={styles.reviewEmoji}>{result.question.flag.emoji}</Text>
+            <FlagImageSmall
+              countryCode={result.question.flag.id}
+              emoji={result.question.flag.emoji}
+            />
             <View style={styles.reviewContent}>
               <Text style={styles.reviewName}>{result.question.flag.name}</Text>
-              {!result.correct && (
+              {!result.correct && result.userAnswer !== 'SKIPPED' && (
                 <Text style={styles.reviewAnswer}>
                   You said: {result.userAnswer}
                 </Text>
+              )}
+              {result.userAnswer === 'SKIPPED' && (
+                <Text style={styles.reviewAnswer}>Skipped</Text>
               )}
             </View>
             <Text style={[styles.reviewIcon, result.correct ? { color: colors.success } : { color: colors.error }]}>
@@ -117,9 +193,20 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     paddingBottom: spacing.xxl,
   },
+  celebrationBanner: {
+    backgroundColor: '#FFD700',
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  celebrationText: {
+    ...typography.heading,
+    color: colors.primary,
+  },
   gradeContainer: {
     alignItems: 'center',
-    marginVertical: spacing.xl,
+    marginVertical: spacing.lg,
   },
   grade: {
     fontSize: 72,
@@ -131,10 +218,15 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: spacing.xs,
   },
+  modeCategoryLabel: {
+    ...typography.caption,
+    color: colors.textTertiary,
+    marginTop: spacing.xs,
+  },
   statsRow: {
     flexDirection: 'row',
     gap: spacing.sm,
-    marginBottom: spacing.xl,
+    marginBottom: spacing.lg,
   },
   statCard: {
     flex: 1,
@@ -153,6 +245,19 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: 4,
   },
+  shareButton: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: colors.accent,
+    marginBottom: spacing.lg,
+  },
+  shareButtonText: {
+    ...typography.bodyBold,
+    color: colors.accent,
+  },
   reviewTitle: {
     ...typography.heading,
     color: colors.text,
@@ -166,16 +271,13 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.sm,
     borderLeftWidth: 4,
+    gap: spacing.md,
   },
   reviewCorrect: {
     borderLeftColor: colors.success,
   },
   reviewWrong: {
     borderLeftColor: colors.error,
-  },
-  reviewEmoji: {
-    fontSize: 32,
-    marginRight: spacing.md,
   },
   reviewContent: {
     flex: 1,

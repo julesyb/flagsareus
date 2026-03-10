@@ -11,6 +11,7 @@ import {
 import { colors, spacing, borderRadius, typography, shadows } from '../utils/theme';
 import { FlagItem } from '../types';
 import { getAllFlags } from '../data';
+import { FlagImageSmall } from '../components/FlagImage';
 
 const REGIONS = ['All', 'Africa', 'Asia', 'Europe', 'Americas', 'Oceania'];
 
@@ -34,7 +35,7 @@ export default function BrowseScreen() {
 
   const renderItem = ({ item }: { item: FlagItem }) => (
     <View style={styles.flagItem}>
-      <Text style={styles.flagEmoji}>{item.emoji}</Text>
+      <FlagImageSmall countryCode={item.id} emoji={item.emoji} />
       <View style={styles.flagInfo}>
         <Text style={styles.flagName}>{item.name}</Text>
         <Text style={styles.flagRegion}>{item.region}</Text>
@@ -160,11 +161,8 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     padding: spacing.md,
     marginBottom: spacing.sm,
+    gap: spacing.md,
     ...shadows.small,
-  },
-  flagEmoji: {
-    fontSize: 36,
-    marginRight: spacing.md,
   },
   flagInfo: {
     flex: 1,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,12 +11,24 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, borderRadius, typography, shadows } from '../utils/theme';
 import { getTotalFlagCount } from '../data';
+import { initAudio, hapticTap } from '../utils/feedback';
 import { RootStackParamList } from '../types/navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 export default function HomeScreen({ navigation }: Props) {
   const totalFlags = getTotalFlagCount();
+
+  useEffect(() => {
+    initAudio();
+  }, []);
+
+  const quickPlay = () => {
+    hapticTap();
+    navigation.navigate('Game', {
+      config: { mode: 'easy', category: 'easy_flags', questionCount: 10 },
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,26 +46,44 @@ export default function HomeScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.menuSection}>
+          {/* Quick Play - one tap to start */}
+          <TouchableOpacity
+            style={[styles.menuCard, styles.quickPlayCard]}
+            onPress={quickPlay}
+            activeOpacity={0.8}
+          >
+            <View style={styles.cardContent}>
+              <Text style={styles.cardEmoji}>⚡</Text>
+              <View style={styles.cardText}>
+                <Text style={[styles.cardTitle, styles.lightText]}>Quick Play</Text>
+                <Text style={[styles.cardDescription, styles.lightTextDim]}>
+                  10 famous flags, 50/50
+                </Text>
+              </View>
+            </View>
+            <Text style={[styles.cardArrow, styles.lightText]}>→</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={[styles.menuCard, styles.playCard]}
-            onPress={() => navigation.navigate('GameSetup')}
+            onPress={() => { hapticTap(); navigation.navigate('GameSetup'); }}
             activeOpacity={0.8}
           >
             <View style={styles.cardContent}>
               <Text style={styles.cardEmoji}>🎮</Text>
               <View style={styles.cardText}>
-                <Text style={[styles.cardTitle, styles.playCardText]}>Play</Text>
-                <Text style={[styles.cardDescription, styles.playCardDesc]}>
-                  Quiz, challenge, or party mode
+                <Text style={[styles.cardTitle, styles.lightText]}>Custom Game</Text>
+                <Text style={[styles.cardDescription, styles.lightTextDim]}>
+                  Choose mode, category & more
                 </Text>
               </View>
             </View>
-            <Text style={[styles.cardArrow, styles.playCardText]}>→</Text>
+            <Text style={[styles.cardArrow, styles.lightText]}>→</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.menuCard}
-            onPress={() => navigation.navigate('Stats')}
+            onPress={() => { hapticTap(); navigation.navigate('Stats'); }}
             activeOpacity={0.8}
           >
             <View style={styles.cardContent}>
@@ -70,7 +100,7 @@ export default function HomeScreen({ navigation }: Props) {
 
           <TouchableOpacity
             style={styles.menuCard}
-            onPress={() => navigation.navigate('Browse')}
+            onPress={() => { hapticTap(); navigation.navigate('Browse'); }}
             activeOpacity={0.8}
           >
             <View style={styles.cardContent}>
@@ -131,13 +161,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     ...shadows.small,
   },
+  quickPlayCard: {
+    backgroundColor: colors.accent,
+  },
   playCard: {
     backgroundColor: colors.primary,
   },
-  playCardText: {
+  lightText: {
     color: colors.white,
   },
-  playCardDesc: {
+  lightTextDim: {
     color: 'rgba(255,255,255,0.6)',
   },
   cardContent: {

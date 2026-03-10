@@ -13,6 +13,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, borderRadius, typography, shadows } from '../utils/theme';
 import { GameQuestion, GameResult } from '../types';
 import { generateQuestions, checkAnswer } from '../utils/gameEngine';
+import { hapticCorrect, hapticWrong, hapticTap, playCorrectSound, playWrongSound } from '../utils/feedback';
+import FlagImage from '../components/FlagImage';
 import { RootStackParamList } from '../types/navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
@@ -25,8 +27,11 @@ export default function GameScreen({ route, navigation }: Props) {
   const [textInput, setTextInput] = useState('');
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [currentStreak, setCurrentStreak] = useState(0);
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
   const fadeAnim = useRef(new Animated.Value(1)).current;
+  const streakScale = useRef(new Animated.Value(1)).current;
+  const shakeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const q = generateQuestions(config);
@@ -38,15 +43,48 @@ export default function GameScreen({ route, navigation }: Props) {
   const isHard = config.mode === 'hard';
   const progress = questions.length > 0 ? (currentIndex + 1) / questions.length : 0;
 
+  const animateStreak = () => {
+    streakScale.setValue(1.5);
+    Animated.spring(streakScale, {
+      toValue: 1,
+      friction: 3,
+      tension: 150,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const animateWrong = () => {
+    Animated.sequence([
+      Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 8, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -8, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 0, duration: 50, useNativeDriver: true }),
+    ]).start();
+  };
+
   const handleAnswer = useCallback(
     (answer: string) => {
       if (showFeedback) return;
 
+      hapticTap();
       const correct = checkAnswer(answer, currentQuestion.flag.name);
       const timeTaken = Date.now() - questionStartTime;
 
       setSelectedAnswer(answer);
       setShowFeedback(true);
+
+      if (correct) {
+        hapticCorrect();
+        playCorrectSound();
+        setCurrentStreak((s) => s + 1);
+        animateStreak();
+      } else {
+        hapticWrong();
+        playWrongSound();
+        setCurrentStreak(0);
+        animateWrong();
+      }
 
       const result: GameResult = {
         question: currentQuestion,
@@ -115,18 +153,38 @@ export default function GameScreen({ route, navigation }: Props) {
         <Text style={styles.counter}>
           {currentIndex + 1} / {questions.length}
         </Text>
-        <Text style={styles.score}>
-          {results.filter((r) => r.correct).length} correct
-        </Text>
+        <View style={styles.streakContainer}>
+          {currentStreak >= 2 && (
+            <Animated.Text
+              style={[styles.streakText, { transform: [{ scale: streakScale }] }]}
+            >
+              🔥 {currentStreak}
+            </Animated.Text>
+          )}
+          {currentStreak < 2 && (
+            <Text style={styles.score}>
+              {results.filter((r) => r.correct).length} ✓
+            </Text>
+          )}
+        </View>
       </View>
 
       <View style={styles.progressBar}>
         <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
       </View>
 
-      <Animated.View style={[styles.questionContainer, { opacity: fadeAnim }]}>
+      <Animated.View
+        style={[
+          styles.questionContainer,
+          { opacity: fadeAnim, transform: [{ translateX: shakeAnim }] },
+        ]}
+      >
         <View style={styles.flagContainer}>
-          <Text style={styles.flagEmoji}>{currentQuestion.flag.emoji}</Text>
+          <FlagImage
+            countryCode={currentQuestion.flag.id}
+            size="hero"
+            emoji={currentQuestion.flag.emoji}
+          />
         </View>
 
         <Text style={styles.regionHint}>{currentQuestion.flag.region}</Text>
@@ -233,6 +291,7 @@ const styles = StyleSheet.create({
   },
   quitButton: {
     padding: spacing.sm,
+    width: 60,
   },
   quitText: {
     ...typography.label,
@@ -241,6 +300,14 @@ const styles = StyleSheet.create({
   counter: {
     ...typography.bodyBold,
     color: colors.text,
+  },
+  streakContainer: {
+    width: 60,
+    alignItems: 'flex-end',
+  },
+  streakText: {
+    ...typography.bodyBold,
+    color: '#FF6B35',
   },
   score: {
     ...typography.label,
@@ -265,9 +332,6 @@ const styles = StyleSheet.create({
   flagContainer: {
     alignItems: 'center',
     marginBottom: spacing.lg,
-  },
-  flagEmoji: {
-    fontSize: 120,
   },
   regionHint: {
     ...typography.captionBold,
