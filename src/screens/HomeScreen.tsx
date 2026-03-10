@@ -9,7 +9,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, fontFamily, borderRadius } from '../utils/theme';
+import { colors, spacing, fontFamily } from '../utils/theme';
 import { getTotalFlagCount } from '../data';
 import { initAudio, hapticTap } from '../utils/feedback';
 import { getStats } from '../utils/storage';
@@ -34,6 +34,9 @@ export default function HomeScreen({ navigation }: Props) {
     return unsubscribe;
   }, [navigation]);
 
+  const progressPct = totalFlags > 0 ? Math.round((mastered / totalFlags) * 100) : 0;
+  const progressWidth = totalFlags > 0 ? ((mastered / totalFlags) * 100).toFixed(1) : '0';
+
   const quickPlay = () => {
     hapticTap();
     navigation.navigate('Game', {
@@ -48,92 +51,132 @@ export default function HomeScreen({ navigation }: Props) {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* LOGO */}
-        <View style={styles.logoSection}>
-          <View style={styles.logoIcon}>
-            <Text style={styles.logoIconText}>F</Text>
+        {/* HEADER */}
+        <View style={styles.headerTopRule} />
+        <View style={styles.headerInner}>
+          <View>
+            <Text style={styles.eyebrow}>Flag Identification {'\u00B7'} {totalFlags} Countries</Text>
+            <Text style={styles.logotypeMain}>Flag{'\n'}<Text style={styles.logotypeItalic}>That</Text></Text>
           </View>
-          <View style={styles.logoTextRow}>
-            <Text style={styles.logoFlag}>Flag</Text>
-            <Text style={styles.logoThat}>That</Text>
+          <View style={styles.headerRight}>
+            <Text style={styles.countNumber}>{totalFlags}</Text>
+            <Text style={styles.countLabel}>Countries</Text>
           </View>
-          <Text style={styles.subtitle}>{totalFlags} flags to master</Text>
         </View>
 
-        {/* CARDS */}
-        <View style={styles.cardsContainer}>
-          {/* Quick Play */}
-          <TouchableOpacity
-            style={styles.cardQuickPlay}
-            onPress={quickPlay}
-            activeOpacity={0.85}
-          >
-            <View style={styles.cardInner}>
-              <View style={styles.iconCircleLight}>
-                <Text style={styles.iconTextWhite}>Q</Text>
-              </View>
-              <View style={styles.cardTextGroup}>
-                <Text style={styles.cardTitleWhite}>Quick Play</Text>
-                <Text style={styles.cardSubWhite}>10 famous flags, 50/50</Text>
-              </View>
-            </View>
-            <Text style={styles.arrowWhite}>{'\u2192'}</Text>
-          </TouchableOpacity>
-
-          {/* Custom Game */}
-          <TouchableOpacity
-            style={styles.cardDark}
-            onPress={() => { hapticTap(); navigation.navigate('GameSetup'); }}
-            activeOpacity={0.85}
-          >
-            <View style={styles.cardInner}>
-              <View style={styles.iconCircleDark}>
-                <Text style={styles.iconTextLight}>+</Text>
-              </View>
-              <View style={styles.cardTextGroup}>
-                <Text style={styles.cardTitleWhite}>Custom Game</Text>
-                <Text style={styles.cardSubLight}>Choose mode, category & more</Text>
-              </View>
-            </View>
-            <Text style={styles.arrowLight}>{'\u2192'}</Text>
-          </TouchableOpacity>
-
-          {/* Statistics */}
-          <TouchableOpacity
-            style={styles.cardLight}
-            onPress={() => { hapticTap(); navigation.navigate('Stats'); }}
-            activeOpacity={0.85}
-          >
-            <View style={styles.cardInner}>
-              <View style={styles.iconCircleGray}>
-                <Text style={styles.iconTextDark}>#</Text>
-              </View>
-              <View style={styles.cardTextGroup}>
-                <Text style={styles.cardTitleDark}>Statistics</Text>
-                <Text style={styles.cardSubDark}>Track your progress</Text>
-              </View>
-            </View>
-            <Text style={styles.arrowGray}>{'\u2192'}</Text>
-          </TouchableOpacity>
-
-          {/* Browse Flags */}
-          <TouchableOpacity
-            style={styles.cardLight}
-            onPress={() => { hapticTap(); navigation.navigate('Browse'); }}
-            activeOpacity={0.85}
-          >
-            <View style={styles.cardInner}>
-              <View style={styles.iconCircleGray}>
-                <Text style={styles.iconTextDark}>{'\u2261'}</Text>
-              </View>
-              <View style={styles.cardTextGroup}>
-                <Text style={styles.cardTitleDark}>Browse Flags</Text>
-                <Text style={styles.cardSubDark}>Explore all {totalFlags} flags</Text>
-              </View>
-            </View>
-            <Text style={styles.arrowGray}>{'\u2192'}</Text>
-          </TouchableOpacity>
+        {/* BYLINE */}
+        <View style={styles.byline}>
+          <Text style={styles.bylineText}>Geography {'\u00B7'} Cartography {'\u00B7'} Mastery</Text>
+          <View style={styles.bylineDots}>
+            <View style={styles.bylineDot} />
+            <View style={styles.bylineDot} />
+            <View style={styles.bylineDot} />
+            <View style={styles.bylineDot} />
+            <View style={styles.bylineDot} />
+          </View>
         </View>
+
+        {/* PROGRESS */}
+        <View style={styles.progressBlock}>
+          <View style={styles.progressLeft}>
+            <View style={styles.progressLabelRow}>
+              <Text style={styles.progressLabel}>Mastery Progress</Text>
+              <Text style={styles.progressFraction}>{mastered} of {totalFlags}</Text>
+            </View>
+            <View style={styles.progressTrack}>
+              <View style={[styles.progressFill, { width: `${progressWidth}%` }]} />
+            </View>
+          </View>
+          <View style={styles.progressPctBox}>
+            <Text style={styles.progressPctNumber}>{progressPct}%</Text>
+            <Text style={styles.progressPctLabel}>Complete</Text>
+          </View>
+        </View>
+
+        {/* PLAY SECTION */}
+        <View style={styles.sectionHead}>
+          <Text style={styles.sectionLabel}>Play</Text>
+          <View style={styles.sectionRule} />
+        </View>
+
+        {/* Quick Play — Hero Card */}
+        <TouchableOpacity
+          style={styles.cardHero}
+          onPress={quickPlay}
+          activeOpacity={0.85}
+        >
+          <View style={styles.cardHeroBar} />
+          <View style={styles.heroLeft}>
+            <View style={styles.heroIcon}>
+              <Text style={styles.heroIconText}>Q</Text>
+            </View>
+            <View>
+              <Text style={styles.heroTitle}>Quick Play</Text>
+              <Text style={styles.heroSub}>10 famous flags {'\u00B7'} 50/50</Text>
+            </View>
+          </View>
+          <Text style={styles.heroArrow}>{'\u2192'}</Text>
+        </TouchableOpacity>
+
+        {/* Custom Game */}
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => { hapticTap(); navigation.navigate('GameSetup'); }}
+          activeOpacity={0.85}
+        >
+          <View style={styles.cardLeft}>
+            <View style={styles.cardIcon}>
+              <Text style={styles.cardIconText}>+</Text>
+            </View>
+            <View>
+              <Text style={styles.cardTitle}>Custom Game</Text>
+              <Text style={styles.cardSub}>Choose mode, category & more</Text>
+            </View>
+          </View>
+          <Text style={styles.cardArrow}>{'\u2192'}</Text>
+        </TouchableOpacity>
+
+        {/* EXPLORE SECTION */}
+        <View style={[styles.sectionHead, { marginTop: spacing.lg }]}>
+          <Text style={styles.sectionLabel}>Explore</Text>
+          <View style={styles.sectionRule} />
+        </View>
+
+        {/* Statistics */}
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => { hapticTap(); navigation.navigate('Stats'); }}
+          activeOpacity={0.85}
+        >
+          <View style={styles.cardLeft}>
+            <View style={styles.cardIcon}>
+              <Text style={styles.cardIconText}>#</Text>
+            </View>
+            <View>
+              <Text style={styles.cardTitle}>Statistics</Text>
+              <Text style={styles.cardSub}>Track your progress</Text>
+            </View>
+          </View>
+          <Text style={styles.cardArrow}>{'\u2192'}</Text>
+        </TouchableOpacity>
+
+        {/* Browse Flags */}
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => { hapticTap(); navigation.navigate('Browse'); }}
+          activeOpacity={0.85}
+        >
+          <View style={styles.cardLeft}>
+            <View style={styles.cardIcon}>
+              <Text style={styles.cardIconText}>{'\u2261'}</Text>
+            </View>
+            <View>
+              <Text style={styles.cardTitle}>Browse Flags</Text>
+              <Text style={styles.cardSub}>Explore all {totalFlags} flags</Text>
+            </View>
+          </View>
+          <Text style={styles.cardArrow}>{'\u2192'}</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -145,192 +188,303 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   content: {
-    paddingBottom: spacing.xxl + spacing.xl,
+    maxWidth: 700,
+    alignSelf: 'center',
+    width: '100%',
+    paddingHorizontal: 40,
+    paddingBottom: 80,
   },
 
-  // LOGO
-  logoSection: {
-    alignItems: 'center',
-    paddingTop: spacing.xxl + spacing.lg,
-    paddingBottom: spacing.xl + spacing.md,
-  },
-  logoIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 14,
+  // HEADER
+  headerTopRule: {
+    width: '100%',
+    height: 3,
     backgroundColor: colors.accent,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.md,
+    marginTop: 56,
+    marginBottom: 24,
   },
-  logoIconText: {
+  headerInner: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    paddingBottom: 20,
+    borderBottomWidth: 2,
+    borderBottomColor: colors.ink,
+  },
+  eyebrow: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 32,
-    color: colors.white,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 3,
+    textTransform: 'uppercase',
+    color: colors.slate,
+    marginBottom: 8,
   },
-  logoTextRow: {
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  logoFlag: {
+  logotypeMain: {
     fontFamily: fontFamily.display,
-    fontSize: 42,
+    fontSize: 64,
+    fontWeight: '700',
+    lineHeight: 58,
     color: colors.ink,
-    letterSpacing: -0.5,
-    lineHeight: 48,
+    letterSpacing: -1,
   },
-  logoThat: {
+  logotypeItalic: {
     fontFamily: fontFamily.displayItalic,
-    fontSize: 42,
+    fontWeight: '400',
     color: colors.accent,
-    letterSpacing: -0.5,
-    lineHeight: 48,
   },
-  subtitle: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.textSecondary,
+  headerRight: {
+    alignItems: 'flex-end',
+    paddingBottom: 4,
+  },
+  countNumber: {
+    fontFamily: fontFamily.display,
+    fontSize: 52,
+    fontWeight: '700',
+    lineHeight: 52,
+    color: colors.ink,
+    letterSpacing: -1,
+  },
+  countLabel: {
+    fontFamily: fontFamily.uiLabelMedium,
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    color: colors.slate,
+    marginTop: 2,
   },
 
-  // CARDS
-  cardsContainer: {
-    paddingHorizontal: spacing.md,
-    gap: spacing.md,
-  },
-
-  // Quick Play card (orange)
-  cardQuickPlay: {
+  // BYLINE
+  byline: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.accent,
-    borderRadius: borderRadius.xl,
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.lg,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.rule,
+    marginBottom: 40,
+  },
+  bylineText: {
+    fontFamily: fontFamily.uiLabelMedium,
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    color: colors.slate,
+  },
+  bylineDots: {
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'center',
+  },
+  bylineDot: {
+    width: 4,
+    height: 4,
+    backgroundColor: colors.rule2,
   },
 
-  // Dark card (Custom Game)
-  cardDark: {
+  // PROGRESS
+  progressBlock: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 32,
+    paddingVertical: 20,
+    borderTopWidth: 1,
+    borderTopColor: colors.rule,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.rule,
+    marginBottom: 40,
+  },
+  progressLeft: {
+    flex: 1,
+  },
+  progressLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginBottom: 10,
+  },
+  progressLabel: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 2.5,
+    textTransform: 'uppercase',
+    color: colors.slate,
+  },
+  progressFraction: {
+    fontFamily: fontFamily.uiLabelMedium,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 0.7,
+    color: colors.slate,
+  },
+  progressTrack: {
+    height: 3,
+    backgroundColor: colors.rule,
+    position: 'relative',
+  },
+  progressFill: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    backgroundColor: colors.ink,
+  },
+  progressPctBox: {
+    width: 80,
+    alignItems: 'flex-end',
+  },
+  progressPctNumber: {
+    fontFamily: fontFamily.display,
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.ink,
+    letterSpacing: -0.5,
+    lineHeight: 28,
+  },
+  progressPctLabel: {
+    fontFamily: fontFamily.uiLabelMedium,
+    fontSize: 9,
+    fontWeight: '600',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    color: colors.slate,
+    marginTop: 2,
+  },
+
+  // SECTION HEADS
+  sectionHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginBottom: 10,
+  },
+  sectionLabel: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 3,
+    textTransform: 'uppercase',
+    color: colors.slate,
+  },
+  sectionRule: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.rule,
+  },
+
+  // HERO CARD (dark, red left bar)
+  cardHero: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.ink,
-    borderRadius: borderRadius.xl,
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.lg,
+    padding: 28,
+    paddingLeft: 32,
+    marginBottom: 8,
+    position: 'relative',
+  },
+  cardHeroBar: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 4,
+    backgroundColor: colors.accent,
+  },
+  heroLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20,
+  },
+  heroIcon: {
+    width: 40,
+    height: 40,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  heroIconText: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: 16,
+    color: colors.white,
+  },
+  heroTitle: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: 26,
+    fontWeight: '700',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    lineHeight: 26,
+    color: colors.white,
+    marginBottom: 4,
+  },
+  heroSub: {
+    fontFamily: fontFamily.body,
+    fontSize: 12,
+    fontWeight: '400',
+    color: 'rgba(255,255,255,0.45)',
+  },
+  heroArrow: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: 20,
+    color: 'rgba(255,255,255,0.4)',
   },
 
-  // Light card (Statistics, Browse)
-  cardLight: {
+  // STANDARD CARDS
+  card: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.white,
-    borderRadius: borderRadius.xl,
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.lg,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.rule,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.rule,
+    padding: 18,
+    paddingHorizontal: 24,
+    marginBottom: 6,
   },
-
-  cardInner: {
+  cardLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
-    flex: 1,
+    gap: 16,
   },
-  cardTextGroup: {
-    flex: 1,
-  },
-
-  // Icon circles
-  iconCircleLight: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.25)',
+  cardIcon: {
+    width: 32,
+    height: 32,
+    borderWidth: 1,
+    borderColor: colors.rule,
+    backgroundColor: colors.paper,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  iconCircleDark: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconCircleGray: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.surfaceSecondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  // Icon text
-  iconTextWhite: {
+  cardIconText: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 16,
-    color: colors.white,
+    fontSize: 14,
+    color: colors.slate,
   },
-  iconTextLight: {
+  cardTitle: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 18,
-    color: 'rgba(255,255,255,0.7)',
-  },
-  iconTextDark: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: 16,
-    color: colors.textSecondary,
-  },
-
-  // Card titles
-  cardTitleWhite: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: 18,
-    color: colors.white,
-    marginBottom: spacing.xxs,
-  },
-  cardTitleDark: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: 18,
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
     color: colors.ink,
-    marginBottom: spacing.xxs,
+    lineHeight: 20,
+    marginBottom: 3,
   },
-
-  // Card subtitles
-  cardSubWhite: {
+  cardSub: {
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.65)',
+    fontSize: 12,
+    color: colors.slate,
   },
-  cardSubLight: {
+  cardArrow: {
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.5)',
-  },
-  cardSubDark: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.textSecondary,
-  },
-
-  // Arrows
-  arrowWhite: {
-    fontFamily: fontFamily.body,
-    fontSize: 20,
-    color: 'rgba(255,255,255,0.6)',
-  },
-  arrowLight: {
-    fontFamily: fontFamily.body,
-    fontSize: 20,
-    color: 'rgba(255,255,255,0.35)',
-  },
-  arrowGray: {
-    fontFamily: fontFamily.body,
-    fontSize: 20,
+    fontSize: 16,
     color: colors.rule2,
   },
 });
