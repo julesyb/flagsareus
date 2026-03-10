@@ -4,30 +4,27 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   SafeAreaView,
   StatusBar,
   Animated,
   Dimensions,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, fontFamily } from '../utils/theme';
+import { colors, fontFamily } from '../utils/theme';
 import { getTotalFlagCount } from '../data';
 import { initAudio, hapticTap } from '../utils/feedback';
 import { getStats } from '../utils/storage';
 import { RootStackParamList } from '../types/navigation';
+import { GameMode } from '../types';
 import { LightningIcon, CrosshairIcon, BarChartIcon, GlobeIcon } from '../components/Icons';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
-
-const REGIONS = [
-  { name: 'Africa', count: 54 },
-  { name: 'Americas', count: 35 },
-  { name: 'Asia', count: 48 },
-  { name: 'Europe', count: 44 },
-  { name: 'Oceania', count: 14 },
-  { name: 'Middle East', count: 18 },
+const MODES: { key: GameMode; label: string }[] = [
+  { key: 'easy', label: '2' },
+  { key: 'medium', label: '4' },
+  { key: 'hard', label: 'Type' },
 ];
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const GRID_SPACING = 80;
 
@@ -74,6 +71,7 @@ function FadeUp({ delay = 0, children }: { delay?: number; children: React.React
 export default function HomeScreen({ navigation }: Props) {
   const totalFlags = getTotalFlagCount();
   const [mastered, setMastered] = useState(0);
+  const [mode, setMode] = useState<GameMode>('medium');
   const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -105,7 +103,7 @@ export default function HomeScreen({ navigation }: Props) {
   const quickPlay = () => {
     hapticTap();
     navigation.navigate('Game', {
-      config: { mode: 'easy', category: 'easy_flags', questionCount: 10 },
+      config: { mode, category: 'all', questionCount: 10 },
     });
   };
 
@@ -119,10 +117,7 @@ export default function HomeScreen({ navigation }: Props) {
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
       <GridLines />
 
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={styles.content}>
         {/* ── HEADER ── */}
         <FadeUp delay={0}>
           <View style={styles.headerTopRule} />
@@ -178,12 +173,7 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         </FadeUp>
 
-        {/* ── PLAY ── */}
-        <View style={styles.sectionHead}>
-          <Text style={styles.sectionLabel}>Play</Text>
-          <View style={styles.sectionRule} />
-        </View>
-
+        {/* ── SINGLE CTA ── */}
         <FadeUp delay={220}>
           <TouchableOpacity
             style={styles.cardHero}
@@ -193,106 +183,80 @@ export default function HomeScreen({ navigation }: Props) {
             <View style={styles.cardHeroBar} />
             <View style={styles.heroLeft}>
               <View style={styles.heroIcon}>
-                <LightningIcon size={18} color={colors.white} />
+                <LightningIcon size={22} color={colors.white} />
               </View>
               <View>
-                <Text style={styles.heroTitle}>Quick Play</Text>
+                <Text style={styles.heroTitle}>Play</Text>
                 <Text style={styles.heroSub}>
-                  10 famous flags {'\u00A0\u00B7\u00A0'} 50 / 50 score
+                  10 random flags {'\u00A0\u00B7\u00A0'} all {totalFlags}
                 </Text>
               </View>
             </View>
             <Text style={styles.heroArrow}>{'\u2192'}</Text>
           </TouchableOpacity>
-        </FadeUp>
 
-        <FadeUp delay={300}>
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => { hapticTap(); navigation.navigate('GameSetup'); }}
-            activeOpacity={0.85}
-          >
-            <View style={styles.cardLeft}>
-              <View style={styles.cardIcon}>
-                <CrosshairIcon size={16} color={colors.slate} />
-              </View>
-              <View>
-                <Text style={styles.cardTitle}>Custom Game</Text>
-                <Text style={styles.cardSub}>Choose mode, category & more</Text>
-              </View>
-            </View>
-            <Text style={styles.cardArrow}>{'\u2192'}</Text>
-          </TouchableOpacity>
-        </FadeUp>
-
-        {/* ── EXPLORE ── */}
-        <View style={[styles.sectionHead, { marginTop: spacing.lg }]}>
-          <Text style={styles.sectionLabel}>Explore</Text>
-          <View style={styles.sectionRule} />
-        </View>
-
-        <FadeUp delay={360}>
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => { hapticTap(); navigation.navigate('Stats'); }}
-            activeOpacity={0.85}
-          >
-            <View style={styles.cardLeft}>
-              <View style={styles.cardIcon}>
-                <BarChartIcon size={16} color={colors.slate} />
-              </View>
-              <View>
-                <Text style={styles.cardTitle}>Statistics</Text>
-                <Text style={styles.cardSub}>Track your progress</Text>
-              </View>
-            </View>
-            <Text style={styles.cardArrow}>{'\u2192'}</Text>
-          </TouchableOpacity>
-        </FadeUp>
-
-        <FadeUp delay={420}>
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => { hapticTap(); navigation.navigate('Browse'); }}
-            activeOpacity={0.85}
-          >
-            <View style={styles.cardLeft}>
-              <View style={styles.cardIcon}>
-                <GlobeIcon size={16} color={colors.slate} />
-              </View>
-              <View>
-                <Text style={styles.cardTitle}>Browse Flags</Text>
-                <Text style={styles.cardSub}>Explore all {totalFlags} flags</Text>
-              </View>
-            </View>
-            <Text style={styles.cardArrow}>{'\u2192'}</Text>
-          </TouchableOpacity>
-        </FadeUp>
-
-        {/* ── REGION INDEX ── */}
-        <FadeUp delay={500}>
-          <View style={styles.regionIndex}>
-            <Text style={styles.regionIndexHead}>Browse by Region</Text>
-            <View style={styles.regionGrid}>
-              {REGIONS.map((region, i) => (
+          {/* ── MODE SWITCHER ── */}
+          <View style={styles.modeSwitcher}>
+            <Text style={styles.modeSwitcherLabel}>Mode</Text>
+            <View style={styles.modeSwitcherRow}>
+              {MODES.map((m) => (
                 <TouchableOpacity
-                  key={region.name}
-                  style={[
-                    styles.regionItem,
-                    (i + 1) % 3 !== 0 && styles.regionItemBorderRight,
-                    i < 3 && styles.regionItemBorderBottom,
-                  ]}
-                  onPress={() => { hapticTap(); navigation.navigate('Browse'); }}
+                  key={m.key}
+                  style={[styles.modeChip, mode === m.key && styles.modeChipActive]}
+                  onPress={() => { hapticTap(); setMode(m.key); }}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.regionName}>{region.name}</Text>
-                  <Text style={styles.regionCount}>{region.count}</Text>
+                  <Text style={[styles.modeChipText, mode === m.key && styles.modeChipTextActive]}>
+                    {m.label}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
           </View>
         </FadeUp>
-      </ScrollView>
+      </View>
+
+      {/* ── BOTTOM NAV BAR ── */}
+      <View style={styles.bottomNav}>
+        <View style={styles.bottomNavTopRule} />
+        <View style={styles.bottomNavInner}>
+          <TouchableOpacity
+            style={styles.bottomNavItem}
+            onPress={quickPlay}
+            activeOpacity={0.7}
+          >
+            <LightningIcon size={16} color={colors.ink} />
+            <Text style={styles.bottomNavLabel}>Quick Play</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.bottomNavItem}
+            onPress={() => { hapticTap(); navigation.navigate('GameSetup'); }}
+            activeOpacity={0.7}
+          >
+            <CrosshairIcon size={16} color={colors.ink} />
+            <Text style={styles.bottomNavLabel}>Custom</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.bottomNavItem}
+            onPress={() => { hapticTap(); navigation.navigate('Stats'); }}
+            activeOpacity={0.7}
+          >
+            <BarChartIcon size={16} color={colors.ink} />
+            <Text style={styles.bottomNavLabel}>Stats</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.bottomNavItem}
+            onPress={() => { hapticTap(); navigation.navigate('Browse'); }}
+            activeOpacity={0.7}
+          >
+            <GlobeIcon size={16} color={colors.ink} />
+            <Text style={styles.bottomNavLabel}>Browse</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -304,11 +268,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   content: {
+    flex: 1,
     maxWidth: 700,
     alignSelf: 'center',
     width: '100%',
     paddingHorizontal: 40,
-    paddingBottom: 80,
+    justifyContent: 'center',
   },
 
   // Grid
@@ -473,35 +438,14 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 
-  // Section heads
-  sectionHead: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    marginBottom: 10,
-  },
-  sectionLabel: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: 9,
-    letterSpacing: 2.52,
-    textTransform: 'uppercase',
-    color: colors.slate,
-  },
-  sectionRule: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.rule,
-  },
-
   // Hero card
   cardHero: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.ink,
-    paddingVertical: 28,
+    paddingVertical: 36,
     paddingHorizontal: 32,
-    marginBottom: 8,
     position: 'relative',
   },
   cardHeroBar: {
@@ -518,8 +462,8 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   heroIcon: {
-    width: 40,
-    height: 40,
+    width: 48,
+    height: 48,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.2)',
     justifyContent: 'center',
@@ -527,10 +471,10 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 26,
-    letterSpacing: 2.08,
+    fontSize: 32,
+    letterSpacing: 3,
     textTransform: 'uppercase',
-    lineHeight: 26,
+    lineHeight: 32,
     color: colors.white,
     marginBottom: 4,
   },
@@ -545,102 +489,73 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.4)',
   },
 
-  // Standard cards
-  card: {
+  // Mode switcher
+  modeSwitcher: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.rule,
-    borderLeftWidth: 3,
-    borderLeftColor: colors.rule,
-    paddingVertical: 18,
-    paddingHorizontal: 24,
-    marginBottom: 6,
+    marginTop: 12,
   },
-  cardLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  cardIcon: {
-    width: 32,
-    height: 32,
-    borderWidth: 1,
-    borderColor: colors.rule,
-    backgroundColor: colors.paper,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cardTitle: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: 20,
-    letterSpacing: 1.4,
-    textTransform: 'uppercase',
-    color: colors.ink,
-    lineHeight: 20,
-    marginBottom: 3,
-  },
-  cardSub: {
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.slate,
-  },
-  cardArrow: {
-    fontFamily: fontFamily.body,
-    fontSize: 16,
-    color: colors.rule2,
-  },
-
-  // Region index
-  regionIndex: {
-    borderTopWidth: 2,
-    borderTopColor: colors.ink,
-    marginTop: 44,
-    paddingTop: 16,
-  },
-  regionIndexHead: {
+  modeSwitcherLabel: {
     fontFamily: fontFamily.uiLabel,
     fontSize: 9,
-    letterSpacing: 2.52,
+    letterSpacing: 2.2,
     textTransform: 'uppercase',
     color: colors.slate,
-    marginBottom: 14,
   },
-  regionGrid: {
+  modeSwitcherRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    gap: 6,
+  },
+  modeChip: {
+    paddingVertical: 6,
+    paddingHorizontal: 14,
     borderWidth: 1,
     borderColor: colors.rule,
     backgroundColor: colors.white,
   },
-  regionItem: {
-    width: '33.333%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+  modeChipActive: {
+    backgroundColor: colors.ink,
+    borderColor: colors.ink,
   },
-  regionItemBorderRight: {
-    borderRightWidth: 1,
-    borderRightColor: colors.rule,
-  },
-  regionItemBorderBottom: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.rule,
-  },
-  regionName: {
+  modeChipText: {
     fontFamily: fontFamily.uiLabelMedium,
-    fontSize: 12,
+    fontSize: 11,
     letterSpacing: 1.2,
     textTransform: 'uppercase',
-    color: colors.ink,
-  },
-  regionCount: {
-    fontFamily: fontFamily.uiLabelLight,
-    fontSize: 11,
     color: colors.slate,
+  },
+  modeChipTextActive: {
+    color: colors.white,
+  },
+
+  // Bottom nav
+  bottomNav: {
+    backgroundColor: colors.background,
+    paddingBottom: 8,
+  },
+  bottomNavTopRule: {
+    height: 2,
+    backgroundColor: colors.ink,
+  },
+  bottomNavInner: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  bottomNavItem: {
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  bottomNavLabel: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: 9,
+    letterSpacing: 1.8,
+    textTransform: 'uppercase',
+    color: colors.ink,
   },
 });

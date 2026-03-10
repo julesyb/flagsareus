@@ -7,5 +7,5 @@ export type RootStackParamList = {
   HeadsUp: { config: GameConfig };
   Results: { results: GameResult[]; config: GameConfig };
   Stats: undefined;
-  Browse: undefined;
+  Browse: { region?: string } | undefined;
 };
