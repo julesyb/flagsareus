@@ -13,7 +13,6 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fontFamily } from '../utils/theme';
 import { getTotalFlagCount } from '../data';
 import { initAudio, hapticTap } from '../utils/feedback';
-import { getStats } from '../utils/storage';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode } from '../types';
 import { LightningIcon, CrosshairIcon, BarChartIcon, GlobeIcon } from '../components/Icons';
@@ -70,35 +69,11 @@ function FadeUp({ delay = 0, children }: { delay?: number; children: React.React
 // ─── Main Screen ─────────────────────────────────────────────
 export default function HomeScreen({ navigation }: Props) {
   const totalFlags = getTotalFlagCount();
-  const [mastered, setMastered] = useState(0);
   const [mode, setMode] = useState<GameMode>('medium');
-  const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     initAudio();
   }, []);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      getStats().then((stats) => {
-        setMastered(stats.totalCorrect);
-      });
-    });
-    return unsubscribe;
-  }, [navigation]);
-
-  // Animate progress bar fill
-  useEffect(() => {
-    const target = totalFlags > 0 ? mastered / totalFlags : 0;
-    Animated.timing(progressAnim, {
-      toValue: target,
-      duration: 1000,
-      delay: 700,
-      useNativeDriver: false,
-    }).start();
-  }, [mastered, totalFlags]);
-
-  const progressPct = totalFlags > 0 ? Math.round((mastered / totalFlags) * 100) : 0;
 
   const quickPlay = () => {
     hapticTap();
@@ -106,11 +81,6 @@ export default function HomeScreen({ navigation }: Props) {
       config: { mode, category: 'all', questionCount: 10 },
     });
   };
-
-  const progressWidth = progressAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0%', '100%'],
-  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -135,27 +105,6 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         </FadeUp>
 
-
-        {/* ── PROGRESS ── */}
-        <FadeUp delay={140}>
-          <View style={styles.progressBlock}>
-            <View style={styles.progressLeft}>
-              <View style={styles.progressLabelRow}>
-                <Text style={styles.progressLabel}>Mastery Progress</Text>
-                <Text style={styles.progressFraction}>
-                  {mastered} of {totalFlags}
-                </Text>
-              </View>
-              <View style={styles.progressTrack}>
-                <Animated.View style={[styles.progressFill, { width: progressWidth }]} />
-              </View>
-            </View>
-            <View style={styles.progressPctBox}>
-              <Text style={styles.progressPctNumber}>{progressPct}%</Text>
-              <Text style={styles.progressPctLabel}>Complete</Text>
-            </View>
-          </View>
-        </FadeUp>
 
         {/* ── SINGLE CTA ── */}
         <FadeUp delay={220}>
@@ -319,68 +268,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.uiLabelMedium,
     fontSize: 10,
     letterSpacing: 2,
-    textTransform: 'uppercase',
-    color: colors.slate,
-    marginTop: 2,
-  },
-
-  // Progress
-  progressBlock: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 32,
-    paddingVertical: 20,
-    borderTopWidth: 1,
-    borderTopColor: colors.rule,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.rule,
-    marginBottom: 40,
-  },
-  progressLeft: {
-    flex: 1,
-  },
-  progressLabelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
-    marginBottom: 10,
-  },
-  progressLabel: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: 10,
-    letterSpacing: 2.2,
-    textTransform: 'uppercase',
-    color: colors.slate,
-  },
-  progressFraction: {
-    fontFamily: fontFamily.uiLabelMedium,
-    fontSize: 11,
-    letterSpacing: 0.66,
-    color: colors.slate,
-  },
-  progressTrack: {
-    height: 3,
-    backgroundColor: colors.rule,
-  },
-  progressFill: {
-    height: 3,
-    backgroundColor: colors.ink,
-  },
-  progressPctBox: {
-    width: 80,
-    alignItems: 'flex-end',
-  },
-  progressPctNumber: {
-    fontFamily: fontFamily.display,
-    fontSize: 28,
-    color: colors.ink,
-    letterSpacing: -0.56,
-    lineHeight: 28,
-  },
-  progressPctLabel: {
-    fontFamily: fontFamily.uiLabelMedium,
-    fontSize: 9,
-    letterSpacing: 1.62,
     textTransform: 'uppercase',
     color: colors.slate,
     marginTop: 2,
