@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserStats, GameMode, CategoryId } from '../types';
+import { UserStats, GameMode, CategoryId, GameResult } from '../types';
 
 const STATS_KEY = '@flagsareus_stats';
+const FLAG_STATS_KEY = '@flagsareus_flag_stats';
 
 const DEFAULT_STATS: UserStats = {
   totalGamesPlayed: 0,
@@ -67,7 +68,51 @@ export async function updateStats(
 export async function resetStats(): Promise<void> {
   try {
     await AsyncStorage.removeItem(STATS_KEY);
+    await AsyncStorage.removeItem(FLAG_STATS_KEY);
   } catch {
     // Silently fail
   }
+}
+
+// Per-flag stats: tracks wrong count per flag for "Practice More"
+export interface FlagStats {
+  [flagId: string]: { wrong: number; right: number };
+}
+
+export async function getFlagStats(): Promise<FlagStats> {
+  try {
+    const json = await AsyncStorage.getItem(FLAG_STATS_KEY);
+    if (json) return JSON.parse(json);
+    return {};
+  } catch {
+    return {};
+  }
+}
+
+export async function updateFlagResults(results: GameResult[]): Promise<void> {
+  try {
+    const stats = await getFlagStats();
+    for (const r of results) {
+      const id = r.question.flag.id;
+      if (!stats[id]) {
+        stats[id] = { wrong: 0, right: 0 };
+      }
+      if (r.correct) {
+        stats[id].right += 1;
+      } else {
+        stats[id].wrong += 1;
+      }
+    }
+    await AsyncStorage.setItem(FLAG_STATS_KEY, JSON.stringify(stats));
+  } catch {
+    // Silently fail
+  }
+}
+
+export async function getMissedFlagIds(): Promise<string[]> {
+  const stats = await getFlagStats();
+  return Object.entries(stats)
+    .filter(([, s]) => s.wrong > 0)
+    .sort(([, a], [, b]) => b.wrong - a.wrong)
+    .map(([id]) => id);
 }
