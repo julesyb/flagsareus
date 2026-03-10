@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Flags Are Us",
+    "name": "Flag That",
     "slug": "flagsareus",
     "version": "1.0.0",
     "orientation": "default",
@@ -15,7 +15,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.flagsareus.app",
       "infoPlist": {
-        "CFBundleDisplayName": "Flags Are Us"
+        "CFBundleDisplayName": "Flag That"
       }
     },
     "android": {
