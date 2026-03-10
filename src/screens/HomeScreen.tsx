@@ -38,22 +38,30 @@ export default function HomeScreen({ navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Text style={styles.logo}>Flags</Text>
-          <Text style={styles.logoAccent}>Are Us</Text>
+          <View style={styles.logoRow}>
+            <View style={styles.logoMark}>
+              <Text style={styles.logoMarkText}>F</Text>
+            </View>
+            <View>
+              <Text style={styles.logo}>Flags</Text>
+              <Text style={styles.logoAccent}>Are Us</Text>
+            </View>
+          </View>
           <Text style={styles.subtitle}>
-            {totalFlags} country flags to master
+            {totalFlags} flags to master
           </Text>
         </View>
 
         <View style={styles.menuSection}>
-          {/* Quick Play - one tap to start */}
           <TouchableOpacity
             style={[styles.menuCard, styles.quickPlayCard]}
             onPress={quickPlay}
             activeOpacity={0.8}
           >
             <View style={styles.cardContent}>
-              <Text style={styles.cardEmoji}>⚡</Text>
+              <View style={styles.cardIconBox}>
+                <Text style={styles.cardIconText}>Q</Text>
+              </View>
               <View style={styles.cardText}>
                 <Text style={[styles.cardTitle, styles.lightText]}>Quick Play</Text>
                 <Text style={[styles.cardDescription, styles.lightTextDim]}>
@@ -61,7 +69,7 @@ export default function HomeScreen({ navigation }: Props) {
                 </Text>
               </View>
             </View>
-            <Text style={[styles.cardArrow, styles.lightText]}>→</Text>
+            <Text style={[styles.cardArrow, styles.lightText]}>{'\u2192'}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -70,7 +78,9 @@ export default function HomeScreen({ navigation }: Props) {
             activeOpacity={0.8}
           >
             <View style={styles.cardContent}>
-              <Text style={styles.cardEmoji}>🎮</Text>
+              <View style={[styles.cardIconBox, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
+                <Text style={styles.cardIconText}>+</Text>
+              </View>
               <View style={styles.cardText}>
                 <Text style={[styles.cardTitle, styles.lightText]}>Custom Game</Text>
                 <Text style={[styles.cardDescription, styles.lightTextDim]}>
@@ -78,7 +88,7 @@ export default function HomeScreen({ navigation }: Props) {
                 </Text>
               </View>
             </View>
-            <Text style={[styles.cardArrow, styles.lightText]}>→</Text>
+            <Text style={[styles.cardArrow, styles.lightText]}>{'\u2192'}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -87,7 +97,9 @@ export default function HomeScreen({ navigation }: Props) {
             activeOpacity={0.8}
           >
             <View style={styles.cardContent}>
-              <Text style={styles.cardEmoji}>📊</Text>
+              <View style={[styles.cardIconBox, { backgroundColor: colors.surfaceSecondary }]}>
+                <Text style={[styles.cardIconText, { color: colors.text }]}>#</Text>
+              </View>
               <View style={styles.cardText}>
                 <Text style={styles.cardTitle}>Statistics</Text>
                 <Text style={styles.cardDescription}>
@@ -95,7 +107,7 @@ export default function HomeScreen({ navigation }: Props) {
                 </Text>
               </View>
             </View>
-            <Text style={styles.cardArrow}>→</Text>
+            <Text style={styles.cardArrow}>{'\u2192'}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -104,7 +116,9 @@ export default function HomeScreen({ navigation }: Props) {
             activeOpacity={0.8}
           >
             <View style={styles.cardContent}>
-              <Text style={styles.cardEmoji}>🌍</Text>
+              <View style={[styles.cardIconBox, { backgroundColor: colors.surfaceSecondary }]}>
+                <Text style={[styles.cardIconText, { color: colors.text }]}>{'\u2261'}</Text>
+              </View>
               <View style={styles.cardText}>
                 <Text style={styles.cardTitle}>Browse Flags</Text>
                 <Text style={styles.cardDescription}>
@@ -112,7 +126,7 @@ export default function HomeScreen({ navigation }: Props) {
                 </Text>
               </View>
             </View>
-            <Text style={styles.cardArrow}>→</Text>
+            <Text style={styles.cardArrow}>{'\u2192'}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -133,21 +147,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xl,
   },
+  logoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  logoMark: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    backgroundColor: colors.accent,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...shadows.medium,
+  },
+  logoMarkText: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: colors.white,
+  },
   logo: {
     ...typography.hero,
-    fontSize: 48,
+    fontSize: 40,
     color: colors.primary,
   },
   logoAccent: {
     ...typography.hero,
-    fontSize: 48,
+    fontSize: 40,
     color: colors.accent,
-    marginTop: -8,
+    marginTop: -6,
   },
   subtitle: {
     ...typography.label,
     color: colors.textSecondary,
-    marginTop: spacing.sm,
+    marginTop: spacing.md,
   },
   menuSection: {
     gap: spacing.md,
@@ -178,9 +211,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  cardEmoji: {
-    fontSize: 32,
+  cardIconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: spacing.md,
+  },
+  cardIconText: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.white,
   },
   cardText: {
     flex: 1,

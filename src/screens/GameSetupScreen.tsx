@@ -68,7 +68,9 @@ export default function GameSetupScreen({ navigation }: Props) {
                 onPress={() => setMode(m)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.modeIcon}>{info.icon}</Text>
+                <View style={[styles.modeIconBadge, isActive && styles.modeIconBadgeActive]}>
+                  <Text style={[styles.modeIconText, isActive && styles.modeIconTextActive]}>{info.icon}</Text>
+                </View>
                 <Text style={[styles.modeLabel, isActive && styles.modeLabelActive]}>
                   {info.label}
                 </Text>
@@ -99,7 +101,9 @@ export default function GameSetupScreen({ navigation }: Props) {
                       onPress={() => setSelectedCategory(cat.id)}
                       activeOpacity={0.7}
                     >
-                      <Text style={styles.categoryIcon}>{cat.icon}</Text>
+                      <View style={[styles.categoryIconBadge, isActive && styles.categoryIconBadgeActive]}>
+                        <Text style={[styles.categoryIconText, isActive && styles.categoryIconTextActive]}>{cat.icon}</Text>
+                      </View>
                       <View style={styles.categoryTextGroup}>
                         <Text style={[styles.categoryLabel, isActive && styles.categoryLabelActive]}>
                           {cat.label}
@@ -219,9 +223,25 @@ const styles = StyleSheet.create({
     borderColor: colors.accent,
     backgroundColor: colors.accent + '10',
   },
-  modeIcon: {
-    fontSize: 24,
+  modeIconBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: colors.surfaceSecondary,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: spacing.xs,
+  },
+  modeIconBadgeActive: {
+    backgroundColor: colors.accent + '20',
+  },
+  modeIconText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.textSecondary,
+  },
+  modeIconTextActive: {
+    color: colors.accent,
   },
   modeLabel: {
     ...typography.bodyBold,
@@ -269,8 +289,25 @@ const styles = StyleSheet.create({
     borderColor: colors.accent,
     backgroundColor: colors.accent + '10',
   },
-  categoryIcon: {
-    fontSize: 20,
+  categoryIconBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: colors.surfaceSecondary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  categoryIconBadgeActive: {
+    backgroundColor: colors.accent + '20',
+  },
+  categoryIconText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: colors.textSecondary,
+    letterSpacing: 0.5,
+  },
+  categoryIconTextActive: {
+    color: colors.accent,
   },
   categoryTextGroup: {
     gap: 1,

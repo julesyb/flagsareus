@@ -105,7 +105,7 @@ export default function StatsScreen() {
           const acc = s && s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
           return (
             <View key={cat.id} style={styles.statRow}>
-              <Text style={styles.statRowLabel}>{cat.icon} {cat.label}</Text>
+              <Text style={styles.statRowLabel}>{cat.label}</Text>
               <View style={styles.statBarContainer}>
                 <View style={[styles.statBar, { width: `${acc}%` }]} />
               </View>
