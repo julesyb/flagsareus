@@ -12,7 +12,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, buttons } from '../utils/theme';
 import { calculateAccuracy, getStreakFromResults, getGrade } from '../utils/gameEngine';
-import { updateStats } from '../utils/storage';
+import { updateStats, updateFlagResults } from '../utils/storage';
 import { hapticCorrect, playCelebrationSound } from '../utils/feedback';
 import { FlagImageSmall } from '../components/FlagImage';
 import { GAME_MODES, CATEGORIES } from '../types';
@@ -36,6 +36,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
 
   useEffect(() => {
     updateStats(correct, results.length, streak, config.mode, config.category);
+    updateFlagResults(results);
 
     Animated.spring(gradeScale, {
       toValue: 1,
@@ -84,8 +85,8 @@ export default function ResultsScreen({ route, navigation }: Props) {
   };
 
   const playAgain = () => {
-    if (config.mode === 'headsup') {
-      navigation.replace('HeadsUp', { config });
+    if (config.mode === 'flagflash') {
+      navigation.replace('FlagFlash', { config });
     } else {
       navigation.replace('Game', { config });
     }

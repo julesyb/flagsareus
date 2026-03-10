@@ -11,6 +11,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, buttons } from '../utils/theme';
 import {
   GameMode,
+  DisplayMode,
   CategoryId,
   CategoryType,
   GAME_MODES,
@@ -24,9 +25,10 @@ import { RootStackParamList } from '../types/navigation';
 type Props = NativeStackScreenProps<RootStackParamList, 'GameSetup'>;
 
 const QUESTION_COUNTS = [10, 20, 50, 100];
-const HEADSUP_TIMES = [15, 30, 60, 90];
+const FLAGFLASH_TIMES = [15, 30, 60, 90];
 
 export default function GameSetupScreen({ navigation }: Props) {
+  const [displayMode, setDisplayMode] = useState<DisplayMode>('flag');
   const [mode, setMode] = useState<GameMode>('easy');
   const [selectedCategory, setSelectedCategory] = useState<CategoryId>('all');
   const [questionCount, setQuestionCount] = useState(10);
@@ -35,7 +37,7 @@ export default function GameSetupScreen({ navigation }: Props) {
   const [filterType, setFilterType] = useState<CategoryType | null>(null);
 
   const totalFlags = getTotalFlagCount();
-  const isHeadsUp = mode === 'headsup';
+  const isFlagFlash = mode === 'flagflash';
 
   const handleFilterTypeSelect = (type: CategoryType) => {
     if (filterType === type) {
@@ -64,12 +66,13 @@ export default function GameSetupScreen({ navigation }: Props) {
     const config: GameConfig = {
       mode,
       category: selectedCategory,
-      questionCount: isHeadsUp ? 999 : effectiveQuestionCount,
-      ...(isHeadsUp && { timeLimit }),
+      questionCount: isFlagFlash ? 999 : effectiveQuestionCount,
+      displayMode,
+      ...(isFlagFlash && { timeLimit }),
     };
 
-    if (isHeadsUp) {
-      navigation.navigate('HeadsUp', { config });
+    if (isFlagFlash) {
+      navigation.navigate('FlagFlash', { config });
     } else {
       navigation.navigate('Game', { config });
     }
@@ -85,6 +88,31 @@ export default function GameSetupScreen({ navigation }: Props) {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
+        <Text style={styles.sectionTitle}>Display</Text>
+        <View style={styles.displayToggleRow}>
+          {(['flag', 'map'] as DisplayMode[]).map((dm) => {
+            const isActive = displayMode === dm;
+            return (
+              <TouchableOpacity
+                key={dm}
+                style={[styles.displayToggle, isActive && styles.displayToggleActive]}
+                onPress={() => setDisplayMode(dm)}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.displayToggleIcon, isActive && styles.displayToggleIconActive]}>
+                  {dm === 'flag' ? '\u2691' : '\u2609'}
+                </Text>
+                <Text style={[styles.displayToggleText, isActive && styles.displayToggleTextActive]}>
+                  {dm === 'flag' ? 'Flag Mode' : 'Map Mode'}
+                </Text>
+                <Text style={[styles.displayToggleDesc, isActive && styles.displayToggleDescActive]}>
+                  {dm === 'flag' ? 'Identify the flag' : 'Identify the country on a map'}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
         <Text style={styles.sectionTitle}>Game Mode</Text>
         <View style={styles.modeGrid}>
           {(Object.keys(GAME_MODES) as GameMode[]).map((m) => {
@@ -163,7 +191,7 @@ export default function GameSetupScreen({ navigation }: Props) {
           </View>
         )}
 
-        {!isHeadsUp ? (
+        {!isFlagFlash ? (
           <>
             <Text style={styles.sectionTitle}>Questions</Text>
             <View style={styles.optionRow}>
@@ -210,7 +238,7 @@ export default function GameSetupScreen({ navigation }: Props) {
           <>
             <Text style={styles.sectionTitle}>Time Limit</Text>
             <View style={styles.optionRow}>
-              {HEADSUP_TIMES.map((t) => (
+              {FLAGFLASH_TIMES.map((t) => (
                 <TouchableOpacity
                   key={t}
                   style={[
@@ -235,12 +263,12 @@ export default function GameSetupScreen({ navigation }: Props) {
         )}
 
         <TouchableOpacity
-          style={[styles.startButton, isHeadsUp && styles.startButtonParty]}
+          style={[styles.startButton, isFlagFlash && styles.startButtonParty]}
           onPress={startGame}
           activeOpacity={0.8}
         >
           <Text style={styles.startButtonText}>
-            {isHeadsUp ? 'Start Heads Up!' : 'Start Game'}
+            {isFlagFlash ? 'Start FlagFlash' : 'Start Game'}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -256,6 +284,47 @@ const styles = StyleSheet.create({
   content: {
     padding: spacing.lg,
     paddingBottom: spacing.xxl,
+  },
+  displayToggleRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  displayToggle: {
+    flex: 1,
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: colors.border,
+  },
+  displayToggleActive: {
+    borderColor: colors.ink,
+    backgroundColor: colors.surfaceSecondary,
+  },
+  displayToggleIcon: {
+    fontSize: 24,
+    color: colors.textSecondary,
+    marginBottom: spacing.xs,
+  },
+  displayToggleIconActive: {
+    color: colors.ink,
+  },
+  displayToggleText: {
+    ...typography.bodyBold,
+    color: colors.text,
+  },
+  displayToggleTextActive: {
+    color: colors.ink,
+  },
+  displayToggleDesc: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    marginTop: spacing.xxs,
+    textAlign: 'center',
+  },
+  displayToggleDescActive: {
+    color: colors.slate,
   },
   sectionTitle: {
     ...typography.headingUpper,

@@ -21,16 +21,17 @@ import {
   playGameStartSound,
 } from '../utils/feedback';
 import FlagImage from '../components/FlagImage';
+import MapImage from '../components/MapImage';
 import { RootStackParamList } from '../types/navigation';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'HeadsUp'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'FlagFlash'>;
 
 type TiltState = 'neutral' | 'correct' | 'skip';
 type Phase = 'tutorial' | 'countdown' | 'playing';
 
 const isWeb = Platform.OS === 'web';
 
-export default function HeadsUpScreen({ route, navigation }: Props) {
+export default function FlagFlashScreen({ route, navigation }: Props) {
   const { config } = route.params;
   const [questions, setQuestions] = useState<GameQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -215,7 +216,7 @@ export default function HeadsUpScreen({ route, navigation }: Props) {
     return (
       <View style={styles.tutorialContainer}>
         <StatusBar hidden />
-        <Text style={styles.tutorialTitle}>Heads Up!</Text>
+        <Text style={styles.tutorialTitle}>FlagFlash</Text>
         <Text style={styles.tutorialSubtitle}>How to play</Text>
 
         <View style={styles.tutorialSteps}>
@@ -345,11 +346,18 @@ export default function HeadsUpScreen({ route, navigation }: Props) {
           <Text style={styles.feedbackText}>PASS</Text>
         ) : (
           <>
-            <FlagImage
-              countryCode={currentQuestion.flag.id}
-              size="hero"
-              emoji={currentQuestion.flag.emoji}
-            />
+            {config.displayMode === 'map' ? (
+              <MapImage
+                countryCode={currentQuestion.flag.id}
+                size="hero"
+              />
+            ) : (
+              <FlagImage
+                countryCode={currentQuestion.flag.id}
+                size="hero"
+                emoji={currentQuestion.flag.emoji}
+              />
+            )}
             <Text style={styles.flagName}>{currentQuestion.flag.name}</Text>
             <Text style={styles.flagRegion}>{currentQuestion.flag.region}</Text>
           </>

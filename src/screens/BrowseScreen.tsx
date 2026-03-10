@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,44 +9,86 @@ import {
   TextInput,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import { colors, spacing, typography } from '../utils/theme';
 import { FlagItem } from '../types';
 import { RootStackParamList } from '../types/navigation';
 import { getAllFlags } from '../data';
 import { FlagImageSmall } from '../components/FlagImage';
+import { getMissedFlagIds, getFlagStats, FlagStats } from '../utils/storage';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Browse'>;
 
 const REGIONS = ['All', 'Africa', 'Asia', 'Europe', 'Americas', 'Oceania'];
+const PRACTICE_MORE = 'Practice More';
 
 export default function BrowseScreen({ route }: Props) {
   const initialRegion = route.params?.region ?? 'All';
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRegion, setSelectedRegion] = useState(initialRegion);
+  const [selectedFilter, setSelectedFilter] = useState(initialRegion);
+  const [missedFlagIds, setMissedFlagIds] = useState<string[]>([]);
+  const [flagStats, setFlagStats] = useState<FlagStats>({});
 
   const allFlags = useMemo(() => getAllFlags(), []);
 
+  // Reload missed flags each time the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      getMissedFlagIds().then(setMissedFlagIds);
+      getFlagStats().then(setFlagStats);
+    }, []),
+  );
+
   const filteredFlags = useMemo(() => {
     let flags = allFlags;
-    if (selectedRegion !== 'All') {
-      flags = flags.filter((f) => f.region === selectedRegion);
+    if (selectedFilter === PRACTICE_MORE) {
+      const missedSet = new Set(missedFlagIds);
+      flags = flags.filter((f) => missedSet.has(f.id));
+      // Sort by most wrong first
+      flags = flags.sort((a, b) => {
+        const aWrong = flagStats[a.id]?.wrong ?? 0;
+        const bWrong = flagStats[b.id]?.wrong ?? 0;
+        return bWrong - aWrong;
+      });
+    } else {
+      if (selectedFilter !== 'All') {
+        flags = flags.filter((f) => f.region === selectedFilter);
+      }
+      flags = flags.sort((a, b) => a.name.localeCompare(b.name));
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       flags = flags.filter((f) => f.name.toLowerCase().includes(q));
     }
-    return flags.sort((a, b) => a.name.localeCompare(b.name));
-  }, [allFlags, selectedRegion, searchQuery]);
+    return flags;
+  }, [allFlags, selectedFilter, searchQuery, missedFlagIds, flagStats]);
 
-  const renderItem = ({ item }: { item: FlagItem }) => (
-    <View style={styles.flagItem}>
-      <FlagImageSmall countryCode={item.id} emoji={item.emoji} />
-      <View style={styles.flagInfo}>
-        <Text style={styles.flagName}>{item.name}</Text>
-        <Text style={styles.flagRegion}>{item.region}</Text>
+  const filterOptions = useMemo(() => {
+    if (missedFlagIds.length > 0) {
+      return [...REGIONS, PRACTICE_MORE];
+    }
+    return REGIONS;
+  }, [missedFlagIds]);
+
+  const renderItem = ({ item }: { item: FlagItem }) => {
+    const stats = flagStats[item.id];
+    const showWrongCount = selectedFilter === PRACTICE_MORE && stats;
+
+    return (
+      <View style={styles.flagItem}>
+        <FlagImageSmall countryCode={item.id} emoji={item.emoji} />
+        <View style={styles.flagInfo}>
+          <Text style={styles.flagName}>{item.name}</Text>
+          <Text style={styles.flagRegion}>
+            {item.region}
+            {showWrongCount
+              ? ` \u2022 missed ${stats.wrong} time${stats.wrong !== 1 ? 's' : ''}`
+              : ''}
+          </Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -63,34 +105,38 @@ export default function BrowseScreen({ route }: Props) {
 
       <FlatList
         horizontal
-        data={REGIONS}
+        data={filterOptions}
         keyExtractor={(item) => item}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.regionList}
         style={styles.regionScroll}
-        renderItem={({ item: region }) => (
+        renderItem={({ item: filter }) => (
           <TouchableOpacity
             style={[
               styles.regionChip,
-              selectedRegion === region && styles.regionChipActive,
+              selectedFilter === filter && styles.regionChipActive,
+              filter === PRACTICE_MORE && selectedFilter !== filter && styles.practiceChip,
+              filter === PRACTICE_MORE && selectedFilter === filter && styles.practiceChipActive,
             ]}
-            onPress={() => setSelectedRegion(region)}
+            onPress={() => setSelectedFilter(filter)}
             activeOpacity={0.7}
           >
             <Text
               style={[
                 styles.regionLabel,
-                selectedRegion === region && styles.regionLabelActive,
+                selectedFilter === filter && styles.regionLabelActive,
               ]}
             >
-              {region}
+              {filter}
             </Text>
           </TouchableOpacity>
         )}
       />
 
       <Text style={styles.resultCount}>
-        {filteredFlags.length} flag{filteredFlags.length !== 1 ? 's' : ''}
+        {selectedFilter === PRACTICE_MORE && filteredFlags.length === 0
+          ? 'No missed flags yet \u2014 keep playing!'
+          : `${filteredFlags.length} flag${filteredFlags.length !== 1 ? 's' : ''}`}
       </Text>
 
       <FlatList
@@ -112,6 +158,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
   },
   searchInput: {
     backgroundColor: colors.surface,
@@ -123,7 +170,8 @@ const styles = StyleSheet.create({
   },
   regionScroll: {
     maxHeight: 48,
-    marginTop: spacing.md,
+    marginTop: spacing.sm,
+    marginBottom: spacing.md,
   },
   regionList: {
     paddingHorizontal: spacing.lg,
@@ -140,6 +188,13 @@ const styles = StyleSheet.create({
     borderColor: colors.ink,
     backgroundColor: colors.ink,
   },
+  practiceChip: {
+    borderColor: colors.accent,
+  },
+  practiceChipActive: {
+    borderColor: colors.accent,
+    backgroundColor: colors.accent,
+  },
   regionLabel: {
     ...typography.captionBold,
     color: colors.textSecondary,
@@ -151,7 +206,7 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.textSecondary,
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
+    paddingTop: spacing.sm,
     paddingBottom: spacing.sm,
   },
   listContent: {
