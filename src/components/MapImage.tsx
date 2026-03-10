@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { Image } from 'expo-image';
 import { colors, fontFamily } from '../utils/theme';
 import { countryCoordinates } from '../data/countryCoordinates';
@@ -62,22 +62,19 @@ function getCenterOffset(lat: number, lng: number, zoom: number, tileSize: numbe
   const fractX = xTile - Math.floor(xTile);
   const fractY = yTile - Math.floor(yTile);
 
-  const totalPx = gridSize * tileSize;
   const half = Math.floor(gridSize / 2);
 
   const centerPxX = (half + fractX) * tileSize;
   const centerPxY = (half + fractY) * tileSize;
 
-  return {
-    offsetX: centerPxX - totalPx / 2,
-    offsetY: centerPxY - totalPx / 2,
-  };
+  return { centerPxX, centerPxY };
 }
 
 export default function MapImage({ countryCode, size = 'hero', style }: MapImageProps) {
   const dimensions = SIZE_MAP[size];
   const coord = countryCoordinates[countryCode.toLowerCase()];
   const [zoomDelta, setZoomDelta] = useState(0);
+  const scrollRef = useRef<ScrollView>(null);
 
   const isInteractive = size === 'hero' || size === 'large';
 
@@ -95,59 +92,99 @@ export default function MapImage({ countryCode, size = 'hero', style }: MapImage
   const totalPx = gridSize * TILE_SIZE;
 
   const tiles = useMemo(() => getTileGrid(coord.lat, coord.lng, zoom, gridSize), [coord.lat, coord.lng, zoom, gridSize]);
-  const offset = useMemo(() => getCenterOffset(coord.lat, coord.lng, zoom, TILE_SIZE, gridSize), [coord.lat, coord.lng, zoom, gridSize]);
+  const centerOffset = useMemo(() => getCenterOffset(coord.lat, coord.lng, zoom, TILE_SIZE, gridSize), [coord.lat, coord.lng, zoom, gridSize]);
 
+  // ScrollView content offset to center the country in the viewport
+  const initialOffsetX = centerOffset.centerPxX - dimensions.width / 2;
+  const initialOffsetY = centerOffset.centerPxY - dimensions.height / 2;
+
+  if (!isInteractive) {
+    // Non-interactive: simple clipped view (small/medium sizes)
+    return (
+      <View style={[styles.container, dimensions, style]}>
+        <View
+          style={{
+            width: totalPx,
+            height: totalPx,
+            position: 'absolute',
+            left: dimensions.width / 2 - centerOffset.centerPxX,
+            top: dimensions.height / 2 - centerOffset.centerPxY,
+          }}
+        >
+          {tiles.map((tile) => (
+            <Image
+              key={`${zoom}-${tile.x}-${tile.y}`}
+              source={{ uri: tile.url }}
+              style={{
+                position: 'absolute',
+                left: tile.x * TILE_SIZE,
+                top: tile.y * TILE_SIZE,
+                width: TILE_SIZE,
+                height: TILE_SIZE,
+              }}
+              contentFit="cover"
+              cachePolicy="disk"
+            />
+          ))}
+        </View>
+      </View>
+    );
+  }
+
+  // Interactive: ScrollView with pinch-to-zoom + pan
   return (
     <View style={[styles.container, dimensions, style]}>
-      <View
-        style={{
-          width: totalPx,
-          height: totalPx,
-          position: 'absolute',
-          left: dimensions.width / 2 - offset.offsetX - TILE_SIZE * Math.floor(gridSize / 2),
-          top: dimensions.height / 2 - offset.offsetY - TILE_SIZE * Math.floor(gridSize / 2),
-        }}
+      <ScrollView
+        ref={scrollRef}
+        style={dimensions}
+        contentOffset={{ x: initialOffsetX, y: initialOffsetY }}
+        minimumZoomScale={1}
+        maximumZoomScale={3}
+        bouncesZoom
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
       >
-        {tiles.map((tile) => (
-          <Image
-            key={`${zoom}-${tile.x}-${tile.y}`}
-            source={{ uri: tile.url }}
-            style={{
-              position: 'absolute',
-              left: tile.x * TILE_SIZE,
-              top: tile.y * TILE_SIZE,
-              width: TILE_SIZE,
-              height: TILE_SIZE,
-            }}
-            contentFit="cover"
-            cachePolicy="disk"
-          />
-        ))}
-      </View>
+        <View style={{ width: totalPx, height: totalPx }}>
+          {tiles.map((tile) => (
+            <Image
+              key={`${zoom}-${tile.x}-${tile.y}`}
+              source={{ uri: tile.url }}
+              style={{
+                position: 'absolute',
+                left: tile.x * TILE_SIZE,
+                top: tile.y * TILE_SIZE,
+                width: TILE_SIZE,
+                height: TILE_SIZE,
+              }}
+              contentFit="cover"
+              cachePolicy="disk"
+            />
+          ))}
+        </View>
+      </ScrollView>
 
       {/* Crosshair marker */}
       <View style={styles.crosshairH} pointerEvents="none" />
       <View style={styles.crosshairV} pointerEvents="none" />
 
-      {/* Zoom controls */}
-      {isInteractive && (
-        <View style={styles.zoomControls}>
-          <TouchableOpacity
-            style={styles.zoomButton}
-            onPress={() => setZoomDelta((d) => Math.min(d + 1, 4))}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.zoomText}>+</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.zoomButton}
-            onPress={() => setZoomDelta((d) => Math.max(d - 1, -2))}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.zoomText}>-</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      {/* Zoom buttons — tile-level zoom (loads higher res tiles) */}
+      <View style={styles.zoomControls}>
+        <TouchableOpacity
+          style={styles.zoomButton}
+          onPress={() => setZoomDelta((d) => Math.min(d + 1, 4))}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.zoomText}>+</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.zoomButton}
+          onPress={() => setZoomDelta((d) => Math.max(d - 1, -2))}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.zoomText}>-</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -181,6 +218,7 @@ const styles = StyleSheet.create({
     top: '50%',
     height: 1,
     backgroundColor: 'rgba(229, 39, 28, 0.35)',
+    pointerEvents: 'none',
   },
   crosshairV: {
     position: 'absolute',
@@ -189,6 +227,7 @@ const styles = StyleSheet.create({
     left: '50%',
     width: 1,
     backgroundColor: 'rgba(229, 39, 28, 0.35)',
+    pointerEvents: 'none',
   },
   zoomControls: {
     position: 'absolute',
