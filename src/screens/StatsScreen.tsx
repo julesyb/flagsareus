@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   smallStatLabel: {
     ...typography.caption,
     color: colors.textSecondary,
-    marginTop: spacing.xs,
+    marginTop: spacing.xxs,
   },
   sectionTitle: {
     ...typography.headingUpper,

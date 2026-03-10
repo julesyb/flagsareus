@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   reviewAnswer: {
     ...typography.caption,
     color: colors.error,
-    marginTop: spacing.xs,
+    marginTop: spacing.xxs,
   },
   reviewIcon: {
     ...typography.heading,

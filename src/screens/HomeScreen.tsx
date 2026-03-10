@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   countLabel: {
     ...typography.eyebrow,
     color: colors.textSecondary,
-    marginTop: spacing.xs,
+    marginTop: spacing.xxs,
   },
 
   // BYLINE
@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
     borderLeftColor: colors.border,
     paddingVertical: spacing.md + spacing.xs,
     paddingHorizontal: spacing.lg,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs + spacing.xxs,
   },
   cardLeft: {
     flexDirection: 'row',
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     ...typography.cardTitle,
     color: colors.ink,
-    marginBottom: spacing.xs,
+    marginBottom: spacing.xxs,
   },
   cardSub: {
     fontFamily: fontFamily.body,

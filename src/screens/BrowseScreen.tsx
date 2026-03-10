@@ -176,6 +176,6 @@ const styles = StyleSheet.create({
   flagRegion: {
     ...typography.caption,
     color: colors.textSecondary,
-    marginTop: spacing.xs,
+    marginTop: spacing.xxs,
   },
 });

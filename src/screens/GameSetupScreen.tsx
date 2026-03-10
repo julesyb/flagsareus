@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   modeDesc: {
     ...typography.caption,
     color: colors.textSecondary,
-    marginTop: spacing.xs,
+    marginTop: spacing.xxs,
     textAlign: 'center',
   },
   modeDescActive: {
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     color: colors.accent,
   },
   categoryTextGroup: {
-    gap: spacing.xs,
+    gap: 1,
   },
   categoryLabel: {
     ...typography.label,
