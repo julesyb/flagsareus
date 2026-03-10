@@ -68,7 +68,7 @@ export function FlagImageSmall({ countryCode, emoji }: { countryCode: string; em
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
-    backgroundColor: colors.border,
+    backgroundColor: 'transparent',
   },
   image: {},
   emojiOverlay: {
