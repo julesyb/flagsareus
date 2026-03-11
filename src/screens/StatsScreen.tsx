@@ -50,7 +50,6 @@ export default function StatsScreen() {
   const progressFade = useRef(new Animated.Value(0)).current;
   const progressBarAnim = useRef(new Animated.Value(0)).current;
   const regionFade = useRef(new Animated.Value(0)).current;
-
   const restFade = useRef(new Animated.Value(0)).current;
 
   const flagNameMap = React.useMemo(() => {
