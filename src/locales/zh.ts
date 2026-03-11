@@ -25,7 +25,7 @@ const zh: typeof en = {
   },
 
   nav: {
-    play: '\u5f00\u59cb',
+    home: '\u9996\u9875',
     modes: '\u6a21\u5f0f',
     stats: '\u7edf\u8ba1',
     browse: '\u6d4f\u89c8',

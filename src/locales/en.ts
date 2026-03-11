@@ -25,7 +25,7 @@ const en = {
 
   // ─── Bottom Nav ──────────────────────────────────────────
   nav: {
-    play: 'Play',
+    home: 'Home',
     modes: 'Modes',
     stats: 'Stats',
     browse: 'Browse',

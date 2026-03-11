@@ -25,7 +25,7 @@ const de: typeof en = {
   },
 
   nav: {
-    play: 'Spielen',
+    home: 'Start',
     modes: 'Modi',
     stats: 'Stats',
     browse: 'Stöbern',

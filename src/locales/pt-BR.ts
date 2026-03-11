@@ -25,7 +25,7 @@ const ptBR: typeof en = {
   },
 
   nav: {
-    play: 'Jogar',
+    home: 'Início',
     modes: 'Modos',
     stats: 'Stats',
     browse: 'Explorar',

@@ -25,7 +25,7 @@ const es: typeof en = {
   },
 
   nav: {
-    play: 'Jugar',
+    home: 'Inicio',
     modes: 'Modos',
     stats: 'Stats',
     browse: 'Explorar',
