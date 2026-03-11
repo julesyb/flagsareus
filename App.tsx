@@ -29,6 +29,7 @@ import ErrorBoundary from './src/components/ErrorBoundary';
 import { ChevronLeftIcon } from './src/components/Icons';
 import { RootStackParamList } from './src/types/navigation';
 import { colors } from './src/utils/theme';
+import { configureNotificationHandler, syncNotificationSchedule } from './src/utils/notifications';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -64,11 +65,16 @@ const screenOptions = {
   },
 };
 
+// Configure notification display behavior at module level
+configureNotificationHandler();
+
 function AppContent() {
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = 'Flag That';
     }
+    // Sync notification schedule on app start (re-schedules if enabled)
+    syncNotificationSchedule();
   }, []);
 
   return (

@@ -20,6 +20,8 @@ import {
   setSoundsEnabled,
   setHapticsEnabled,
 } from '../utils/feedback';
+import { toggleDailyReminder, getPermissionStatus } from '../utils/notifications';
+import { BellIcon } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
 
 export default function SettingsScreen() {
@@ -27,6 +29,9 @@ export default function SettingsScreen() {
   const [settings, setSettings] = useState<AppSettings>({
     soundEnabled: true,
     hapticsEnabled: true,
+    dailyReminderEnabled: false,
+    reminderHour: 9,
+    reminderMinute: 0,
   });
 
   useFocusEffect(
@@ -42,6 +47,60 @@ export default function SettingsScreen() {
 
     if (key === 'soundEnabled') setSoundsEnabled(value as boolean);
     if (key === 'hapticsEnabled') setHapticsEnabled(value as boolean);
+  };
+
+  const handleToggleReminder = async (enabled: boolean) => {
+    const result = await toggleDailyReminder(
+      enabled,
+      settings.reminderHour,
+      settings.reminderMinute,
+    );
+    const updated = { ...settings, dailyReminderEnabled: result };
+    setSettings(updated);
+    await saveSettings(updated);
+
+    if (enabled && !result && Platform.OS !== 'web') {
+      Alert.alert(
+        'Notifications Disabled',
+        'Allow notifications in your device settings to enable daily reminders.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() },
+        ],
+      );
+    }
+  };
+
+  const cycleReminderTime = async () => {
+    // Cycle through common reminder times
+    const times = [
+      { h: 7, m: 0 },
+      { h: 8, m: 0 },
+      { h: 9, m: 0 },
+      { h: 10, m: 0 },
+      { h: 12, m: 0 },
+      { h: 18, m: 0 },
+      { h: 20, m: 0 },
+      { h: 21, m: 0 },
+    ];
+    const currentIdx = times.findIndex(
+      (t) => t.h === settings.reminderHour && t.m === settings.reminderMinute,
+    );
+    const next = times[(currentIdx + 1) % times.length];
+    const updated = { ...settings, reminderHour: next.h, reminderMinute: next.m };
+    setSettings(updated);
+    await saveSettings(updated);
+
+    if (settings.dailyReminderEnabled) {
+      await toggleDailyReminder(true, next.h, next.m);
+    }
+  };
+
+  const formatTime = (hour: number, minute: number): string => {
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const h = hour % 12 || 12;
+    const m = minute.toString().padStart(2, '0');
+    return `${h}:${m} ${period}`;
   };
 
   const handleReset = async () => {
@@ -108,25 +167,43 @@ export default function SettingsScreen() {
         <Text style={styles.sectionTitle}>Notifications</Text>
 
         <View style={styles.settingCard}>
-          <TouchableOpacity
-            style={styles.settingRow}
-            onPress={() => {
-              if (Platform.OS !== 'web') {
-                Linking.openSettings();
-              }
-            }}
-            activeOpacity={0.7}
-          >
+          <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Notification Settings</Text>
+              <Text style={styles.settingLabel}>Daily Challenge Reminder</Text>
               <Text style={styles.settingDesc}>
                 {Platform.OS === 'web'
-                  ? 'Notifications managed in browser settings'
-                  : 'Opens system notification settings'}
+                  ? 'Available on iOS and Android'
+                  : 'Get reminded to play each day'}
               </Text>
             </View>
-            <Text style={styles.settingChevron}>&rsaquo;</Text>
-          </TouchableOpacity>
+            <Switch
+              value={settings.dailyReminderEnabled}
+              onValueChange={handleToggleReminder}
+              trackColor={{ false: colors.rule, true: colors.ink }}
+              thumbColor={colors.white}
+              disabled={Platform.OS === 'web'}
+            />
+          </View>
+          {Platform.OS !== 'web' && (
+            <>
+              <View style={styles.settingDivider} />
+              <TouchableOpacity
+                style={styles.settingRow}
+                onPress={cycleReminderTime}
+                activeOpacity={0.7}
+              >
+                <View style={styles.settingInfo}>
+                  <Text style={[styles.settingLabel, !settings.dailyReminderEnabled && styles.settingDisabled]}>
+                    Reminder Time
+                  </Text>
+                  <Text style={styles.settingDesc}>Tap to change</Text>
+                </View>
+                <Text style={[styles.settingTimeValue, !settings.dailyReminderEnabled && styles.settingDisabled]}>
+                  {formatTime(settings.reminderHour, settings.reminderMinute)}
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
 
         {/* About */}
@@ -227,6 +304,15 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: colors.textTertiary,
     lineHeight: 22,
+  },
+  settingDisabled: {
+    opacity: 0.35,
+  },
+  settingTimeValue: {
+    ...typography.bodyBold,
+    color: colors.text,
+    fontSize: 15,
+    letterSpacing: 0.5,
   },
   resetButton: {
     backgroundColor: colors.surface,
