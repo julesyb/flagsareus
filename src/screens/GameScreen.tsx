@@ -69,6 +69,13 @@ export default function GameScreen({ route, navigation }: Props) {
   const pendingResultsRef = useRef<GameResult[] | null>(null);
   const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Clean up auto-advance timer on unmount
+  useEffect(() => {
+    return () => {
+      if (autoAdvanceRef.current) clearTimeout(autoAdvanceRef.current);
+    };
+  }, []);
+
   // When timeLeft hits 0, navigate to results
   useEffect(() => {
     if (isTimeAttack && timeLeft === 0) {

@@ -440,7 +440,7 @@ const s = StyleSheet.create({
   streakLbl: {
     fontFamily: fontFamily.uiLabel,
     fontSize: 9,
-    letterSpacing: 1.5,
+    letterSpacing: 1,
     textTransform: 'uppercase',
     color: colors.accent,
     marginTop: 1,
@@ -448,7 +448,7 @@ const s = StyleSheet.create({
   streakLblMuted: {
     fontFamily: fontFamily.uiLabel,
     fontSize: 9,
-    letterSpacing: 1.5,
+    letterSpacing: 1,
     textTransform: 'uppercase',
     color: colors.textTertiary,
     marginTop: 1,
@@ -466,7 +466,7 @@ const s = StyleSheet.create({
   heroLabel: {
     fontFamily: fontFamily.uiLabel,
     fontSize: 10,
-    letterSpacing: 2.5,
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
     color: colors.whiteAlpha45,
     marginBottom: 18,
@@ -559,7 +559,7 @@ const s = StyleSheet.create({
   teaserPlayText: {
     fontFamily: fontFamily.uiLabel,
     fontSize: 15,
-    letterSpacing: 1.2,
+    letterSpacing: 0.8,
     textTransform: 'uppercase',
     color: colors.white,
   },
@@ -589,7 +589,7 @@ const s = StyleSheet.create({
   playBtnText: {
     fontFamily: fontFamily.uiLabel,
     fontSize: 17,
-    letterSpacing: 1.2,
+    letterSpacing: 0.8,
     textTransform: 'uppercase',
     color: colors.white,
   },
@@ -660,7 +660,7 @@ const s = StyleSheet.create({
   sectionLbl: {
     fontFamily: fontFamily.uiLabel,
     fontSize: 10,
-    letterSpacing: 2,
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
     color: colors.textTertiary,
     marginBottom: 8,
