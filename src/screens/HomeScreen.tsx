@@ -503,24 +503,6 @@ export default function HomeScreen({ navigation }: Props) {
             <ChevronRightIcon size={18} color={colors.rule} />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={s.modeCard}
-            activeOpacity={0.85}
-            onPress={() => {
-              hapticTap();
-              navigation.navigate('JoinChallenge');
-            }}
-          >
-            <View style={[s.modeIcon, { backgroundColor: colors.teal }]}>
-              <UsersIcon size={18} color={colors.white} />
-            </View>
-            <View style={s.modeText}>
-              <Text style={s.modeTitle}>{t('challenge.joinTitle')}</Text>
-              <Text style={s.modeSub}>{t('challenge.homeDesc')}</Text>
-            </View>
-            <ChevronRightIcon size={18} color={colors.rule} />
-          </TouchableOpacity>
-
           {weakFlagCount > 0 && (
             <TouchableOpacity
               style={[s.modeCard, { borderColor: colors.accent, borderWidth: 1.5 }]}

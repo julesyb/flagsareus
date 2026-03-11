@@ -22,9 +22,9 @@ export type DecodeResult =
   | { status: 'invalid' };
 
 // ── V3 raw URL-safe format (no base64) ──
-// name~modeIdx~timeLimit~flagIds~packedResults
-// All chars are URL-safe, zero encoding overhead.
-// packedResults: 2-char base36 per flag (0=wrong, >0 = deciseconds+1).
+// name~modeIdx~timeLimit~flagIds~correctHex~totalDeci
+// correctHex: correct/wrong bits packed as hex (e.g. "2d6" for 1011010110)
+// totalDeci: total answer time in deciseconds (single number)
 
 const MODE_INDEX = new Map(CHALLENGE_MODES.map((m, i) => [m, i]));
 const INDEX_MODE = new Map(CHALLENGE_MODES.map((m, i) => [i, m]));
@@ -45,12 +45,16 @@ export function encodeChallenge(data: ChallengeData): string | null {
 
   const name = sanitizeName(data.hostName);
   const flags = data.flagIds.join('');
-  const packed = data.hostResults.map((r) => {
-    const val = r.correct ? Math.round(r.timeMs / 100) + 1 : 0;
-    return val.toString(36).padStart(2, '0');
-  }).join('');
+  // Pack correct/wrong bits as hex
+  let bits = 0;
+  for (const r of data.hostResults) {
+    bits = (bits << 1) | (r.correct ? 1 : 0);
+  }
+  const correctHex = bits.toString(16);
+  // Total time in deciseconds
+  const totalDeci = Math.round(data.hostResults.reduce((s, r) => s + r.timeMs, 0) / 100);
 
-  return `${name}~${modeIdx}~${data.timeLimit}~${flags}~${packed}`;
+  return `${name}~${modeIdx}~${data.timeLimit}~${flags}~${correctHex}~${totalDeci}`;
 }
 
 /** Strip URL prefixes so users can paste full URLs into the code input */
@@ -98,9 +102,9 @@ export function decodeChallenge(code: string): DecodeResult {
 
 function decodeV3Raw(raw: string): ChallengeData | null {
   const parts = raw.split('~');
-  if (parts.length !== 5) return null;
+  if (parts.length !== 6) return null;
 
-  const [hostName, modeIdxStr, timeLimitStr, flags, packed] = parts;
+  const [hostName, modeIdxStr, timeLimitStr, flags, correctHex, totalDeciStr] = parts;
   if (!hostName || hostName.length > 50 || flags.length === 0 || flags.length % 2 !== 0) return null;
 
   const modeIdx = parseInt(modeIdxStr, 10);
@@ -115,12 +119,18 @@ function decodeV3Raw(raw: string): ChallengeData | null {
     flagIds.push(flags.slice(i, i + 2));
   }
 
-  if (packed.length !== flagIds.length * 2) return null;
+  const bits = parseInt(correctHex, 16);
+  if (isNaN(bits)) return null;
+  const totalDeci = parseInt(totalDeciStr, 10);
+  if (isNaN(totalDeci)) return null;
+
+  const n = flagIds.length;
+  const correctCount = flagIds.filter((_, i) => (bits >> (n - 1 - i)) & 1).length;
+  const avgTimeMs = correctCount > 0 ? Math.round((totalDeci * 100) / correctCount) : 0;
+
   const hostResults = flagIds.map((_, i) => {
-    const val = parseInt(packed.slice(i * 2, i * 2 + 2), 36);
-    return val === 0
-      ? { correct: false, timeMs: 0 }
-      : { correct: true, timeMs: (val - 1) * 100 };
+    const correct = !!((bits >> (n - 1 - i)) & 1);
+    return { correct, timeMs: correct ? avgTimeMs : 0 };
   });
 
   return { hostName, mode, timeLimit, flagIds, hostResults };

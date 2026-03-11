@@ -710,17 +710,12 @@ export default function ResultsScreen({ route, navigation }: Props) {
               activeOpacity={0.7}
             >
               <UsersIcon size={18} color={colors.ink} />
-              <View style={st.challengeButtonContent}>
-                <Text style={st.challengeButtonTitle}>{t('challenge.challengeFriend')}</Text>
-                <Text style={st.challengeButtonSub}>{t('challenge.challengeDesc')}</Text>
-              </View>
-              <ChevronRightIcon size={16} color={colors.textTertiary} />
+              <Text style={st.challengeButtonTitle}>{t('challenge.challengeFriend')}</Text>
             </TouchableOpacity>
           </Animated.View>
         )}
 
-        {/* ── CHALLENGE BACK (after playing a challenge) ── */}
-        {/* Navigate to GameSetup so they play NEW flags, then share from those results */}
+        {/* ── CHALLENGE BACK ── */}
         {isChallenge && canChallenge && !reviewOnly && (
           <Animated.View style={{ opacity: restFade }}>
             <TouchableOpacity
@@ -729,11 +724,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
               activeOpacity={0.7}
             >
               <UsersIcon size={18} color={colors.ink} />
-              <View style={st.challengeButtonContent}>
-                <Text style={st.challengeButtonTitle}>{t('challenge.challengeBack')}</Text>
-                <Text style={st.challengeButtonSub}>{t('challenge.challengeBackDesc')}</Text>
-              </View>
-              <ChevronRightIcon size={16} color={colors.textTertiary} />
+              <Text style={st.challengeButtonTitle}>{t('challenge.challengeBack')}</Text>
             </TouchableOpacity>
           </Animated.View>
         )}
@@ -826,10 +817,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
           const itemTime = Math.round(result.timeTaken / 100) / 10;
           const isFastest = fastestCorrect && result.correct && result.timeTaken === fastestCorrect.time;
           const opponentResult = challenge?.hostResults[index];
-          const opponentTime = opponentResult ? Math.round(opponentResult.timeMs / 100) / 10 : null;
-          const wonThisRound = opponentResult && result.correct && opponentResult.correct
-            ? result.timeTaken < opponentResult.timeMs
-            : result.correct && opponentResult && !opponentResult.correct;
           return (
             <Animated.View
               key={index}
@@ -854,14 +841,14 @@ export default function ResultsScreen({ route, navigation }: Props) {
                 {result.userAnswer === 'SKIPPED' && (
                   <Text style={st.reviewAnswer}>{t('results.skipped')}</Text>
                 )}
-                {isChallenge && opponentTime !== null && (
+                {isChallenge && opponentResult && (
                   <Text style={st.reviewOpponent}>
-                    {challenge.hostName}: {opponentTime}s {opponentResult?.correct ? '' : '(x)'}
+                    {challenge.hostName}: {opponentResult.correct ? <CheckIcon size={12} color={colors.success} /> : <CrossIcon size={12} color={colors.error} />}
                   </Text>
                 )}
               </View>
               <View style={st.reviewRight}>
-                <Text style={[st.reviewTime, isFastest && st.reviewTimeFastest, wonThisRound && st.reviewTimeWon]}>{itemTime}s</Text>
+                <Text style={[st.reviewTime, isFastest && st.reviewTimeFastest]}>{itemTime}s</Text>
                 {result.correct ? <CheckIcon size={18} color={colors.success} /> : <CrossIcon size={18} color={colors.error} />}
               </View>
             </Animated.View>
@@ -873,7 +860,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
       </ScrollView>
       <BottomNav activeTab="Home" onNavigate={onNavigate} />
 
-      {/* ── Challenge name modal ── */}
+      {/* ── Challenge name modal (only shown if no saved name) ── */}
       <Modal
         visible={showChallengeModal}
         transparent
@@ -887,7 +874,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
         >
           <TouchableOpacity activeOpacity={1} style={st.modalCard} onPress={() => {}}>
             <Text style={st.modalTitle}>{t('challenge.enterName')}</Text>
-            <Text style={st.modalSubtitle}>{t('challenge.enterNameDesc')}</Text>
             <TextInput
               style={st.modalInput}
               value={challengeName}
@@ -901,23 +887,14 @@ export default function ResultsScreen({ route, navigation }: Props) {
               returnKeyType="done"
               onSubmitEditing={challengeName.trim().length > 0 ? handleChallengeShare : undefined}
             />
-            <View style={st.modalButtons}>
-              <TouchableOpacity
-                style={st.modalCancel}
-                onPress={() => setShowChallengeModal(false)}
-                activeOpacity={0.7}
-              >
-                <Text style={st.modalCancelText}>{t('common.cancel')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[st.modalShare, challengeName.trim().length === 0 && st.modalShareDisabled]}
-                onPress={handleChallengeShare}
-                disabled={challengeName.trim().length === 0}
-                activeOpacity={0.7}
-              >
-                <Text style={st.modalShareText}>{t('common.share')}</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              style={[st.modalShare, challengeName.trim().length === 0 && st.modalShareDisabled]}
+              onPress={handleChallengeShare}
+              disabled={challengeName.trim().length === 0}
+              activeOpacity={0.7}
+            >
+              <Text style={st.modalShareText}>{t('common.share')}</Text>
+            </TouchableOpacity>
           </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
@@ -1127,7 +1104,6 @@ const st = StyleSheet.create({
   reviewRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   reviewTime: { fontFamily: fontFamily.bodyMedium, fontSize: fontSize.sm, color: colors.textTertiary },
   reviewTimeFastest: { color: colors.success },
-  reviewTimeWon: { color: colors.success },
   reviewOpponent: { fontFamily: fontFamily.body, fontSize: fontSize.sm, color: colors.textTertiary, marginTop: spacing.xxs },
 
   // ── Head-to-head
@@ -1175,16 +1151,13 @@ const st = StyleSheet.create({
 
   // ── Challenge button
   challengeButton: {
-    flexDirection: 'row', alignItems: 'center', gap: spacing.md,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm,
     backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.ink,
-    borderRadius: borderRadius.lg, padding: spacing.md, marginBottom: spacing.md,
+    borderRadius: borderRadius.lg, paddingVertical: 14, marginBottom: spacing.md,
   },
-  challengeButtonContent: { flex: 1 },
   challengeButtonTitle: {
-    fontFamily: fontFamily.bodyBold, fontSize: fontSize.body, color: colors.ink,
-  },
-  challengeButtonSub: {
-    fontFamily: fontFamily.body, fontSize: fontSize.sm, color: colors.textTertiary, marginTop: 2,
+    fontFamily: fontFamily.uiLabel, fontSize: fontSize.caption,
+    letterSpacing: 0.5, textTransform: 'uppercase', color: colors.ink,
   },
 
   // ── Challenge modal
@@ -1197,32 +1170,17 @@ const st = StyleSheet.create({
     padding: spacing.xl, width: '100%', maxWidth: 360,
   },
   modalTitle: {
-    fontFamily: fontFamily.display, fontSize: fontSize.heading,
-    color: colors.ink, textAlign: 'center', letterSpacing: -0.5,
-  },
-  modalSubtitle: {
-    fontFamily: fontFamily.body, fontSize: fontSize.caption,
-    color: colors.textSecondary, textAlign: 'center',
-    marginTop: spacing.sm, marginBottom: spacing.lg,
+    fontFamily: fontFamily.bodyBold, fontSize: fontSize.body,
+    color: colors.ink, textAlign: 'center', marginBottom: spacing.md,
   },
   modalInput: {
     backgroundColor: colors.surfaceSecondary, borderWidth: 2, borderColor: colors.border,
     borderRadius: borderRadius.md, padding: spacing.md,
-    ...typography.body, color: colors.text, textAlign: 'center',
-  },
-  modalButtons: {
-    flexDirection: 'row', gap: spacing.sm, marginTop: spacing.lg,
-  },
-  modalCancel: {
-    flex: 1, paddingVertical: 14, alignItems: 'center',
-    borderRadius: borderRadius.md, borderWidth: 2, borderColor: colors.border,
-  },
-  modalCancelText: {
-    fontFamily: fontFamily.uiLabel, fontSize: fontSize.caption,
-    letterSpacing: 0.5, textTransform: 'uppercase', color: colors.textSecondary,
+    fontFamily: fontFamily.body, fontSize: fontSize.body,
+    color: colors.text, textAlign: 'center', marginBottom: spacing.md,
   },
   modalShare: {
-    flex: 1, paddingVertical: 14, alignItems: 'center',
+    paddingVertical: 14, alignItems: 'center',
     borderRadius: borderRadius.md, backgroundColor: colors.ink,
   },
   modalShareDisabled: { backgroundColor: colors.textTertiary },
