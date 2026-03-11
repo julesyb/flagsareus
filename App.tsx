@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 import {
   LibreBaskerville_700Bold,
@@ -21,11 +21,28 @@ import StatsScreen from './src/screens/StatsScreen';
 import BrowseScreen from './src/screens/BrowseScreen';
 import FlagFlashScreen from './src/screens/FlagFlashScreen';
 import FlagPuzzleScreen from './src/screens/FlagPuzzleScreen';
+import NeighborsScreen from './src/screens/NeighborsScreen';
+import FlagImpostorScreen from './src/screens/FlagImpostorScreen';
+import CapitalConnectionScreen from './src/screens/CapitalConnectionScreen';
 import ErrorBoundary from './src/components/ErrorBoundary';
+import { ChevronLeftIcon } from './src/components/Icons';
 import { RootStackParamList } from './src/types/navigation';
-import { colors, typography } from './src/utils/theme';
+import { colors, typography, fontFamily } from './src/utils/theme';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+function HomeBackButton({ onPress }: { onPress: () => void }) {
+  return (
+    <TouchableOpacity
+      style={{ flexDirection: 'row', alignItems: 'center', marginLeft: -8, paddingRight: 12 }}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <ChevronLeftIcon size={20} color={colors.textTertiary} />
+      <Text style={{ fontFamily: fontFamily.uiLabelMedium, fontSize: 13, letterSpacing: 0.3, color: colors.textTertiary, textTransform: 'uppercase', marginLeft: 2 }}>Play</Text>
+    </TouchableOpacity>
+  );
+}
 
 const screenOptions = {
   headerStyle: {
@@ -57,7 +74,10 @@ function AppContent() {
         <Stack.Screen
           name="GameSetup"
           component={GameSetupScreen}
-          options={{ title: 'New Game' }}
+          options={({ navigation }) => ({
+            title: 'Game Modes',
+            headerLeft: () => <HomeBackButton onPress={() => navigation.navigate('Home')} />,
+          })}
         />
         <Stack.Screen
           name="Game"
@@ -75,6 +95,21 @@ function AppContent() {
           options={{ headerShown: false, gestureEnabled: false }}
         />
         <Stack.Screen
+          name="Neighbors"
+          component={NeighborsScreen}
+          options={{ headerShown: false, gestureEnabled: false }}
+        />
+        <Stack.Screen
+          name="FlagImpostor"
+          component={FlagImpostorScreen}
+          options={{ headerShown: false, gestureEnabled: false }}
+        />
+        <Stack.Screen
+          name="CapitalConnection"
+          component={CapitalConnectionScreen}
+          options={{ headerShown: false, gestureEnabled: false }}
+        />
+        <Stack.Screen
           name="Results"
           component={ResultsScreen}
           options={{ title: 'Results', headerLeft: () => null, gestureEnabled: false }}
@@ -82,12 +117,18 @@ function AppContent() {
         <Stack.Screen
           name="Stats"
           component={StatsScreen}
-          options={{ title: 'Statistics' }}
+          options={({ navigation }) => ({
+            title: 'Statistics',
+            headerLeft: () => <HomeBackButton onPress={() => navigation.navigate('Home')} />,
+          })}
         />
         <Stack.Screen
           name="Browse"
           component={BrowseScreen}
-          options={{ title: 'Browse Flags' }}
+          options={({ navigation }) => ({
+            title: 'Browse Flags',
+            headerLeft: () => <HomeBackButton onPress={() => navigation.navigate('Home')} />,
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>

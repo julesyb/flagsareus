@@ -14,12 +14,12 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fontFamily, spacing, borderRadius } from '../utils/theme';
 import { getTotalFlagCount } from '../data';
-import { initAudio, hapticTap, hapticCorrect, hapticWrong, playCorrectSound, playWrongSound } from '../utils/feedback';
+import { initAudio, hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
 import { getStats, getDayStreak } from '../utils/storage';
 import { generateQuestions } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion } from '../types';
-import { LightningIcon, CrosshairIcon, ChevronRightIcon, ClockIcon } from '../components/Icons';
+import { LightningIcon, CrosshairIcon, ChevronRightIcon, ClockIcon, UsersIcon, EyeIcon, LinkIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 
@@ -76,7 +76,6 @@ function FlagTeaser() {
     setPicked(opt);
     if (opt === question.flag.name) {
       hapticCorrect();
-      playCorrectSound();
     } else {
       hapticWrong();
       playWrongSound();
@@ -91,7 +90,7 @@ function FlagTeaser() {
           countryCode={question.flag.id}
           emoji={question.flag.emoji}
           size="hero"
-          style={{ borderRadius: borderRadius.sm }}
+          style={{ width: '100%' }}
         />
         <Animated.View style={[s.flagCover, { opacity: coverOpacity }]}>
           <Text style={s.coverQ}>?</Text>
@@ -158,10 +157,10 @@ function FlagTeaser() {
       ) : (
         <View style={s.teaserResult}>
           <Text style={s.teaserResultText}>
-            {picked === question.flag.name ? 'Correct!' : `It was ${question.flag.name}`}
+            {picked === question.flag.name ? 'Correct!' : question.flag.name}
           </Text>
           <TouchableOpacity
-            style={s.teaserPlayBtn}
+            style={[s.teaserPlayBtn, picked === question.flag.name ? s.teaserPlayBtnCorrect : s.teaserPlayBtnWrong]}
             onPress={() => {
               hapticTap();
               navigation.navigate('Game', {
@@ -314,7 +313,7 @@ export default function HomeScreen({ navigation }: Props) {
             activeOpacity={0.85}
             onPress={() => { hapticTap(); navigation.navigate('GameSetup'); }}
           >
-            <View style={[s.modeIcon, s.modeIconRed]}>
+            <View style={s.modeIcon}>
               <CrosshairIcon size={18} color={colors.white} />
             </View>
             <View style={s.modeText}>
@@ -340,6 +339,66 @@ export default function HomeScreen({ navigation }: Props) {
             <View style={s.modeText}>
               <Text style={s.modeTitle}>Timed Quiz</Text>
               <Text style={s.modeSub}>60 seconds - how many can you get?</Text>
+            </View>
+            <ChevronRightIcon size={18} color={colors.rule} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={s.modeCard}
+            activeOpacity={0.85}
+            onPress={() => {
+              hapticTap();
+              navigation.navigate('Neighbors', {
+                config: { mode: 'neighbors', category: 'all', questionCount: 10, displayMode: 'flag' },
+              });
+            }}
+          >
+            <View style={s.modeIcon}>
+              <UsersIcon size={18} color={colors.white} />
+            </View>
+            <View style={s.modeText}>
+              <Text style={s.modeTitle}>Neighbors</Text>
+              <Text style={s.modeSub}>Find all bordering countries</Text>
+            </View>
+            <ChevronRightIcon size={18} color={colors.rule} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={s.modeCard}
+            activeOpacity={0.85}
+            onPress={() => {
+              hapticTap();
+              navigation.navigate('FlagImpostor', {
+                config: { mode: 'impostor', category: 'all', questionCount: 10, displayMode: 'flag' },
+              });
+            }}
+          >
+            <View style={s.modeIcon}>
+              <EyeIcon size={18} color={colors.white} />
+            </View>
+            <View style={s.modeText}>
+              <Text style={s.modeTitle}>Flag Impostor</Text>
+              <Text style={s.modeSub}>Spot the fake flag</Text>
+            </View>
+            <ChevronRightIcon size={18} color={colors.rule} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={s.modeCard}
+            activeOpacity={0.85}
+            onPress={() => {
+              hapticTap();
+              navigation.navigate('CapitalConnection', {
+                config: { mode: 'capitalconnection', category: 'all', questionCount: 5, displayMode: 'flag' },
+              });
+            }}
+          >
+            <View style={s.modeIcon}>
+              <LinkIcon size={18} color={colors.white} />
+            </View>
+            <View style={s.modeText}>
+              <Text style={s.modeTitle}>Capital Connection</Text>
+              <Text style={s.modeSub}>Match flags to their capitals</Text>
             </View>
             <ChevronRightIcon size={18} color={colors.rule} />
           </TouchableOpacity>
@@ -431,7 +490,7 @@ const s = StyleSheet.create({
     alignItems: 'flex-end',
   },
   streakVal: {
-    fontFamily: fontFamily.uiLabel,
+    fontFamily: fontFamily.display,
     fontSize: 28,
     lineHeight: 28,
     color: colors.ink,
@@ -474,7 +533,6 @@ const s = StyleSheet.create({
   flagWrap: {
     width: '100%',
     aspectRatio: 3 / 2,
-    borderRadius: borderRadius.sm,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -550,16 +608,21 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: colors.accent,
     paddingVertical: 14,
     paddingHorizontal: 28,
     borderRadius: borderRadius.md,
     width: '100%',
   },
+  teaserPlayBtnCorrect: {
+    backgroundColor: colors.success,
+  },
+  teaserPlayBtnWrong: {
+    backgroundColor: colors.error,
+  },
   teaserPlayText: {
     fontFamily: fontFamily.uiLabel,
     fontSize: 15,
-    letterSpacing: 0.8,
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
     color: colors.white,
   },
@@ -589,7 +652,7 @@ const s = StyleSheet.create({
   playBtnText: {
     fontFamily: fontFamily.uiLabel,
     fontSize: 17,
-    letterSpacing: 0.8,
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
     color: colors.white,
   },
@@ -685,14 +748,11 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modeIconRed: {
-    backgroundColor: colors.accent,
-  },
   modeText: {
     flex: 1,
   },
   modeTitle: {
-    fontFamily: fontFamily.display,
+    fontFamily: fontFamily.bodyBold,
     fontSize: 15,
     color: colors.ink,
     marginBottom: 2,

@@ -99,7 +99,11 @@ export default function GameSetupScreen({ navigation }: Props) {
   const isFlagFlash = mode === 'flagflash';
   const isFlagPuzzle = mode === 'flagpuzzle';
   const isTimeAttack = mode === 'timeattack';
+  const isNeighbors = mode === 'neighbors';
+  const isImpostor = mode === 'impostor';
+  const isCapitalConnection = mode === 'capitalconnection';
   const hasTimeLimit = isFlagFlash || isFlagPuzzle || isTimeAttack;
+  const showDisplayToggle = !isNeighbors && !isImpostor && !isCapitalConnection;
 
   // Set sensible default time limit when mode changes
   useEffect(() => {
@@ -144,6 +148,12 @@ export default function GameSetupScreen({ navigation }: Props) {
       navigation.navigate('FlagFlash', { config });
     } else if (isFlagPuzzle) {
       navigation.navigate('FlagPuzzle', { config });
+    } else if (isNeighbors) {
+      navigation.navigate('Neighbors', { config });
+    } else if (isImpostor) {
+      navigation.navigate('FlagImpostor', { config });
+    } else if (isCapitalConnection) {
+      navigation.navigate('CapitalConnection', { config });
     } else {
       navigation.navigate('Game', { config });
     }
@@ -159,7 +169,7 @@ export default function GameSetupScreen({ navigation }: Props) {
     return FLAGFLASH_TIMES;
   };
 
-  const showQuestionCount = !isFlagFlash && !isTimeAttack && !isFlagPuzzle;
+  const showQuestionCount = !isFlagFlash && !isTimeAttack && !isFlagPuzzle && filterType !== 'theme';
 
   return (
     <SafeAreaView style={styles.container}>
@@ -169,42 +179,46 @@ export default function GameSetupScreen({ navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         {/* Display Mode */}
-        <Text style={styles.sectionTitle}>Display</Text>
-        <View style={styles.displayToggleRow}>
-          {(['flag', 'map'] as DisplayMode[]).map((dm) => {
-            const isActive = displayMode === dm;
-            return (
-              <TouchableOpacity
-                key={dm}
-                style={[styles.displayToggle, isActive && styles.displayToggleActive]}
-                onPress={() => setDisplayMode(dm)}
-                activeOpacity={0.7}
-                accessibilityRole="button"
-                accessibilityState={{ selected: isActive }}
-                accessibilityLabel={dm === 'flag' ? 'Flag Mode' : 'Map Mode'}
-              >
-                <View style={[styles.displayToggleIconWrapper, isActive && styles.displayToggleIconWrapperActive]}>
-                  {dm === 'flag' ? (
-                    <FlagIcon size={24} color={isActive ? colors.ink : colors.textSecondary} />
-                  ) : (
-                    <MapPinIcon size={24} color={isActive ? colors.ink : colors.textSecondary} />
-                  )}
-                </View>
-                <Text style={[styles.displayToggleText, isActive && styles.displayToggleTextActive]}>
-                  {dm === 'flag' ? 'Flag Mode' : 'Map Mode'}
-                </Text>
-                <Text style={[styles.displayToggleDesc, isActive && styles.displayToggleDescActive]}>
-                  {dm === 'flag' ? 'Identify the flag' : 'Identify the country on a map'}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+        {showDisplayToggle && (
+          <>
+            <Text style={styles.sectionTitle}>Display</Text>
+            <View style={styles.displayToggleRow}>
+              {(['flag', 'map'] as DisplayMode[]).map((dm) => {
+                const isActive = displayMode === dm;
+                return (
+                  <TouchableOpacity
+                    key={dm}
+                    style={[styles.displayToggle, isActive && styles.displayToggleActive]}
+                    onPress={() => setDisplayMode(dm)}
+                    activeOpacity={0.7}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: isActive }}
+                    accessibilityLabel={dm === 'flag' ? 'Flag Mode' : 'Map Mode'}
+                  >
+                    <View style={[styles.displayToggleIconWrapper, isActive && styles.displayToggleIconWrapperActive]}>
+                      {dm === 'flag' ? (
+                        <FlagIcon size={24} color={isActive ? colors.ink : colors.textSecondary} />
+                      ) : (
+                        <MapPinIcon size={24} color={isActive ? colors.ink : colors.textSecondary} />
+                      )}
+                    </View>
+                    <Text style={[styles.displayToggleText, isActive && styles.displayToggleTextActive]}>
+                      {dm === 'flag' ? 'Flag Mode' : 'Map Mode'}
+                    </Text>
+                    <Text style={[styles.displayToggleDesc, isActive && styles.displayToggleDescActive]}>
+                      {dm === 'flag' ? 'Identify the flag' : 'Identify the country on a map'}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </>
+        )}
 
         {/* Game Mode */}
         <Text style={styles.sectionTitle}>Game Mode</Text>
         <View style={styles.modeGrid}>
-          {(Object.keys(GAME_MODES) as GameMode[]).map((m) => {
+          {(Object.keys(GAME_MODES) as GameMode[]).filter((m) => !GAME_MODES[m].hidden).map((m) => {
             const info = GAME_MODES[m];
             const isActive = mode === m;
             return (
@@ -411,20 +425,14 @@ export default function GameSetupScreen({ navigation }: Props) {
         )}
 
         <TouchableOpacity
-          style={[styles.startButton, (isFlagFlash || isFlagPuzzle || isTimeAttack) && styles.startButtonParty]}
+          style={[styles.startButton, mode !== 'easy' && mode !== 'medium' && mode !== 'hard' && styles.startButtonParty]}
           onPress={startGame}
           activeOpacity={0.8}
           accessibilityRole="button"
-          accessibilityLabel={isTimeAttack ? 'Start Timed Quiz' : isFlagFlash ? 'Start FlagFlash' : isFlagPuzzle ? 'Start Flag Puzzle' : 'Start Game'}
+          accessibilityLabel={`Start ${GAME_MODES[mode].label}`}
         >
           <Text style={styles.startButtonText}>
-            {isTimeAttack
-              ? 'Start Timed Quiz'
-              : isFlagFlash
-                ? 'Start FlagFlash'
-                : isFlagPuzzle
-                  ? 'Start Flag Puzzle'
-                  : 'Start Game'}
+            Start {GAME_MODES[mode].label}
           </Text>
         </TouchableOpacity>
       </ScrollView>

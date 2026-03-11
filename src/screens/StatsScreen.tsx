@@ -10,14 +10,16 @@ import {
   Platform,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/navigation';
 import { colors, spacing, typography, fontFamily, borderRadius } from '../utils/theme';
 import { UserStats, GAME_MODES, GameMode } from '../types';
 import { getStats, resetStats, getFlagStats, FlagStats } from '../utils/storage';
-import { getAllFlags } from '../data';
+import { getAllFlags, getTotalFlagCount } from '../data';
 import BottomNav from '../components/BottomNav';
 
 export default function StatsScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [flagStats, setFlagStats] = useState<FlagStats>({});
 
@@ -113,8 +115,10 @@ export default function StatsScreen() {
               <Text style={styles.smallStatLabel}>Best Streak</Text>
             </View>
             <View style={styles.smallStatCard}>
-              <Text style={styles.smallStatValue}>{stats.totalCorrect}</Text>
-              <Text style={styles.smallStatLabel}>Correct</Text>
+              <Text style={styles.smallStatValue}>
+                {Object.values(flagStats).filter((s) => s.right > 0).length}/{getTotalFlagCount()}
+              </Text>
+              <Text style={styles.smallStatLabel}>Countries</Text>
             </View>
           </View>
           {(stats.bestTimeAttackScore || 0) > 0 && (
@@ -126,7 +130,7 @@ export default function StatsScreen() {
         </View>
 
         <Text style={styles.sectionTitle}>By Mode</Text>
-        {(Object.keys(GAME_MODES) as GameMode[]).map((m) => {
+        {(Object.keys(GAME_MODES) as GameMode[]).filter((m) => !GAME_MODES[m].hidden).map((m) => {
           const s = stats.modeStats[m];
           const acc = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
           return (
@@ -190,9 +194,9 @@ export default function StatsScreen() {
         </TouchableOpacity>
       </ScrollView>
       <BottomNav activeTab="Stats" onNavigate={(tab) => {
-        if (tab === 'Play') navigation.navigate('Home' as never);
-        else if (tab === 'Modes') navigation.navigate('GameSetup' as never);
-        else if (tab === 'Browse') navigation.navigate('Browse' as never);
+        if (tab === 'Play') navigation.navigate('Home' );
+        else if (tab === 'Modes') navigation.navigate('GameSetup' );
+        else if (tab === 'Browse') navigation.navigate('Browse' );
       }} />
     </SafeAreaView>
   );

@@ -26,19 +26,20 @@ export function useGameAnimations() {
     ]).start();
   }, [shakeAnim]);
 
-  const animateTransition = useCallback(() => {
-    Animated.sequence([
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 150,
-        useNativeDriver: true,
-      }),
+  const animateTransition = useCallback((onMidpoint?: () => void) => {
+    fadeAnim.setValue(1);
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 120,
+      useNativeDriver: true,
+    }).start(() => {
+      onMidpoint?.();
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 150,
+        duration: 180,
         useNativeDriver: true,
-      }),
-    ]).start();
+      }).start();
+    });
   }, [fadeAnim]);
 
   return {

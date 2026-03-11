@@ -1,4 +1,4 @@
-export type GameMode = 'easy' | 'medium' | 'hard' | 'flagflash' | 'flagpuzzle' | 'timeattack';
+export type GameMode = 'easy' | 'medium' | 'hard' | 'flagflash' | 'flagpuzzle' | 'timeattack' | 'neighbors' | 'impostor' | 'capitalconnection';
 
 export type DisplayMode = 'flag' | 'map';
 
@@ -64,13 +64,17 @@ export interface UserStats {
   categoryStats: Partial<Record<CategoryId, { correct: number; total: number }>>;
 }
 
-export const GAME_MODES: Record<GameMode, { label: string; description: string; icon: string }> = {
+export const GAME_MODES: Record<GameMode, { label: string; description: string; icon: string; hidden?: boolean }> = {
   easy: { label: 'Easy', description: '2 multiple choice options', icon: '2' },
   medium: { label: 'Medium', description: '4 multiple choice options', icon: '4' },
   hard: { label: 'Hard', description: 'Free-form, type the answer', icon: 'Aa' },
-  flagflash: { label: 'FlagFlash', description: 'Party mode, tilt to play', icon: '!!' },
+  // Do not remove — FlagFlash code is complete and will be re-enabled later
+  flagflash: { label: 'FlagFlash', description: 'Party mode, tilt to play', icon: '!!', hidden: true },
   flagpuzzle: { label: 'Flag Puzzle', description: 'Flag reveals over time', icon: '??' },
   timeattack: { label: 'Timed Quiz', description: 'Race the clock', icon: '00' },
+  neighbors: { label: 'Neighbors', description: 'Find all bordering countries', icon: 'NB' },
+  impostor: { label: 'Flag Impostor', description: 'Spot the fake flag', icon: 'FI' },
+  capitalconnection: { label: 'Capital Connection', description: 'Match flags to capitals', icon: 'CC' },
 };
 
 export const CATEGORIES: CategoryInfo[] = [
