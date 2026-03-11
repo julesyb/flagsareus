@@ -74,9 +74,9 @@ export default function ResultsScreen({ route, navigation }: Props) {
   }, []);
 
   const categoryLabel = config.category === 'all'
-    ? 'All Flags'
-    : CATEGORIES.find((c) => c.id === config.category)?.label || '';
-  const modeLabel = GAME_MODES[config.mode].label;
+    ? t('categories.all')
+    : t(`categories.${config.category}`);
+  const modeLabel = t(`modes.${config.mode}`);
 
   const handleShare = async () => {
     const message = isDaily

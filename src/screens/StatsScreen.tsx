@@ -131,10 +131,10 @@ export default function StatsScreen() {
         <View style={s.challengeCard}>
           <Text style={s.cardEyebrow}>{t('stats.yourResults')}</Text>
           <Text style={s.cardHeadline}>
-            {stats.bestStreak} Streak{'\n'}{overallAccuracy}% Acc.
+            {t('stats.streakAcc', { streak: stats.bestStreak, accuracy: overallAccuracy })}
           </Text>
           <Text style={s.cardSub}>
-            {countriesSeen} countries  -  {stats.totalGamesPlayed} games played
+            {t('stats.countriesGames', { countries: countriesSeen, games: stats.totalGamesPlayed })}
           </Text>
           <View style={s.cardPills}>
             <View style={s.pill}>
@@ -150,7 +150,7 @@ export default function StatsScreen() {
             </View>
           </View>
           <TouchableOpacity style={s.shareBtn} onPress={handleShare} activeOpacity={0.85}>
-            <Text style={s.shareBtnText}>Share Score</Text>
+            <Text style={s.shareBtnText}>{t('common.share')}</Text>
           </TouchableOpacity>
         </View>
 

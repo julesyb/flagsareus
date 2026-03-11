@@ -211,6 +211,7 @@ export default function SettingsScreen() {
                 style={styles.settingRow}
                 onPress={cycleReminderTime}
                 activeOpacity={0.7}
+                disabled={!settings.dailyReminderEnabled}
               >
                 <View style={styles.settingInfo}>
                   <Text style={[styles.settingLabel, !settings.dailyReminderEnabled && styles.settingDisabled]}>
@@ -258,7 +259,7 @@ export default function SettingsScreen() {
             activeOpacity={0.7}
           >
             <Text style={styles.settingLabel}>{t('settings.privacyPolicy')}</Text>
-            <Text style={styles.settingChevron}>&rsaquo;</Text>
+            <ChevronRightIcon size={18} color={colors.textTertiary} />
           </TouchableOpacity>
         </View>
 
