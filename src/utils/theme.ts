@@ -226,7 +226,7 @@ export const buttons = {
     borderRadius: borderRadius.lg,
   },
   primaryText: {
-    fontFamily: 'Barlow_600SemiBold',
+    fontFamily: fontFamily.uiLabel,
     fontSize: 19,
     letterSpacing: 0.8,
     textTransform: 'uppercase' as const,
@@ -242,7 +242,7 @@ export const buttons = {
     borderRadius: borderRadius.lg,
   },
   secondaryText: {
-    fontFamily: 'Barlow_600SemiBold',
+    fontFamily: fontFamily.uiLabel,
     fontSize: 19,
     letterSpacing: 0.8,
     textTransform: 'uppercase' as const,
@@ -261,7 +261,7 @@ export const buttons = {
     borderColor: palette.ink,
   },
   chipText: {
-    fontFamily: 'Barlow_500Medium',
+    fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
     letterSpacing: 0.8,
     textTransform: 'uppercase' as const,
@@ -279,7 +279,7 @@ export const nav = {
   },
   backText: {
     fontSize: 14,
-    fontFamily: 'Barlow_500Medium',
+    fontFamily: fontFamily.bodyMedium,
     letterSpacing: 0.3,
     color: palette.muted,
     textTransform: 'uppercase' as const,

@@ -99,7 +99,7 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
   useEffect(() => {
     const q = generateQuestions(config);
     setQuestions(q);
-  }, []);
+  }, [config]);
 
   // Countdown
   useEffect(() => {
@@ -258,6 +258,12 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
     [currentIndex, questions, navigation, config],
   );
 
+  const currentQuestion = questions[currentIndex] ?? null;
+  const correctCount = React.useMemo(
+    () => results.filter((r) => r.correct).length,
+    [results],
+  );
+
   const exitGame = () => {
     navigation.replace('Results', { results: resultsRef.current, config });
   };
@@ -286,8 +292,8 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
 
   // Tutorial screen
   if (phase === 'tutorial') {
-    // Mobile web gets the same tilt instructions as native (hold on forehead)
-    // Desktop web gets keyboard/button instructions
+    // Native always uses tilt. Mobile web uses tilt if permission granted (unknown yet).
+    // Show tilt instructions for native/mobile web, button instructions for desktop web.
     const showTiltTutorial = !isWeb || isMobileWeb;
 
     return (
@@ -388,12 +394,6 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
       </View>
     );
   }
-
-  const currentQuestion = questions[currentIndex];
-  const correctCount = React.useMemo(
-    () => results.filter((r) => r.correct).length,
-    [results],
-  );
 
   const bgColor =
     tiltState === 'correct'

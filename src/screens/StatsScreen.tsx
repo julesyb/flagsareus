@@ -18,9 +18,9 @@ import { getAllFlags, getTotalFlagCount } from '../data';
 import { hapticTap } from '../utils/feedback';
 import { FlagImageSmall } from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
-import { evaluateBadges, BADGES, TIER_COLORS, Badge, EarnedBadge, BadgeTier } from '../utils/badges';
+import { evaluateBadges, BADGES, TIER_COLORS } from '../utils/badges';
 
-const RANK_COLORS = ['#C9960C', '#888888', '#A0612A'];
+const RANK_COLORS = [colors.gradeS, colors.textTertiary, colors.warning];
 
 export default function StatsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -346,7 +346,7 @@ const s = StyleSheet.create({
     backgroundColor: colors.darkSurface,
     borderWidth: 1,
     borderColor: colors.darkBorder,
-    borderRadius: 100,
+    borderRadius: borderRadius.full,
     paddingVertical: 5,
     paddingHorizontal: 12,
   },
@@ -361,7 +361,7 @@ const s = StyleSheet.create({
   },
   shareBtn: {
     backgroundColor: colors.accent,
-    borderRadius: 100,
+    borderRadius: borderRadius.full,
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignSelf: 'flex-start',
@@ -424,14 +424,14 @@ const s = StyleSheet.create({
   progressWrap: {
     height: 7,
     backgroundColor: colors.border,
-    borderRadius: 100,
+    borderRadius: borderRadius.full,
     overflow: 'hidden',
     marginTop: 12,
   },
   progressFill: {
     height: '100%',
     backgroundColor: colors.accent,
-    borderRadius: 100,
+    borderRadius: borderRadius.full,
   },
   progressLabels: {
     flexDirection: 'row',
@@ -497,11 +497,11 @@ const s = StyleSheet.create({
     marginTop: 2,
   },
   badge: {
-    borderRadius: 100,
+    borderRadius: borderRadius.full,
     paddingVertical: 5,
     paddingHorizontal: 11,
   },
-  badgePlayed: { backgroundColor: 'rgba(22, 163, 74, 0.1)' },
+  badgePlayed: { backgroundColor: colors.successBg },
   badgeUnplayed: { backgroundColor: colors.surfaceSecondary },
   badgeText: {
     fontFamily: fontFamily.uiLabel,
@@ -539,8 +539,8 @@ const s = StyleSheet.create({
     flex: 1,
   },
   scoreBadge: {
-    backgroundColor: 'rgba(22, 163, 74, 0.1)',
-    borderRadius: 100,
+    backgroundColor: colors.successBg,
+    borderRadius: borderRadius.full,
     paddingVertical: 3,
     paddingHorizontal: 10,
   },
