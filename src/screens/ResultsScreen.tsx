@@ -117,17 +117,15 @@ export default function ResultsScreen({ route, navigation }: Props) {
     saveChallengeName(challengeName.trim());
     const flagIds = results.map((r) => r.question.flag.id);
     const hostResults = results.map((r) => ({ correct: r.correct, timeMs: r.timeTaken }));
-    let code: string;
-    try {
-      code = encodeChallenge({
-        hostName: challengeName.trim(),
-        mode: config.mode,
-        timeLimit: config.timeLimit || 15,
-        flagIds,
-        hostResults,
-      });
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : t('challenge.invalidCode');
+    const code = encodeChallenge({
+      hostName: challengeName.trim(),
+      mode: config.mode,
+      timeLimit: config.timeLimit || 15,
+      flagIds,
+      hostResults,
+    });
+    if (!code) {
+      const msg = t('challenge.invalidCode');
       if (Platform.OS === 'web') {
         alert(msg);
       } else {

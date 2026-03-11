@@ -34,11 +34,12 @@ const INDEX_MODE = new Map(CHALLENGE_MODES.map((m, i) => [i, m]));
 /**
  * Encode challenge data into a shareable string.
  * V2 format: "FT2:" + base64(compact pipe-delimited string)
+ * Returns null if encoding fails (e.g. invalid flag IDs).
  */
-export function encodeChallenge(data: ChallengeData): string {
+export function encodeChallenge(data: ChallengeData): string | null {
   // V2 format requires all flag IDs to be exactly 2 chars (ISO 3166-1 alpha-2)
   if (data.flagIds.some((id) => id.length !== 2)) {
-    throw new Error('All flag IDs must be exactly 2 characters for V2 encoding');
+    return null;
   }
   const modeIdx = MODE_INDEX.get(data.mode) ?? 0;
   const flags = data.flagIds.join('');
