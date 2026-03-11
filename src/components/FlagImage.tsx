@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import { StyleSheet, View, Text, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { colors, fontFamily, borderRadius } from '../utils/theme';
 
@@ -29,7 +29,14 @@ function getFlagUrl(code: string, width: number): string {
 }
 
 export default function FlagImage({ countryCode, size = 'large', emoji, style }: FlagImageProps) {
-  const dimensions = SIZE_MAP[size];
+  const { width: screenWidth } = useWindowDimensions();
+  const dimensions = useMemo(() => {
+    if (size === 'hero') {
+      const w = Math.min(screenWidth - 48, 420);
+      return { width: Math.max(w, 320), height: Math.round(Math.max(w, 320) * (2 / 3)) };
+    }
+    return SIZE_MAP[size];
+  }, [size, screenWidth]);
   const requestWidth = dimensions.width * 2;
   const [loaded, setLoaded] = useState(false);
 

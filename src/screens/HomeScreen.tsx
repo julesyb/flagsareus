@@ -10,7 +10,8 @@ import {
   ScrollView,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fontFamily, spacing, borderRadius } from '../utils/theme';
 import { getTotalFlagCount, getCategoryCount } from '../data';
 import { initAudio, hapticTap, hapticCorrect, hapticWrong, playCorrectSound, playWrongSound } from '../utils/feedback';
@@ -42,6 +43,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 // ─── Flag Teaser (inline mini-quiz) ─────────────────────────
 function FlagTeaser() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const question = useMemo<GameQuestion | null>(() => {
     const qs = generateQuestions({ mode: 'medium', category: 'all', questionCount: 1, displayMode: 'flag' });
     return qs[0] ?? null;
@@ -102,61 +104,82 @@ function FlagTeaser() {
       </View>
 
       {/* Options 2x2 */}
-      <View style={s.optsGrid}>
-        <View style={s.optsRow}>
-          {question.options.slice(0, 2).map((opt, i) => {
-            const isCorrect = opt === question.flag.name;
-            const isSelected = picked === opt;
-            const showCorrect = picked !== null && isCorrect;
-            const showWrong = isSelected && !isCorrect;
-            return (
-              <Animated.View
-                key={opt}
-                style={[
-                  s.optWrap,
-                  { opacity: optAnims[i], transform: [{ scale: optAnims[i].interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) }] },
-                ]}
-              >
-                <TouchableOpacity
-                  style={[s.optBtn, showCorrect && s.optCorrect, showWrong && s.optWrong]}
-                  onPress={() => handlePick(opt)}
-                  activeOpacity={0.8}
-                  disabled={picked !== null}
+      {!picked ? (
+        <View style={s.optsGrid}>
+          <View style={s.optsRow}>
+            {question.options.slice(0, 2).map((opt, i) => {
+              const isCorrect = opt === question.flag.name;
+              const isSelected = picked === opt;
+              const showCorrect = picked !== null && isCorrect;
+              const showWrong = isSelected && !isCorrect;
+              return (
+                <Animated.View
+                  key={opt}
+                  style={[
+                    s.optWrap,
+                    { opacity: optAnims[i], transform: [{ scale: optAnims[i].interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) }] },
+                  ]}
                 >
-                  <Text style={[s.optText, showCorrect && s.optTextCorrect, showWrong && s.optTextWrong]}>{opt}</Text>
-                </TouchableOpacity>
-              </Animated.View>
-            );
-          })}
-        </View>
-        <View style={s.optsRow}>
-          {question.options.slice(2, 4).map((opt, i) => {
-            const idx = i + 2;
-            const isCorrect = opt === question.flag.name;
-            const isSelected = picked === opt;
-            const showCorrect = picked !== null && isCorrect;
-            const showWrong = isSelected && !isCorrect;
-            return (
-              <Animated.View
-                key={opt}
-                style={[
-                  s.optWrap,
-                  { opacity: optAnims[idx], transform: [{ scale: optAnims[idx].interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) }] },
-                ]}
-              >
-                <TouchableOpacity
-                  style={[s.optBtn, showCorrect && s.optCorrect, showWrong && s.optWrong]}
-                  onPress={() => handlePick(opt)}
-                  activeOpacity={0.8}
-                  disabled={picked !== null}
+                  <TouchableOpacity
+                    style={[s.optBtn, showCorrect && s.optCorrect, showWrong && s.optWrong]}
+                    onPress={() => handlePick(opt)}
+                    activeOpacity={0.8}
+                    disabled={picked !== null}
+                  >
+                    <Text style={[s.optText, showCorrect && s.optTextCorrect, showWrong && s.optTextWrong]}>{opt}</Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              );
+            })}
+          </View>
+          <View style={s.optsRow}>
+            {question.options.slice(2, 4).map((opt, i) => {
+              const idx = i + 2;
+              const isCorrect = opt === question.flag.name;
+              const isSelected = picked === opt;
+              const showCorrect = picked !== null && isCorrect;
+              const showWrong = isSelected && !isCorrect;
+              return (
+                <Animated.View
+                  key={opt}
+                  style={[
+                    s.optWrap,
+                    { opacity: optAnims[idx], transform: [{ scale: optAnims[idx].interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) }] },
+                  ]}
                 >
-                  <Text style={[s.optText, showCorrect && s.optTextCorrect, showWrong && s.optTextWrong]}>{opt}</Text>
-                </TouchableOpacity>
-              </Animated.View>
-            );
-          })}
+                  <TouchableOpacity
+                    style={[s.optBtn, showCorrect && s.optCorrect, showWrong && s.optWrong]}
+                    onPress={() => handlePick(opt)}
+                    activeOpacity={0.8}
+                    disabled={picked !== null}
+                  >
+                    <Text style={[s.optText, showCorrect && s.optTextCorrect, showWrong && s.optTextWrong]}>{opt}</Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              );
+            })}
+          </View>
         </View>
-      </View>
+      ) : (
+        <View style={s.teaserResult}>
+          <Text style={s.teaserResultText}>
+            {picked === question.flag.name ? 'Correct!' : `It was ${question.flag.name}`}
+          </Text>
+          <TouchableOpacity
+            style={s.teaserPlayBtn}
+            onPress={() => {
+              hapticTap();
+              navigation.navigate('Game', {
+                config: { mode: 'medium', category: 'all', questionCount: 10, displayMode: 'flag' },
+              });
+            }}
+            activeOpacity={0.85}
+          >
+            <Text style={s.teaserPlayText}>Keep Playing</Text>
+            <ChevronRightIcon size={14} color={colors.white} />
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -203,6 +226,7 @@ export default function HomeScreen({ navigation }: Props) {
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
 
       <ScrollView style={s.scroll} contentContainerStyle={s.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={s.desktopWrapper}>
         {/* ── HEADER ── */}
         <View style={s.header}>
           <View style={s.wordmark}>
@@ -347,6 +371,7 @@ export default function HomeScreen({ navigation }: Props) {
         )}
 
         <View style={{ height: spacing.md }} />
+        </View>
       </ScrollView>
 
       {/* ── BOTTOM NAV ── */}
@@ -374,6 +399,11 @@ const s = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: spacing.md,
+    alignItems: 'center',
+  },
+  desktopWrapper: {
+    width: '100%',
+    maxWidth: 480,
   },
 
   // ── Header
@@ -504,6 +534,38 @@ const s = StyleSheet.create({
   },
   optTextWrong: {
     color: colors.errorTextOnDark,
+  },
+
+  // ── Teaser result
+  teaserResult: {
+    marginTop: 16,
+    alignItems: 'center',
+    gap: 12,
+  },
+  teaserResultText: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: 16,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: colors.whiteAlpha70,
+  },
+  teaserPlayBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: colors.accent,
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+    borderRadius: borderRadius.md,
+    width: '100%',
+  },
+  teaserPlayText: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: 15,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: colors.white,
   },
 
   // ── Play button
