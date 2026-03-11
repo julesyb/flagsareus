@@ -23,7 +23,7 @@ import { FlagImageSmall } from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
-import { getAllEarnedBadges, buildBadgeContext, BADGES, TIER_COLORS, BadgeCheckContext, getBadgeProgress } from '../utils/badges';
+import { getAllEarnedBadges, buildBadgeContext, BADGES, TIER_COLORS, getBadgeProgress } from '../utils/badges';
 import { ChevronRightIcon, CrosshairIcon, BadgeIconView } from '../components/Icons';
 
 const RANK_COLORS = [colors.gradeS, colors.textTertiary, colors.warning];
@@ -204,23 +204,27 @@ export default function StatsScreen() {
       .slice(0, 10);
   }, [flagStats]);
 
-  const earnedBadges = React.useMemo(() => {
-    if (!badgeData || !stats) return [];
-    const ctx = buildBadgeContext(stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched);
-    return getAllEarnedBadges(ctx, badgeData.earnedBadgeIds);
+  // Single badge context memo — consumed by earnedBadges, nextMilestone, and badge grid
+  const badgeCtx = React.useMemo(() => {
+    if (!badgeData || !stats) return null;
+    return buildBadgeContext(stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched);
   }, [stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched]);
+
+  const earnedBadges = React.useMemo(() => {
+    if (!badgeCtx || !badgeData) return [];
+    return getAllEarnedBadges(badgeCtx, badgeData.earnedBadgeIds);
+  }, [badgeCtx, badgeData]);
 
   // ── Next milestone computation (uses shared getBadgeProgress) ──
   const nextMilestone = React.useMemo(() => {
-    if (!stats || !badgeData) return null;
+    if (!badgeCtx) return null;
     const earnedIdSet = new Set(earnedBadges.map((b) => b.id));
-    const ctx = buildBadgeContext(stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched);
 
     const candidates: { badge: typeof BADGES[0]; progress: number; target: number; remaining: number }[] = [];
 
     for (const badge of BADGES) {
       if (earnedIdSet.has(badge.id)) continue;
-      const bp = getBadgeProgress(badge, ctx);
+      const bp = getBadgeProgress(badge, badgeCtx);
       if (!bp || bp.target === 0 || bp.progress === 0) continue;
       if (bp.pct >= 30) {
         candidates.push({ badge, progress: bp.progress, target: bp.target, remaining: bp.target - bp.progress });
@@ -230,7 +234,7 @@ export default function StatsScreen() {
     if (candidates.length === 0) return null;
     candidates.sort((a, b) => (a.remaining / a.target) - (b.remaining / b.target));
     return candidates[0];
-  }, [stats, earnedBadges, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched]);
+  }, [badgeCtx, earnedBadges]);
 
   // Score distribution: bucket accuracies into ranges
   // (must be above the early return to satisfy Rules of Hooks)
@@ -274,11 +278,6 @@ export default function StatsScreen() {
   const earnedIds = new Set(earnedBadges.map((b) => b.id));
 
   const playedModes = MODE_BREAKDOWN.filter(({ key }) => stats.modeStats[key].total > 0);
-
-  // Badge check context for progress bars
-  const badgeCtx: BadgeCheckContext | null = badgeData
-    ? buildBadgeContext(stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched)
-    : null;
 
   // Region accuracy data (only regions with games played)
   const regionData = REGIONS

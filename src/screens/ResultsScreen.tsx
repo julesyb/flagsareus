@@ -23,7 +23,7 @@ import { BaselineRegionId, UserStats, GameMode } from '../types';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
 import { FlagImageSmall } from '../components/FlagImage';
-import { CheckIcon, CrossIcon, ChevronRightIcon, BarChartIcon, GlobeIcon, CalendarIcon, UsersIcon, BadgeIconView } from '../components/Icons';
+import { CheckIcon, CrossIcon, ChevronRightIcon, BarChartIcon, GlobeIcon, CalendarIcon, UsersIcon, CrosshairIcon, BadgeIconView } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
@@ -446,8 +446,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
     : accDiff !== null && accDiff > 0 ? t('results.aboveAverage', { pct: accDiff })
     : accDiff !== null && accDiff < 0 ? t('results.belowAverage', { pct: Math.abs(accDiff) })
     : null;
-
-  // Badge icon rendering handled by shared BadgeIconView component
 
   // Interpolate progress bar width
   const progressBarWidth = progressBarAnim.interpolate({
