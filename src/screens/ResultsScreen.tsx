@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -22,7 +22,7 @@ import { CheckIcon, CrossIcon } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
 import { GAME_MODES, CATEGORIES } from '../types';
 import { RootStackParamList } from '../types/navigation';
-import { preloadInterstitial, showInterstitial } from '../utils/ads';
+import { useInterstitialAdUnit, shouldShowAd, recordAdImpression, incrementGameCount } from '../utils/ads';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
 
@@ -43,11 +43,36 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const isDaily = config.mode === 'daily';
   const isBaseline = config.mode === 'baseline';
 
+  const interstitial = useInterstitialAdUnit();
+  const [adEligible, setAdEligible] = useState(false);
+  const pendingNavRef = useRef<(() => void) | null>(null);
+
+  // Load ad if frequency cap allows
+  useEffect(() => {
+    shouldShowAd().then((eligible) => {
+      setAdEligible(eligible);
+      if (eligible) {
+        interstitial.load();
+      }
+    });
+  }, [interstitial.load]);
+
+  // When ad closes, execute pending navigation
+  useEffect(() => {
+    if (interstitial.isClosed && pendingNavRef.current) {
+      recordAdImpression();
+      const nav = pendingNavRef.current;
+      pendingNavRef.current = null;
+      nav();
+    }
+  }, [interstitial.isClosed]);
+
   useEffect(() => {
     if (!reviewOnly) {
       updateStats(correct, results.length, streak, config.mode, config.category);
       updateFlagResults(results);
       updateLastGameBadgeFlags(correct, results.length);
+      incrementGameCount();
       if (isDaily) {
         saveDailyChallenge(results);
         incrementDailyChallenges();
@@ -64,8 +89,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
       delay: 200,
       useNativeDriver: true,
     }).start();
-
-    preloadInterstitial();
 
     if (isPerfect) {
       hapticCorrect();
@@ -111,7 +134,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
 
   const goHome = () => navigation.popToTop();
 
-  const navigatePlayAgain = () => {
+  const navigatePlayAgain = useCallback(() => {
     if (isDaily || isBaseline) {
       navigation.popToTop();
       return;
@@ -129,11 +152,15 @@ export default function ResultsScreen({ route, navigation }: Props) {
     } else {
       navigation.replace('Game', { config });
     }
-  };
+  }, [isDaily, isBaseline, config, navigation]);
 
-  const playAgain = async () => {
-    await showInterstitial();
-    navigatePlayAgain();
+  const playAgain = () => {
+    if (adEligible && interstitial.isLoaded) {
+      pendingNavRef.current = navigatePlayAgain;
+      interstitial.show();
+    } else {
+      navigatePlayAgain();
+    }
   };
 
   return (

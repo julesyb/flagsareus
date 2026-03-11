@@ -34,7 +34,7 @@ import { colors, fontFamily, fontSize } from './src/utils/theme';
 import { configureNotificationHandler, syncNotificationSchedule } from './src/utils/notifications';
 import { initLocale, t } from './src/utils/i18n';
 import { hasCompletedOnboarding } from './src/utils/storage';
-import { initializeAds } from './src/utils/ads';
+import { initializeAds, requestConsent } from './src/utils/ads';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -87,7 +87,7 @@ function AppContent() {
         setInitialRoute(onboarded ? 'Home' : 'Onboarding');
         setLocaleReady(true);
         syncNotificationSchedule();
-        initializeAds();
+        requestConsent().then(() => initializeAds());
       })
       .catch(() => {
         setLocaleReady(true);
