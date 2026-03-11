@@ -351,7 +351,7 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
               returnKeyType="done"
               onSubmitEditing={handleSubmit}
               editable={!showFeedback}
-              accessibilityLabel="Type country name"
+              accessibilityLabel={t('puzzle.typePlaceholder')}
             />
             <TouchableOpacity
               style={[
@@ -362,7 +362,7 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
               disabled={textInput.trim().length === 0 || showFeedback}
               activeOpacity={0.7}
               accessibilityRole="button"
-              accessibilityLabel="Submit answer"
+              accessibilityLabel={t('common.submit')}
             >
               <Text style={styles.submitButtonText}>{t('common.submit')}</Text>
             </TouchableOpacity>
@@ -401,7 +401,7 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
               onPress={goToNext}
               activeOpacity={0.7}
               accessibilityRole="button"
-              accessibilityLabel="Next question"
+              accessibilityLabel={t('common.next')}
             >
               <Text style={styles.nextButtonText}>{t('common.next')}</Text>
               <ChevronRightIcon size={16} color={colors.white} />

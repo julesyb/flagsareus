@@ -231,6 +231,22 @@ const ptBR: typeof en = {
     whatIsCapital: 'Qual \u00e9 a capital de {name}?',
   },
 
+  notification: {
+    title1: 'O desafio di\u00e1rio est\u00e1 pronto',
+    body1: 'Um novo conjunto de 10 bandeiras espera por voc\u00ea.',
+    title2: 'Novas bandeiras hoje',
+    body2: 'O desafio di\u00e1rio acabou de chegar.',
+    title3: 'Suas bandeiras di\u00e1rias esperam',
+    body3: 'Consegue superar sua pontua\u00e7\u00e3o de ontem?',
+    title4: 'N\u00e3o quebre a sequ\u00eancia',
+    body4: 'Mantenha sua sequ\u00eancia com o desafio de hoje.',
+    title5: 'Flag That - Di\u00e1rio',
+    body5: '10 bandeiras novas. Quantas voc\u00ea consegue?',
+    streakTitle: 'N\u00e3o quebre a sequ\u00eancia',
+    streakBody: 'Voc\u00ea est\u00e1 h\u00e1 {streak} dias seguidos. Continue assim!',
+    channelName: 'Desafio di\u00e1rio',
+  },
+
   error: {
     title: 'Algo deu errado',
     message: 'O aplicativo encontrou um erro inesperado.',

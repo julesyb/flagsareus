@@ -243,6 +243,23 @@ const en = {
     whatIsCapital: 'What is the capital of {name}?',
   },
 
+  // ─── Notifications ─────────────────────────────────────
+  notification: {
+    title1: 'Daily Challenge is ready',
+    body1: 'A new set of 10 flags is waiting for you.',
+    title2: 'New flags today',
+    body2: "Today's daily challenge just dropped.",
+    title3: 'Your daily flags await',
+    body3: "Can you beat yesterday's score?",
+    title4: "Don't break the streak",
+    body4: 'Keep your streak alive with today\'s challenge.',
+    title5: 'Flag That - Daily',
+    body5: '10 new flags. How many can you name?',
+    streakTitle: "Don't break the streak",
+    streakBody: "You're on a {streak}-day streak. Keep it going!",
+    channelName: 'Daily Challenge',
+  },
+
   // ─── Error Boundary ─────────────────────────────────────
   error: {
     title: 'Something went wrong',

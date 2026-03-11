@@ -1,21 +1,13 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import { getSettings, saveSettings, getDayStreak, getDailyChallenge } from './storage';
+import { getSettings, saveSettings, getDayStreak } from './storage';
+import { t } from './i18n';
 
 // Channel for Android
 const DAILY_CHANNEL_ID = 'daily-challenge';
 
 // Notification identifier so we can cancel/replace
 const DAILY_NOTIFICATION_ID = 'daily-challenge-reminder';
-
-// Varied notification messages for retention
-const REMINDER_MESSAGES = [
-  { title: 'Daily Challenge is ready', body: 'A new set of 10 flags is waiting for you.' },
-  { title: 'New flags today', body: 'Today\'s daily challenge just dropped.' },
-  { title: 'Your daily flags await', body: 'Can you beat yesterday\'s score?' },
-  { title: 'Don\'t break the streak', body: 'Keep your streak alive with today\'s challenge.' },
-  { title: 'Flag That - Daily', body: '10 new flags. How many can you name?' },
-];
 
 /**
  * Configure notification behavior (shown even when app is foregrounded).
@@ -60,7 +52,7 @@ export async function getPermissionStatus(): Promise<string> {
 export async function setupAndroidChannel(): Promise<void> {
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(DAILY_CHANNEL_ID, {
-      name: 'Daily Challenge',
+      name: t('notification.channelName'),
       importance: Notifications.AndroidImportance.DEFAULT,
       vibrationPattern: [0, 250],
       lightColor: '#E5271C',
@@ -69,20 +61,24 @@ export async function setupAndroidChannel(): Promise<void> {
 }
 
 /**
- * Pick a message based on streak context.
+ * Pick a localized message based on streak context.
  */
 function pickMessage(streak: number): { title: string; body: string } {
   if (streak >= 3) {
     return {
-      title: 'Don\'t break the streak',
-      body: `You're on a ${streak}-day streak. Keep it going!`,
+      title: t('notification.streakTitle'),
+      body: t('notification.streakBody', { streak }),
     };
   }
-  // Rotate through messages based on day of year
-  const dayOfYear = Math.floor(
-    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000,
-  );
-  return REMINDER_MESSAGES[dayOfYear % REMINDER_MESSAGES.length];
+  // Rotate through 5 messages based on day of year
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 1);
+  const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
+  const idx = (dayOfYear % 5) + 1;
+  return {
+    title: t(`notification.title${idx}`),
+    body: t(`notification.body${idx}`),
+  };
 }
 
 /**

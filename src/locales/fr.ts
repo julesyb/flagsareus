@@ -231,6 +231,22 @@ const fr: typeof en = {
     whatIsCapital: 'Quelle est la capitale de {name} ?',
   },
 
+  notification: {
+    title1: 'Le d\u00e9fi quotidien est pr\u00eat',
+    body1: '10 nouveaux drapeaux vous attendent.',
+    title2: 'Nouveaux drapeaux aujourd\'hui',
+    body2: 'Le d\u00e9fi quotidien vient de tomber.',
+    title3: 'Vos drapeaux du jour vous attendent',
+    body3: 'Pouvez-vous battre votre score d\'hier ?',
+    title4: 'Ne brisez pas la s\u00e9rie',
+    body4: 'Maintenez votre s\u00e9rie avec le d\u00e9fi du jour.',
+    title5: 'Flag That - Quotidien',
+    body5: '10 nouveaux drapeaux. Combien pouvez-vous nommer ?',
+    streakTitle: 'Ne brisez pas la s\u00e9rie',
+    streakBody: 'Vous \u00eates sur une s\u00e9rie de {streak} jours. Continuez !',
+    channelName: 'D\u00e9fi quotidien',
+  },
+
   error: {
     title: 'Erreur inattendue',
     message: 'L\'application a rencontr\u00e9 une erreur.',

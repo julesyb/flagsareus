@@ -231,6 +231,22 @@ const es: typeof en = {
     whatIsCapital: '\u00bfCu\u00e1l es la capital de {name}?',
   },
 
+  notification: {
+    title1: 'El desaf\u00edo diario est\u00e1 listo',
+    body1: 'Un nuevo conjunto de 10 banderas te espera.',
+    title2: 'Nuevas banderas hoy',
+    body2: 'El desaf\u00edo diario acaba de llegar.',
+    title3: 'Tus banderas diarias te esperan',
+    body3: '\u00bfPuedes superar tu puntuaci\u00f3n de ayer?',
+    title4: 'No pierdas tu racha',
+    body4: 'Mant\u00e9n tu racha con el desaf\u00edo de hoy.',
+    title5: 'Flag That - Diario',
+    body5: '10 banderas nuevas. \u00bfCu\u00e1ntas puedes nombrar?',
+    streakTitle: 'No pierdas tu racha',
+    streakBody: 'Llevas {streak} d\u00edas seguidos. \u00a1Sigue as\u00ed!',
+    channelName: 'Desaf\u00edo diario',
+  },
+
   error: {
     title: 'Algo sali\u00f3 mal',
     message: 'La aplicaci\u00f3n encontr\u00f3 un error inesperado.',

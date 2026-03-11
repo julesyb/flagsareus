@@ -334,7 +334,7 @@ export default function GameScreen({ route, navigation }: Props) {
               returnKeyType="done"
               onSubmitEditing={handleSubmitHard}
               editable={!showFeedback}
-              accessibilityLabel="Type your answer"
+              accessibilityLabel={t('game.typePlaceholder')}
             />
             {suggestions.length > 0 && (
               <ScrollView
@@ -363,7 +363,7 @@ export default function GameScreen({ route, navigation }: Props) {
               disabled={textInput.trim().length === 0 || showFeedback}
               activeOpacity={0.7}
               accessibilityRole="button"
-              accessibilityLabel="Submit answer"
+              accessibilityLabel={t('common.submit')}
             >
               <Text style={styles.submitButtonText}>{t('common.submit')}</Text>
             </TouchableOpacity>

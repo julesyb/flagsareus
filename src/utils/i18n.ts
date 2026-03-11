@@ -68,7 +68,7 @@ export function getDeviceLocale(): LocaleCode {
 
   // Check prefix match
   const prefix = lang.split('-')[0];
-  const match = SUPPORTED_LOCALES.find((l) => l.code === prefix);
+  const match = SUPPORTED_LOCALES.find((l) => l.code.split('-')[0] === prefix);
   return match ? match.code : 'en';
 }
 
@@ -91,7 +91,9 @@ export function getLocale(): LocaleCode {
  */
 export async function initLocale(): Promise<LocaleCode> {
   const settings = await getSettings();
-  const locale = (settings.locale as LocaleCode) || getDeviceLocale();
+  const stored = settings.locale;
+  const isValid = stored && SUPPORTED_LOCALES.some((l) => l.code === stored);
+  const locale = isValid ? (stored as LocaleCode) : getDeviceLocale();
   currentLocale = locale;
   return locale;
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, Platform } from 'react-native';
 import { useFonts } from 'expo-font';
 import {
@@ -41,7 +41,7 @@ function HomeBackButton({ onPress }: { onPress: () => void }) {
       onPress={onPress}
       activeOpacity={0.7}
       accessibilityRole="button"
-      accessibilityLabel="Go back"
+      accessibilityLabel={t('app.goBack')}
     >
       <ChevronLeftIcon size={22} color={colors.ink} />
     </TouchableOpacity>
@@ -77,11 +77,17 @@ function AppContent() {
       document.title = 'Flag That';
     }
     // Initialize locale from saved settings, then sync notifications
-    initLocale().then(() => {
-      setLocaleReady(true);
-      syncNotificationSchedule();
-    });
+    initLocale()
+      .then(() => {
+        setLocaleReady(true);
+        syncNotificationSchedule();
+      })
+      .catch(() => {
+        setLocaleReady(true);
+      });
   }, []);
+
+  if (!localeReady) return null;
 
   return (
     <NavigationContainer>
@@ -95,7 +101,7 @@ function AppContent() {
           name="GameSetup"
           component={GameSetupScreen}
           options={({ navigation }) => ({
-            title: 'Game Modes',
+            title: t('app.gameModes'),
             headerLeft: () => <HomeBackButton onPress={() => navigation.navigate('Home')} />,
           })}
         />
@@ -133,7 +139,7 @@ function AppContent() {
           name="Results"
           component={ResultsScreen}
           options={({ navigation }) => ({
-            title: 'Results',
+            title: t('app.results'),
             headerLeft: () => <HomeBackButton onPress={() => navigation.navigate('Home')} />,
             gestureEnabled: false,
           })}
@@ -142,7 +148,7 @@ function AppContent() {
           name="Stats"
           component={StatsScreen}
           options={({ navigation }) => ({
-            title: 'Statistics',
+            title: t('app.statistics'),
             headerLeft: () => <HomeBackButton onPress={() => navigation.navigate('Home')} />,
           })}
         />
@@ -150,7 +156,7 @@ function AppContent() {
           name="Settings"
           component={SettingsScreen}
           options={({ navigation }) => ({
-            title: 'Settings',
+            title: t('app.settings'),
             headerLeft: () => <HomeBackButton onPress={() => navigation.navigate('Home')} />,
           })}
         />
@@ -158,7 +164,7 @@ function AppContent() {
           name="Browse"
           component={BrowseScreen}
           options={({ navigation }) => ({
-            title: 'Browse Flags',
+            title: t('app.browseFlags'),
             headerLeft: () => <HomeBackButton onPress={() => navigation.navigate('Home')} />,
           })}
         />

@@ -231,6 +231,22 @@ const de: typeof en = {
     whatIsCapital: 'Was ist die Hauptstadt von {name}?',
   },
 
+  notification: {
+    title1: 'Die t\u00e4gliche Herausforderung ist bereit',
+    body1: '10 neue Flaggen warten auf dich.',
+    title2: 'Neue Flaggen heute',
+    body2: 'Die t\u00e4gliche Herausforderung ist da.',
+    title3: 'Deine t\u00e4glichen Flaggen warten',
+    body3: 'Kannst du dein gestriges Ergebnis schlagen?',
+    title4: 'Brich die Serie nicht ab',
+    body4: 'Halte deine Serie mit der heutigen Herausforderung.',
+    title5: 'Flag That - T\u00e4glich',
+    body5: '10 neue Flaggen. Wie viele schaffst du?',
+    streakTitle: 'Brich die Serie nicht ab',
+    streakBody: 'Du bist seit {streak} Tagen dabei. Weiter so!',
+    channelName: 'T\u00e4gliche Herausforderung',
+  },
+
   error: {
     title: 'Etwas ist schiefgelaufen',
     message: 'Die App ist auf einen unerwarteten Fehler gesto\u00dfen.',

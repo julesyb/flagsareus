@@ -159,7 +159,7 @@ export default function NeighborsScreen({ navigation, route }: Props) {
           onPress={() => navigation.goBack()}
           style={styles.exitButton}
           accessibilityRole="button"
-          accessibilityLabel="Exit game"
+          accessibilityLabel={t('common.exit')}
         >
           <Text style={styles.exitText}>{t('common.exit')}</Text>
         </TouchableOpacity>

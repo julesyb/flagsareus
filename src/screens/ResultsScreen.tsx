@@ -185,7 +185,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
             style={styles.secondaryButton}
             onPress={handleShare}
             activeOpacity={0.7}
-            accessibilityLabel="Share results"
+            accessibilityLabel={t('common.share')}
           >
             <Text style={styles.secondaryButtonText}>{t('common.share')}</Text>
           </TouchableOpacity>
@@ -193,7 +193,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
             style={styles.primaryButton}
             onPress={playAgain}
             activeOpacity={0.7}
-            accessibilityLabel="Play again"
+            accessibilityLabel={t('common.play')}
           >
             <Text style={styles.primaryButtonText}>{isDaily ? t('common.home') : t('common.play')}</Text>
           </TouchableOpacity>
@@ -202,7 +202,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
               style={styles.secondaryButton}
               onPress={goHome}
               activeOpacity={0.7}
-              accessibilityLabel="Go home"
+              accessibilityLabel={t('common.home')}
             >
               <Text style={styles.secondaryButtonText}>{t('common.home')}</Text>
             </TouchableOpacity>
@@ -243,7 +243,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
             style={styles.secondaryButton}
             onPress={handleShare}
             activeOpacity={0.7}
-            accessibilityLabel="Share results"
+            accessibilityLabel={t('common.share')}
           >
             <Text style={styles.secondaryButtonText}>{t('common.share')}</Text>
           </TouchableOpacity>
@@ -251,7 +251,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
             style={styles.primaryButton}
             onPress={playAgain}
             activeOpacity={0.7}
-            accessibilityLabel="Play again"
+            accessibilityLabel={t('common.play')}
           >
             <Text style={styles.primaryButtonText}>{isDaily ? t('common.home') : t('common.play')}</Text>
           </TouchableOpacity>
