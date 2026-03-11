@@ -160,6 +160,11 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
   }, [phase, currentIndex, questions]);
 
   // Mobile web tilt detection via DeviceMotion API
+  // Uses z-axis (perpendicular to screen) to match native behavior.
+  // Phone on forehead, screen outward: z ~ 0 at rest.
+  // Tilt forward (nod, screen faces ground): z goes negative.
+  // Tilt backward (look up, screen faces sky): z goes positive.
+  // Thresholds ±6 m/s^2 match native ±0.6g (expo-sensors normalizes to 0-1).
   useEffect(() => {
     if (!isMobileWeb) return;
     if (phase !== 'playing') return;
@@ -170,17 +175,12 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
       const acc = e.accelerationIncludingGravity;
       if (!acc || acc.z == null) return;
 
-      // Normalize: on mobile web, z ~= 9.8 when flat face-up.
-      // Tilted toward user (screen faces away, forehead pose tilted down): z decreases.
-      // Tilted away from user (screen faces user, forehead pose tilted up): z stays high.
-      // We use y-axis which changes more reliably with forward/backward tilt in portrait:
-      // y ~= 0 when vertical, y > 5 tilted forward (face down), y < -5 tilted backward (face up)
-      const y = acc.y ?? 0;
+      const z = acc.z;
 
-      if (y > 6) {
-        handleTilt('correct'); // Tilted forward/down
-      } else if (y < -6) {
-        handleTilt('skip'); // Tilted backward/up
+      if (z < -6) {
+        handleTilt('correct'); // Screen facing ground (nod forward)
+      } else if (z > 6) {
+        handleTilt('skip'); // Screen facing sky (lean back)
       }
     };
 
@@ -270,9 +270,19 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
     if (isMobileWeb) {
       const granted = await requestMotionPermission();
       setMotionGranted(granted);
+      if (!granted) {
+        // Tilt unavailable - skip straight to playing with button controls.
+        // No countdown needed since phone won't be on forehead.
+        const q = questions.length > 0 ? questions : generateQuestions(config);
+        if (questions.length === 0) setQuestions(q);
+        playGameStartSound();
+        setPhase('playing');
+        questionStartTime.current = Date.now();
+        return;
+      }
     }
     setPhase('countdown');
-  }, []);
+  }, [questions, config]);
 
   // Tutorial screen
   if (phase === 'tutorial') {
