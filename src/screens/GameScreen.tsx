@@ -71,6 +71,8 @@ export default function GameScreen({ route, navigation }: Props) {
 
   const pendingResultsRef = useRef<GameResult[] | null>(null);
   const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wrongCountRef = useRef(0);
+  const resultsRef = useRef<GameResult[]>([]);
 
   // Clean up auto-advance timer on unmount
   useEffect(() => {
@@ -157,7 +159,8 @@ export default function GameScreen({ route, navigation }: Props) {
         hapticWrong();
         playWrongSound();
         setCurrentStreak(0);
-        setWrongCount((w) => w + 1);
+        wrongCountRef.current += 1;
+        setWrongCount(wrongCountRef.current);
         animateWrong();
       }
 
@@ -168,12 +171,12 @@ export default function GameScreen({ route, navigation }: Props) {
         timeTaken,
       };
 
-      const newResults = [...results, result];
+      const newResults = [...resultsRef.current, result];
       pendingResultsRef.current = newResults;
+      resultsRef.current = newResults;
 
       // Check if guess limit reached (game over)
-      const newWrongCount = wrongCount + (correct ? 0 : 1);
-      const isEliminated = guessLimit > 0 && newWrongCount >= guessLimit;
+      const isEliminated = guessLimit > 0 && wrongCountRef.current >= guessLimit;
 
       const feedbackDelay = isTimeAttack
         ? (correct ? 300 : 600)
@@ -189,7 +192,7 @@ export default function GameScreen({ route, navigation }: Props) {
         }, feedbackDelay);
       }
     },
-    [showFeedback, currentQuestion, questionStartTime, results, isTimeAttack, animateStreak, animateWrong, goToNext, wrongCount, guessLimit],
+    [showFeedback, currentQuestion, questionStartTime, isTimeAttack, animateStreak, animateWrong, goToNext, guessLimit],
   );
 
   const handleSubmitHard = () => {
