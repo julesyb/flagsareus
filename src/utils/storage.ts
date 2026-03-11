@@ -263,7 +263,7 @@ export async function saveDailyChallenge(results: GameResult[]): Promise<void> {
       score,
     };
     await AsyncStorage.setItem(DAILY_CHALLENGE_KEY, JSON.stringify(data));
-    await appendDailyLog(today, score, results);
+    await appendDailyLog(today, score, results.length);
   } catch {
     // Silently fail
   }
@@ -287,10 +287,10 @@ export async function getDailyLog(): Promise<DailyLog> {
   }
 }
 
-async function appendDailyLog(date: string, score: number, results: GameResult[]): Promise<void> {
+async function appendDailyLog(date: string, score: number, total: number): Promise<void> {
   try {
     const log = await getDailyLog();
-    log[date] = { score, total: results.length };
+    log[date] = { score, total };
     await AsyncStorage.setItem(DAILY_LOG_KEY, JSON.stringify(log));
   } catch {
     // Silently fail
