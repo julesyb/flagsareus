@@ -19,6 +19,10 @@
 //   teal/gold/electric-blue pops for variety.
 // =====================
 
+// ---- App domain (single source of truth) ----
+export const APP_DOMAIN = 'flagthat.app';
+export const APP_URL = `https://${APP_DOMAIN}`;
+
 // ---- Single source of truth for every color value ----
 const palette = {
   ink: '#1A1A2E',         // Deep midnight navy (retro cartridge vibes)

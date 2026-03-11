@@ -2,6 +2,7 @@ import { getAllFlags } from '../data';
 import { FlagItem, GameQuestion, GameMode } from '../types';
 import { shuffleArray } from './gameEngine';
 import { twinPairs } from '../data/countryAliases';
+import { APP_DOMAIN } from './theme';
 
 /** Modes that support the challenge feature */
 export const CHALLENGE_MODES: GameMode[] = [
@@ -60,9 +61,10 @@ export function encodeChallenge(data: ChallengeData): string | null {
 
 /** Strip URL prefixes so users can paste full URLs into the code input */
 function stripUrlPrefix(input: string): string {
+  const escaped = APP_DOMAIN.replace(/\./g, '\\.');
   return input
-    .replace(/^https?:\/\/flagthat\.app\/c\//i, '')
-    .replace(/^flagthat\.app\/c\//i, '')
+    .replace(new RegExp(`^https?://${escaped}/c/`, 'i'), '')
+    .replace(new RegExp(`^${escaped}/c/`, 'i'), '')
     .replace(/^flagthat:\/\/c\//i, '');
 }
 

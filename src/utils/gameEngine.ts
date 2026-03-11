@@ -2,7 +2,7 @@ import { GameMode, FlagItem, GameQuestion, GameResult, GameConfig } from '../typ
 import { getFlagsForCategory, getAllFlags } from '../data';
 import { countryAliases, twinPairs } from '../data/countryAliases';
 import { translateName } from '../data/countryNames';
-import { colors } from './theme';
+import { colors, APP_DOMAIN } from './theme';
 
 export function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
@@ -92,7 +92,7 @@ export function generateDailyShareGrid(results: GameResult[]): string {
   // Split into rows of 5
   const row1 = grid.slice(0, 5);
   const row2 = grid.slice(5, 10);
-  return `Flag That #${dailyNum}\n${correct}/10\n\n${row1}\n${row2}\n\nflagthat.app`;
+  return `Flag That #${dailyNum}\n${correct}/10\n\n${row1}\n${row2}\n\n${APP_DOMAIN}`;
 }
 
 export function generateShareGrid(results: GameResult[], modeLabel: string, categoryLabel: string): string {
@@ -107,7 +107,7 @@ export function generateShareGrid(results: GameResult[], modeLabel: string, cate
   }
   const gridStr = rows.join('\n');
   const perfectLine = accuracy === 100 ? '\nPERFECT SCORE!' : '';
-  return `Flag That - ${modeLabel}\n${correct}/${results.length} (${grade.label})${perfectLine}\n\n${gridStr}\n\nflagthat.app`;
+  return `Flag That - ${modeLabel}\n${correct}/${results.length} (${grade.label})${perfectLine}\n\n${gridStr}\n\n${APP_DOMAIN}`;
 }
 
 export function generateQuestions(config: GameConfig): GameQuestion[] {

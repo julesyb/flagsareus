@@ -124,7 +124,7 @@ const zh: typeof en = {
     skipped: '\u8df3\u8fc7',
     shareTitle: 'Flag That #{number}',
     shareScore: '{correct}/10',
-    shareFooter: '\u6765\u6311\u6218\u6211\u7684\u5206\u6570\uff01\nhttps://flagthat.app',
+    shareFooter: '\u6765\u6311\u6218\u6211\u7684\u5206\u6570\uff01\n{appUrl}',
     perfectShareNote: '\u6ee1\u5206\uff01',
     newBest: '\u65b0\u7eaa\u5f55',
     badgesUnlocked: '\u89e3\u9501\u5fbd\u7ae0',

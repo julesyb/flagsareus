@@ -124,7 +124,7 @@ const ptBR: typeof en = {
     skipped: 'Pulada',
     shareTitle: 'Flag That #{number}',
     shareScore: '{correct}/10',
-    shareFooter: 'Pode me superar?\nhttps://flagthat.app',
+    shareFooter: 'Pode me superar?\n{appUrl}',
     perfectShareNote: 'PONTUA\u00c7\u00c3O PERFEITA!',
     newBest: 'Novo recorde',
     badgesUnlocked: 'Medalhas desbloqueadas',

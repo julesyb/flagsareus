@@ -129,7 +129,7 @@ const en = {
     skipped: 'Skipped',
     shareTitle: 'Flag That #{number}',
     shareScore: '{correct}/10',
-    shareFooter: 'Can you beat my score?\nhttps://flagthat.app',
+    shareFooter: 'Can you beat my score?\n{appUrl}',
     perfectShareNote: 'PERFECT SCORE!',
     newBest: 'New Best',
     badgesUnlocked: 'Badges Unlocked',

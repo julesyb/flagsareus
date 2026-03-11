@@ -124,7 +124,7 @@ const de: typeof en = {
     skipped: '\u00dcbersprungen',
     shareTitle: 'Flag That #{number}',
     shareScore: '{correct}/10',
-    shareFooter: 'Kannst du mich schlagen?\nhttps://flagthat.app',
+    shareFooter: 'Kannst du mich schlagen?\n{appUrl}',
     perfectShareNote: 'PERFEKTE PUNKTZAHL!',
     newBest: 'Neuer Rekord',
     badgesUnlocked: 'Abzeichen freigeschaltet',

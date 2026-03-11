@@ -16,7 +16,7 @@ import {
   Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
+import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius, APP_URL } from '../utils/theme';
 import { calculateAccuracy, getStreakFromResults, getGrade, generateDailyShareGrid, generateShareGrid, getDailyNumber } from '../utils/gameEngine';
 import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, updateLastGameBadgeFlags, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreak, getBadgeData, getMissedFlagIds, addGameHistoryEntry, getSupportData, getChallengeName, saveChallengeName, addChallengeToHistory } from '../utils/storage';
 import { BaselineRegionId, UserStats, GameMode } from '../types';
@@ -130,7 +130,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
       return;
     }
     const shortCode = generateShortCode(challengeData);
-    const link = `https://flagthat.app/c/${code}`;
+    const link = `${APP_URL}/c/${code}`;
     const headline = t('challenge.shareMessage', { correct, total: results.length });
     const message = `${headline}\n\n${link}`;
     // Save to challenge history

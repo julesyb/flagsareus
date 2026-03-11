@@ -124,7 +124,7 @@ const fr: typeof en = {
     skipped: 'Pass\u00e9',
     shareTitle: 'Flag That #{number}',
     shareScore: '{correct}/10',
-    shareFooter: 'Battez mon score !\nhttps://flagthat.app',
+    shareFooter: 'Battez mon score !\n{appUrl}',
     perfectShareNote: 'SCORE PARFAIT !',
     newBest: 'Nouveau record',
     badgesUnlocked: 'Badges d\u00e9bloqu\u00e9s',

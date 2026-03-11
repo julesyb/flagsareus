@@ -124,7 +124,7 @@ const es: typeof en = {
     skipped: 'Omitida',
     shareTitle: 'Flag That #{number}',
     shareScore: '{correct}/10',
-    shareFooter: '\u00bfPuedes superar mi puntuaci\u00f3n?\nhttps://flagthat.app',
+    shareFooter: '\u00bfPuedes superar mi puntuaci\u00f3n?\n{appUrl}',
     perfectShareNote: '\u00a1PUNTUACI\u00d3N PERFECTA!',
     newBest: 'Nuevo record',
     badgesUnlocked: 'Insignias desbloqueadas',
