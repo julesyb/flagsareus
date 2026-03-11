@@ -12,6 +12,7 @@ const GAME_HISTORY_KEY = '@flagsareus_game_history';
 const SUPPORT_KEY = '@flagsareus_support';
 const BASELINE_KEY = '@flagsareus_baseline';
 const CHALLENGE_NAME_KEY = '@flagsareus_challenge_name';
+const CHALLENGE_HISTORY_KEY = '@flagsareus_challenge_history';
 
 // ─── Challenge Name ─────────────────────────────────────────
 export async function getChallengeName(): Promise<string> {
@@ -205,6 +206,7 @@ export async function resetStats(): Promise<void> {
     await AsyncStorage.removeItem(DAILY_LOG_KEY);
     await AsyncStorage.removeItem(GAME_HISTORY_KEY);
     await AsyncStorage.removeItem(BASELINE_KEY);
+    await AsyncStorage.removeItem(CHALLENGE_HISTORY_KEY);
   } catch {
     // Silently fail
   }
@@ -525,4 +527,49 @@ export async function skipOnboarding(): Promise<void> {
   };
   data.skipped = true;
   await AsyncStorage.setItem(BASELINE_KEY, JSON.stringify(data));
+}
+
+// ─── Challenge History ────────────────────────────────────
+export interface ChallengeHistoryEntry {
+  shortCode: string;        // 6-char alphanumeric identifier
+  mode: GameMode;
+  date: string;             // ISO date string
+  myName: string;
+  myScore: number;
+  totalFlags: number;
+  opponentName: string | null;
+  opponentScore: number | null;
+  direction: 'sent' | 'received';
+  fullCode: string;         // Full FT2: code for resharing
+}
+
+const MAX_CHALLENGE_HISTORY = 10;
+
+export async function getChallengeHistory(): Promise<ChallengeHistoryEntry[]> {
+  try {
+    const json = await AsyncStorage.getItem(CHALLENGE_HISTORY_KEY);
+    if (json) return JSON.parse(json);
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+export async function addChallengeToHistory(entry: ChallengeHistoryEntry): Promise<void> {
+  try {
+    const history = await getChallengeHistory();
+    // Check if this challenge already exists (by shortCode + direction)
+    const existingIdx = history.findIndex(
+      (h) => h.shortCode === entry.shortCode && h.direction === entry.direction,
+    );
+    if (existingIdx >= 0) {
+      history[existingIdx] = entry;
+    } else {
+      history.unshift(entry); // newest first
+    }
+    const trimmed = history.slice(0, MAX_CHALLENGE_HISTORY);
+    await AsyncStorage.setItem(CHALLENGE_HISTORY_KEY, JSON.stringify(trimmed));
+  } catch {
+    // Silently fail
+  }
 }

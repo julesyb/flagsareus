@@ -197,6 +197,34 @@ export function getScreenForMode(mode: GameMode): ChallengeScreenName {
   return map[mode] || 'Game';
 }
 
+// ── Short challenge code ──
+// Generate a 6-character alphanumeric code from challenge data.
+// Used as a human-readable identifier in share messages.
+const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I/O/0/1 to avoid confusion
+
+function simpleHash(str: string): number {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+}
+
+/**
+ * Generate a 6-char alphanumeric code from challenge data.
+ * Deterministic: same challenge data always produces the same code.
+ */
+export function generateShortCode(data: ChallengeData): string {
+  const seed = `${data.hostName}|${data.mode}|${data.flagIds.join('')}|${data.hostResults.map((r) => r.correct ? '1' : '0').join('')}`;
+  let hash = simpleHash(seed);
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += CODE_CHARS[hash % CODE_CHARS.length];
+    hash = simpleHash(code + seed.slice(i));
+  }
+  return code;
+}
+
 // ── Base64 helpers (cross-platform) ──
 
 function toBase64(str: string): string {

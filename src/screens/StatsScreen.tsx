@@ -15,7 +15,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { colors, spacing, fontFamily, fontSize, borderRadius } from '../utils/theme';
 import { UserStats, GameMode, CategoryId } from '../types';
-import { getStats, getFlagStats, FlagStats, getDayStreak, getBadgeData, getMissedFlagIds, BadgeData, getSupportData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData } from '../utils/storage';
+import { getStats, getFlagStats, FlagStats, getDayStreak, getBadgeData, getMissedFlagIds, BadgeData, getSupportData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData, getChallengeHistory, ChallengeHistoryEntry } from '../utils/storage';
 import { getAllFlags, getTotalFlagCount } from '../data';
 import { getGrade } from '../utils/gameEngine';
 import { t } from '../utils/i18n';
@@ -24,7 +24,7 @@ import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { evaluateBadges, BADGES, TIER_COLORS, BadgeIcon, BadgeCheckContext, getBadgeProgress } from '../utils/badges';
-import { FlagIcon, GlobeIcon, CheckIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon, HeartIcon, ChevronRightIcon, BarChartIcon } from '../components/Icons';
+import { FlagIcon, GlobeIcon, CheckIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon, HeartIcon, ChevronRightIcon, BarChartIcon, UsersIcon } from '../components/Icons';
 
 const RANK_COLORS = [colors.gradeS, colors.textTertiary, colors.warning];
 
@@ -52,6 +52,7 @@ export default function StatsScreen() {
   const [adsWatched, setAdsWatched] = useState(0);
   const [gameHistory, setGameHistory] = useState<GameHistoryEntry[]>([]);
   const [baseline, setBaseline] = useState<BaselineData | null>(null);
+  const [challengeHistory, setChallengeHistory] = useState<ChallengeHistoryEntry[]>([]);
 
   // ── Animation values ──
   const heroFade = useRef(new Animated.Value(0)).current;
@@ -99,8 +100,8 @@ export default function StatsScreen() {
 
       async function loadData() {
         try {
-          const [s, fs, ds, bd, missed, gh, support, bl] = await Promise.all([
-            getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(), getGameHistory(), getSupportData(), getBaselineData(),
+          const [s, fs, ds, bd, missed, gh, support, bl, ch] = await Promise.all([
+            getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(), getGameHistory(), getSupportData(), getBaselineData(), getChallengeHistory(),
           ]);
           if (!cancelled) {
             setStats(s);
@@ -111,6 +112,7 @@ export default function StatsScreen() {
             setGameHistory(gh);
             setAdsWatched(support.totalAdsWatched);
             setBaseline(bl);
+            setChallengeHistory(ch);
 
             // ── Kick off animation sequence after data loads ──
             const acc = s.totalAnswered > 0
@@ -587,6 +589,67 @@ export default function StatsScreen() {
                       ]} />
                     </View>
                     <Text style={[s.distCount, isGood && s.distCountGood]}>{bucket.count}</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </Animated.View>
+        )}
+
+        {/* ── RECENT CHALLENGES ── */}
+        {challengeHistory.length > 0 && (
+          <Animated.View style={{ opacity: restFade }}>
+            <View style={s.sectionHeader}>
+              <Text style={s.sectionTitle}>{t('challenge.recentChallenges')}</Text>
+              <Text style={s.sectionMeta}>{t('challenge.last10')}</Text>
+            </View>
+            <View style={s.challengeList}>
+              {challengeHistory.map((ch, i) => {
+                const hasOpponent = ch.opponentName !== null && ch.opponentScore !== null;
+                const won = hasOpponent && ch.myScore > ch.opponentScore!;
+                const lost = hasOpponent && ch.myScore < ch.opponentScore!;
+                const tied = hasOpponent && ch.myScore === ch.opponentScore;
+                const dateStr = new Date(ch.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                return (
+                  <View key={`${ch.shortCode}-${ch.direction}-${i}`} style={s.challengeRow}>
+                    <View style={[
+                      s.challengeIconWrap,
+                      won ? { backgroundColor: colors.successBg } :
+                      lost ? { backgroundColor: colors.errorBg } :
+                      { backgroundColor: colors.surfaceSecondary },
+                    ]}>
+                      <UsersIcon size={16} color={won ? colors.success : lost ? colors.error : colors.textTertiary} />
+                    </View>
+                    <View style={s.challengeContent}>
+                      <View style={s.challengeTopRow}>
+                        <Text style={s.challengeCode}>{ch.shortCode}</Text>
+                        <Text style={s.challengeDate}>{dateStr}</Text>
+                      </View>
+                      <Text style={s.challengeMode}>{t(`modes.${ch.mode}`)}</Text>
+                      <View style={s.challengeScoreRow}>
+                        <Text style={s.challengeScoreLabel}>{t('challenge.you')}:</Text>
+                        <Text style={[s.challengeScore, won && { color: colors.success }]}>
+                          {ch.myScore}/{ch.totalFlags}
+                        </Text>
+                        {hasOpponent && (
+                          <>
+                            <Text style={s.challengeVs}>vs</Text>
+                            <Text style={s.challengeScoreLabel}>{ch.opponentName}:</Text>
+                            <Text style={[s.challengeScore, lost && { color: colors.error }]}>
+                              {ch.opponentScore}/{ch.totalFlags}
+                            </Text>
+                          </>
+                        )}
+                      </View>
+                      {won && <Text style={[s.challengeResult, { color: colors.success }]}>{t('challenge.youWin')}</Text>}
+                      {lost && <Text style={[s.challengeResult, { color: colors.error }]}>{t('challenge.theyWin', { name: ch.opponentName || '' })}</Text>}
+                      {tied && <Text style={[s.challengeResult, { color: colors.textSecondary }]}>{t('challenge.tie')}</Text>}
+                    </View>
+                    <View style={s.challengeDirectionPill}>
+                      <Text style={s.challengeDirectionText}>
+                        {ch.direction === 'sent' ? t('challenge.sent') : t('challenge.received')}
+                      </Text>
+                    </View>
                   </View>
                 );
               })}
@@ -1102,6 +1165,94 @@ const s = StyleSheet.create({
   },
   distCountGood: {
     color: colors.success,
+  },
+
+  // ── Challenges
+  challengeList: {
+    gap: 6,
+  },
+  challengeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 12,
+    paddingHorizontal: 14,
+    gap: 12,
+  },
+  challengeIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  challengeContent: {
+    flex: 1,
+  },
+  challengeTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  challengeCode: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.caption,
+    letterSpacing: 1.5,
+    color: colors.ink,
+  },
+  challengeDate: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.sm,
+    color: colors.textTertiary,
+  },
+  challengeMode: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.sm,
+    color: colors.textTertiary,
+    marginBottom: 4,
+  },
+  challengeScoreRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  challengeScoreLabel: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+  },
+  challengeScore: {
+    fontFamily: fontFamily.bodyBold,
+    fontSize: fontSize.sm,
+    color: colors.ink,
+  },
+  challengeVs: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.sm,
+    color: colors.textTertiary,
+    marginHorizontal: 4,
+  },
+  challengeResult: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: fontSize.sm,
+    marginTop: 2,
+  },
+  challengeDirectionPill: {
+    backgroundColor: colors.surfaceSecondary,
+    borderRadius: borderRadius.full,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+  },
+  challengeDirectionText: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.xxs,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    color: colors.textTertiary,
   },
 
   // ── Badges

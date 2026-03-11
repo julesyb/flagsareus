@@ -399,6 +399,10 @@ const es: typeof en = {
     previewHostScore: '{name} obtuvo {correct}/{total}',
     challengeBack: 'Contradesaf\u00edo',
     challengeBackDesc: 'Juega una nueva ronda y env\u00edala de vuelta',
+    recentChallenges: 'Desafios recientes',
+    last10: 'Ultimos 10',
+    sent: 'Enviado',
+    received: 'Jugado',
   },
 };
 

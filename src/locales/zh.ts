@@ -399,6 +399,10 @@ const zh: typeof en = {
     previewHostScore: '{name} \u7b54\u5bf9\u4e86 {correct}/{total}',
     challengeBack: '\u53cd\u51fb\u6311\u6218',
     challengeBackDesc: '\u73a9\u4e00\u5c40\u65b0\u7684\u5e76\u53d1\u56de\u53bb',
+    recentChallenges: 'Recent Challenges',
+    last10: 'Last 10',
+    sent: 'Sent',
+    received: 'Played',
   },
 };
 

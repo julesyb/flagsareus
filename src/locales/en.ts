@@ -316,6 +316,10 @@ const en = {
     previewHostScore: '{name} got {correct}/{total}',
     challengeBack: 'Challenge Back',
     challengeBackDesc: 'Play a new round and send it back',
+    recentChallenges: 'Recent Challenges',
+    last10: 'Last 10',
+    sent: 'Sent',
+    received: 'Played',
   },
 
   // ─── Notifications ─────────────────────────────────────

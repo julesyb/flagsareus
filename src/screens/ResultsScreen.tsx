@@ -18,7 +18,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
 import { calculateAccuracy, getStreakFromResults, getGrade, generateDailyShareGrid, generateShareGrid, getDailyNumber } from '../utils/gameEngine';
-import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, updateLastGameBadgeFlags, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreak, getBadgeData, getMissedFlagIds, addGameHistoryEntry, getSupportData, getChallengeName, saveChallengeName } from '../utils/storage';
+import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, updateLastGameBadgeFlags, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreak, getBadgeData, getMissedFlagIds, addGameHistoryEntry, getSupportData, getChallengeName, saveChallengeName, addChallengeToHistory } from '../utils/storage';
 import { BaselineRegionId, UserStats, GameMode } from '../types';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
@@ -31,7 +31,7 @@ import { RootStackParamList } from '../types/navigation';
 import { evaluateBadges, BADGES, TIER_COLORS, BadgeIcon, EarnedBadge } from '../utils/badges';
 import { getTotalFlagCount } from '../data';
 import { useInterstitialAdUnit, shouldShowAd, recordAdImpression, incrementGameCount } from '../utils/ads';
-import { encodeChallenge, ChallengeData, CHALLENGE_MODES } from '../utils/challengeCode';
+import { encodeChallenge, ChallengeData, CHALLENGE_MODES, generateShortCode } from '../utils/challengeCode';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
 
@@ -112,13 +112,14 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const doShareChallenge = async (name: string) => {
     const flagIds = results.map((r) => r.question.flag.id);
     const hostResults = results.map((r) => ({ correct: r.correct, timeMs: r.timeTaken }));
-    const code = encodeChallenge({
+    const challengeData: ChallengeData = {
       hostName: name,
       mode: config.mode,
       timeLimit: config.timeLimit || 15,
       flagIds,
       hostResults,
-    });
+    };
+    const code = encodeChallenge(challengeData);
     if (!code) {
       const msg = t('challenge.invalidCode');
       if (Platform.OS === 'web') {
@@ -128,17 +129,25 @@ export default function ResultsScreen({ route, navigation }: Props) {
       }
       return;
     }
+    const shortCode = generateShortCode(challengeData);
     const link = `https://flagthat.app/c/${encodeURIComponent(code)}`;
     const headline = t('challenge.shareMessage', { correct, total: results.length });
-    // Build score grid (rows of 5, matching daily share style)
-    const grid = results.map((r) => (r.correct ? '\u2b1b' : '\u2b1c')).join('');
-    const rows: string[] = [];
-    for (let i = 0; i < grid.length; i += 5) {
-      rows.push(grid.slice(i, i + 5));
-    }
-    const gridStr = rows.join('\n');
+    const message = `${headline}\n${correct}/${results.length} - ${shortCode}\n\n${link}`;
+    // Save to challenge history
+    addChallengeToHistory({
+      shortCode,
+      mode: config.mode,
+      date: new Date().toISOString(),
+      myName: name,
+      myScore: correct,
+      totalFlags: results.length,
+      opponentName: null,
+      opponentScore: null,
+      direction: 'sent',
+      fullCode: code,
+    });
     try {
-      await Share.share({ message: `${headline}\n\n${gridStr}\n\n${link}` });
+      await Share.share({ message });
     } catch { /* share cancelled */ }
   };
 
@@ -253,6 +262,23 @@ export default function ResultsScreen({ route, navigation }: Props) {
         if (isDaily) {
           await saveDailyChallenge(results);
           await incrementDailyChallenges();
+        }
+        // Save received challenge to history
+        if (isChallenge && challenge && playerName) {
+          const shortCode = generateShortCode(challenge);
+          const hostScore = challenge.hostResults.filter((r) => r.correct).length;
+          addChallengeToHistory({
+            shortCode,
+            mode: config.mode,
+            date: new Date().toISOString(),
+            myName: playerName,
+            myScore: correct,
+            totalFlags: results.length,
+            opponentName: challenge.hostName,
+            opponentScore: hostScore,
+            direction: 'received',
+            fullCode: encodeChallenge(challenge) || '',
+          });
         }
       }
       if (isBaseline) {

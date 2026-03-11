@@ -400,6 +400,10 @@ const de: typeof en = {
     previewHostScore: '{name} hat {correct}/{total} richtig',
     challengeBack: 'Zur\u00fcckfordern',
     challengeBackDesc: 'Spiel eine neue Runde und sende sie zur\u00fcck',
+    recentChallenges: 'Letzte Herausforderungen',
+    last10: 'Letzte 10',
+    sent: 'Gesendet',
+    received: 'Gespielt',
   },
 };
 

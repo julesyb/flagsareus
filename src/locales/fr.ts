@@ -399,6 +399,10 @@ const fr: typeof en = {
     previewHostScore: '{name} a obtenu {correct}/{total}',
     challengeBack: 'Contre-d\u00e9fi',
     challengeBackDesc: 'Jouez une nouvelle manche et renvoyez-la',
+    recentChallenges: 'Defis recents',
+    last10: '10 derniers',
+    sent: 'Envoye',
+    received: 'Joue',
   },
 };
 

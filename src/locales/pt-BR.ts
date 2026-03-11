@@ -399,6 +399,10 @@ const ptBR: typeof en = {
     previewHostScore: '{name} acertou {correct}/{total}',
     challengeBack: 'Contra-desafio',
     challengeBackDesc: 'Jogue uma nova rodada e envie de volta',
+    recentChallenges: 'Desafios recentes',
+    last10: 'Ultimos 10',
+    sent: 'Enviado',
+    received: 'Jogado',
   },
 };
 
