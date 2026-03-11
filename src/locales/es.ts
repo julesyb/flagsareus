@@ -199,8 +199,6 @@ const es: typeof en = {
     totalWatched: 'Apoyado {count} vez',
     totalWatchedPlural: 'Apoyado {count} veces',
     adFailed: 'Nada disponible ahora. \u00a1Int\u00e9ntalo m\u00e1s tarde!',
-    settingsTitle: 'Apoyo',
-    settingsDesc: 'Ve un video corto para ayudar a que Flag That siga siendo gratis',
   },
 
   browse: {

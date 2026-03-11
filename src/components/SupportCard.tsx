@@ -67,28 +67,30 @@ export default function SupportCard({ gamesPlayed }: SupportCardProps) {
   // ── Returning supporter: compact row
   if (isSupporter) {
     return (
-      <TouchableOpacity
-        style={[s.card, s.cardCompact]}
-        onPress={handleWatch}
-        activeOpacity={0.85}
-        disabled={loading}
-      >
-        <HeartIcon size={14} color={colors.accent} strokeWidth={2} filled />
-        <Text style={s.compactText}>
-          {totalWatched === 1
-            ? t('support.totalWatched', { count: totalWatched })
-            : t('support.totalWatchedPlural', { count: totalWatched })}
-        </Text>
-        <View style={s.compactBtn}>
-          <PlayIcon size={8} color={colors.white} />
-          <Text style={s.compactBtnText}>
-            {loading ? '...' : t('support.watchAgain')}
+      <View style={[s.card, s.cardCompactWrap]}>
+        <TouchableOpacity
+          style={s.cardCompact}
+          onPress={handleWatch}
+          activeOpacity={0.85}
+          disabled={loading}
+        >
+          <HeartIcon size={14} color={colors.accent} strokeWidth={2} filled />
+          <Text style={s.compactText}>
+            {totalWatched === 1
+              ? t('support.totalWatched', { count: totalWatched })
+              : t('support.totalWatchedPlural', { count: totalWatched })}
           </Text>
-        </View>
+          <View style={s.compactBtn}>
+            <PlayIcon size={8} color={colors.white} />
+            <Text style={s.compactBtnText}>
+              {loading ? '...' : t('support.watchAgain')}
+            </Text>
+          </View>
+        </TouchableOpacity>
         {adFailed && (
           <Text style={s.failedText}>{t('support.adFailed')}</Text>
         )}
-      </TouchableOpacity>
+      </View>
     );
   }
 
@@ -139,10 +141,15 @@ const s = StyleSheet.create({
     backgroundColor: colors.successBg,
     paddingVertical: 14,
   },
+  cardCompactWrap: {
+    paddingVertical: 0,
+    padding: 0,
+  },
   cardCompact: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+    padding: spacing.md,
     paddingVertical: 12,
   },
   header: {

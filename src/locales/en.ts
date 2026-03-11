@@ -207,8 +207,6 @@ const en = {
     totalWatched: 'Supported {count} time',
     totalWatchedPlural: 'Supported {count} times',
     adFailed: 'Nothing available right now. Try again later!',
-    settingsTitle: 'Support',
-    settingsDesc: 'Watch a short video to help keep Flag That free',
   },
 
   // ─── Browse Screen ──────────────────────────────────────

@@ -199,8 +199,6 @@ const de: typeof en = {
     totalWatched: '{count} Mal unterst\u00fctzt',
     totalWatchedPlural: '{count} Mal unterst\u00fctzt',
     adFailed: 'Gerade nichts verf\u00fcgbar. Versuch es sp\u00e4ter!',
-    settingsTitle: 'Unterst\u00fctzung',
-    settingsDesc: 'Schau ein Video, um Flag That kostenlos zu halten',
   },
 
   browse: {

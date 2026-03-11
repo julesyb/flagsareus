@@ -199,8 +199,6 @@ const ptBR: typeof en = {
     totalWatched: 'Apoiado {count} vez',
     totalWatchedPlural: 'Apoiado {count} vezes',
     adFailed: 'Nada dispon\u00edvel agora. Tente mais tarde!',
-    settingsTitle: 'Apoio',
-    settingsDesc: 'Assista um v\u00eddeo para ajudar o Flag That a continuar gratuito',
   },
 
   browse: {

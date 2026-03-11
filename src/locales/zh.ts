@@ -199,8 +199,6 @@ const zh: typeof en = {
     totalWatched: '\u5df2\u652f\u6301{count}\u6b21',
     totalWatchedPlural: '\u5df2\u652f\u6301{count}\u6b21',
     adFailed: '\u6682\u65e0\u53ef\u7528\u5185\u5bb9\uff0c\u8bf7\u7a0d\u540e\u518d\u8bd5\uff01',
-    settingsTitle: '\u652f\u6301',
-    settingsDesc: '\u89c2\u770b\u77ed\u89c6\u9891\u5e2e\u52a9 Flag That \u4fdd\u6301\u514d\u8d39',
   },
 
   browse: {

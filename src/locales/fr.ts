@@ -199,8 +199,6 @@ const fr: typeof en = {
     totalWatched: 'Soutenu {count} fois',
     totalWatchedPlural: 'Soutenu {count} fois',
     adFailed: 'Rien de disponible pour le moment. R\u00e9essayez plus tard !',
-    settingsTitle: 'Soutien',
-    settingsDesc: 'Regardez une vid\u00e9o pour aider Flag That \u00e0 rester gratuit',
   },
 
   browse: {

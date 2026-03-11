@@ -23,6 +23,7 @@ import { PlayIcon, ChevronRightIcon, ClockIcon, UsersIcon, EyeIcon, CalendarIcon
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import SupportCard from '../components/SupportCard';
+import { preloadRewardedAd } from '../utils/ads';
 import { t } from '../utils/i18n';
 
 const MODE_KEYS: GameMode[] = ['easy', 'medium', 'hard'];
@@ -178,6 +179,7 @@ export default function HomeScreen({ navigation }: Props) {
 
   useEffect(() => {
     initAudio();
+    preloadRewardedAd();
     getSettings().then((s) => {
       setSoundsEnabled(s.soundEnabled);
       setHapticsEnabled(s.hapticsEnabled);
@@ -465,6 +467,9 @@ export default function HomeScreen({ navigation }: Props) {
           )}
         </View>
 
+        {/* ── SUPPORT ── */}
+        <SupportCard gamesPlayed={stats?.totalGamesPlayed ?? 0} />
+
         {/* ── YOUR STATS ── */}
         {hasPlayed && (
           <View style={s.statsWrap}>
@@ -485,9 +490,6 @@ export default function HomeScreen({ navigation }: Props) {
             </View>
           </View>
         )}
-
-        {/* ── SUPPORT ── */}
-        <SupportCard gamesPlayed={stats?.totalGamesPlayed ?? 0} />
 
         <View style={{ height: spacing.md }} />
         </View>
