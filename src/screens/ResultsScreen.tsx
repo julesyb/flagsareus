@@ -130,8 +130,15 @@ export default function ResultsScreen({ route, navigation }: Props) {
     }
     const link = `https://flagthat.app/c/${encodeURIComponent(code)}`;
     const headline = t('challenge.shareMessage', { correct, total: results.length });
+    // Build score grid (rows of 5, matching daily share style)
+    const grid = results.map((r) => (r.correct ? '\u2b1b' : '\u2b1c')).join('');
+    const rows: string[] = [];
+    for (let i = 0; i < grid.length; i += 5) {
+      rows.push(grid.slice(i, i + 5));
+    }
+    const gridStr = rows.join('\n');
     try {
-      await Share.share({ message: `${headline}\n\n${link}` });
+      await Share.share({ message: `${headline}\n\n${gridStr}\n\n${link}` });
     } catch { /* share cancelled */ }
   };
 
