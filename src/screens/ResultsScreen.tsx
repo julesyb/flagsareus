@@ -12,8 +12,8 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
-import { calculateAccuracy, getStreakFromResults, getGrade, generateDailyShareGrid, getDailyNumber } from '../utils/gameEngine';
-import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, updateLastGameBadgeFlags, markShared, getStats, getFlagStats, getDayStreak, getBadgeData, getMissedFlagIds } from '../utils/storage';
+import { calculateAccuracy, getStreakFromResults, getGrade, generateDailyShareGrid, generateShareGrid, getDailyNumber } from '../utils/gameEngine';
+import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, updateLastGameBadgeFlags, markShared, getStats, getFlagStats, getDayStreak, getBadgeData, getMissedFlagIds, addGameHistoryEntry } from '../utils/storage';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
 import { FlagImageSmall } from '../components/FlagImage';
@@ -60,8 +60,9 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const statsFade = useRef(new Animated.Value(0)).current;
   // Phase 6: Everything else
   const restFade = useRef(new Animated.Value(0)).current;
-  // Perfect celebration
+  // Perfect celebration + hero glow for great scores
   const confettiOpacity = useRef(new Animated.Value(0)).current;
+  const heroGlow = useRef(new Animated.Value(0)).current;
   // Review items
   const reviewAnims = useRef(results.map(() => new Animated.Value(0))).current;
   // Progress bar
@@ -118,6 +119,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
         await updateStats(correct, results.length, streak, config.mode, config.category);
         await updateFlagResults(results);
         await updateLastGameBadgeFlags(correct, results.length);
+        await addGameHistoryEntry(accuracy, config.mode);
         if (isDaily) {
           await saveDailyChallenge(results);
           await incrementDailyChallenges();
@@ -215,8 +217,9 @@ export default function ResultsScreen({ route, navigation }: Props) {
       ),
     ).start();
 
-    // Perfect celebration
+    // Celebration intensity scaling
     if (isPerfect) {
+      // Full celebration: sound + haptic + pulsing banner + hero glow
       setTimeout(() => {
         hapticCorrect();
         playCelebrationSound();
@@ -228,8 +231,23 @@ export default function ResultsScreen({ route, navigation }: Props) {
         ]),
       );
       loopAnim.start();
+      // Hero glow pulse
+      Animated.sequence([
+        Animated.timing(heroGlow, { toValue: 1, duration: 400, delay: gradeDelay, useNativeDriver: false }),
+        Animated.timing(heroGlow, { toValue: 0, duration: 600, useNativeDriver: false }),
+      ]).start();
       return () => { loopAnim.stop(); };
+    } else if (accuracy >= 90) {
+      // Great score: haptic + hero glow flash (gold tint)
+      setTimeout(() => {
+        hapticCorrect();
+      }, gradeDelay);
+      Animated.sequence([
+        Animated.timing(heroGlow, { toValue: 0.7, duration: 350, delay: gradeDelay, useNativeDriver: false }),
+        Animated.timing(heroGlow, { toValue: 0, duration: 500, useNativeDriver: false }),
+      ]).start();
     } else if (accuracy >= 80) {
+      // Good score: light haptic
       setTimeout(() => hapticTap(), gradeDelay);
     }
   }, []);
@@ -242,7 +260,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const handleShare = async () => {
     const message = isDaily
       ? generateDailyShareGrid(results)
-      : `Flag That\n${modeLabel} - ${categoryLabel}\nScore: ${correct}/${results.length} (${accuracy}%)\nGrade: ${grade.label} | Streak: ${streak}\n${isPerfect ? t('results.perfectShareNote') + '\n' : ''}${t('results.shareFooter')}`;
+      : generateShareGrid(results, modeLabel, categoryLabel);
     try { await Share.share({ message }); markShared(); } catch { /* cancelled */ }
   };
 
@@ -298,6 +316,12 @@ export default function ResultsScreen({ route, navigation }: Props) {
     outputRange: ['0%', '100%'],
   });
 
+  // Hero glow: interpolate to a warm gold border overlay
+  const heroGlowColor = heroGlow.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['rgba(201, 150, 12, 0)', 'rgba(201, 150, 12, 0.35)'],
+  });
+
   return (
     <SafeAreaView style={st.container}>
       <ScrollView contentContainerStyle={st.content} showsVerticalScrollIndicator={false}>
@@ -315,7 +339,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
             Phase 2: grade letter springs in
             Phase 3: "8/10 correct" fades in
             ══════════════════════════════════════════════════════════ */}
-        <View style={st.heroCard}>
+        <Animated.View style={[st.heroCard, { borderColor: heroGlowColor, borderWidth: 2 }]}>
           <Text style={st.heroEyebrow}>
             {isDaily ? t('results.dailyTitle', { number: dailyNumber }) : `${modeLabel} / ${categoryLabel}`}
           </Text>
@@ -335,7 +359,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
           <Animated.Text style={[st.heroScoreText, { opacity: scoreFade }]}>
             {correct}/{results.length} {t('results.correct').toLowerCase()}
           </Animated.Text>
-        </View>
+        </Animated.View>
 
         {/* ══════════════════════════════════════════════════════════
             STREAK TIMELINE: Dots appear one-by-one showing the flow

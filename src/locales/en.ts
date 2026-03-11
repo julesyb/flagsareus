@@ -187,6 +187,7 @@ const en = {
     byModeLabel: 'By Mode',
     overallGrade: 'Overall Grade',
     moreToUnlock: '{count} more to unlock',
+    scoreDistribution: 'Score Distribution',
   },
 
   // ─── Settings Screen ────────────────────────────────────

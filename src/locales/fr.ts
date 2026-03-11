@@ -181,6 +181,7 @@ const fr: typeof en = {
     byModeLabel: 'Par mode',
     overallGrade: 'Note g\u00e9n\u00e9rale',
     moreToUnlock: 'Encore {count} pour d\u00e9bloquer',
+    scoreDistribution: 'Distribution des scores',
   },
 
   settings: {

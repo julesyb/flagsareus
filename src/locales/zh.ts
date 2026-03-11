@@ -181,6 +181,7 @@ const zh: typeof en = {
     byModeLabel: '\u6309\u6a21\u5f0f',
     overallGrade: '\u603b\u4f53\u7b49\u7ea7',
     moreToUnlock: '\u8fd8\u9700{count}\u4e2a\u624d\u80fd\u89e3\u9501',
+    scoreDistribution: '\u5206\u6570\u5206\u5e03',
   },
 
   settings: {

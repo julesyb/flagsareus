@@ -181,6 +181,7 @@ const ptBR: typeof en = {
     byModeLabel: 'Por modo',
     overallGrade: 'Nota geral',
     moreToUnlock: 'Faltam {count} para desbloquear',
+    scoreDistribution: 'Distribuição de pontos',
   },
 
   settings: {

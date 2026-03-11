@@ -181,6 +181,7 @@ const es: typeof en = {
     byModeLabel: 'Por modo',
     overallGrade: 'Nota general',
     moreToUnlock: '{count} m\u00e1s para desbloquear',
+    scoreDistribution: 'Distribución de puntos',
   },
 
   settings: {

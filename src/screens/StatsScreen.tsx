@@ -21,7 +21,8 @@ import { getGrade } from '../utils/gameEngine';
 import { t } from '../utils/i18n';
 import { FlagImageSmall } from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
-import { evaluateBadges, BADGES, TIER_COLORS, BadgeIcon } from '../utils/badges';
+import { evaluateBadges, BADGES, TIER_COLORS, BadgeIcon, BadgeCheckContext, getBadgeProgress } from '../utils/badges';
+import { getGameHistory, GameHistoryEntry } from '../utils/storage';
 import { FlagIcon, GlobeIcon, CheckIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon, ChevronRightIcon, BarChartIcon } from '../components/Icons';
 
 const RANK_COLORS = [colors.gradeS, colors.textTertiary, colors.warning];
@@ -46,6 +47,7 @@ export default function StatsScreen() {
   const [dayStreak, setDayStreak] = useState(0);
   const [badgeData, setBadgeData] = useState<BadgeData | null>(null);
   const [weakFlagCount, setWeakFlagCount] = useState(0);
+  const [gameHistory, setGameHistory] = useState<GameHistoryEntry[]>([]);
 
   // ── Animation values ──
   const heroFade = useRef(new Animated.Value(0)).current;
@@ -93,8 +95,8 @@ export default function StatsScreen() {
 
       async function loadData() {
         try {
-          const [s, fs, ds, bd, missed] = await Promise.all([
-            getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(),
+          const [s, fs, ds, bd, missed, gh] = await Promise.all([
+            getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(), getGameHistory(),
           ]);
           if (!cancelled) {
             setStats(s);
@@ -102,6 +104,7 @@ export default function StatsScreen() {
             setDayStreak(ds);
             setBadgeData(bd);
             setWeakFlagCount(missed.length);
+            setGameHistory(gh);
 
             // ── Kick off animation sequence after data loads ──
             const acc = s.totalAnswered > 0
@@ -275,6 +278,37 @@ export default function StatsScreen() {
   const earnedIds = new Set(earnedBadges.map((b) => b.id));
 
   const playedModes = MODE_BREAKDOWN.filter(({ key }) => stats.modeStats[key].total > 0);
+
+  // Badge check context for progress bars
+  const badgeCtx: BadgeCheckContext | null = badgeData ? {
+    stats, flagStats, dayStreak,
+    dailyChallengesCompleted: badgeData.dailyChallengesCompleted,
+    hasShared: badgeData.hasShared,
+    lastGamePerfect10: badgeData.lastGamePerfect10,
+    lastGameSRank: badgeData.lastGameSRank,
+    weakFlagCount,
+  } : null;
+
+  // Score distribution: bucket accuracies into ranges
+  const distribution = React.useMemo(() => {
+    if (gameHistory.length === 0) return null;
+    const buckets = [
+      { label: '90-100', min: 90, max: 100, count: 0 },
+      { label: '70-89', min: 70, max: 89, count: 0 },
+      { label: '50-69', min: 50, max: 69, count: 0 },
+      { label: '0-49', min: 0, max: 49, count: 0 },
+    ];
+    for (const entry of gameHistory) {
+      for (const bucket of buckets) {
+        if (entry.accuracy >= bucket.min && entry.accuracy <= bucket.max) {
+          bucket.count++;
+          break;
+        }
+      }
+    }
+    const maxCount = Math.max(...buckets.map((b) => b.count), 1);
+    return { buckets, maxCount, total: gameHistory.length };
+  }, [gameHistory]);
 
   // Region accuracy data (only regions with games played)
   const regionData = REGIONS
@@ -475,7 +509,38 @@ export default function StatsScreen() {
           </Animated.View>
         )}
 
-        {/* ── BADGES ── */}
+        {/* ── SCORE DISTRIBUTION ── */}
+        {distribution && distribution.total >= 3 && (
+          <Animated.View style={{ opacity: restFade }}>
+            <View style={s.sectionHeader}>
+              <Text style={s.sectionTitle}>{t('stats.scoreDistribution')}</Text>
+              <Text style={s.sectionMeta}>{t('results.gamesPlayed', { count: distribution.total })}</Text>
+            </View>
+            <View style={s.distCard}>
+              {distribution.buckets.map((bucket) => {
+                const barPct = distribution.maxCount > 0
+                  ? Math.max((bucket.count / distribution.maxCount) * 100, bucket.count > 0 ? 4 : 0)
+                  : 0;
+                const isGood = bucket.min >= 70;
+                return (
+                  <View key={bucket.label} style={s.distRow}>
+                    <Text style={s.distLabel}>{bucket.label}%</Text>
+                    <View style={s.distBarWrap}>
+                      <View style={[
+                        s.distBarFill,
+                        { width: `${barPct}%` },
+                        isGood && s.distBarGood,
+                      ]} />
+                    </View>
+                    <Text style={[s.distCount, isGood && s.distCountGood]}>{bucket.count}</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </Animated.View>
+        )}
+
+        {/* ── BADGES (with progress bars on locked) ── */}
         <Animated.View style={{ opacity: restFade }}>
           <View style={s.sectionHeader}>
             <Text style={s.sectionTitle}>{t('stats.badges')}</Text>
@@ -485,6 +550,7 @@ export default function StatsScreen() {
             {BADGES.map((badge) => {
               const earned = earnedIds.has(badge.id);
               const tierColor = TIER_COLORS[badge.tier];
+              const progress = !earned && badgeCtx ? getBadgeProgress(badge, badgeCtx) : null;
               return (
                 <View key={badge.id} style={[s.badgeCard, !earned && s.badgeCardLocked]}>
                   <View style={[s.badgeIconWrap, { backgroundColor: earned ? tierColor + '18' : colors.surfaceSecondary }]}>
@@ -492,6 +558,14 @@ export default function StatsScreen() {
                   </View>
                   <Text style={[s.badgeName, !earned && s.badgeNameLocked]}>{badge.name}</Text>
                   <Text style={[s.badgeDesc, !earned && s.badgeDescLocked]}>{badge.description}</Text>
+                  {progress && progress.progress > 0 && (
+                    <View style={s.badgeProgressWrap}>
+                      <View style={[s.badgeProgressFill, { width: `${progress.pct}%` }]} />
+                    </View>
+                  )}
+                  {progress && progress.progress > 0 && (
+                    <Text style={s.badgeProgressText}>{progress.progress}/{progress.target}</Text>
+                  )}
                 </View>
               );
             })}
@@ -869,6 +943,53 @@ const s = StyleSheet.create({
   scoreBadgeWrong: { backgroundColor: colors.errorBg },
   scoreBadgeTextWrong: { color: colors.error },
 
+  // ── Score Distribution
+  distCard: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 14,
+    gap: 10,
+  },
+  distRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  distLabel: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: fontSize.sm,
+    color: colors.textTertiary,
+    width: 56,
+    textAlign: 'right',
+  },
+  distBarWrap: {
+    flex: 1,
+    height: 10,
+    backgroundColor: colors.border,
+    borderRadius: borderRadius.full,
+    overflow: 'hidden',
+  },
+  distBarFill: {
+    height: '100%',
+    backgroundColor: colors.textTertiary,
+    borderRadius: borderRadius.full,
+  },
+  distBarGood: {
+    backgroundColor: colors.success,
+  },
+  distCount: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.sm,
+    color: colors.textTertiary,
+    width: 24,
+    textAlign: 'right',
+  },
+  distCountGood: {
+    color: colors.success,
+  },
+
   // ── Badges
   badgeGrid: {
     flexDirection: 'row',
@@ -902,6 +1023,24 @@ const s = StyleSheet.create({
     lineHeight: 16,
   },
   badgeDescLocked: { color: colors.textTertiary },
+  badgeProgressWrap: {
+    height: 4,
+    backgroundColor: colors.border,
+    borderRadius: borderRadius.full,
+    overflow: 'hidden',
+    marginTop: 8,
+  },
+  badgeProgressFill: {
+    height: '100%',
+    backgroundColor: colors.warning,
+    borderRadius: borderRadius.full,
+  },
+  badgeProgressText: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.xxs,
+    color: colors.textTertiary,
+    marginTop: 3,
+  },
 
   // ── Footer
   settingsLink: {

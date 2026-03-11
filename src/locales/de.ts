@@ -181,6 +181,7 @@ const de: typeof en = {
     byModeLabel: 'Nach Modus',
     overallGrade: 'Gesamtnote',
     moreToUnlock: 'Noch {count} zum Freischalten',
+    scoreDistribution: 'Punkteverteilung',
   },
 
   settings: {
