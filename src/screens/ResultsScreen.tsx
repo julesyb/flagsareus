@@ -22,6 +22,7 @@ import { CheckIcon, CrossIcon } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
 import { GAME_MODES, CATEGORIES } from '../types';
 import { RootStackParamList } from '../types/navigation';
+import { preloadInterstitial, showInterstitial } from '../utils/ads';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
 
@@ -63,6 +64,8 @@ export default function ResultsScreen({ route, navigation }: Props) {
       delay: 200,
       useNativeDriver: true,
     }).start();
+
+    preloadInterstitial();
 
     if (isPerfect) {
       hapticCorrect();
@@ -108,7 +111,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
 
   const goHome = () => navigation.popToTop();
 
-  const playAgain = () => {
+  const navigatePlayAgain = () => {
     if (isDaily || isBaseline) {
       navigation.popToTop();
       return;
@@ -126,6 +129,11 @@ export default function ResultsScreen({ route, navigation }: Props) {
     } else {
       navigation.replace('Game', { config });
     }
+  };
+
+  const playAgain = async () => {
+    await showInterstitial();
+    navigatePlayAgain();
   };
 
   return (
