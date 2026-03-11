@@ -14,8 +14,8 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { colors, spacing, fontFamily, fontSize, borderRadius } from '../utils/theme';
-import { UserStats, GameMode, CategoryId, CATEGORIES } from '../types';
-import { getStats, getFlagStats, FlagStats, getDayStreak, getBadgeData, getMissedFlagIds, BadgeData, getSupportData } from '../utils/storage';
+import { UserStats, GameMode, CategoryId } from '../types';
+import { getStats, getFlagStats, FlagStats, getDayStreak, getBadgeData, getMissedFlagIds, BadgeData, getSupportData, getGameHistory, GameHistoryEntry } from '../utils/storage';
 import { getAllFlags, getTotalFlagCount } from '../data';
 import { getGrade } from '../utils/gameEngine';
 import { t } from '../utils/i18n';
@@ -24,7 +24,6 @@ import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { evaluateBadges, BADGES, TIER_COLORS, BadgeIcon, BadgeCheckContext, getBadgeProgress } from '../utils/badges';
-import { getGameHistory, GameHistoryEntry } from '../utils/storage';
 import { FlagIcon, GlobeIcon, CheckIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon, HeartIcon, ChevronRightIcon, BarChartIcon } from '../components/Icons';
 
 const RANK_COLORS = [colors.gradeS, colors.textTertiary, colors.warning];
