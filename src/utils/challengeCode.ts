@@ -1,4 +1,4 @@
-import { getAllFlags, getFlagsForCategory } from '../data';
+import { getAllFlags } from '../data';
 import { FlagItem, GameQuestion, GameMode } from '../types';
 import { shuffleArray } from './gameEngine';
 import { twinPairs } from '../data/countryAliases';
