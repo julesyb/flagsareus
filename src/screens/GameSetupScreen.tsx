@@ -62,11 +62,11 @@ const DIFFICULTIES: { key: QuizDifficulty; labelKey: string }[] = [
 function ConfigRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <>
+      <View style={styles.configDivider} />
       <View style={styles.configRow}>
         <Text style={styles.configLbl}>{label}</Text>
         <View style={styles.segRow}>{children}</View>
       </View>
-      <View style={styles.configDivider} />
     </>
   );
 }
@@ -113,9 +113,9 @@ export default function GameSetupScreen({ navigation }: Props) {
 
   // Set sensible default time limit when mode changes
   useEffect(() => {
-    if (isFlagFlash) setTimeLimit(60);
-    else if (isFlagPuzzle) setTimeLimit(15);
-    else if (isTimeAttack) setTimeLimit(60);
+    if (setupMode === 'flagflash') setTimeLimit(60);
+    else if (setupMode === 'flagpuzzle') setTimeLimit(15);
+    else if (setupMode === 'timeattack') setTimeLimit(60);
   }, [setupMode]);
 
   const handleFilterTypeSelect = (type: CategoryType) => {
@@ -178,6 +178,10 @@ export default function GameSetupScreen({ navigation }: Props) {
   };
 
   const showQuestionCount = !isTimeAttack && !isFlagPuzzle && !isFlagFlash && filterType !== 'theme';
+
+  const startButtonLabel = isQuiz
+    ? t('setup.startQuiz', { difficulty: t(DIFFICULTIES.find((d) => d.key === difficulty)?.labelKey ?? 'common.medium') })
+    : t('setup.startMode', { mode: t(SETUP_MODES.find((m) => m.key === setupMode)?.labelKey ?? 'setup.quiz') });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -335,10 +339,12 @@ export default function GameSetupScreen({ navigation }: Props) {
                 <Text style={[styles.filterTypeText, isActive && styles.filterTypeTextActive]}>
                   {type === 'region' ? t('setup.byRegion') : t('setup.byTheme')}
                 </Text>
-                <ChevronRightIcon
-                  size={14}
-                  color={isActive ? colors.white : colors.textTertiary}
-                />
+                <View style={isActive ? styles.chevronDown : undefined}>
+                  <ChevronRightIcon
+                    size={14}
+                    color={isActive ? colors.white : colors.textTertiary}
+                  />
+                </View>
               </TouchableOpacity>
             );
           })}
@@ -384,11 +390,9 @@ export default function GameSetupScreen({ navigation }: Props) {
           onPress={startGame}
           activeOpacity={0.8}
           accessibilityRole="button"
-          accessibilityLabel={isQuiz ? t('setup.startQuiz', { difficulty: t(DIFFICULTIES.find((d) => d.key === difficulty)?.labelKey ?? 'common.medium') }) : t('setup.startMode', { mode: t(SETUP_MODES.find((m) => m.key === setupMode)?.labelKey ?? 'setup.quiz') })}
+          accessibilityLabel={startButtonLabel}
         >
-          <Text style={styles.startButtonText}>
-            {isQuiz ? t('setup.startQuiz', { difficulty: t(DIFFICULTIES.find((d) => d.key === difficulty)?.labelKey ?? 'common.medium') }) : t('setup.startMode', { mode: t(SETUP_MODES.find((m) => m.key === setupMode)?.labelKey ?? 'setup.quiz') })}
-          </Text>
+          <Text style={styles.startButtonText}>{startButtonLabel}</Text>
         </TouchableOpacity>
       </View>
 
@@ -497,16 +501,16 @@ const styles = StyleSheet.create({
     borderColor: colors.rule,
     overflow: 'hidden',
   },
+  configDivider: {
+    height: 1,
+    backgroundColor: colors.rule,
+  },
   configRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.md,
     gap: spacing.sm,
-  },
-  configDivider: {
-    height: 1,
-    backgroundColor: colors.rule,
   },
   configLbl: {
     fontFamily: fontFamily.bodyMedium,
@@ -523,7 +527,7 @@ const styles = StyleSheet.create({
   },
   segBtn: {
     flex: 1,
-    maxWidth: 64,
+    maxWidth: 80,
     paddingVertical: spacing.sm,
     backgroundColor: colors.surfaceSecondary,
     borderWidth: 1.5,
@@ -574,6 +578,9 @@ const styles = StyleSheet.create({
   },
   filterTypeTextActive: {
     color: colors.white,
+  },
+  chevronDown: {
+    transform: [{ rotate: '90deg' }],
   },
 
   // Category chips - clean, no icon badges
