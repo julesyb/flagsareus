@@ -7,6 +7,8 @@ const DAY_STREAK_KEY = '@flagsareus_day_streak';
 const DAILY_CHALLENGE_KEY = '@flagsareus_daily_challenge';
 const SETTINGS_KEY = '@flagsareus_settings';
 const BADGE_DATA_KEY = '@flagsareus_badge_data';
+const GAME_HISTORY_KEY = '@flagsareus_game_history';
+const SUPPORT_KEY = '@flagsareus_support';
 const BASELINE_KEY = '@flagsareus_baseline';
 
 // ─── Badge Tracking Data ───────────────────────────────────
@@ -184,6 +186,7 @@ export async function resetStats(): Promise<void> {
     await AsyncStorage.removeItem(DAY_STREAK_KEY);
     await AsyncStorage.removeItem(BADGE_DATA_KEY);
     await AsyncStorage.removeItem(DAILY_CHALLENGE_KEY);
+    await AsyncStorage.removeItem(GAME_HISTORY_KEY);
     await AsyncStorage.removeItem(BASELINE_KEY);
   } catch {
     // Silently fail
@@ -316,6 +319,72 @@ export async function getMissedFlagIds(): Promise<string[]> {
     .filter(([, s]) => s.wrong > 0 && s.rightStreak < 3)
     .sort(([, a], [, b]) => b.wrong - a.wrong)
     .map(([id]) => id);
+}
+
+// ─── Game History (last 50 games for score distribution) ─────
+export interface GameHistoryEntry {
+  accuracy: number; // 0-100
+  mode: GameMode;
+  date: string;
+}
+
+const MAX_GAME_HISTORY = 50;
+
+export async function getGameHistory(): Promise<GameHistoryEntry[]> {
+  try {
+    const json = await AsyncStorage.getItem(GAME_HISTORY_KEY);
+    if (json) return JSON.parse(json);
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+export async function addGameHistoryEntry(accuracy: number, mode: GameMode): Promise<void> {
+  try {
+    const history = await getGameHistory();
+    history.push({ accuracy, mode, date: getTodayDate() });
+    // Keep only the most recent entries
+    const trimmed = history.slice(-MAX_GAME_HISTORY);
+    await AsyncStorage.setItem(GAME_HISTORY_KEY, JSON.stringify(trimmed));
+  } catch {
+    // Silently fail
+  }
+}
+
+// ─── Support (Opt-in Ad Tracking) ─────────────────────────
+export interface SupportData {
+  totalAdsWatched: number;
+  lastWatchedDate: string | null;
+}
+
+const DEFAULT_SUPPORT: SupportData = {
+  totalAdsWatched: 0,
+  lastWatchedDate: null,
+};
+
+export async function getSupportData(): Promise<SupportData> {
+  try {
+    const json = await AsyncStorage.getItem(SUPPORT_KEY);
+    if (json) return { ...DEFAULT_SUPPORT, ...JSON.parse(json) };
+    return { ...DEFAULT_SUPPORT };
+  } catch {
+    return { ...DEFAULT_SUPPORT };
+  }
+}
+
+export async function recordAdWatched(): Promise<SupportData> {
+  try {
+    const data = await getSupportData();
+    const updated: SupportData = {
+      totalAdsWatched: data.totalAdsWatched + 1,
+      lastWatchedDate: getTodayDate(),
+    };
+    await AsyncStorage.setItem(SUPPORT_KEY, JSON.stringify(updated));
+    return updated;
+  } catch {
+    return { ...DEFAULT_SUPPORT };
+  }
 }
 
 // ─── Baseline Data ────────────────────────────────────────

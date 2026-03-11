@@ -72,6 +72,7 @@ const en = {
     bestStreak: 'Best Streak',
     best60s: 'Best 60s',
     accuracy: 'Accuracy',
+    onboardingScores: 'Scores',
   },
 
   // ─── Game Setup ──────────────────────────────────────────
@@ -134,6 +135,23 @@ const en = {
     shareScore: '{correct}/10',
     shareFooter: 'Can you beat my score?\nhttps://flagthat.app',
     perfectShareNote: 'PERFECT SCORE!',
+    newBest: 'New Best',
+    badgesUnlocked: 'Badges Unlocked',
+    yourProgress: 'Your Progress',
+    viewAllStats: 'View All Stats',
+    gamesPlayed: '{count} games played',
+    fastest: 'Fastest',
+    newCountries: '{count} new',
+    aboveAverage: '{pct}% above your average',
+    belowAverage: '{pct}% below your average',
+    firstGame: 'First game, nice',
+    practiceWeak: 'Practice Weak Flags',
+    flagsToReview: '{count} to review',
+    beatYourScore: 'Beat Your Score',
+    keepTheStreak: 'Keep the Streak',
+    tryHardMode: 'Try Hard Mode',
+    playAgain: 'Play Again',
+    almostThere: '{remaining} more for {badge}',
   },
 
   // ─── Stats Screen ────────────────────────────────────────
@@ -166,6 +184,11 @@ const en = {
     alwaysRight: 'Always right',
     weakFlags: 'Weak Flags',
     practiceThese: 'Practice these',
+    practiceNow: 'Practice Now',
+    byModeLabel: 'By Mode',
+    overallGrade: 'Overall Grade',
+    moreToUnlock: '{count} more to unlock',
+    scoreDistribution: 'Score Distribution',
   },
 
   // ─── Settings Screen ────────────────────────────────────
@@ -195,6 +218,18 @@ const en = {
     resetConfirmMsg: 'This will clear all stats, streaks, and progress. This cannot be undone.',
     resetConfirmWeb: 'Reset all data?\n\nThis will clear all stats, streaks, and progress. This cannot be undone.',
     reset: 'Reset',
+  },
+
+  // ─── Support ───────────────────────────────────────────
+  support: {
+    title: 'Buy us a coffee',
+    subtitle: 'Flag That is free with no ads. Help keep it that way - watch a quick video. Totally optional.',
+    watchButton: 'Watch a Video',
+    watchAgain: 'Watch',
+    thankYou: 'You are the best. Thank you!',
+    totalWatched: 'Supported {count} time',
+    totalWatchedPlural: 'Supported {count} times',
+    adFailed: 'Nothing available right now. Try again later!',
   },
 
   // ─── Browse Screen ──────────────────────────────────────
@@ -294,12 +329,13 @@ const en = {
     daily_legend: { name: 'Daily Legend', description: 'Complete 30 daily challenges' },
     practice_perfect: { name: 'Practice Perfect', description: 'Clear all flags from practice' },
     shared_spirit: { name: 'Shared Spirit', description: 'Share your results' },
+    supporter: { name: 'Supporter', description: 'Support by watching a video' },
   },
 
   // ─── Onboarding ───────────────────────────────────────────
   onboarding: {
     subtitle: "Let's see where you stand",
-    regionTest: '10-flag quiz',
+    regionTest: 'Flag quiz',
     flagCount: '{count} flags',
     completed: 'Done',
     startPlaying: 'Start Playing',

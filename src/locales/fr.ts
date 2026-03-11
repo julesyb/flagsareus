@@ -70,6 +70,7 @@ const fr: typeof en = {
     bestStreak: 'Meilleure s\u00e9rie',
     best60s: 'Meilleur 60s',
     accuracy: 'Pr\u00e9cision',
+    onboardingScores: 'Scores',
   },
 
   setup: {
@@ -129,6 +130,23 @@ const fr: typeof en = {
     shareScore: '{correct}/10',
     shareFooter: 'Battez mon score !\nhttps://flagthat.app',
     perfectShareNote: 'SCORE PARFAIT !',
+    newBest: 'Nouveau record',
+    badgesUnlocked: 'Badges d\u00e9bloqu\u00e9s',
+    yourProgress: 'Votre progression',
+    viewAllStats: 'Toutes les stats',
+    gamesPlayed: '{count} parties jou\u00e9es',
+    fastest: 'Plus rapide',
+    newCountries: '{count} nouveaux',
+    aboveAverage: '{pct}% au-dessus de votre moyenne',
+    belowAverage: '{pct}% en dessous de votre moyenne',
+    firstGame: 'Premi\u00e8re partie, bravo',
+    practiceWeak: 'R\u00e9viser les drapeaux faibles',
+    flagsToReview: '{count} \u00e0 r\u00e9viser',
+    beatYourScore: 'Battez votre score',
+    keepTheStreak: 'Gardez la s\u00e9rie',
+    tryHardMode: 'Essayer difficile',
+    playAgain: 'Rejouer',
+    almostThere: 'Encore {remaining} pour {badge}',
   },
 
   stats: {
@@ -160,6 +178,11 @@ const fr: typeof en = {
     alwaysRight: 'Toujours correct',
     weakFlags: 'Drapeaux difficiles',
     practiceThese: 'R\u00e9visez',
+    practiceNow: 'R\u00e9viser maintenant',
+    byModeLabel: 'Par mode',
+    overallGrade: 'Note g\u00e9n\u00e9rale',
+    moreToUnlock: 'Encore {count} pour d\u00e9bloquer',
+    scoreDistribution: 'Distribution des scores',
   },
 
   settings: {
@@ -188,6 +211,17 @@ const fr: typeof en = {
     resetConfirmMsg: 'Toutes les stats, s\u00e9ries et progr\u00e8s seront effac\u00e9s. Cette action est irr\u00e9versible.',
     resetConfirmWeb: 'R\u00e9initialiser les donn\u00e9es ?\n\nToutes les stats, s\u00e9ries et progr\u00e8s seront effac\u00e9s. Cette action est irr\u00e9versible.',
     reset: 'R\u00e9initialiser',
+  },
+
+  support: {
+    title: 'Offrez-nous un caf\u00e9',
+    subtitle: 'Flag That est gratuit, sans pub. Aidez-nous \u00e0 continuer en regardant une courte vid\u00e9o. Totalement optionnel.',
+    watchButton: 'Regarder une vid\u00e9o',
+    watchAgain: 'Regarder',
+    thankYou: 'Vous \u00eates formidable. Merci !',
+    totalWatched: 'Soutenu {count} fois',
+    totalWatchedPlural: 'Soutenu {count} fois',
+    adFailed: 'Rien de disponible pour le moment. R\u00e9essayez plus tard !',
   },
 
   browse: {
@@ -279,11 +313,12 @@ const fr: typeof en = {
     daily_legend: { name: 'L\u00e9gende quotidienne', description: '30 d\u00e9fis quotidiens termin\u00e9s' },
     practice_perfect: { name: 'R\u00e9vision parfaite', description: 'Plus aucun drapeau \u00e0 r\u00e9viser' },
     shared_spirit: { name: 'Esprit de partage', description: 'Partagez vos r\u00e9sultats' },
+    supporter: { name: 'Soutien', description: 'Soutenez en regardant une vid\u00e9o' },
   },
 
   onboarding: {
     subtitle: 'Voyons o\u00f9 vous en \u00eates',
-    regionTest: 'Quiz de 10 drapeaux',
+    regionTest: 'Quiz de drapeaux',
     flagCount: '{count} drapeaux',
     completed: 'Termin\u00e9',
     startPlaying: 'Commencer \u00e0 jouer',

@@ -70,6 +70,7 @@ const es: typeof en = {
     bestStreak: 'Mejor racha',
     best60s: 'Mejor 60s',
     accuracy: 'Precisi\u00f3n',
+    onboardingScores: 'Puntuaciones',
   },
 
   setup: {
@@ -129,6 +130,23 @@ const es: typeof en = {
     shareScore: '{correct}/10',
     shareFooter: '\u00bfPuedes superar mi puntuaci\u00f3n?\nhttps://flagthat.app',
     perfectShareNote: '\u00a1PUNTUACI\u00d3N PERFECTA!',
+    newBest: 'Nuevo record',
+    badgesUnlocked: 'Insignias desbloqueadas',
+    yourProgress: 'Tu progreso',
+    viewAllStats: 'Ver todas las estad\u00edsticas',
+    gamesPlayed: '{count} partidas jugadas',
+    fastest: 'M\u00e1s r\u00e1pido',
+    newCountries: '{count} nuevos',
+    aboveAverage: '{pct}% sobre tu promedio',
+    belowAverage: '{pct}% bajo tu promedio',
+    firstGame: 'Primera partida, genial',
+    practiceWeak: 'Practicar banderas d\u00e9biles',
+    flagsToReview: '{count} para repasar',
+    beatYourScore: 'Supera tu marca',
+    keepTheStreak: 'Mantener la racha',
+    tryHardMode: 'Probar dif\u00edcil',
+    playAgain: 'Jugar de nuevo',
+    almostThere: '{remaining} m\u00e1s para {badge}',
   },
 
   stats: {
@@ -160,6 +178,11 @@ const es: typeof en = {
     alwaysRight: 'Siempre correctas',
     weakFlags: 'Banderas dif\u00edciles',
     practiceThese: 'Practica estas',
+    practiceNow: 'Practicar ahora',
+    byModeLabel: 'Por modo',
+    overallGrade: 'Nota general',
+    moreToUnlock: '{count} m\u00e1s para desbloquear',
+    scoreDistribution: 'Distribución de puntos',
   },
 
   settings: {
@@ -188,6 +211,17 @@ const es: typeof en = {
     resetConfirmMsg: 'Se borrar\u00e1n todas las estad\u00edsticas, rachas y progreso. Esta acci\u00f3n es irreversible.',
     resetConfirmWeb: '\u00bfRestablecer datos?\n\nSe borrar\u00e1n todas las estad\u00edsticas, rachas y progreso. Esta acci\u00f3n es irreversible.',
     reset: 'Restablecer',
+  },
+
+  support: {
+    title: 'Inv\u00edtanos a un caf\u00e9',
+    subtitle: 'Flag That es gratis, sin anuncios. Ay\u00fadanos a seguir as\u00ed viendo un video corto. Totalmente opcional.',
+    watchButton: 'Ver un video',
+    watchAgain: 'Ver',
+    thankYou: 'Eres el mejor. \u00a1Gracias!',
+    totalWatched: 'Apoyado {count} vez',
+    totalWatchedPlural: 'Apoyado {count} veces',
+    adFailed: 'Nada disponible ahora. \u00a1Int\u00e9ntalo m\u00e1s tarde!',
   },
 
   browse: {
@@ -279,11 +313,12 @@ const es: typeof en = {
     daily_legend: { name: 'Leyenda diaria', description: '30 desaf\u00edos diarios completados' },
     practice_perfect: { name: 'Pr\u00e1ctica perfecta', description: 'Sin banderas pendientes de practicar' },
     shared_spirit: { name: 'Esp\u00edritu compartido', description: 'Comparte tus resultados' },
+    supporter: { name: 'Patrocinador', description: 'Apoya viendo un video' },
   },
 
   onboarding: {
     subtitle: 'Veamos tu nivel',
-    regionTest: 'Quiz de 10 banderas',
+    regionTest: 'Quiz de banderas',
     flagCount: '{count} banderas',
     completed: 'Hecho',
     startPlaying: 'Empezar a jugar',

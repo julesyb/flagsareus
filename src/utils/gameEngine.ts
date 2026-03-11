@@ -95,6 +95,21 @@ export function generateDailyShareGrid(results: GameResult[]): string {
   return `Flag That #${dailyNum}\n${correct}/10\n\n${row1}\n${row2}\n\nflagthat.app`;
 }
 
+export function generateShareGrid(results: GameResult[], modeLabel: string, categoryLabel: string): string {
+  const correct = results.filter((r) => r.correct).length;
+  const accuracy = calculateAccuracy(results);
+  const grade = getGrade(accuracy);
+  const grid = results.map((r) => (r.correct ? '\u2b1b' : '\u2b1c')).join('');
+  // Split into rows of 5
+  const rows: string[] = [];
+  for (let i = 0; i < grid.length; i += 5) {
+    rows.push(grid.slice(i, i + 5));
+  }
+  const gridStr = rows.join('\n');
+  const perfectLine = accuracy === 100 ? '\nPERFECT SCORE!' : '';
+  return `Flag That - ${modeLabel}\n${correct}/${results.length} (${grade.label})${perfectLine}\n\n${gridStr}\n\nflagthat.app`;
+}
+
 export function generateQuestions(config: GameConfig): GameQuestion[] {
   const categoryFlags = getFlagsForCategory(config.category);
 
@@ -129,7 +144,7 @@ export function generatePracticeQuestions(flagIds: string[]): GameQuestion[] {
 function generateOptions(correctFlag: FlagItem, pool: FlagItem[], mode: GameMode): string[] {
   if (mode === 'hard' || mode === 'flagflash' || mode === 'flagpuzzle') return [];
 
-  const choiceCount = (mode === 'timeattack' || mode === 'medium') ? 4 : 2;
+  const choiceCount = (mode === 'timeattack' || mode === 'medium' || mode === 'baseline') ? 4 : 2;
   const otherFlags = pool.filter((f) => f.id !== correctFlag.id);
 
   // Prioritize twin flags as wrong options so look-alikes appear together

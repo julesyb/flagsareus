@@ -70,6 +70,7 @@ const de: typeof en = {
     bestStreak: 'Beste Serie',
     best60s: 'Beste 60s',
     accuracy: 'Genauigkeit',
+    onboardingScores: 'Ergebnisse',
   },
 
   setup: {
@@ -129,6 +130,23 @@ const de: typeof en = {
     shareScore: '{correct}/10',
     shareFooter: 'Kannst du mich schlagen?\nhttps://flagthat.app',
     perfectShareNote: 'PERFEKTE PUNKTZAHL!',
+    newBest: 'Neuer Rekord',
+    badgesUnlocked: 'Abzeichen freigeschaltet',
+    yourProgress: 'Dein Fortschritt',
+    viewAllStats: 'Alle Statistiken',
+    gamesPlayed: '{count} Spiele gespielt',
+    fastest: 'Schnellste',
+    newCountries: '{count} neu',
+    aboveAverage: '{pct}% \u00fcber deinem Schnitt',
+    belowAverage: '{pct}% unter deinem Schnitt',
+    firstGame: 'Erstes Spiel, toll',
+    practiceWeak: 'Schwache Flaggen \u00fcben',
+    flagsToReview: '{count} zu wiederholen',
+    beatYourScore: 'Schlag deinen Rekord',
+    keepTheStreak: 'Serie halten',
+    tryHardMode: 'Schwer versuchen',
+    playAgain: 'Nochmal spielen',
+    almostThere: 'Noch {remaining} f\u00fcr {badge}',
   },
 
   stats: {
@@ -160,6 +178,11 @@ const de: typeof en = {
     alwaysRight: 'Immer richtig',
     weakFlags: 'Schwache Flaggen',
     practiceThese: '\u00dcbe diese',
+    practiceNow: 'Jetzt \u00fcben',
+    byModeLabel: 'Nach Modus',
+    overallGrade: 'Gesamtnote',
+    moreToUnlock: 'Noch {count} zum Freischalten',
+    scoreDistribution: 'Punkteverteilung',
   },
 
   settings: {
@@ -188,6 +211,17 @@ const de: typeof en = {
     resetConfirmMsg: 'Alle Statistiken, Serien und Fortschritte werden gel\u00f6scht. Dies kann nicht r\u00fcckg\u00e4ngig gemacht werden.',
     resetConfirmWeb: 'Alle Daten zur\u00fccksetzen?\n\nAlle Statistiken, Serien und Fortschritte werden gel\u00f6scht. Dies kann nicht r\u00fcckg\u00e4ngig gemacht werden.',
     reset: 'Zur\u00fccksetzen',
+  },
+
+  support: {
+    title: 'Spendier uns einen Kaffee',
+    subtitle: 'Flag That ist kostenlos, ohne Werbung. Hilf uns, das beizubehalten - schau ein kurzes Video. V\u00f6llig freiwillig.',
+    watchButton: 'Video ansehen',
+    watchAgain: 'Ansehen',
+    thankYou: 'Du bist spitze. Danke!',
+    totalWatched: '{count} Mal unterst\u00fctzt',
+    totalWatchedPlural: '{count} Mal unterst\u00fctzt',
+    adFailed: 'Gerade nichts verf\u00fcgbar. Versuch es sp\u00e4ter!',
   },
 
   browse: {
@@ -279,11 +313,12 @@ const de: typeof en = {
     daily_legend: { name: 'T\u00e4gliche Legende', description: '30 t\u00e4gliche Herausforderungen' },
     practice_perfect: { name: 'Perfekt ge\u00fcbt', description: 'Keine Flaggen mehr zum \u00dcben' },
     shared_spirit: { name: 'Teilender Geist', description: 'Teile deine Ergebnisse' },
+    supporter: { name: 'Unterst\u00fctzer', description: 'Unterst\u00fctze durch ein Video' },
   },
 
   onboarding: {
     subtitle: 'Mal sehen, wo du stehst',
-    regionTest: '10-Flaggen-Quiz',
+    regionTest: 'Flaggen-Quiz',
     flagCount: '{count} Flaggen',
     completed: 'Fertig',
     startPlaying: 'Losspielen',

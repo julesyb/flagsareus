@@ -70,6 +70,7 @@ const ptBR: typeof en = {
     bestStreak: 'Melhor sequ\u00eancia',
     best60s: 'Melhor 60s',
     accuracy: 'Precis\u00e3o',
+    onboardingScores: 'Pontua\u00e7\u00f5es',
   },
 
   setup: {
@@ -129,6 +130,23 @@ const ptBR: typeof en = {
     shareScore: '{correct}/10',
     shareFooter: 'Pode me superar?\nhttps://flagthat.app',
     perfectShareNote: 'PONTUA\u00c7\u00c3O PERFEITA!',
+    newBest: 'Novo recorde',
+    badgesUnlocked: 'Medalhas desbloqueadas',
+    yourProgress: 'Seu progresso',
+    viewAllStats: 'Ver todas as estat\u00edsticas',
+    gamesPlayed: '{count} jogos',
+    fastest: 'Mais r\u00e1pido',
+    newCountries: '{count} novos',
+    aboveAverage: '{pct}% acima da sua m\u00e9dia',
+    belowAverage: '{pct}% abaixo da sua m\u00e9dia',
+    firstGame: 'Primeiro jogo, legal',
+    practiceWeak: 'Praticar bandeiras fracas',
+    flagsToReview: '{count} para revisar',
+    beatYourScore: 'Supere sua marca',
+    keepTheStreak: 'Manter a sequ\u00eancia',
+    tryHardMode: 'Tentar dif\u00edcil',
+    playAgain: 'Jogar de novo',
+    almostThere: 'Mais {remaining} para {badge}',
   },
 
   stats: {
@@ -160,6 +178,11 @@ const ptBR: typeof en = {
     alwaysRight: 'Sempre corretas',
     weakFlags: 'Bandeiras dif\u00edceis',
     practiceThese: 'Pratique estas',
+    practiceNow: 'Praticar agora',
+    byModeLabel: 'Por modo',
+    overallGrade: 'Nota geral',
+    moreToUnlock: 'Faltam {count} para desbloquear',
+    scoreDistribution: 'Distribuição de pontos',
   },
 
   settings: {
@@ -188,6 +211,17 @@ const ptBR: typeof en = {
     resetConfirmMsg: 'Todas as estat\u00edsticas, sequ\u00eancias e progresso ser\u00e3o apagados. Isso n\u00e3o pode ser desfeito.',
     resetConfirmWeb: 'Redefinir dados?\n\nTodas as estat\u00edsticas, sequ\u00eancias e progresso ser\u00e3o apagados. Isso n\u00e3o pode ser desfeito.',
     reset: 'Redefinir',
+  },
+
+  support: {
+    title: 'Pague-nos um caf\u00e9',
+    subtitle: 'Flag That \u00e9 gratuito, sem an\u00fancios. Ajude a manter assim assistindo um v\u00eddeo curto. Totalmente opcional.',
+    watchButton: 'Assistir um v\u00eddeo',
+    watchAgain: 'Assistir',
+    thankYou: 'Voc\u00ea \u00e9 demais. Obrigado!',
+    totalWatched: 'Apoiado {count} vez',
+    totalWatchedPlural: 'Apoiado {count} vezes',
+    adFailed: 'Nada dispon\u00edvel agora. Tente mais tarde!',
   },
 
   browse: {
@@ -279,11 +313,12 @@ const ptBR: typeof en = {
     daily_legend: { name: 'Lenda di\u00e1ria', description: '30 desafios di\u00e1rios completos' },
     practice_perfect: { name: 'Pr\u00e1tica perfeita', description: 'Sem bandeiras para praticar' },
     shared_spirit: { name: 'Esp\u00edrito compartilhador', description: 'Compartilhe seus resultados' },
+    supporter: { name: 'Apoiador', description: 'Apoie assistindo um v\u00eddeo' },
   },
 
   onboarding: {
     subtitle: 'Vamos ver seu n\u00edvel',
-    regionTest: 'Quiz de 10 bandeiras',
+    regionTest: 'Quiz de bandeiras',
     flagCount: '{count} bandeiras',
     completed: 'Feito',
     startPlaying: 'Come\u00e7ar a jogar',
