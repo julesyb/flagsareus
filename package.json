@@ -7,7 +7,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build:web": "npx expo export --platform web"
+    "build:web": "npx expo export --platform web",
+    "eas-build-post-install": "node ./node_modules/expo-applovin-ads/scripts/eas-build-post-install-script.js"
   },
   "dependencies": {
     "@expo-google-fonts/barlow": "^0.4.1",
@@ -30,7 +31,8 @@
     "react": "19.2.0",
     "react-dom": "^19.2.0",
     "react-native": "0.83.2",
-    "react-native-google-mobile-ads": "^14.6.0",
+    "expo-applovin-ads": "^0.1.0",
+    "react-native-applovin-max": "^9.5.0",
     "react-native-safe-area-context": "^5.7.0",
     "react-native-screens": "^4.24.0",
     "react-native-svg": "^15.15.3",
