@@ -19,7 +19,7 @@ import { getStats, getDayStreak, getDailyChallenge, DailyChallengeData, getSetti
 import { generateQuestions, getDailyNumber } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion } from '../types';
-import { PlayIcon, ChevronRightIcon, ClockIcon, UsersIcon, EyeIcon, MapPinIcon, LinkIcon, CalendarIcon, CrosshairIcon } from '../components/Icons';
+import { PlayIcon, ChevronRightIcon, ClockIcon, UsersIcon, EyeIcon, CalendarIcon, CrosshairIcon, LightningIcon, GearIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 
@@ -233,6 +233,13 @@ export default function HomeScreen({ navigation }: Props) {
               </>
             )}
           </View>
+          <TouchableOpacity
+            style={s.settingsBtn}
+            onPress={() => navigation.navigate('Settings')}
+            activeOpacity={0.6}
+          >
+            <GearIcon size={20} color={colors.textTertiary} />
+          </TouchableOpacity>
         </View>
 
         {/* ── DAILY CHALLENGE ── */}
@@ -377,6 +384,26 @@ export default function HomeScreen({ navigation }: Props) {
             activeOpacity={0.85}
             onPress={() => {
               hapticTap();
+              navigation.navigate('FlagFlash', {
+                config: { mode: 'flagflash', category: 'all', questionCount: 999, timeLimit: 60, displayMode: 'flag' },
+              });
+            }}
+          >
+            <View style={s.modeIcon}>
+              <LightningIcon size={18} color={colors.white} />
+            </View>
+            <View style={s.modeText}>
+              <Text style={s.modeTitle}>FlagFlash</Text>
+              <Text style={s.modeSub}>Party mode - tilt your phone to play</Text>
+            </View>
+            <ChevronRightIcon size={18} color={colors.rule} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={s.modeCard}
+            activeOpacity={0.85}
+            onPress={() => {
+              hapticTap();
               navigation.navigate('Neighbors', {
                 config: { mode: 'neighbors', category: 'all', questionCount: 10, displayMode: 'flag' },
               });
@@ -408,46 +435,6 @@ export default function HomeScreen({ navigation }: Props) {
             <View style={s.modeText}>
               <Text style={s.modeTitle}>Flag Impostor</Text>
               <Text style={s.modeSub}>Spot the fake flag</Text>
-            </View>
-            <ChevronRightIcon size={18} color={colors.rule} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={s.modeCard}
-            activeOpacity={0.85}
-            onPress={() => {
-              hapticTap();
-              navigation.navigate('Game', {
-                config: { mode: 'medium', category: 'all', questionCount: 10, displayMode: 'map' },
-              });
-            }}
-          >
-            <View style={s.modeIcon}>
-              <MapPinIcon size={18} color={colors.white} />
-            </View>
-            <View style={s.modeText}>
-              <Text style={s.modeTitle}>Map Mode</Text>
-              <Text style={s.modeSub}>Identify countries on the map</Text>
-            </View>
-            <ChevronRightIcon size={18} color={colors.rule} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={s.modeCard}
-            activeOpacity={0.85}
-            onPress={() => {
-              hapticTap();
-              navigation.navigate('CapitalConnection', {
-                config: { mode: 'capitalconnection', category: 'all', questionCount: 10, displayMode: 'flag' },
-              });
-            }}
-          >
-            <View style={s.modeIcon}>
-              <LinkIcon size={18} color={colors.white} />
-            </View>
-            <View style={s.modeText}>
-              <Text style={s.modeTitle}>Capital Quiz</Text>
-              <Text style={s.modeSub}>Name the capital city</Text>
             </View>
             <ChevronRightIcon size={18} color={colors.rule} />
           </TouchableOpacity>
@@ -546,19 +533,24 @@ const s = StyleSheet.create({
   wordmark: {},
   wmLine1: {
     fontFamily: fontFamily.display,
-    fontSize: 36,
-    lineHeight: 38,
+    fontSize: 34,
+    lineHeight: 36,
     color: colors.ink,
     letterSpacing: -0.5,
   },
   wmLine2: {
     fontFamily: fontFamily.displayItalic,
-    fontSize: 36,
-    lineHeight: 38,
+    fontSize: 34,
+    lineHeight: 36,
     color: colors.accent,
   },
   headerRight: {
     alignItems: 'flex-end',
+    flex: 1,
+  },
+  settingsBtn: {
+    padding: spacing.sm,
+    marginLeft: spacing.sm,
   },
   streakVal: {
     fontFamily: fontFamily.display,
@@ -573,7 +565,7 @@ const s = StyleSheet.create({
     letterSpacing: 1,
     textTransform: 'uppercase',
     color: colors.accent,
-    marginTop: 1,
+    marginTop: spacing.xxs,
   },
   streakLblMuted: {
     fontFamily: fontFamily.uiLabel,
@@ -581,7 +573,7 @@ const s = StyleSheet.create({
     letterSpacing: 1,
     textTransform: 'uppercase',
     color: colors.textTertiary,
-    marginTop: 1,
+    marginTop: spacing.xxs,
   },
 
   // ── Daily Challenge
@@ -592,11 +584,11 @@ const s = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.accent,
     borderRadius: borderRadius.lg,
-    padding: 14,
-    paddingHorizontal: 16,
+    padding: spacing.md,
+    paddingHorizontal: spacing.md,
     marginHorizontal: spacing.md,
     marginTop: spacing.md,
-    gap: 12,
+    gap: spacing.md,
   },
   dailyCardDone: {
     borderColor: colors.rule,
@@ -615,7 +607,7 @@ const s = StyleSheet.create({
   },
   dailyTitle: {
     fontFamily: fontFamily.bodyBold,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.ink,
     marginBottom: 2,
   },
@@ -624,9 +616,9 @@ const s = StyleSheet.create({
   },
   dailySub: {
     fontFamily: fontFamily.body,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.textTertiary,
-    lineHeight: 16,
+    lineHeight: 18,
   },
   dailyScore: {
     fontFamily: fontFamily.display,
@@ -640,16 +632,16 @@ const s = StyleSheet.create({
     marginHorizontal: spacing.md,
     marginTop: spacing.md,
     borderRadius: borderRadius.xl,
-    padding: 22,
-    paddingTop: 24,
+    padding: spacing.lg,
+    paddingTop: spacing.lg,
   },
   heroLabel: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 10,
+    fontSize: 11,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
     color: colors.whiteAlpha45,
-    marginBottom: 18,
+    marginBottom: spacing.md,
   },
   flagWrap: {
     width: '100%',
@@ -660,12 +652,12 @@ const s = StyleSheet.create({
 
   // Options 2x2
   optsGrid: {
-    marginTop: 16,
-    gap: 7,
+    marginTop: spacing.md,
+    gap: spacing.sm,
   },
   optsRow: {
     flexDirection: 'row',
-    gap: 7,
+    gap: spacing.sm,
   },
   optWrap: {
     flex: 1,
@@ -675,8 +667,8 @@ const s = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: colors.darkBorder,
     borderRadius: borderRadius.md,
-    paddingVertical: 13,
-    paddingHorizontal: 10,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
     alignItems: 'center',
   },
   optCorrect: {
@@ -689,7 +681,7 @@ const s = StyleSheet.create({
   },
   optText: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 14,
+    fontSize: 16,
     color: colors.whiteAlpha70,
     textAlign: 'center',
   },
@@ -702,13 +694,13 @@ const s = StyleSheet.create({
 
   // ── Teaser result
   teaserResult: {
-    marginTop: 16,
+    marginTop: spacing.md,
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.md,
   },
   teaserResultText: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 16,
+    fontSize: 18,
     letterSpacing: 1,
     textTransform: 'uppercase',
     color: colors.white,
@@ -718,15 +710,15 @@ const s = StyleSheet.create({
   },
   teaserResultWrong: {
     color: colors.white,
-    fontSize: 18,
+    fontSize: 20,
   },
   teaserPlayBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 14,
-    paddingHorizontal: 28,
+    gap: spacing.sm,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
     borderRadius: borderRadius.md,
     width: '100%',
   },
@@ -738,7 +730,7 @@ const s = StyleSheet.create({
   },
   teaserPlayText: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 15,
+    fontSize: 17,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
     color: colors.white,
@@ -747,28 +739,28 @@ const s = StyleSheet.create({
   // ── Play button
   playWrap: {
     paddingHorizontal: spacing.md,
-    paddingTop: 10,
+    paddingTop: spacing.sm,
   },
   playBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    gap: spacing.sm,
     backgroundColor: colors.ink,
     borderRadius: borderRadius.lg,
-    paddingVertical: 18,
+    paddingVertical: spacing.md + spacing.xxs,
   },
   playBolt: {
     width: 24,
     height: 24,
     backgroundColor: colors.accent,
-    borderRadius: 6,
+    borderRadius: borderRadius.sm,
     justifyContent: 'center',
     alignItems: 'center',
   },
   playBtnText: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 17,
+    fontSize: 19,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
     color: colors.white,
@@ -777,7 +769,7 @@ const s = StyleSheet.create({
   // ── Config card
   configCard: {
     marginHorizontal: spacing.md,
-    marginTop: 10,
+    marginTop: spacing.sm,
     backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
     borderWidth: 1,
@@ -787,9 +779,9 @@ const s = StyleSheet.create({
   configRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 13,
-    paddingHorizontal: 16,
-    gap: 10,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
   },
   configDivider: {
     height: 1,
@@ -797,7 +789,7 @@ const s = StyleSheet.create({
   },
   configLbl: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.ink,
     minWidth: 58,
     flexShrink: 0,
@@ -805,13 +797,13 @@ const s = StyleSheet.create({
   segRow: {
     flexDirection: 'row',
     flex: 1,
-    gap: 4,
+    gap: spacing.xs,
     justifyContent: 'flex-end',
   },
   segBtn: {
     flex: 1,
     maxWidth: 54,
-    paddingVertical: 7,
+    paddingVertical: spacing.sm,
     backgroundColor: colors.surfaceSecondary,
     borderWidth: 1.5,
     borderColor: colors.rule,
@@ -824,7 +816,7 @@ const s = StyleSheet.create({
   },
   segBtnText: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 13,
+    fontSize: 14,
     textTransform: 'uppercase',
     color: colors.textTertiary,
   },
@@ -835,15 +827,15 @@ const s = StyleSheet.create({
   // ── Game modes
   sectionWrap: {
     paddingHorizontal: spacing.md,
-    marginTop: 10,
+    marginTop: spacing.sm,
   },
   sectionLbl: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 10,
+    fontSize: 11,
     letterSpacing: 1.2,
     textTransform: 'uppercase',
     color: colors.textTertiary,
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   modeCard: {
     flexDirection: 'row',
@@ -852,10 +844,10 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.rule,
     borderRadius: borderRadius.lg,
-    padding: 14,
-    paddingHorizontal: 16,
-    marginBottom: 7,
-    gap: 12,
+    padding: spacing.md,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.sm,
+    gap: spacing.md,
   },
   modeIcon: {
     width: 40,
@@ -870,25 +862,25 @@ const s = StyleSheet.create({
   },
   modeTitle: {
     fontFamily: fontFamily.bodyBold,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.ink,
     marginBottom: 2,
   },
   modeSub: {
     fontFamily: fontFamily.body,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.textTertiary,
-    lineHeight: 16,
+    lineHeight: 18,
   },
 
   // ── Stats row
   statsWrap: {
     paddingHorizontal: spacing.md,
-    marginTop: 10,
+    marginTop: spacing.sm,
   },
   statsRow: {
     flexDirection: 'row',
-    gap: 7,
+    gap: spacing.sm,
   },
   statTile: {
     flex: 1,
@@ -896,7 +888,7 @@ const s = StyleSheet.create({
     borderRadius: borderRadius.lg,
     borderWidth: 1,
     borderColor: colors.rule,
-    padding: 14,
+    padding: spacing.md,
     alignItems: 'center',
   },
   statVal: {
@@ -907,10 +899,10 @@ const s = StyleSheet.create({
   },
   statLbl: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 10,
+    fontSize: 12,
     letterSpacing: 0.8,
     textTransform: 'uppercase',
     color: colors.textTertiary,
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
 });
