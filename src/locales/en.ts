@@ -72,7 +72,7 @@ const en = {
     bestStreak: 'Best Streak',
     best60s: 'Best 60s',
     accuracy: 'Accuracy',
-    onboardingDesc: '{count} flags, 4 options',
+    onboardingFlags: 'flags to go',
   },
 
   // ─── Game Setup ──────────────────────────────────────────

@@ -70,7 +70,7 @@ const ptBR: typeof en = {
     bestStreak: 'Melhor sequ\u00eancia',
     best60s: 'Melhor 60s',
     accuracy: 'Precis\u00e3o',
-    onboardingDesc: '{count} bandeiras, 4 op\u00e7\u00f5es',
+    onboardingFlags: 'bandeiras pendentes',
   },
 
   setup: {

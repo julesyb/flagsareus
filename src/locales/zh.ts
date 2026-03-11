@@ -70,7 +70,7 @@ const zh: typeof en = {
     bestStreak: '\u6700\u4f73\u8fde\u80dc',
     best60s: '\u6700\u4f73 60s',
     accuracy: '\u51c6\u786e\u7387',
-    onboardingDesc: '{count} \u9762\u56fd\u65d7, 4 \u4e2a\u9009\u9879',
+    onboardingFlags: '\u9762\u56fd\u65d7\u5f85\u6d4b',
   },
 
   setup: {

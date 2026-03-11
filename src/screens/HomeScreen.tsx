@@ -260,28 +260,31 @@ export default function HomeScreen({ navigation }: Props) {
               });
             }}
           >
-            <View style={s.onboardingRow}>
-              <View style={{ flex: 1 }}>
+            <View style={s.onboardingTop}>
+              <View style={s.onboardingIcon}>
+                <CrosshairIcon size={18} color={colors.accent} />
+              </View>
+              <View style={s.onboardingContent}>
                 <Text style={s.onboardingTitle}>{t(`categories.${nextRegion}`)}</Text>
                 <Text style={s.onboardingSub}>
-                  {t('home.onboardingDesc', { count: getCategoryCount(nextRegion as CategoryId) })}
+                  {getCategoryCount(nextRegion as CategoryId)} {t('home.onboardingFlags')}
                 </Text>
               </View>
-              <View style={s.onboardingPlayBtn}>
-                <PlayIcon size={12} color={colors.white} />
-              </View>
+              <ChevronRightIcon size={18} color={colors.accent} />
             </View>
             <View style={s.onboardingSegments}>
-              {ONBOARDING_REGIONS.map((r) => (
-                <View
-                  key={r}
-                  style={[
-                    s.onboardingSegment,
-                    baseline?.regions[r] && s.onboardingSegmentDone,
-                    r === nextRegion && s.onboardingSegmentNext,
-                  ]}
-                />
-              ))}
+              {ONBOARDING_REGIONS.map((r) => {
+                const done = !!baseline?.regions[r];
+                const active = r === nextRegion;
+                return (
+                  <View key={r} style={s.onboardingSegCol}>
+                    <View style={[s.onboardingSegBar, done && s.onboardingSegDone, active && s.onboardingSegActive]} />
+                    <Text style={[s.onboardingSegLabel, done && s.onboardingSegLabelDone, active && s.onboardingSegLabelActive]}>
+                      {t(`categories.${r}`).slice(0, 3).toUpperCase()}
+                    </Text>
+                  </View>
+                );
+              })}
             </View>
           </TouchableOpacity>
         )}
@@ -627,51 +630,75 @@ const s = StyleSheet.create({
 
   // ── Onboarding progress
   onboardingCard: {
-    backgroundColor: colors.ink,
+    backgroundColor: colors.white,
+    borderWidth: 2,
+    borderColor: colors.accent,
     borderRadius: borderRadius.lg,
     marginHorizontal: spacing.md,
     marginTop: spacing.md,
     padding: spacing.md,
   },
-  onboardingRow: {
+  onboardingTop: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: spacing.md,
     marginBottom: spacing.md,
+  },
+  onboardingIcon: {
+    width: 40,
+    height: 40,
+    backgroundColor: colors.accentBg,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  onboardingContent: {
+    flex: 1,
   },
   onboardingTitle: {
     fontFamily: fontFamily.bodyBold,
     fontSize: fontSize.lg,
-    color: colors.white,
-    marginBottom: spacing.xxs,
+    color: colors.ink,
+    marginBottom: 2,
   },
   onboardingSub: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.caption,
-    color: colors.whiteAlpha45,
-  },
-  onboardingPlayBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: borderRadius.sm,
-    backgroundColor: colors.accent,
-    justifyContent: 'center',
-    alignItems: 'center',
+    color: colors.textTertiary,
+    lineHeight: 18,
   },
   onboardingSegments: {
     flexDirection: 'row',
     gap: spacing.xs,
   },
-  onboardingSegment: {
+  onboardingSegCol: {
     flex: 1,
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  onboardingSegBar: {
+    width: '100%',
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.darkBorder,
+    backgroundColor: colors.rule,
   },
-  onboardingSegmentDone: {
+  onboardingSegDone: {
     backgroundColor: colors.success,
   },
-  onboardingSegmentNext: {
-    backgroundColor: colors.whiteAlpha45,
+  onboardingSegActive: {
+    backgroundColor: colors.accent,
+  },
+  onboardingSegLabel: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: 9,
+    letterSpacing: 0.5,
+    color: colors.textTertiary,
+  },
+  onboardingSegLabelDone: {
+    color: colors.success,
+  },
+  onboardingSegLabelActive: {
+    color: colors.accent,
   },
 
   // ── Daily Challenge
