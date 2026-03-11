@@ -19,7 +19,7 @@ import { getStats, getDayStreak, getDailyChallenge, DailyChallengeData, getSetti
 import { generateQuestions, getDailyNumber } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion, CategoryId } from '../types';
-import { PlayIcon, ChevronRightIcon, ChevronDownIcon, CalendarIcon, GearIcon } from '../components/Icons';
+import { PlayIcon, ChevronRightIcon, ChevronDownIcon, CalendarIcon, ClockIcon, GearIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
@@ -418,6 +418,27 @@ export default function HomeScreen({ navigation }: Props) {
             </>
           )}
         </View>
+
+        {/* ── TIMED QUIZ ── */}
+        <TouchableOpacity
+          style={s.timedCard}
+          activeOpacity={0.85}
+          onPress={() => {
+            hapticTap();
+            navigation.navigate('Game', {
+              config: { mode: 'timeattack', category: 'all', questionCount: 999, timeLimit: 60, displayMode: 'flag' },
+            });
+          }}
+        >
+          <View style={s.timedIcon}>
+            <ClockIcon size={18} color={colors.white} />
+          </View>
+          <View style={s.timedText}>
+            <Text style={s.timedTitle}>{t('home.timedQuiz')}</Text>
+            <Text style={s.timedSub}>{t('home.timedQuizDesc')}</Text>
+          </View>
+          <ChevronRightIcon size={18} color={colors.rule} />
+        </TouchableOpacity>
 
         {/* ── SUPPORT ── */}
         <SupportCard gamesPlayed={stats?.totalGamesPlayed ?? 0} />
@@ -823,4 +844,40 @@ const s = StyleSheet.create({
     color: colors.white,
   },
 
+  // ── Timed Quiz card
+  timedCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderWidth: 2,
+    borderColor: colors.rule,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md,
+    gap: spacing.md,
+  },
+  timedIcon: {
+    width: 40,
+    height: 40,
+    backgroundColor: colors.teal,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timedText: {
+    flex: 1,
+  },
+  timedTitle: {
+    fontFamily: fontFamily.bodyBold,
+    fontSize: fontSize.lg,
+    color: colors.ink,
+    marginBottom: 2,
+  },
+  timedSub: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.caption,
+    color: colors.textTertiary,
+    lineHeight: 18,
+  },
 });
