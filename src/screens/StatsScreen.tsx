@@ -120,7 +120,7 @@ export default function StatsScreen() {
         </View>
 
         <Text style={styles.sectionTitle}>By Mode</Text>
-        {(Object.keys(GAME_MODES) as GameMode[]).map((m) => {
+        {(Object.keys(GAME_MODES) as GameMode[]).filter((m) => !GAME_MODES[m].hidden).map((m) => {
           const s = stats.modeStats[m];
           const acc = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
           return (
