@@ -27,6 +27,7 @@ import NeighborsScreen from './src/screens/NeighborsScreen';
 import FlagImpostorScreen from './src/screens/FlagImpostorScreen';
 import CapitalConnectionScreen from './src/screens/CapitalConnectionScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
+import JoinChallengeScreen from './src/screens/JoinChallengeScreen';
 import ErrorBoundary from './src/components/ErrorBoundary';
 import { ChevronLeftIcon } from './src/components/Icons';
 import { RootStackParamList } from './src/types/navigation';
@@ -146,6 +147,14 @@ function AppContent() {
           name="CapitalConnection"
           component={CapitalConnectionScreen}
           options={{ headerShown: false, gestureEnabled: false }}
+        />
+        <Stack.Screen
+          name="JoinChallenge"
+          component={JoinChallengeScreen}
+          options={({ navigation }) => ({
+            title: t('challenge.joinTitle'),
+            headerLeft: () => <BackButton onPress={() => navigation.goBack()} />,
+          })}
         />
         <Stack.Screen
           name="Results"

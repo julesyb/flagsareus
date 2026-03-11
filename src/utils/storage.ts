@@ -11,6 +11,21 @@ const BADGE_DATA_KEY = '@flagsareus_badge_data';
 const GAME_HISTORY_KEY = '@flagsareus_game_history';
 const SUPPORT_KEY = '@flagsareus_support';
 const BASELINE_KEY = '@flagsareus_baseline';
+const CHALLENGE_NAME_KEY = '@flagsareus_challenge_name';
+
+// ─── Challenge Name ─────────────────────────────────────────
+export async function getChallengeName(): Promise<string> {
+  try {
+    const val = await AsyncStorage.getItem(CHALLENGE_NAME_KEY);
+    return val || '';
+  } catch { return ''; }
+}
+
+export async function saveChallengeName(name: string): Promise<void> {
+  try {
+    await AsyncStorage.setItem(CHALLENGE_NAME_KEY, name);
+  } catch { /* ignore */ }
+}
 
 // ─── Badge Tracking Data ───────────────────────────────────
 export interface BadgeData {

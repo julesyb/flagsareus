@@ -19,7 +19,7 @@ import { getStats, getDayStreak, getDailyChallenge, DailyChallengeData, getSetti
 import { generateQuestions, getDailyNumber } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion, CategoryId } from '../types';
-import { PlayIcon, ChevronRightIcon, ClockIcon, UsersIcon, EyeIcon, CalendarIcon, CrosshairIcon, LightningIcon, GearIcon, CheckIcon } from '../components/Icons';
+import { PlayIcon, ChevronRightIcon, ChevronDownIcon, ClockIcon, UsersIcon, EyeIcon, CalendarIcon, CrosshairIcon, LightningIcon, GearIcon, PuzzleIcon, CheckIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
@@ -520,6 +520,44 @@ export default function HomeScreen({ navigation }: Props) {
             <View style={s.modeText}>
               <Text style={s.modeTitle}>{t('home.flagImpostor')}</Text>
               <Text style={s.modeSub}>{t('home.flagImpostorDesc')}</Text>
+            </View>
+            <ChevronRightIcon size={18} color={colors.rule} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={s.modeCard}
+            activeOpacity={0.85}
+            onPress={() => {
+              hapticTap();
+              navigation.navigate('FlagPuzzle', {
+                config: { mode: 'flagpuzzle', category: 'all', questionCount: 10, timeLimit: 15, displayMode: 'flag' },
+              });
+            }}
+          >
+            <View style={[s.modeIcon, { backgroundColor: colors.amber }]}>
+              <PuzzleIcon size={18} color={colors.white} />
+            </View>
+            <View style={s.modeText}>
+              <Text style={s.modeTitle}>{t('setup.flagPuzzle')}</Text>
+              <Text style={s.modeSub}>{t('setup.flagPuzzleDesc')}</Text>
+            </View>
+            <ChevronRightIcon size={18} color={colors.rule} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={s.modeCard}
+            activeOpacity={0.85}
+            onPress={() => {
+              hapticTap();
+              navigation.navigate('JoinChallenge');
+            }}
+          >
+            <View style={[s.modeIcon, { backgroundColor: colors.teal }]}>
+              <UsersIcon size={18} color={colors.white} />
+            </View>
+            <View style={s.modeText}>
+              <Text style={s.modeTitle}>{t('challenge.joinTitle')}</Text>
+              <Text style={s.modeSub}>{t('challenge.homeDesc')}</Text>
             </View>
             <ChevronRightIcon size={18} color={colors.rule} />
           </TouchableOpacity>

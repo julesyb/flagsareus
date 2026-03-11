@@ -38,39 +38,60 @@ interface RoundData {
   options: FlagItem[];
 }
 
-function generateRounds(count: number): RoundData[] {
+function buildRoundForCountry(code: string): RoundData | null {
+  const country = flagById.get(code);
+  if (!country || !countryNeighbors[code]) return null;
+
+  const neighborIds = countryNeighbors[code].filter((id) => flagById.has(id));
+  if (neighborIds.length < 2) return null;
+
+  const cappedNeighborIds = neighborIds.length > MAX_OPTIONS - MIN_DISTRACTORS
+    ? shuffleArray(neighborIds).slice(0, MAX_OPTIONS - MIN_DISTRACTORS)
+    : neighborIds;
+  const neighborFlags = cappedNeighborIds.map((id) => flagById.get(id)!);
+
+  const distractorCount = Math.max(MIN_DISTRACTORS, MAX_OPTIONS - cappedNeighborIds.length);
+  const excludeSet = new Set([code, ...neighborIds]);
+  const allOther = countries.filter((c) => !excludeSet.has(c.id));
+  const distractors = shuffleArray(allOther).slice(0, distractorCount);
+
+  return {
+    country,
+    neighborIds: cappedNeighborIds,
+    options: shuffleArray([...neighborFlags, ...distractors]),
+  };
+}
+
+function generateRounds(count: number, challengeFlagIds?: string[]): RoundData[] {
+  if (challengeFlagIds) {
+    const rounds: RoundData[] = [];
+    for (const id of challengeFlagIds) {
+      const round = buildRoundForCountry(id);
+      if (round) rounds.push(round);
+    }
+    return rounds;
+  }
+
   const eligible = getCountriesWithNeighbors().filter(
     (code) => countryNeighbors[code].length >= 2 && flagById.has(code),
   );
   if (eligible.length === 0) return [];
 
   const shuffled = shuffleArray(eligible).slice(0, count);
-
-  return shuffled.map((code) => {
-    const country = flagById.get(code)!;
-    const neighborIds = countryNeighbors[code].filter((id) => flagById.has(id));
-    // Cap neighbors so total options stay within MAX_OPTIONS
-    const cappedNeighborIds = neighborIds.length > MAX_OPTIONS - MIN_DISTRACTORS
-      ? shuffleArray(neighborIds).slice(0, MAX_OPTIONS - MIN_DISTRACTORS)
-      : neighborIds;
-    const neighborFlags = cappedNeighborIds.map((id) => flagById.get(id)!);
-
-    const distractorCount = Math.max(MIN_DISTRACTORS, MAX_OPTIONS - cappedNeighborIds.length);
-    const excludeSet = new Set([code, ...neighborIds]);
-    const allOther = countries.filter((c) => !excludeSet.has(c.id));
-    const distractors = shuffleArray(allOther).slice(0, distractorCount);
-
-    return {
-      country,
-      neighborIds: cappedNeighborIds,
-      options: shuffleArray([...neighborFlags, ...distractors]),
-    };
-  });
+  const rounds: RoundData[] = [];
+  for (const code of shuffled) {
+    const round = buildRoundForCountry(code);
+    if (round) rounds.push(round);
+  }
+  return rounds;
 }
 
 export default function NeighborsScreen({ navigation, route }: Props) {
-  const { config } = route.params;
-  const rounds = useMemo(() => generateRounds(config.questionCount), [config.questionCount]);
+  const { config, challenge, playerName } = route.params;
+  const rounds = useMemo(
+    () => generateRounds(config.questionCount, challenge?.flagIds),
+    [config.questionCount, challenge],
+  );
   const [roundIndex, setRoundIndex] = useState(0);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [submitted, setSubmitted] = useState(false);
@@ -137,7 +158,7 @@ export default function NeighborsScreen({ navigation, route }: Props) {
     const currentResults = [...results];
     const isEliminated = guessLimit > 0 && currentResults.filter((r) => !r.correct).length >= guessLimit;
     if (isLastRound || isEliminated) {
-      navigation.replace('Results', { results: currentResults, config });
+      navigation.replace('Results', { results: currentResults, config, ...(challenge && { challenge, playerName }) });
       return;
     }
 

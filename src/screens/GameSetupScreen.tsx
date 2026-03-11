@@ -88,11 +88,29 @@ function SegBtn({ label, active, onPress }: { label: string; active: boolean; on
   );
 }
 
-export default function GameSetupScreen({ navigation }: Props) {
+export default function GameSetupScreen({ route, navigation }: Props) {
   const onNavigate = useNavTabs();
+  const initialMode = route.params?.initialMode;
+
   const [displayMode, setDisplayMode] = useState<DisplayMode>('flag');
-  const [setupMode, setSetupMode] = useState<SetupMode>('quiz');
-  const [difficulty, setDifficulty] = useState<QuizDifficulty>('medium');
+  const [setupMode, setSetupMode] = useState<SetupMode>(() => {
+    switch (initialMode) {
+      case 'easy': case 'medium': case 'hard': return 'quiz';
+      case 'flagpuzzle': return 'flagpuzzle';
+      case 'flagflash': return 'flagflash';
+      case 'timeattack': return 'timeattack';
+      case 'neighbors': return 'neighbors';
+      case 'capitalconnection': return 'capitalconnection';
+      default: return 'quiz';
+    }
+  });
+  const [difficulty, setDifficulty] = useState<QuizDifficulty>(() => {
+    switch (initialMode) {
+      case 'easy': return 'easy';
+      case 'hard': return 'hard';
+      default: return 'medium';
+    }
+  });
   const [selectedCategory, setSelectedCategory] = useState<CategoryId>('all');
   const [questionCount, setQuestionCount] = useState(10);
   const [questionCountAll, setQuestionCountAll] = useState(false);

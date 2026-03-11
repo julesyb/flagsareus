@@ -1,17 +1,19 @@
-import { GameConfig, GameResult } from './index';
+import { GameConfig, GameResult, GameMode } from './index';
+import { ChallengeData } from '../utils/challengeCode';
 
 export type RootStackParamList = {
   Onboarding: undefined;
   Home: undefined;
-  GameSetup: undefined;
-  Game: { config: GameConfig };
+  GameSetup: { initialMode?: GameMode } | undefined;
+  Game: { config: GameConfig; challenge?: ChallengeData; playerName?: string };
   FlagFlash: { config: GameConfig };
-  FlagPuzzle: { config: GameConfig };
-  Neighbors: { config: GameConfig };
+  FlagPuzzle: { config: GameConfig; challenge?: ChallengeData; playerName?: string };
+  Neighbors: { config: GameConfig; challenge?: ChallengeData; playerName?: string };
   FlagImpostor: { config: GameConfig };
-  CapitalConnection: { config: GameConfig };
-  Results: { results: GameResult[]; config: GameConfig; reviewOnly?: boolean };
+  CapitalConnection: { config: GameConfig; challenge?: ChallengeData; playerName?: string };
+  Results: { results: GameResult[]; config: GameConfig; reviewOnly?: boolean; challenge?: ChallengeData; playerName?: string };
   Stats: undefined;
   Settings: undefined;
   Browse: { region?: string } | undefined;
+  JoinChallenge: undefined;
 };
