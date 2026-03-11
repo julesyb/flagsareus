@@ -13,7 +13,7 @@ interface MapImageProps {
 // CartoDB Positron no-labels — simple country outlines
 // Use @2x tiles for better quality on retina screens
 const TILE_URL = 'https://basemaps.cartocdn.com/light_nolabels';
-const MAX_ZOOM = 5; // Cap zoom to avoid showing city roads and minor boundaries
+const MAX_ZOOM = 3; // Cap zoom to show only country borders, no city roads or minor boundaries
 const TILE_SIZE = 256;
 
 function latLngToTile(lat: number, lng: number, zoom: number) {

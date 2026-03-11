@@ -29,6 +29,8 @@ const QUESTION_COUNTS = [10, 20, 50, 100];
 const FLAGFLASH_TIMES = [15, 30, 60, 90];
 const FLAGPUZZLE_TIMES = [15, 30, 60];
 const TIMEATTACK_TIMES = [30, 60, 90, 120];
+const DEFAULT_GUESS_LIMIT = 3;
+const GUESS_LIMIT_OPTIONS = [3, 5, 0] as const; // 0 = unlimited
 
 // Extracted: reusable row of option chips with "All" toggle
 function OptionChipRow({
@@ -93,6 +95,7 @@ export default function GameSetupScreen({ navigation }: Props) {
   const [timeLimit, setTimeLimit] = useState(60);
   const [filterType, setFilterType] = useState<CategoryType | null>(null);
   const [autocomplete, setAutocomplete] = useState(false);
+  const [guessLimit, setGuessLimit] = useState(DEFAULT_GUESS_LIMIT);
 
   const totalFlags = getTotalFlagCount();
   const isFlagFlash = mode === 'flagflash';
@@ -102,6 +105,7 @@ export default function GameSetupScreen({ navigation }: Props) {
   const isImpostor = mode === 'impostor';
   const isCapitalConnection = mode === 'capitalconnection';
   const hasTimeLimit = isFlagFlash || isFlagPuzzle || isTimeAttack;
+  const showGuessLimit = !isFlagFlash && !isFlagPuzzle && !isTimeAttack && !isNeighbors && !isImpostor && !isCapitalConnection;
 
   // Set sensible default time limit when mode changes
   useEffect(() => {
@@ -138,6 +142,7 @@ export default function GameSetupScreen({ navigation }: Props) {
       displayMode,
       ...(hasTimeLimit && { timeLimit }),
       ...(mode === 'hard' && { autocomplete }),
+      ...(showGuessLimit && guessLimit > 0 && { guessLimit }),
     };
 
     if (isTimeAttack) {
@@ -234,6 +239,33 @@ export default function GameSetupScreen({ navigation }: Props) {
                     </Text>
                     <Text style={[styles.displayToggleDesc, isActive && styles.displayToggleDescActive]}>
                       {val ? 'Show suggestions as you type' : 'Type the full answer'}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </>
+        )}
+
+        {/* Guess Limit (only for standard quiz modes) */}
+        {showGuessLimit && (
+          <>
+            <Text style={styles.sectionTitle}>Lives</Text>
+            <Text style={styles.filterHint}>Wrong guesses before game over</Text>
+            <View style={styles.optionRow}>
+              {GUESS_LIMIT_OPTIONS.map((v) => {
+                const isActive = guessLimit === v;
+                return (
+                  <TouchableOpacity
+                    key={v}
+                    style={[styles.optionChip, isActive && styles.optionChipActive]}
+                    onPress={() => setGuessLimit(v)}
+                    activeOpacity={0.7}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: isActive }}
+                  >
+                    <Text style={[styles.optionLabel, isActive && styles.optionLabelActive]}>
+                      {v === 0 ? 'Unlimited' : v}
                     </Text>
                   </TouchableOpacity>
                 );

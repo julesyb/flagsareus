@@ -38,6 +38,9 @@ export default function GameScreen({ route, navigation }: Props) {
   const [showFeedback, setShowFeedback] = useState(false);
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState(false);
   const [currentStreak, setCurrentStreak] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0);
+  const guessLimit = config.guessLimit ?? 0; // 0 = unlimited
+  const livesRemaining = guessLimit > 0 ? guessLimit - wrongCount : null;
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
   const [timeLeft, setTimeLeft] = useState(config.timeLimit || 60);
   const { fadeAnim, streakScale, shakeAnim, animateStreak, animateWrong, animateTransition } = useGameAnimations();
@@ -68,6 +71,8 @@ export default function GameScreen({ route, navigation }: Props) {
 
   const pendingResultsRef = useRef<GameResult[] | null>(null);
   const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wrongCountRef = useRef(0);
+  const resultsRef = useRef<GameResult[]>([]);
 
   // Clean up auto-advance timer on unmount
   useEffect(() => {
@@ -154,6 +159,8 @@ export default function GameScreen({ route, navigation }: Props) {
         hapticWrong();
         playWrongSound();
         setCurrentStreak(0);
+        wrongCountRef.current += 1;
+        setWrongCount(wrongCountRef.current);
         animateWrong();
       }
 
@@ -164,18 +171,28 @@ export default function GameScreen({ route, navigation }: Props) {
         timeTaken,
       };
 
-      const newResults = [...results, result];
+      const newResults = [...resultsRef.current, result];
       pendingResultsRef.current = newResults;
+      resultsRef.current = newResults;
+
+      // Check if guess limit reached (game over)
+      const isEliminated = guessLimit > 0 && wrongCountRef.current >= guessLimit;
 
       const feedbackDelay = isTimeAttack
         ? (correct ? 300 : 600)
         : (correct ? 600 : 1200);
 
-      autoAdvanceRef.current = setTimeout(() => {
-        goToNext();
-      }, feedbackDelay);
+      if (isEliminated) {
+        autoAdvanceRef.current = setTimeout(() => {
+          navigation.replace('Results', { results: newResults, config });
+        }, feedbackDelay);
+      } else {
+        autoAdvanceRef.current = setTimeout(() => {
+          goToNext();
+        }, feedbackDelay);
+      }
     },
-    [showFeedback, currentQuestion, questionStartTime, results, isTimeAttack, animateStreak, animateWrong, goToNext],
+    [showFeedback, currentQuestion, questionStartTime, isTimeAttack, animateStreak, animateWrong, goToNext, guessLimit],
   );
 
   const handleSubmitHard = () => {
@@ -219,7 +236,15 @@ export default function GameScreen({ route, navigation }: Props) {
       <View style={[styles.desktopWrapper, { maxWidth: contentMaxWidth }]}>
       <View style={styles.topBar}>
         <TouchableOpacity
-          onPress={() => navigation.popToTop()}
+          onPress={() => {
+            if (autoAdvanceRef.current) clearTimeout(autoAdvanceRef.current);
+            const currentResults = pendingResultsRef.current ?? results;
+            if (currentResults.length > 0) {
+              navigation.replace('Results', { results: currentResults, config });
+            } else {
+              navigation.popToTop();
+            }
+          }}
           style={styles.quitButton}
         >
           <Text style={styles.quitText}>Exit</Text>
@@ -248,7 +273,13 @@ export default function GameScreen({ route, navigation }: Props) {
             )
           )}
         </View>
-        <View style={styles.quitSpacer} />
+        {livesRemaining !== null ? (
+          <Text style={[styles.livesText, livesRemaining === 1 && styles.livesTextUrgent]}>
+            {livesRemaining} {livesRemaining === 1 ? 'life' : 'lives'}
+          </Text>
+        ) : (
+          <View style={styles.quitSpacer} />
+        )}
       </View>
 
       <Animated.View
@@ -268,10 +299,6 @@ export default function GameScreen({ route, navigation }: Props) {
             />
           )}
         </View>
-
-        {!isHard && (
-          <Text style={styles.regionHint}>{currentQuestion.flag.region}</Text>
-        )}
 
         {isHard && (
           <Text style={styles.questionText}>
@@ -380,9 +407,7 @@ export default function GameScreen({ route, navigation }: Props) {
             {lastAnswerCorrect ? (
               <Text style={styles.feedbackCorrect} accessibilityLiveRegion="polite">Correct!</Text>
             ) : (
-              <Text style={styles.feedbackWrong} accessibilityLiveRegion="polite">
-                It was {currentQuestion.flag.name}
-              </Text>
+              <Text style={styles.feedbackWrong} accessibilityLiveRegion="polite">Wrong</Text>
             )}
           </View>
         )}
@@ -475,6 +500,15 @@ const styles = StyleSheet.create({
   quitSpacer: {
     width: 60,
   },
+  livesText: {
+    ...typography.bodyBold,
+    color: colors.error,
+    width: 60,
+    textAlign: 'right',
+  },
+  livesTextUrgent: {
+    color: colors.accent,
+  },
   questionContainer: {
     flex: 1,
     padding: spacing.lg,
@@ -483,12 +517,6 @@ const styles = StyleSheet.create({
   flagContainer: {
     alignItems: 'center',
     marginBottom: spacing.md,
-  },
-  regionHint: {
-    ...typography.captionBold,
-    color: colors.textTertiary,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
   },
   questionText: {
     ...typography.caption,

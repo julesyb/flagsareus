@@ -393,9 +393,7 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
             {lastAnswerCorrect ? (
               <Text style={styles.feedbackCorrect} accessibilityLiveRegion="polite">Correct!</Text>
             ) : (
-              <Text style={styles.feedbackWrong} accessibilityLiveRegion="polite">
-                It was {currentQuestion.flag.name}
-              </Text>
+              <Text style={styles.feedbackWrong} accessibilityLiveRegion="polite">Wrong</Text>
             )}
             <TouchableOpacity
               style={styles.nextButton}
@@ -470,18 +468,6 @@ const styles = StyleSheet.create({
   score: {
     ...typography.caption,
     color: colors.success,
-  },
-  timerDisplay: {
-    width: 60,
-    alignItems: 'flex-end',
-  },
-  timerText: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: 18,
-    color: colors.ink,
-  },
-  timerTextUrgent: {
-    color: colors.error,
   },
   questionContainer: {
     flex: 1,

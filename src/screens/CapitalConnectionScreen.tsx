@@ -180,8 +180,7 @@ export default function CapitalConnectionScreen({ navigation, route }: Props) {
           />
         </View>
 
-        <Text style={styles.regionHint}>{question.flag.region}</Text>
-        <Text style={styles.prompt}>What is the capital?</Text>
+        <Text style={styles.prompt}>What is the capital of {question.flag.name}?</Text>
 
         <View style={styles.optionsContainer}>
           {question.options.map((option, index) => {
@@ -222,9 +221,7 @@ export default function CapitalConnectionScreen({ navigation, route }: Props) {
             {selectedAnswer === question.correctCapital ? (
               <Text style={styles.feedbackCorrect}>Correct!</Text>
             ) : (
-              <Text style={styles.feedbackWrong}>
-                It was {question.correctCapital}
-              </Text>
+              <Text style={styles.feedbackWrong}>Wrong</Text>
             )}
           </View>
         )}
@@ -294,12 +291,6 @@ const styles = StyleSheet.create({
   flagContainer: {
     alignItems: 'center',
     marginBottom: spacing.md,
-  },
-  regionHint: {
-    ...typography.captionBold,
-    color: colors.textTertiary,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
   },
   prompt: {
     ...typography.caption,
