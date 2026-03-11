@@ -16,6 +16,11 @@ export interface ChallengeData {
   hostResults: { correct: boolean; timeMs: number }[];
 }
 
+export type DecodeResult =
+  | { status: 'ok'; data: ChallengeData }
+  | { status: 'unsupported' }
+  | { status: 'invalid' };
+
 // ── V2 compact format ──
 // Pipe-delimited: name|modeIndex|timeLimit|flagIds|correctBits|times
 // - modeIndex: single digit index into CHALLENGE_MODES
@@ -48,24 +53,27 @@ export function encodeChallenge(data: ChallengeData): string {
 /**
  * Decode a challenge code string back into ChallengeData.
  * Supports both V2 (FT2:) and legacy V1 (FT:) formats.
- * Returns 'unsupported' if the code uses a newer format version.
  */
-export function decodeChallenge(code: string): ChallengeData | null | 'unsupported' {
+export function decodeChallenge(code: string): DecodeResult {
   try {
     const trimmed = code.trim();
     if (trimmed.startsWith('FT2:')) {
-      return decodeV2(trimmed.slice(4));
+      const data = decodeV2(trimmed.slice(4));
+      return data ? { status: 'ok', data } : { status: 'invalid' };
     }
     if (trimmed.startsWith('FT:')) {
-      return decodeV1(trimmed.slice(3));
+      const data = decodeV1(trimmed.slice(3));
+      return data ? { status: 'ok', data } : { status: 'invalid' };
     }
-    // Detect future format versions (FT3:, FT4:, etc.)
+    // FT: (V1) and FT2: (V2) are handled above via startsWith checks.
+    // Any other FTn: prefix indicates a newer format we can't decode.
+    // This regex matches FT followed by one or more digits and a colon.
     if (/^FT\d+:/.test(trimmed)) {
-      return 'unsupported';
+      return { status: 'unsupported' };
     }
-    return null;
+    return { status: 'invalid' };
   } catch {
-    return null;
+    return { status: 'invalid' };
   }
 }
 

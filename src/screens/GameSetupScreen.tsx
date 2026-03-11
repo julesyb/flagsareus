@@ -88,11 +88,29 @@ function SegBtn({ label, active, onPress }: { label: string; active: boolean; on
   );
 }
 
-export default function GameSetupScreen({ navigation }: Props) {
+export default function GameSetupScreen({ route, navigation }: Props) {
   const onNavigate = useNavTabs();
+  const initialMode = route.params?.initialMode;
+
+  // Map GameMode back to SetupMode + QuizDifficulty for pre-selection
+  const getInitialSetup = (): { setup: SetupMode; diff: QuizDifficulty } => {
+    switch (initialMode) {
+      case 'easy': return { setup: 'quiz', diff: 'easy' };
+      case 'medium': return { setup: 'quiz', diff: 'medium' };
+      case 'hard': return { setup: 'quiz', diff: 'hard' };
+      case 'flagpuzzle': return { setup: 'flagpuzzle', diff: 'medium' };
+      case 'flagflash': return { setup: 'flagflash', diff: 'medium' };
+      case 'timeattack': return { setup: 'timeattack', diff: 'medium' };
+      case 'neighbors': return { setup: 'neighbors', diff: 'medium' };
+      case 'capitalconnection': return { setup: 'capitalconnection', diff: 'medium' };
+      default: return { setup: 'quiz', diff: 'medium' };
+    }
+  };
+  const initial = getInitialSetup();
+
   const [displayMode, setDisplayMode] = useState<DisplayMode>('flag');
-  const [setupMode, setSetupMode] = useState<SetupMode>('quiz');
-  const [difficulty, setDifficulty] = useState<QuizDifficulty>('medium');
+  const [setupMode, setSetupMode] = useState<SetupMode>(initial.setup);
+  const [difficulty, setDifficulty] = useState<QuizDifficulty>(initial.diff);
   const [selectedCategory, setSelectedCategory] = useState<CategoryId>('all');
   const [questionCount, setQuestionCount] = useState(10);
   const [questionCountAll, setQuestionCountAll] = useState(false);

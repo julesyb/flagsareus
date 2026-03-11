@@ -13,6 +13,7 @@ import {
   Modal,
   Platform,
   Keyboard,
+  Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
@@ -114,18 +115,29 @@ export default function ResultsScreen({ route, navigation }: Props) {
     setShowChallengeModal(false);
     hapticTap();
     saveChallengeName(challengeName.trim());
+    const flagIds = results.map((r) => r.question.flag.id);
+    const hostResults = results.map((r) => ({ correct: r.correct, timeMs: r.timeTaken }));
+    let code: string;
     try {
-      const flagIds = results.map((r) => r.question.flag.id);
-      const hostResults = results.map((r) => ({ correct: r.correct, timeMs: r.timeTaken }));
-      const code = encodeChallenge({
+      code = encodeChallenge({
         hostName: challengeName.trim(),
         mode: config.mode,
         timeLimit: config.timeLimit || 15,
         flagIds,
         hostResults,
       });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : t('challenge.invalidCode');
+      if (Platform.OS === 'web') {
+        alert(msg);
+      } else {
+        Alert.alert(t('challenge.invalidCodeTitle'), msg);
+      }
+      return;
+    }
+    try {
       await Share.share({ message: `${t('challenge.shareMessage')}\n\n${code}` });
-    } catch { /* encoding error or share cancelled */ }
+    } catch { /* share cancelled */ }
   };
 
   // Head-to-head comparison data
@@ -658,7 +670,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
           <Animated.View style={{ opacity: restFade }}>
             <TouchableOpacity
               style={st.challengeButton}
-              onPress={() => { hapticTap(); navigation.replace('GameSetup'); }}
+              onPress={() => { hapticTap(); navigation.replace('GameSetup', { initialMode: config.mode }); }}
               activeOpacity={0.7}
             >
               <UsersIcon size={18} color={colors.ink} />

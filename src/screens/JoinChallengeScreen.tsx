@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
 import { RootStackParamList } from '../types/navigation';
-import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData } from '../utils/challengeCode';
+import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, DecodeResult } from '../utils/challengeCode';
 import { hapticTap, hapticWrong } from '../utils/feedback';
 import { UsersIcon, CheckIcon, CrossIcon } from '../components/Icons';
 import ScreenContainer from '../components/ScreenContainer';
@@ -30,37 +30,31 @@ export default function JoinChallengeScreen({ navigation }: Props) {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [debouncedCode, setDebouncedCode] = useState('');
-  const mountedRef = useRef(true);
-
-  // Track mount state to prevent setState after unmount
-  useEffect(() => {
-    return () => { mountedRef.current = false; };
-  }, []);
 
   // Load saved name on mount
   useEffect(() => {
     getChallengeName().then((saved) => {
-      if (saved && mountedRef.current) setName(saved);
+      if (saved) setName(saved);
     });
   }, []);
 
   // Debounce code changes (300ms)
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (mountedRef.current) setDebouncedCode(code);
+      setDebouncedCode(code);
     }, 300);
     return () => clearTimeout(timer);
   }, [code]);
 
   // Decode challenge from debounced code for live preview
-  const decoded = useMemo(() => {
+  const decoded: DecodeResult | null = useMemo(() => {
     const trimmed = debouncedCode.trim();
     if (trimmed.length === 0) return null;
     return decodeChallenge(trimmed);
   }, [debouncedCode]);
 
-  const preview: ChallengeData | null = decoded && decoded !== 'unsupported' ? decoded : null;
-  const isUnsupported = decoded === 'unsupported';
+  const preview: ChallengeData | null = decoded?.status === 'ok' ? decoded.data : null;
+  const isUnsupported = decoded?.status === 'unsupported';
 
   const canPlay = code.trim().length > 0 && name.trim().length > 0;
 
@@ -77,16 +71,17 @@ export default function JoinChallengeScreen({ navigation }: Props) {
     Keyboard.dismiss();
     hapticTap();
 
-    const challenge = decodeChallenge(code.trim());
-    if (challenge === 'unsupported') {
+    const result = decodeChallenge(code.trim());
+    if (result.status === 'unsupported') {
       showError(t('challenge.unsupportedCode'));
       return;
     }
-    if (!challenge) {
+    if (result.status === 'invalid') {
       showError(t('challenge.invalidCode'));
       return;
     }
 
+    const challenge = result.data;
     const questions = buildChallengeQuestions(challenge.flagIds, challenge.mode);
     if (!questions) {
       showError(t('challenge.invalidCode'));

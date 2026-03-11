@@ -4,7 +4,7 @@ import { ChallengeData } from '../utils/challengeCode';
 export type RootStackParamList = {
   Onboarding: undefined;
   Home: undefined;
-  GameSetup: undefined;
+  GameSetup: { initialMode?: string } | undefined;
   Game: { config: GameConfig; challenge?: ChallengeData; playerName?: string };
   FlagFlash: { config: GameConfig };
   FlagPuzzle: { config: GameConfig; challenge?: ChallengeData; playerName?: string };
