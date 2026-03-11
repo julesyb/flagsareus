@@ -142,17 +142,24 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const h2h = isChallenge && challenge ? (() => {
     const hostCorrect = challenge.hostResults.filter((r) => r.correct).length;
     const playerCorrect = results.filter((r) => r.correct).length;
-    const hostAvg = challenge.hostResults.length > 0
-      ? Math.round(challenge.hostResults.reduce((s, r) => s + r.timeMs, 0) / challenge.hostResults.length / 100) / 10
+    const totalFlags = challenge.flagIds.length;
+    // Compute raw averages in ms for fair comparison (host times have 100ms granularity from encoding)
+    const hostAvgMs = challenge.hostResults.length > 0
+      ? challenge.hostResults.reduce((s, r) => s + r.timeMs, 0) / challenge.hostResults.length
       : 0;
-    const playerAvg = avgTime;
-    // Winner: more correct wins. Tie-break: faster avg time.
+    const playerAvgMs = results.length > 0
+      ? results.reduce((s, r) => s + r.timeTaken, 0) / results.length
+      : 0;
+    // Display values rounded to 1 decimal
+    const hostAvg = Math.round(hostAvgMs / 100) / 10;
+    const playerAvg = Math.round(playerAvgMs / 100) / 10;
+    // Winner: more correct wins. Tie-break: faster avg time (compare raw ms for precision).
     let winner: 'host' | 'player' | 'tie' = 'tie';
     if (playerCorrect > hostCorrect) winner = 'player';
     else if (hostCorrect > playerCorrect) winner = 'host';
-    else if (playerAvg < hostAvg) winner = 'player';
-    else if (hostAvg < playerAvg) winner = 'host';
-    return { hostCorrect, playerCorrect, hostAvg, playerAvg, winner };
+    else if (playerAvgMs < hostAvgMs) winner = 'player';
+    else if (hostAvgMs < playerAvgMs) winner = 'host';
+    return { hostCorrect, playerCorrect, hostAvg, playerAvg, totalFlags, winner };
   })() : null;
 
   // Load ad if frequency cap allows (skip for daily/baseline/review)
@@ -499,7 +506,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
                   st.h2hName,
                   h2h.winner === 'player' && st.h2hNameWinner,
                 ]}>{playerName || t('challenge.you')}</Text>
-                <Text style={st.h2hScore}>{h2h.playerCorrect}/{results.length}</Text>
+                <Text style={st.h2hScore}>{h2h.playerCorrect}/{h2h.totalFlags}</Text>
                 <Text style={st.h2hTime}>{h2h.playerAvg}s {t('results.avgTime').toLowerCase()}</Text>
               </View>
               <View style={st.h2hVs}>
@@ -510,7 +517,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
                   st.h2hName,
                   h2h.winner === 'host' && st.h2hNameWinner,
                 ]}>{challenge.hostName}</Text>
-                <Text style={st.h2hScore}>{h2h.hostCorrect}/{results.length}</Text>
+                <Text style={st.h2hScore}>{h2h.hostCorrect}/{h2h.totalFlags}</Text>
                 <Text style={st.h2hTime}>{h2h.hostAvg}s {t('results.avgTime').toLowerCase()}</Text>
               </View>
             </View>

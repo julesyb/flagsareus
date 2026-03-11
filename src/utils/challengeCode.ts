@@ -41,7 +41,10 @@ export function encodeChallenge(data: ChallengeData): string | null {
   if (data.flagIds.some((id) => id.length !== 2)) {
     return null;
   }
-  const modeIdx = MODE_INDEX.get(data.mode) ?? 0;
+  const modeIdx = MODE_INDEX.get(data.mode);
+  if (modeIdx === undefined) {
+    return null;
+  }
   const flags = data.flagIds.join('');
   const bits = data.hostResults.map((r) => r.correct ? '1' : '0').join('');
   // Store times as deciseconds (divide ms by 100, round) to save chars
@@ -84,7 +87,7 @@ function decodeV2(encoded: string): ChallengeData | null {
   if (parts.length !== 6) return null;
 
   const [hostName, modeIdxStr, timeLimitStr, flags, bits, timesStr] = parts;
-  if (!hostName || flags.length === 0 || flags.length % 2 !== 0) return null;
+  if (!hostName || hostName.length > 50 || flags.length === 0 || flags.length % 2 !== 0) return null;
 
   const modeIdx = parseInt(modeIdxStr, 10);
   const mode = INDEX_MODE.get(modeIdx);
@@ -133,6 +136,7 @@ function decodeV1(encoded: string): ChallengeData | null {
   }
 
   const mode = (compact.m || 'flagpuzzle') as GameMode;
+  if (!CHALLENGE_MODES.includes(mode)) return null;
 
   return {
     hostName: compact.n,
@@ -178,11 +182,14 @@ export function buildChallengeQuestions(flagIds: string[], mode: GameMode): Game
   return questions;
 }
 
+/** Screen names that support challenge play */
+export type ChallengeScreenName = 'Game' | 'FlagPuzzle' | 'Neighbors' | 'CapitalConnection';
+
 /**
  * Get the navigation screen name for a given game mode.
  */
-export function getScreenForMode(mode: GameMode): string {
-  const map: Partial<Record<GameMode, string>> = {
+export function getScreenForMode(mode: GameMode): ChallengeScreenName {
+  const map: Partial<Record<GameMode, ChallengeScreenName>> = {
     flagpuzzle: 'FlagPuzzle',
     neighbors: 'Neighbors',
     capitalconnection: 'CapitalConnection',

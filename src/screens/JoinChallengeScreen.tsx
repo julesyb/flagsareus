@@ -14,7 +14,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
 import { RootStackParamList } from '../types/navigation';
-import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, DecodeResult } from '../utils/challengeCode';
+import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName, DecodeResult } from '../utils/challengeCode';
 import { hapticTap, hapticWrong } from '../utils/feedback';
 import { UsersIcon, CheckIcon, CrossIcon } from '../components/Icons';
 import ScreenContainer from '../components/ScreenContainer';
@@ -56,7 +56,8 @@ export default function JoinChallengeScreen({ navigation }: Props) {
   const preview: ChallengeData | null = decoded?.status === 'ok' ? decoded.data : null;
   const isUnsupported = decoded?.status === 'unsupported';
 
-  const canPlay = code.trim().length > 0 && name.trim().length > 0;
+  const hasValidCode = decoded?.status === 'ok';
+  const canPlay = hasValidCode && name.trim().length > 0;
 
   const showError = (msg: string) => {
     hapticWrong();
@@ -91,7 +92,7 @@ export default function JoinChallengeScreen({ navigation }: Props) {
     // Save name for next time
     saveChallengeName(name.trim());
 
-    const screen = getScreenForMode(challenge.mode) as keyof RootStackParamList;
+    const screen: ChallengeScreenName = getScreenForMode(challenge.mode);
     const params = {
       config: {
         mode: challenge.mode,
@@ -103,7 +104,8 @@ export default function JoinChallengeScreen({ navigation }: Props) {
       playerName: name.trim(),
     };
 
-    navigation.replace(screen as 'Game', params);
+    // All ChallengeScreenName screens share the same param shape
+    (navigation.replace as (screen: string, params: typeof params) => void)(screen, params);
   };
 
   const modeLabel = preview ? t(`modes.${preview.mode}`) : '';

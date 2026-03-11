@@ -1,10 +1,10 @@
-import { GameConfig, GameResult } from './index';
+import { GameConfig, GameResult, GameMode } from './index';
 import { ChallengeData } from '../utils/challengeCode';
 
 export type RootStackParamList = {
   Onboarding: undefined;
   Home: undefined;
-  GameSetup: { initialMode?: string } | undefined;
+  GameSetup: { initialMode?: GameMode } | undefined;
   Game: { config: GameConfig; challenge?: ChallengeData; playerName?: string };
   FlagFlash: { config: GameConfig };
   FlagPuzzle: { config: GameConfig; challenge?: ChallengeData; playerName?: string };
