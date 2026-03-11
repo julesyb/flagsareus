@@ -5,6 +5,36 @@ const STATS_KEY = '@flagsareus_stats';
 const FLAG_STATS_KEY = '@flagsareus_flag_stats';
 const DAY_STREAK_KEY = '@flagsareus_day_streak';
 const DAILY_CHALLENGE_KEY = '@flagsareus_daily_challenge';
+const SETTINGS_KEY = '@flagsareus_settings';
+
+// ─── App Settings ──────────────────────────────────────────
+export interface AppSettings {
+  soundEnabled: boolean;
+  hapticsEnabled: boolean;
+}
+
+const DEFAULT_SETTINGS: AppSettings = {
+  soundEnabled: true,
+  hapticsEnabled: true,
+};
+
+export async function getSettings(): Promise<AppSettings> {
+  try {
+    const json = await AsyncStorage.getItem(SETTINGS_KEY);
+    if (json) return { ...DEFAULT_SETTINGS, ...JSON.parse(json) };
+    return { ...DEFAULT_SETTINGS };
+  } catch {
+    return { ...DEFAULT_SETTINGS };
+  }
+}
+
+export async function saveSettings(settings: AppSettings): Promise<void> {
+  try {
+    await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  } catch {
+    // Silently fail
+  }
+}
 
 function getTodayDate(): string {
   return new Date().toISOString().slice(0, 10);

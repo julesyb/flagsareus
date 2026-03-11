@@ -6,16 +6,13 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
-  Alert,
-  Platform,
-  Linking,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { colors, spacing, typography, fontFamily, borderRadius } from '../utils/theme';
 import { UserStats, GAME_MODES, GameMode } from '../types';
-import { getStats, resetStats, getFlagStats, FlagStats } from '../utils/storage';
+import { getStats, getFlagStats, FlagStats } from '../utils/storage';
 import { getAllFlags, getTotalFlagCount } from '../data';
 import BottomNav from '../components/BottomNav';
 
@@ -52,32 +49,6 @@ export default function StatsScreen() {
       .sort(([, a], [, b]) => b.wrong - a.wrong)
       .slice(0, 10);
   }, [flagStats]);
-
-  const handleReset = async () => {
-    if (Platform.OS === 'web') {
-      const confirmed = window.confirm('Reset Statistics?\n\nAre you sure? This cannot be undone.');
-      if (confirmed) {
-        await resetStats();
-        getStats().then(setStats);
-      }
-    } else {
-      Alert.alert(
-        'Reset Statistics',
-        'Are you sure? This cannot be undone.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Reset',
-            style: 'destructive',
-            onPress: async () => {
-              await resetStats();
-              getStats().then(setStats);
-            },
-          },
-        ],
-      );
-    }
-  };
 
   if (!stats) {
     return (
@@ -185,23 +156,13 @@ export default function StatsScreen() {
         )}
 
         <TouchableOpacity
-          style={styles.resetButton}
-          onPress={handleReset}
+          style={styles.settingsLink}
+          onPress={() => navigation.navigate('Settings')}
           activeOpacity={0.7}
           accessibilityRole="button"
-          accessibilityLabel="Reset all statistics"
+          accessibilityLabel="Settings"
         >
-          <Text style={styles.resetButtonText}>Reset Statistics</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.privacyLink}
-          onPress={() => Linking.openURL('https://flagthat.app/privacy')}
-          activeOpacity={0.7}
-          accessibilityRole="link"
-          accessibilityLabel="Privacy Policy"
-        >
-          <Text style={styles.privacyLinkText}>Privacy Policy</Text>
+          <Text style={styles.settingsLinkText}>Settings</Text>
         </TouchableOpacity>
       </ScrollView>
       <BottomNav activeTab="Stats" onNavigate={(tab) => {
@@ -343,21 +304,13 @@ const styles = StyleSheet.create({
   flagStatCount: {
     ...typography.captionBold,
   },
-  resetButton: {
+  settingsLink: {
     marginTop: spacing.xl,
     padding: spacing.md,
     alignItems: 'center',
   },
-  resetButtonText: {
+  settingsLinkText: {
     ...typography.label,
-    color: colors.error,
-  },
-  privacyLink: {
-    padding: spacing.md,
-    alignItems: 'center',
-  },
-  privacyLinkText: {
-    ...typography.caption,
     color: colors.textTertiary,
   },
 });

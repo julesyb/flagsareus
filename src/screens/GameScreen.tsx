@@ -15,7 +15,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, nav, buttons, borderRadius } from '../utils/theme';
 import { GameQuestion, GameResult } from '../types';
 import { generateQuestions, generateDailyQuestions, checkAnswer } from '../utils/gameEngine';
-import { hapticCorrect, hapticWrong, hapticTap, playWrongSound } from '../utils/feedback';
+import { hapticCorrect, hapticWrong, hapticTap, playCorrectSound, playWrongSound } from '../utils/feedback';
 import FlagImage from '../components/FlagImage';
 import MapImage from '../components/MapImage';
 import { useGameAnimations } from '../hooks/useGameAnimations';
@@ -158,6 +158,7 @@ export default function GameScreen({ route, navigation }: Props) {
 
       if (correct) {
         hapticCorrect();
+        playCorrectSound();
         setCurrentStreak((s) => s + 1);
         animateStreak();
       } else {

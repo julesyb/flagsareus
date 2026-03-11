@@ -14,8 +14,8 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fontFamily, spacing, borderRadius } from '../utils/theme';
 import { getTotalFlagCount } from '../data';
-import { initAudio, hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
-import { getStats, getDayStreak, getDailyChallenge, DailyChallengeData } from '../utils/storage';
+import { initAudio, hapticTap, hapticCorrect, hapticWrong, playWrongSound, setSoundsEnabled, setHapticsEnabled } from '../utils/feedback';
+import { getStats, getDayStreak, getDailyChallenge, DailyChallengeData, getSettings } from '../utils/storage';
 import { generateQuestions, getDailyNumber } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion } from '../types';
@@ -178,6 +178,10 @@ export default function HomeScreen({ navigation }: Props) {
 
   useEffect(() => {
     initAudio();
+    getSettings().then((s) => {
+      setSoundsEnabled(s.soundEnabled);
+      setHapticsEnabled(s.hapticsEnabled);
+    });
   }, []);
 
   useFocusEffect(
