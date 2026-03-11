@@ -25,7 +25,7 @@ const en = {
 
   // ─── Bottom Nav ──────────────────────────────────────────
   nav: {
-    play: 'Play',
+    home: 'Home',
     modes: 'Modes',
     stats: 'Stats',
     browse: 'Browse',
@@ -68,10 +68,6 @@ const en = {
     practiceWeak: 'Practice Weak Flags',
     flagsToReview: '{count} flag to review',
     flagsToReviewPlural: '{count} flags to review',
-    yourStats: 'Your stats',
-    bestStreak: 'Best Streak',
-    best60s: 'Best 60s',
-    accuracy: 'Accuracy',
     onboardingScores: 'Scores',
   },
 
@@ -189,6 +185,10 @@ const en = {
     overallGrade: 'Overall Grade',
     moreToUnlock: '{count} more to unlock',
     scoreDistribution: 'Score Distribution',
+    baselineLabel: 'Baseline was {pct}%',
+    improvementUp: 'Up {pct}%, way to go!',
+    improvementSame: 'Holding steady',
+    improvementDown: '{pct}% to recover, you got this',
   },
 
   // ─── Settings Screen ────────────────────────────────────
@@ -377,6 +377,16 @@ const en = {
     skip: 'Skip',
     next: 'Next Region',
     allDone: 'All done, nice work',
+    welcome: 'Welcome to',
+    tagline: 'How well do you know the world?',
+    startPlayingNow: 'Start Playing',
+    startPlayingDesc: 'Jump right into the game',
+    testKnowledge: 'Test Your Knowledge',
+    testKnowledgeDesc: 'Set a baseline, then watch yourself improve',
+    baselineProgress: 'Baseline Progress',
+    baselineMotivation: 'Finish all 5 to track your improvement',
+    continueBaseline: 'Continue',
+    regionsComplete: '{count}/{total} regions',
   },
 
   // ─── Game Modes (for labels) ────────────────────────────

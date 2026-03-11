@@ -25,7 +25,7 @@ const fr: typeof en = {
   },
 
   nav: {
-    play: 'Jouer',
+    home: 'Accueil',
     modes: 'Modes',
     stats: 'Stats',
     browse: 'Explorer',
@@ -66,10 +66,6 @@ const fr: typeof en = {
     practiceWeak: 'R\u00e9viser les drapeaux difficiles',
     flagsToReview: '{count} drapeau \u00e0 r\u00e9viser',
     flagsToReviewPlural: '{count} drapeaux \u00e0 r\u00e9viser',
-    yourStats: 'Vos stats',
-    bestStreak: 'Meilleure s\u00e9rie',
-    best60s: 'Meilleur 60s',
-    accuracy: 'Pr\u00e9cision',
     onboardingScores: 'Scores',
   },
 
@@ -155,7 +151,6 @@ const fr: typeof en = {
     countriesGames: '{countries} pays - {games} parties jou\u00e9es',
     bestStreak: 'Meilleure s\u00e9rie',
     personalBest: 'Record personnel',
-    accuracy: 'Pr\u00e9cision',
     perfect: 'Parfait',
     excellent: 'Excellent',
     great: 'Tr\u00e8s bien',
@@ -183,6 +178,10 @@ const fr: typeof en = {
     overallGrade: 'Note g\u00e9n\u00e9rale',
     moreToUnlock: 'Encore {count} pour d\u00e9bloquer',
     scoreDistribution: 'Distribution des scores',
+    baselineLabel: 'Base : {pct}%',
+    improvementUp: '+{pct}%, bravo !',
+    improvementSame: 'Stable',
+    improvementDown: '{pct}% à rattraper, vous pouvez le faire',
   },
 
   settings: {
@@ -325,6 +324,16 @@ const fr: typeof en = {
     skip: 'Passer',
     next: 'R\u00e9gion suivante',
     allDone: 'Termin\u00e9, bien jou\u00e9',
+    welcome: 'Bienvenue sur',
+    tagline: 'Connaissez-vous bien le monde ?',
+    startPlayingNow: 'Commencer',
+    startPlayingDesc: 'Plongez directement dans le jeu',
+    testKnowledge: 'Testez vos connaissances',
+    testKnowledgeDesc: 'Etablissez une base, puis observez vos progres',
+    baselineMotivation: 'Terminez les 5 pour suivre votre progression',
+    baselineProgress: 'Progression du test',
+    continueBaseline: 'Continuer',
+    regionsComplete: '{count}/{total} r\u00e9gions',
   },
 
   modes: {

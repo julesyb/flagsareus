@@ -25,7 +25,7 @@ const de: typeof en = {
   },
 
   nav: {
-    play: 'Spielen',
+    home: 'Start',
     modes: 'Modi',
     stats: 'Stats',
     browse: 'Stöbern',
@@ -66,10 +66,6 @@ const de: typeof en = {
     practiceWeak: 'Schwache Flaggen \u00fcben',
     flagsToReview: '{count} Flagge zum \u00dcben',
     flagsToReviewPlural: '{count} Flaggen zum \u00dcben',
-    yourStats: 'Deine Statistiken',
-    bestStreak: 'Beste Serie',
-    best60s: 'Beste 60s',
-    accuracy: 'Genauigkeit',
     onboardingScores: 'Ergebnisse',
   },
 
@@ -183,6 +179,10 @@ const de: typeof en = {
     overallGrade: 'Gesamtnote',
     moreToUnlock: 'Noch {count} zum Freischalten',
     scoreDistribution: 'Punkteverteilung',
+    baselineLabel: 'Einstufung: {pct}%',
+    improvementUp: '+{pct}%, weiter so!',
+    improvementSame: 'Stabil',
+    improvementDown: '{pct}% aufzuholen, du schaffst das',
   },
 
   settings: {
@@ -325,6 +325,16 @@ const de: typeof en = {
     skip: '\u00dcberspringen',
     next: 'N\u00e4chste Region',
     allDone: 'Alles geschafft, gut gemacht',
+    welcome: 'Willkommen bei',
+    tagline: 'Wie gut kennst du die Welt?',
+    startPlayingNow: 'Losspielen',
+    startPlayingDesc: 'Direkt ins Spiel einsteigen',
+    testKnowledge: 'Teste dein Wissen',
+    testKnowledgeDesc: 'Lege eine Basis fest und beobachte deine Fortschritte',
+    baselineMotivation: 'Schliesse alle 5 ab, um deine Verbesserung zu verfolgen',
+    baselineProgress: 'Einstufungs-Fortschritt',
+    continueBaseline: 'Weiter',
+    regionsComplete: '{count}/{total} Regionen',
   },
 
   modes: {

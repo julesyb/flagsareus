@@ -19,7 +19,7 @@ import { getStats, getDayStreak, getDailyChallenge, DailyChallengeData, getSetti
 import { generateQuestions, getDailyNumber } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion, CategoryId } from '../types';
-import { PlayIcon, ChevronRightIcon, ChevronDownIcon, ClockIcon, UsersIcon, EyeIcon, CalendarIcon, CrosshairIcon, LightningIcon, GearIcon, PuzzleIcon } from '../components/Icons';
+import { PlayIcon, ChevronRightIcon, ChevronDownIcon, ClockIcon, UsersIcon, EyeIcon, CalendarIcon, CrosshairIcon, LightningIcon, GearIcon, PuzzleIcon, CheckIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
@@ -181,7 +181,6 @@ export default function HomeScreen({ navigation }: Props) {
   const [weakFlagCount, setWeakFlagCount] = useState(0);
   const [autocomplete, setAutocomplete] = useState(false);
   const [baseline, setBaseline] = useState<BaselineData | null>(null);
-  const [baselineExpanded, setBaselineExpanded] = useState(false);
 
   useEffect(() => {
     initAudio();
@@ -215,10 +214,6 @@ export default function HomeScreen({ navigation }: Props) {
   const onboardingCount = baseline ? ONBOARDING_REGIONS.filter((r) => baseline.regions[r]).length : 0;
   const nextRegion = baseline ? ONBOARDING_REGIONS.find((r) => !baseline.regions[r]) ?? 'africa' : 'africa';
 
-  const hasPlayed = stats !== null && stats.totalGamesPlayed > 0;
-  const accuracy = stats && stats.totalAnswered > 0
-    ? Math.round((stats.totalCorrect / stats.totalAnswered) * 100)
-    : 0;
 
   return (
     <SafeAreaView style={s.container}>
@@ -257,54 +252,73 @@ export default function HomeScreen({ navigation }: Props) {
         {/* ── ONBOARDING PROGRESS ── */}
         {!onboardingComplete && (
           <View style={s.onboardingWrap}>
-            <TouchableOpacity
-              style={s.onboardingHeader}
-              activeOpacity={0.85}
-              onPress={() => {
-                hapticTap();
-                const count = getCategoryCount(nextRegion as CategoryId);
-                navigation.navigate('Game', {
-                  config: { mode: 'baseline', category: nextRegion as CategoryId, questionCount: count, displayMode: 'flag' },
-                });
-              }}
-            >
-              <View style={s.onboardingHeaderLeft}>
-                <Text style={s.onboardingHeaderTitle}>{t(`categories.${nextRegion}`)}</Text>
-                <View style={s.onboardingPip} />
-                <Text style={s.onboardingHeaderCount}>{onboardingCount}/{ONBOARDING_REGIONS.length}</Text>
+            <View style={s.onboardingTop}>
+              <View style={s.onboardingTopLeft}>
+                <Text style={s.onboardingTitle}>{t('onboarding.baselineProgress')}</Text>
+                <Text style={s.onboardingCount}>
+                  {t('onboarding.regionsComplete', { count: onboardingCount, total: ONBOARDING_REGIONS.length })}
+                </Text>
               </View>
-              <ChevronRightIcon size={16} color={colors.ink} />
-            </TouchableOpacity>
-            {onboardingCount > 0 && (
               <TouchableOpacity
-                style={s.onboardingExpandBtn}
-                activeOpacity={0.7}
+                style={s.onboardingCta}
+                activeOpacity={0.85}
                 onPress={() => {
                   hapticTap();
-                  setBaselineExpanded((v) => !v);
+                  const count = getCategoryCount(nextRegion as CategoryId);
+                  navigation.navigate('Game', {
+                    config: { mode: 'baseline', category: nextRegion as CategoryId, questionCount: count, displayMode: 'flag' },
+                  });
                 }}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <Text style={s.onboardingExpandText}>{t('home.onboardingScores')}</Text>
-                <View style={baselineExpanded ? { transform: [{ rotate: '180deg' }] } : undefined}>
-                  <ChevronDownIcon size={12} color={colors.textTertiary} />
-                </View>
+                <Text style={s.onboardingCtaText}>{t(`categories.${nextRegion}`)}</Text>
+                <ChevronRightIcon size={14} color={colors.white} />
               </TouchableOpacity>
-            )}
-            {baselineExpanded && (
-              <View style={s.onboardingScoreList}>
-                {ONBOARDING_REGIONS.map((r) => {
-                  const result = baseline?.regions[r];
-                  if (!result) return null;
-                  return (
-                    <View key={r} style={s.onboardingScoreRow}>
-                      <Text style={s.onboardingScoreRegion}>{t(`categories.${r}`)}</Text>
-                      <Text style={s.onboardingScoreVal}>{result.accuracy}%</Text>
-                    </View>
-                  );
-                })}
+            </View>
+            <View style={s.onboardingBarRow}>
+              <View style={s.onboardingBar}>
+                <Animated.View
+                  style={[
+                    s.onboardingBarFill,
+                    { width: `${(onboardingCount / ONBOARDING_REGIONS.length) * 100}%` },
+                  ]}
+                />
               </View>
-            )}
+              <Text style={s.onboardingMotivation}>{t('onboarding.baselineMotivation')}</Text>
+            </View>
+            {/* Region chips */}
+            <View style={s.onboardingChips}>
+              {ONBOARDING_REGIONS.map((r) => {
+                const result = baseline?.regions[r];
+                const isDone = !!result;
+                return (
+                  <TouchableOpacity
+                    key={r}
+                    style={[
+                      s.onboardingChip,
+                      isDone ? s.onboardingChipDone : s.onboardingChipPending,
+                    ]}
+                    activeOpacity={isDone ? 1 : 0.7}
+                    disabled={isDone}
+                    onPress={() => {
+                      hapticTap();
+                      const count = getCategoryCount(r as CategoryId);
+                      navigation.navigate('Game', {
+                        config: { mode: 'baseline', category: r as CategoryId, questionCount: count, displayMode: 'flag' },
+                      });
+                    }}
+                  >
+                    {isDone && <CheckIcon size={10} color={colors.success} />}
+                    <Text style={[
+                      s.onboardingChipText,
+                      isDone ? s.onboardingChipTextDone : s.onboardingChipTextPending,
+                    ]}>
+                      {t(`categories.${r}`)}
+                    </Text>
+                    {isDone && <Text style={s.onboardingChipPct}>{result!.accuracy}%</Text>}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
         )}
 
@@ -574,33 +588,13 @@ export default function HomeScreen({ navigation }: Props) {
         {/* ── SUPPORT ── */}
         <SupportCard gamesPlayed={stats?.totalGamesPlayed ?? 0} />
 
-        {/* ── YOUR STATS ── */}
-        {hasPlayed && (
-          <View style={s.statsWrap}>
-            <Text style={s.sectionLbl}>{t('home.yourStats')}</Text>
-            <View style={s.statsRow}>
-              <View style={[s.statTile, { borderTopColor: colors.teal }]}>
-                <Text style={s.statVal}>{stats!.bestStreak}</Text>
-                <Text style={s.statLbl}>{t('home.bestStreak')}</Text>
-              </View>
-              <View style={[s.statTile, { borderTopColor: colors.amber }]}>
-                <Text style={s.statVal}>{stats!.bestTimeAttackScore}</Text>
-                <Text style={s.statLbl}>{t('home.best60s')}</Text>
-              </View>
-              <View style={[s.statTile, { borderTopColor: colors.blue }]}>
-                <Text style={s.statVal}>{accuracy}%</Text>
-                <Text style={s.statLbl}>{t('home.accuracy')}</Text>
-              </View>
-            </View>
-          </View>
-        )}
 
         <View style={{ height: spacing.md }} />
         </ScreenContainer>
       </ScrollView>
 
       {/* ── BOTTOM NAV ── */}
-      <BottomNav activeTab="Play" onNavigate={onNavigate} />
+      <BottomNav activeTab="Home" onNavigate={onNavigate} />
     </SafeAreaView>
   );
 }
@@ -683,66 +677,102 @@ const s = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.ink,
     borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-  },
-  onboardingHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
     padding: spacing.md,
-  },
-  onboardingHeaderLeft: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
     gap: spacing.sm,
   },
-  onboardingHeaderTitle: {
+  onboardingTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  onboardingTopLeft: {
+    flex: 1,
+  },
+  onboardingTitle: {
     fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.lg,
+    fontSize: fontSize.body,
     color: colors.ink,
+    marginBottom: 2,
   },
-  onboardingPip: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: colors.textTertiary,
-  },
-  onboardingHeaderCount: {
+  onboardingCount: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.caption,
+    fontSize: fontSize.sm,
     color: colors.textTertiary,
   },
-  onboardingExpandBtn: {
+  onboardingCta: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.md,
+    backgroundColor: colors.ink,
+    borderRadius: borderRadius.sm,
+    paddingVertical: spacing.xs + 2,
+    paddingHorizontal: spacing.sm + 2,
   },
-  onboardingExpandText: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.caption,
+  onboardingCtaText: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.sm,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    color: colors.white,
+  },
+  onboardingBarRow: {
+    gap: spacing.xs,
+  },
+  onboardingBar: {
+    height: 6,
+    backgroundColor: colors.rule,
+    borderRadius: borderRadius.full,
+    overflow: 'hidden',
+  },
+  onboardingBarFill: {
+    height: 6,
+    backgroundColor: colors.success,
+    borderRadius: borderRadius.full,
+  },
+  onboardingMotivation: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.xxs,
     color: colors.textTertiary,
+    fontStyle: 'italic',
   },
-  onboardingScoreList: {
-    borderTopWidth: 1,
-    borderTopColor: colors.rule,
+  onboardingChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
   },
-  onboardingScoreRow: {
+  onboardingChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
+    gap: spacing.xs,
+    backgroundColor: colors.surfaceSecondary,
+    borderWidth: 1,
+    borderColor: colors.rule,
+    borderRadius: borderRadius.sm,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
   },
-  onboardingScoreRegion: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.caption,
+  onboardingChipDone: {
+    backgroundColor: colors.successBg,
+    borderColor: colors.success,
+  },
+  onboardingChipPending: {
+    backgroundColor: colors.ink,
+    borderColor: colors.ink,
+  },
+  onboardingChipText: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: fontSize.sm,
     color: colors.textTertiary,
-    flex: 1,
   },
-  onboardingScoreVal: {
+  onboardingChipTextDone: {
+    color: colors.success,
+  },
+  onboardingChipTextPending: {
+    color: colors.white,
+  },
+  onboardingChipPct: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.caption,
+    fontSize: fontSize.sm,
     color: colors.success,
   },
 
@@ -1045,37 +1075,4 @@ const s = StyleSheet.create({
     lineHeight: 18,
   },
 
-  // ── Stats row
-  statsWrap: {
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.lg,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  statTile: {
-    flex: 1,
-    backgroundColor: colors.white,
-    borderRadius: borderRadius.lg,
-    borderWidth: 2,
-    borderColor: colors.rule,
-    borderTopWidth: 3,
-    padding: spacing.md,
-    alignItems: 'center',
-  },
-  statVal: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.heading,
-    color: colors.ink,
-    lineHeight: 26,
-  },
-  statLbl: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.sm,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-    color: colors.textTertiary,
-    marginTop: spacing.xs,
-  },
 });
