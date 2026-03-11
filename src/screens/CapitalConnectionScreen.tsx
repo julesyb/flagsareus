@@ -30,37 +30,60 @@ interface QuestionData {
   options: string[];
 }
 
-function generateQuestions(count: number): QuestionData[] {
-  // Prefer countries that have same-country city distractors
+const flagById = new Map(countries.map((c) => [c.id, c]));
+
+function buildQuestionForFlag(flag: FlagItem): QuestionData | null {
+  const correctCapital = countryCapitals[flag.id];
+  if (!correctCapital) return null;
+
+  const localCities = countryCities[flag.id] ?? [];
+  const eligible = countries.filter((c) => countryCapitals[c.id]);
+
+  let wrongOptions: string[];
+  if (localCities.length >= 3) {
+    wrongOptions = shuffleArray(localCities.filter((c) => c !== correctCapital)).slice(0, 3);
+  } else {
+    const otherCapitals = eligible
+      .filter((c) => c.id !== flag.id)
+      .map((c) => countryCapitals[c.id]);
+    wrongOptions = shuffleArray(otherCapitals).slice(0, 3);
+  }
+
+  const options = shuffleArray([correctCapital, ...wrongOptions]);
+  return { flag, correctCapital, options };
+}
+
+function generateQuestions(count: number, challengeFlagIds?: string[]): QuestionData[] {
+  if (challengeFlagIds) {
+    const questions: QuestionData[] = [];
+    for (const id of challengeFlagIds) {
+      const flag = flagById.get(id);
+      if (!flag) continue;
+      const q = buildQuestionForFlag(flag);
+      if (q) questions.push(q);
+    }
+    return questions;
+  }
+
   const eligible = countries.filter((c) => countryCapitals[c.id]);
   const withCities = eligible.filter((c) => countryCities[c.id]?.length >= 3);
   const pool = withCities.length >= count ? withCities : eligible;
   const selected = shuffleArray(pool).slice(0, count);
 
-  return selected.map((flag) => {
-    const correctCapital = countryCapitals[flag.id];
-    const localCities = countryCities[flag.id] ?? [];
-
-    let wrongOptions: string[];
-    if (localCities.length >= 3) {
-      // Use cities from the same country as distractors
-      wrongOptions = shuffleArray(localCities.filter((c) => c !== correctCapital)).slice(0, 3);
-    } else {
-      // Fallback: use capitals from other countries
-      const otherCapitals = eligible
-        .filter((c) => c.id !== flag.id)
-        .map((c) => countryCapitals[c.id]);
-      wrongOptions = shuffleArray(otherCapitals).slice(0, 3);
-    }
-
-    const options = shuffleArray([correctCapital, ...wrongOptions]);
-    return { flag, correctCapital, options };
-  });
+  const questions: QuestionData[] = [];
+  for (const flag of selected) {
+    const q = buildQuestionForFlag(flag);
+    if (q) questions.push(q);
+  }
+  return questions;
 }
 
 export default function CapitalConnectionScreen({ navigation, route }: Props) {
   const { config, challenge, playerName } = route.params;
-  const questions = useMemo(() => generateQuestions(config.questionCount), [config.questionCount]);
+  const questions = useMemo(
+    () => generateQuestions(config.questionCount, challenge?.flagIds),
+    [config.questionCount, challenge],
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);

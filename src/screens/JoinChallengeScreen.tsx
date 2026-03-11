@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,13 +14,14 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
 import { RootStackParamList } from '../types/navigation';
-import { decodeChallenge, buildChallengeQuestions, getScreenForMode } from '../utils/challengeCode';
+import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData } from '../utils/challengeCode';
 import { hapticTap, hapticWrong } from '../utils/feedback';
 import { UsersIcon } from '../components/Icons';
 import ScreenContainer from '../components/ScreenContainer';
 import BottomNav from '../components/BottomNav';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { t } from '../utils/i18n';
+import { getChallengeName, saveChallengeName } from '../utils/storage';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'JoinChallenge'>;
 
@@ -28,6 +29,20 @@ export default function JoinChallengeScreen({ navigation }: Props) {
   const onNavigate = useNavTabs();
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
+
+  // Load saved name on mount
+  useEffect(() => {
+    getChallengeName().then((saved) => {
+      if (saved) setName(saved);
+    });
+  }, []);
+
+  // Decode challenge from code for live preview
+  const preview: ChallengeData | null = useMemo(() => {
+    const trimmed = code.trim();
+    if (trimmed.length === 0) return null;
+    return decodeChallenge(trimmed);
+  }, [code]);
 
   const canPlay = code.trim().length > 0 && name.trim().length > 0;
 
@@ -59,6 +74,9 @@ export default function JoinChallengeScreen({ navigation }: Props) {
       return;
     }
 
+    // Save name for next time
+    saveChallengeName(name.trim());
+
     const screen = getScreenForMode(challenge.mode) as keyof RootStackParamList;
     const params = {
       config: {
@@ -73,6 +91,8 @@ export default function JoinChallengeScreen({ navigation }: Props) {
 
     navigation.replace(screen as 'Game', params);
   };
+
+  const modeLabel = preview ? t(`modes.${preview.mode}`) : '';
 
   return (
     <SafeAreaView style={styles.container}>
@@ -118,6 +138,25 @@ export default function JoinChallengeScreen({ navigation }: Props) {
             />
             <Text style={styles.hint}>{t('challenge.codeHint')}</Text>
           </View>
+
+          {/* Live preview when a valid code is pasted */}
+          {preview && (
+            <View style={styles.previewCard}>
+              <View style={styles.previewRow}>
+                <Text style={styles.previewLabel}>{t('challenge.previewMode')}</Text>
+                <Text style={styles.previewValue}>{modeLabel}</Text>
+              </View>
+              <View style={styles.previewRow}>
+                <Text style={styles.previewLabel}>{t('challenge.previewHost', { name: preview.hostName })}</Text>
+                <Text style={styles.previewValue}>{t('challenge.previewFlags', { count: preview.flagIds.length })}</Text>
+              </View>
+              {preview.timeLimit > 0 && (
+                <View style={styles.previewRow}>
+                  <Text style={styles.previewLabel}>{t('challenge.previewTimeLimit', { seconds: preview.timeLimit })}</Text>
+                </View>
+              )}
+            </View>
+          )}
 
           <TouchableOpacity
             style={[styles.playButton, !canPlay && styles.playButtonDisabled]}
@@ -198,6 +237,30 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.textTertiary,
     marginTop: spacing.xs,
+  },
+  previewCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 2,
+    borderColor: colors.ink,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    marginTop: spacing.lg,
+    gap: spacing.xs,
+  },
+  previewRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  previewLabel: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: fontSize.caption,
+    color: colors.textSecondary,
+  },
+  previewValue: {
+    fontFamily: fontFamily.bodyBold,
+    fontSize: fontSize.caption,
+    color: colors.ink,
   },
   playButton: {
     ...buttons.primary,

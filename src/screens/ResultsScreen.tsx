@@ -17,7 +17,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
 import { calculateAccuracy, getStreakFromResults, getGrade, generateDailyShareGrid, generateShareGrid, getDailyNumber } from '../utils/gameEngine';
-import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, updateLastGameBadgeFlags, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreak, getBadgeData, getMissedFlagIds, addGameHistoryEntry, getSupportData } from '../utils/storage';
+import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, updateLastGameBadgeFlags, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreak, getBadgeData, getMissedFlagIds, addGameHistoryEntry, getSupportData, getChallengeName, saveChallengeName } from '../utils/storage';
 import { BaselineRegionId, UserStats, GameMode } from '../types';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
@@ -101,11 +101,19 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const [showChallengeModal, setShowChallengeModal] = useState(false);
   const [challengeName, setChallengeName] = useState('');
 
+  // Load saved challenge name
+  useEffect(() => {
+    getChallengeName().then((saved) => {
+      if (saved) setChallengeName(saved);
+    });
+  }, []);
+
   const handleChallengeShare = async () => {
     if (challengeName.trim().length === 0) return;
     Keyboard.dismiss();
     setShowChallengeModal(false);
     hapticTap();
+    saveChallengeName(challengeName.trim());
     const flagIds = results.map((r) => r.question.flag.id);
     const hostResults = results.map((r) => ({ correct: r.correct, timeMs: r.timeTaken }));
     const code = encodeChallenge({

@@ -306,6 +306,10 @@ const en = {
     youWin: 'You win!',
     theyWin: '{name} wins!',
     tie: 'Tie!',
+    previewMode: 'Mode',
+    previewFlags: '{count} flags',
+    previewHost: 'vs {name}',
+    previewTimeLimit: '{seconds}s per flag',
   },
 
   // ─── Notifications ─────────────────────────────────────
