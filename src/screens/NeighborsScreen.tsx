@@ -136,6 +136,11 @@ export default function NeighborsScreen({ navigation, route }: Props) {
     }]);
   };
 
+  // Refs so keyboard handler always calls the latest version
+  const handleSubmitRef = useRef(handleSubmit);
+  handleSubmitRef.current = handleSubmit;
+  const handleNextRef = useRef(() => {});
+
   // Keyboard shortcut: Enter to submit or advance
   useEffect(() => {
     if (Platform.OS !== 'web') return;
@@ -143,9 +148,9 @@ export default function NeighborsScreen({ navigation, route }: Props) {
       if (e.key === 'Enter') {
         e.preventDefault();
         if (submitted) {
-          handleNext();
+          handleNextRef.current();
         } else if (selected.size > 0) {
-          handleSubmit();
+          handleSubmitRef.current();
         }
       }
     };
@@ -170,6 +175,7 @@ export default function NeighborsScreen({ navigation, route }: Props) {
       Animated.timing(fadeAnim, { toValue: 1, duration: 180, useNativeDriver: true }).start();
     });
   };
+  handleNextRef.current = handleNext;
 
   return (
     <SafeAreaView style={styles.container}>

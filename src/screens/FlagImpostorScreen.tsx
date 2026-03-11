@@ -458,20 +458,25 @@ export default function FlagImpostorScreen({ navigation, route }: Props) {
     navigation.replace('Results', { results: finalResults, config });
   };
 
+  // Refs so keyboard handler always calls the latest version
+  const handlePickRef = useRef(handlePick);
+  handlePickRef.current = handlePick;
+  const handleNextRef = useRef(() => {});
+
   // Keyboard shortcuts: 1-4 to pick, Enter to advance
   useEffect(() => {
     if (Platform.OS !== 'web') return;
     const handler = (e: KeyboardEvent) => {
       if (picked !== null && e.key === 'Enter') {
         e.preventDefault();
-        handleNext();
+        handleNextRef.current();
         return;
       }
       if (picked === null && e.key >= '1' && e.key <= '4') {
         e.preventDefault();
         const idx = parseInt(e.key, 10) - 1;
         if (idx < grid.length) {
-          handlePick(idx);
+          handlePickRef.current(idx);
         }
       }
     };
@@ -494,6 +499,7 @@ export default function FlagImpostorScreen({ navigation, route }: Props) {
       Animated.timing(fadeAnim, { toValue: 1, duration: 180, useNativeDriver: true }).start();
     });
   };
+  handleNextRef.current = handleNext;
 
   const FLAG_W = isDesktop ? 180 : 120;
   const FLAG_H = isDesktop ? 120 : 80;
