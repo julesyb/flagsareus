@@ -104,14 +104,14 @@ export function buildBadgeContext(
   };
 }
 
-// ── Derived values (computed once per evaluation, not per badge) ──
+// ── Derived values (computed once, reused across all badge checks) ──
 interface DerivedCtx {
   countriesSeen: number;
   totalFlags: number;
   modesPlayed: number;
 }
 
-function derive(ctx: BadgeCheckContext): DerivedCtx {
+export function deriveFromContext(ctx: BadgeCheckContext): DerivedCtx {
   return {
     countriesSeen: Object.values(ctx.flagStats).filter((s) => s.right > 0).length,
     totalFlags: getTotalFlagCount(),
@@ -167,10 +167,10 @@ export interface BadgeProgress {
   pct: number; // 0-100
 }
 
-export function getBadgeProgress(badge: Badge, ctx: BadgeCheckContext): BadgeProgress | null {
+export function getBadgeProgress(badge: Badge, ctx: BadgeCheckContext, precomputed?: DerivedCtx): BadgeProgress | null {
   const metric = BADGE_METRICS[badge.id];
   if (!metric) return null;
-  const { progress, target } = metric(ctx, derive(ctx));
+  const { progress, target } = metric(ctx, precomputed ?? deriveFromContext(ctx));
   if (target === 0) return null;
   const clamped = Math.min(progress, target);
   return { progress: clamped, target, pct: Math.round((clamped / target) * 100) };
@@ -183,7 +183,7 @@ export function getBadgeProgress(badge: Badge, ctx: BadgeCheckContext): BadgePro
 // by detectPerGameBadges() and persisted via earnedBadgeIds.
 function evaluateBadges(ctx: BadgeCheckContext): EarnedBadge[] {
   const earned: EarnedBadge[] = [];
-  const d = derive(ctx);
+  const d = deriveFromContext(ctx);
 
   for (const badge of BADGES) {
     let isEarned = false;

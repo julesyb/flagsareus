@@ -23,7 +23,7 @@ import { FlagImageSmall } from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
-import { getAllEarnedBadges, buildBadgeContext, BADGES, TIER_COLORS, getBadgeProgress } from '../utils/badges';
+import { getAllEarnedBadges, buildBadgeContext, deriveFromContext, BADGES, TIER_COLORS, getBadgeProgress } from '../utils/badges';
 import { ChevronRightIcon, CrosshairIcon, BadgeIconView } from '../components/Icons';
 
 const RANK_COLORS = [colors.gradeS, colors.textTertiary, colors.warning];
@@ -210,6 +210,12 @@ export default function StatsScreen() {
     return buildBadgeContext(stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched);
   }, [stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched]);
 
+  // Pre-compute derived values once (countriesSeen, totalFlags, modesPlayed)
+  // so getBadgeProgress doesn't recompute them per badge in loops
+  const derived = React.useMemo(() => {
+    return badgeCtx ? deriveFromContext(badgeCtx) : null;
+  }, [badgeCtx]);
+
   const earnedBadges = React.useMemo(() => {
     if (!badgeCtx || !badgeData) return [];
     return getAllEarnedBadges(badgeCtx, badgeData.earnedBadgeIds);
@@ -217,14 +223,14 @@ export default function StatsScreen() {
 
   // ── Next milestone computation (uses shared getBadgeProgress) ──
   const nextMilestone = React.useMemo(() => {
-    if (!badgeCtx) return null;
+    if (!badgeCtx || !derived) return null;
     const earnedIdSet = new Set(earnedBadges.map((b) => b.id));
 
     const candidates: { badge: typeof BADGES[0]; progress: number; target: number; remaining: number }[] = [];
 
     for (const badge of BADGES) {
       if (earnedIdSet.has(badge.id)) continue;
-      const bp = getBadgeProgress(badge, badgeCtx);
+      const bp = getBadgeProgress(badge, badgeCtx, derived);
       if (!bp || bp.target === 0 || bp.progress === 0) continue;
       if (bp.pct >= 30) {
         candidates.push({ badge, progress: bp.progress, target: bp.target, remaining: bp.target - bp.progress });
@@ -234,7 +240,7 @@ export default function StatsScreen() {
     if (candidates.length === 0) return null;
     candidates.sort((a, b) => (a.remaining / a.target) - (b.remaining / b.target));
     return candidates[0];
-  }, [badgeCtx, earnedBadges]);
+  }, [badgeCtx, derived, earnedBadges]);
 
   // Score distribution: bucket accuracies into ranges
   // (must be above the early return to satisfy Rules of Hooks)
@@ -546,7 +552,7 @@ export default function StatsScreen() {
             {BADGES.map((badge) => {
               const earned = earnedIds.has(badge.id);
               const tierColor = TIER_COLORS[badge.tier];
-              const progress = !earned && badgeCtx ? getBadgeProgress(badge, badgeCtx) : null;
+              const progress = !earned && badgeCtx && derived ? getBadgeProgress(badge, badgeCtx, derived) : null;
               return (
                 <View key={badge.id} style={[s.badgeCard, !earned && s.badgeCardLocked]}>
                   <View style={[s.badgeIconWrap, { backgroundColor: earned ? tierColor + '18' : colors.surfaceSecondary }]}>
