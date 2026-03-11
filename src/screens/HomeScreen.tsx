@@ -487,7 +487,7 @@ export default function HomeScreen({ navigation }: Props) {
         )}
 
         {/* ── SUPPORT ── */}
-        {hasPlayed && <SupportCard />}
+        <SupportCard gamesPlayed={stats?.totalGamesPlayed ?? 0} />
 
         <View style={{ height: spacing.md }} />
         </View>

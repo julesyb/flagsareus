@@ -191,15 +191,15 @@ const ptBR: typeof en = {
   },
 
   support: {
-    title: 'Apoie o Flag That',
-    subtitle: 'Curtindo o app? Assista um v\u00eddeo curto para apoiar o desenvolvimento.',
-    watchButton: 'Assistir um v\u00eddeo curto',
-    thankYou: 'Obrigado pelo seu apoio!',
-    totalWatched: '{count} v\u00eddeo assistido',
-    totalWatchedPlural: '{count} v\u00eddeos assistidos',
-    adFailed: 'Nenhum v\u00eddeo dispon\u00edvel agora. Tente novamente mais tarde.',
+    title: 'Pague-nos um caf\u00e9',
+    subtitle: 'Flag That \u00e9 gratuito, sem an\u00fancios. Se quiser ajudar a manter assim, assista um v\u00eddeo curto. Totalmente opcional, sempre bem-vindo.',
+    watchButton: 'Assistir um v\u00eddeo',
+    thankYou: 'Voc\u00ea \u00e9 demais. Obrigado!',
+    totalWatched: 'Apoiado {count} vez',
+    totalWatchedPlural: 'Apoiado {count} vezes',
+    adFailed: 'Nada dispon\u00edvel agora. Tente mais tarde!',
     settingsTitle: 'Apoio',
-    settingsDesc: 'Apoie o Flag That assistindo um v\u00eddeo curto',
+    settingsDesc: 'Assista um v\u00eddeo para ajudar o Flag That a continuar gratuito',
   },
 
   browse: {
@@ -291,6 +291,7 @@ const ptBR: typeof en = {
     daily_legend: { name: 'Lenda di\u00e1ria', description: '30 desafios di\u00e1rios completos' },
     practice_perfect: { name: 'Pr\u00e1tica perfeita', description: 'Sem bandeiras para praticar' },
     shared_spirit: { name: 'Esp\u00edrito compartilhador', description: 'Compartilhe seus resultados' },
+    supporter: { name: 'Apoiador', description: 'Apoie assistindo um v\u00eddeo' },
   },
 
   modes: {

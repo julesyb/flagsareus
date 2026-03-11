@@ -199,15 +199,15 @@ const en = {
 
   // ─── Support ───────────────────────────────────────────
   support: {
-    title: 'Support Flag That',
-    subtitle: 'Enjoying the app? Watch a short video to support development.',
-    watchButton: 'Watch a Short Video',
-    thankYou: 'Thank you for your support!',
-    totalWatched: '{count} video watched',
-    totalWatchedPlural: '{count} videos watched',
-    adFailed: 'No video available right now. Try again later.',
+    title: 'Buy us a coffee',
+    subtitle: 'Flag That is free, with no ads. If you want to help keep it that way, you can watch a quick video. Totally optional, always appreciated.',
+    watchButton: 'Watch a Video',
+    thankYou: 'You are the best. Thank you!',
+    totalWatched: 'Supported {count} time',
+    totalWatchedPlural: 'Supported {count} times',
+    adFailed: 'Nothing available right now. Try again later!',
     settingsTitle: 'Support',
-    settingsDesc: 'Help support Flag That by watching a short video',
+    settingsDesc: 'Watch a short video to help keep Flag That free',
   },
 
   // ─── Browse Screen ──────────────────────────────────────
@@ -307,6 +307,7 @@ const en = {
     daily_legend: { name: 'Daily Legend', description: 'Complete 30 daily challenges' },
     practice_perfect: { name: 'Practice Perfect', description: 'Clear all flags from practice' },
     shared_spirit: { name: 'Shared Spirit', description: 'Share your results' },
+    supporter: { name: 'Supporter', description: 'Support by watching a video' },
   },
 
   // ─── Game Modes (for labels) ────────────────────────────

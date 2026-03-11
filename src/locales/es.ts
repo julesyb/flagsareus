@@ -191,15 +191,15 @@ const es: typeof en = {
   },
 
   support: {
-    title: 'Apoya Flag That',
-    subtitle: 'Te gusta la app? Mira un video corto para apoyar el desarrollo.',
-    watchButton: 'Ver un video corto',
-    thankYou: 'Gracias por tu apoyo!',
-    totalWatched: '{count} video visto',
-    totalWatchedPlural: '{count} videos vistos',
-    adFailed: 'No hay video disponible ahora. Intenta m\u00e1s tarde.',
+    title: 'Inv\u00edtanos a un caf\u00e9',
+    subtitle: 'Flag That es gratis, sin anuncios. Si quieres ayudar a que siga as\u00ed, puedes ver un video corto. Totalmente opcional, siempre agradecido.',
+    watchButton: 'Ver un video',
+    thankYou: 'Eres el mejor. \u00a1Gracias!',
+    totalWatched: 'Apoyado {count} vez',
+    totalWatchedPlural: 'Apoyado {count} veces',
+    adFailed: 'Nada disponible ahora. \u00a1Int\u00e9ntalo m\u00e1s tarde!',
     settingsTitle: 'Apoyo',
-    settingsDesc: 'Ayuda a Flag That viendo un video corto',
+    settingsDesc: 'Ve un video corto para ayudar a que Flag That siga siendo gratis',
   },
 
   browse: {
@@ -291,6 +291,7 @@ const es: typeof en = {
     daily_legend: { name: 'Leyenda diaria', description: '30 desaf\u00edos diarios completados' },
     practice_perfect: { name: 'Pr\u00e1ctica perfecta', description: 'Sin banderas pendientes de practicar' },
     shared_spirit: { name: 'Esp\u00edritu compartido', description: 'Comparte tus resultados' },
+    supporter: { name: 'Patrocinador', description: 'Apoya viendo un video' },
   },
 
   modes: {

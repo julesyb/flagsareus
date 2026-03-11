@@ -191,15 +191,15 @@ const fr: typeof en = {
   },
 
   support: {
-    title: 'Soutenez Flag That',
-    subtitle: 'Vous aimez l\'appli ? Regardez une courte vid\u00e9o pour soutenir le d\u00e9veloppement.',
-    watchButton: 'Regarder une courte vid\u00e9o',
-    thankYou: 'Merci pour votre soutien !',
-    totalWatched: '{count} vid\u00e9o vue',
-    totalWatchedPlural: '{count} vid\u00e9os vues',
-    adFailed: 'Aucune vid\u00e9o disponible pour le moment. R\u00e9essayez plus tard.',
+    title: 'Offrez-nous un caf\u00e9',
+    subtitle: 'Flag That est gratuit, sans pub. Si vous voulez que \u00e7a continue, regardez une courte vid\u00e9o. Totalement optionnel, toujours appr\u00e9ci\u00e9.',
+    watchButton: 'Regarder une vid\u00e9o',
+    thankYou: 'Vous \u00eates formidable. Merci !',
+    totalWatched: 'Soutenu {count} fois',
+    totalWatchedPlural: 'Soutenu {count} fois',
+    adFailed: 'Rien de disponible pour le moment. R\u00e9essayez plus tard !',
     settingsTitle: 'Soutien',
-    settingsDesc: 'Soutenez Flag That en regardant une courte vid\u00e9o',
+    settingsDesc: 'Regardez une vid\u00e9o pour aider Flag That \u00e0 rester gratuit',
   },
 
   browse: {
@@ -291,6 +291,7 @@ const fr: typeof en = {
     daily_legend: { name: 'L\u00e9gende quotidienne', description: '30 d\u00e9fis quotidiens termin\u00e9s' },
     practice_perfect: { name: 'R\u00e9vision parfaite', description: 'Plus aucun drapeau \u00e0 r\u00e9viser' },
     shared_spirit: { name: 'Esprit de partage', description: 'Partagez vos r\u00e9sultats' },
+    supporter: { name: 'Soutien', description: 'Soutenez en regardant une vid\u00e9o' },
   },
 
   modes: {

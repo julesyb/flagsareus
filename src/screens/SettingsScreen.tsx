@@ -23,10 +23,8 @@ import {
 } from '../utils/feedback';
 import { toggleDailyReminder, syncNotificationSchedule } from '../utils/notifications';
 import { t, setLocale, getLocale, SUPPORTED_LOCALES, LocaleCode } from '../utils/i18n';
-import { ChevronRightIcon, HeartIcon } from '../components/Icons';
+import { ChevronRightIcon } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
-import { isAdAvailable, showRewardedAd } from '../utils/ads';
-import { getSupportData, recordAdWatched, SupportData } from '../utils/storage';
 
 export default function SettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -39,15 +37,10 @@ export default function SettingsScreen() {
     locale: null,
   });
   const [, forceRender] = useState(0);
-  const [supportData, setSupportData] = useState<SupportData | null>(null);
-  const [adLoading, setAdLoading] = useState(false);
-  const [adThanked, setAdThanked] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       getSettings().then(setSettings);
-      getSupportData().then(setSupportData);
-      setAdThanked(false);
     }, []),
   );
 
@@ -157,19 +150,6 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleWatchAd = async () => {
-    if (adLoading) return;
-    setAdLoading(true);
-    const rewarded = await showRewardedAd();
-    if (rewarded) {
-      const updated = await recordAdWatched();
-      setSupportData(updated);
-      setAdThanked(true);
-      setTimeout(() => setAdThanked(false), 3000);
-    }
-    setAdLoading(false);
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -268,36 +248,6 @@ export default function SettingsScreen() {
             <ChevronRightIcon size={18} color={colors.textTertiary} />
           </TouchableOpacity>
         </View>
-
-        {/* Support */}
-        {isAdAvailable() && (
-          <>
-            <Text style={styles.sectionTitle}>{t('support.settingsTitle')}</Text>
-            <View style={styles.settingCard}>
-              <TouchableOpacity
-                style={styles.settingRow}
-                onPress={handleWatchAd}
-                activeOpacity={0.7}
-                disabled={adLoading}
-              >
-                <View style={[styles.settingInfo, { flexDirection: 'row', alignItems: 'center', gap: spacing.sm }]}>
-                  <HeartIcon size={16} color={colors.accent} filled />
-                  <View style={{ flex: 1 }}>
-                    <Text style={[styles.settingLabel, adLoading && styles.settingDisabled]}>
-                      {adThanked ? t('support.thankYou') : t('support.watchButton')}
-                    </Text>
-                    <Text style={styles.settingDesc}>{t('support.settingsDesc')}</Text>
-                  </View>
-                </View>
-                {supportData && supportData.totalAdsWatched > 0 && (
-                  <Text style={styles.settingValue}>
-                    {supportData.totalAdsWatched}
-                  </Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </>
-        )}
 
         {/* About */}
         <Text style={styles.sectionTitle}>{t('settings.about')}</Text>

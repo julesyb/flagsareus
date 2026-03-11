@@ -191,15 +191,15 @@ const de: typeof en = {
   },
 
   support: {
-    title: 'Flag That unterst\u00fctzen',
-    subtitle: 'Gef\u00e4llt dir die App? Schau ein kurzes Video, um die Entwicklung zu unterst\u00fctzen.',
-    watchButton: 'Kurzes Video ansehen',
-    thankYou: 'Danke f\u00fcr deine Unterst\u00fctzung!',
-    totalWatched: '{count} Video angesehen',
-    totalWatchedPlural: '{count} Videos angesehen',
-    adFailed: 'Kein Video verf\u00fcgbar. Versuche es sp\u00e4ter erneut.',
+    title: 'Spendier uns einen Kaffee',
+    subtitle: 'Flag That ist kostenlos, ohne Werbung. Wenn du helfen m\u00f6chtest, dass das so bleibt, schau dir ein kurzes Video an. V\u00f6llig freiwillig, immer gesch\u00e4tzt.',
+    watchButton: 'Video ansehen',
+    thankYou: 'Du bist spitze. Danke!',
+    totalWatched: '{count} Mal unterst\u00fctzt',
+    totalWatchedPlural: '{count} Mal unterst\u00fctzt',
+    adFailed: 'Gerade nichts verf\u00fcgbar. Versuch es sp\u00e4ter!',
     settingsTitle: 'Unterst\u00fctzung',
-    settingsDesc: 'Unterst\u00fctze Flag That, indem du ein kurzes Video anschaust',
+    settingsDesc: 'Schau ein Video, um Flag That kostenlos zu halten',
   },
 
   browse: {
@@ -291,6 +291,7 @@ const de: typeof en = {
     daily_legend: { name: 'T\u00e4gliche Legende', description: '30 t\u00e4gliche Herausforderungen' },
     practice_perfect: { name: 'Perfekt ge\u00fcbt', description: 'Keine Flaggen mehr zum \u00dcben' },
     shared_spirit: { name: 'Teilender Geist', description: 'Teile deine Ergebnisse' },
+    supporter: { name: 'Unterst\u00fctzer', description: 'Unterst\u00fctze durch ein Video' },
   },
 
   modes: {
