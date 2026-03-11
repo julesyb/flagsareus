@@ -189,7 +189,7 @@ export default function GameScreen({ route, navigation }: Props) {
         }, feedbackDelay);
       }
     },
-    [showFeedback, currentQuestion, questionStartTime, results, isTimeAttack, animateStreak, animateWrong, goToNext],
+    [showFeedback, currentQuestion, questionStartTime, results, isTimeAttack, animateStreak, animateWrong, goToNext, wrongCount, guessLimit],
   );
 
   const handleSubmitHard = () => {
@@ -504,7 +504,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   livesTextUrgent: {
-    color: colors.error,
+    color: colors.accent,
   },
   questionContainer: {
     flex: 1,
@@ -514,12 +514,6 @@ const styles = StyleSheet.create({
   flagContainer: {
     alignItems: 'center',
     marginBottom: spacing.md,
-  },
-  regionHint: {
-    ...typography.captionBold,
-    color: colors.textTertiary,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
   },
   questionText: {
     ...typography.caption,

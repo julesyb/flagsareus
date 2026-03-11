@@ -29,6 +29,8 @@ const QUESTION_COUNTS = [10, 20, 50, 100];
 const FLAGFLASH_TIMES = [15, 30, 60, 90];
 const FLAGPUZZLE_TIMES = [15, 30, 60];
 const TIMEATTACK_TIMES = [30, 60, 90, 120];
+const DEFAULT_GUESS_LIMIT = 3;
+const GUESS_LIMIT_OPTIONS = [3, 5, 0] as const; // 0 = unlimited
 
 // Extracted: reusable row of option chips with "All" toggle
 function OptionChipRow({
@@ -93,8 +95,7 @@ export default function GameSetupScreen({ navigation }: Props) {
   const [timeLimit, setTimeLimit] = useState(60);
   const [filterType, setFilterType] = useState<CategoryType | null>(null);
   const [autocomplete, setAutocomplete] = useState(false);
-  const [guessLimit, setGuessLimit] = useState(3);
-  const GUESS_LIMIT_OPTIONS = [3, 5, 0] as const; // 0 = unlimited
+  const [guessLimit, setGuessLimit] = useState(DEFAULT_GUESS_LIMIT);
 
   const totalFlags = getTotalFlagCount();
   const isFlagFlash = mode === 'flagflash';

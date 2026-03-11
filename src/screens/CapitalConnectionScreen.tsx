@@ -292,12 +292,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.md,
   },
-  regionHint: {
-    ...typography.captionBold,
-    color: colors.textTertiary,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
   prompt: {
     ...typography.caption,
     color: colors.textTertiary,

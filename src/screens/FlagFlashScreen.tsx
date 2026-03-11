@@ -522,10 +522,6 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     marginTop: spacing.md,
   },
-  flagRegion: {
-    ...typography.heading,
-    color: colors.whiteAlpha50,
-  },
   feedbackText: {
     fontSize: 56,
     fontFamily: fontFamily.display,
