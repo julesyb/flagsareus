@@ -12,7 +12,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { colors, spacing, fontFamily, fontSize, borderRadius } from '../utils/theme';
-import { UserStats } from '../types';
+import { UserStats, GameMode } from '../types';
 import { getStats, getFlagStats, FlagStats, getDayStreak, getBadgeData, getMissedFlagIds, BadgeData } from '../utils/storage';
 import { getAllFlags, getTotalFlagCount } from '../data';
 import { getGrade } from '../utils/gameEngine';
@@ -24,6 +24,18 @@ import { FlagIcon, GlobeIcon, CheckIcon, PlayIcon, LightningIcon, CalendarIcon, 
 
 const RANK_COLORS = [colors.gradeS, colors.textTertiary, colors.warning];
 
+// Modes to show in the breakdown (only ones users actually interact with)
+const MODE_BREAKDOWN: { key: GameMode; labelKey: string }[] = [
+  { key: 'easy', labelKey: 'modes.easy' },
+  { key: 'medium', labelKey: 'modes.medium' },
+  { key: 'hard', labelKey: 'modes.hard' },
+  { key: 'timeattack', labelKey: 'modes.timeattack' },
+  { key: 'daily', labelKey: 'modes.daily' },
+  { key: 'neighbors', labelKey: 'modes.neighbors' },
+  { key: 'impostor', labelKey: 'modes.impostor' },
+  { key: 'capitalconnection', labelKey: 'modes.capitalconnection' },
+];
+
 export default function StatsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [stats, setStats] = useState<UserStats | null>(null);
@@ -34,24 +46,17 @@ export default function StatsScreen() {
 
   const flagNameMap = React.useMemo(() => {
     const map: Record<string, string> = {};
-    for (const f of getAllFlags()) {
-      map[f.id] = f.name;
-    }
+    for (const f of getAllFlags()) map[f.id] = f.name;
     return map;
   }, []);
 
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
-
       async function loadData() {
         try {
           const [s, fs, ds, bd, missed] = await Promise.all([
-            getStats(),
-            getFlagStats(),
-            getDayStreak(),
-            getBadgeData(),
-            getMissedFlagIds(),
+            getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(),
           ]);
           if (!cancelled) {
             setStats(s);
@@ -60,25 +65,17 @@ export default function StatsScreen() {
             setBadgeData(bd);
             setWeakFlagCount(missed.length);
           }
-        } catch (e) {
+        } catch {
           if (!cancelled) {
             setStats((prev) => prev ?? {
-              totalGamesPlayed: 0,
-              totalCorrect: 0,
-              totalAnswered: 0,
-              bestStreak: 0,
-              bestTimeAttackScore: 0,
+              totalGamesPlayed: 0, totalCorrect: 0, totalAnswered: 0,
+              bestStreak: 0, bestTimeAttackScore: 0,
               modeStats: {
-                easy: { correct: 0, total: 0 },
-                medium: { correct: 0, total: 0 },
-                hard: { correct: 0, total: 0 },
-                flagflash: { correct: 0, total: 0 },
-                flagpuzzle: { correct: 0, total: 0 },
-                timeattack: { correct: 0, total: 0 },
-                neighbors: { correct: 0, total: 0 },
-                impostor: { correct: 0, total: 0 },
-                capitalconnection: { correct: 0, total: 0 },
-                daily: { correct: 0, total: 0 },
+                easy: { correct: 0, total: 0 }, medium: { correct: 0, total: 0 },
+                hard: { correct: 0, total: 0 }, flagflash: { correct: 0, total: 0 },
+                flagpuzzle: { correct: 0, total: 0 }, timeattack: { correct: 0, total: 0 },
+                neighbors: { correct: 0, total: 0 }, impostor: { correct: 0, total: 0 },
+                capitalconnection: { correct: 0, total: 0 }, daily: { correct: 0, total: 0 },
                 practice: { correct: 0, total: 0 },
               },
               categoryStats: {},
@@ -86,12 +83,8 @@ export default function StatsScreen() {
           }
         }
       }
-
       loadData();
-
-      return () => {
-        cancelled = true;
-      };
+      return () => { cancelled = true; };
     }, []),
   );
 
@@ -112,9 +105,7 @@ export default function StatsScreen() {
   const earnedBadges = React.useMemo(() => {
     if (!badgeData || !stats) return [];
     return evaluateBadges({
-      stats,
-      flagStats,
-      dayStreak,
+      stats, flagStats, dayStreak,
       dailyChallengesCompleted: badgeData.dailyChallengesCompleted,
       hasShared: badgeData.hasShared,
       lastGamePerfect10: badgeData.lastGamePerfect10,
@@ -136,14 +127,14 @@ export default function StatsScreen() {
 
   const totalFlags = getTotalFlagCount();
   const countriesSeen = Object.values(flagStats).filter((fs) => fs.right > 0).length;
-  const overallAccuracy =
-    stats.totalAnswered > 0
-      ? Math.round((stats.totalCorrect / stats.totalAnswered) * 100)
-      : 0;
+  const overallAccuracy = stats.totalAnswered > 0
+    ? Math.round((stats.totalCorrect / stats.totalAnswered) * 100) : 0;
   const progressPct = totalFlags > 0 ? Math.round((countriesSeen / totalFlags) * 100) : 0;
   const grade = overallAccuracy > 0 ? getGrade(overallAccuracy) : null;
-
   const earnedIds = new Set(earnedBadges.map((b) => b.id));
+
+  // Played modes for breakdown
+  const playedModes = MODE_BREAKDOWN.filter(({ key }) => stats.modeStats[key].total > 0);
 
   const renderBadgeIcon = (icon: BadgeIcon, earned: boolean, tierColor: string) => {
     const iconColor = earned ? tierColor : colors.textTertiary;
@@ -170,26 +161,19 @@ export default function StatsScreen() {
 
   return (
     <SafeAreaView style={s.container}>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={s.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* ── HERO SUMMARY ── */}
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+        {/* ── HERO ── */}
         <View style={s.heroCard}>
           <View style={s.heroTop}>
-            <View style={s.heroLeft}>
-              <Text style={s.heroLabel}>{t('stats.accuracy')}</Text>
-              <Text style={s.heroValue}>{overallAccuracy}<Text style={s.heroUnit}>%</Text></Text>
+            {grade && (
+              <Text style={[s.heroGrade, { color: grade.color }]}>{grade.label}</Text>
+            )}
+            <View style={s.heroAccBlock}>
+              <Text style={s.heroAccValue}>{overallAccuracy}<Text style={s.heroAccUnit}>%</Text></Text>
               {accuracyLabel ? (
-                <Text style={[s.heroSub, overallAccuracy >= 70 && { color: colors.successTextOnDark }]}>{accuracyLabel}</Text>
+                <Text style={[s.heroAccLabel, overallAccuracy >= 70 && { color: colors.successTextOnDark }]}>{accuracyLabel}</Text>
               ) : null}
             </View>
-            {grade && (
-              <View style={s.heroGradeWrap}>
-                <Text style={[s.heroGrade, { color: grade.color }]}>{grade.label}</Text>
-              </View>
-            )}
           </View>
           <View style={s.heroDivider} />
           <View style={s.heroStatsRow}>
@@ -204,11 +188,12 @@ export default function StatsScreen() {
             <View style={s.heroStatItem}>
               <Text style={s.heroStatValue}>{dayStreak}</Text>
               <Text style={s.heroStatLabel}>{t('stats.dayStreak')}</Text>
+              {dayStreak > 0 && <Text style={s.heroStatHint}>{t('stats.playTomorrow')}</Text>}
             </View>
           </View>
         </View>
 
-        {/* ── PROGRESS ── */}
+        {/* ── COUNTRIES PROGRESS ── */}
         <View style={s.tile}>
           <Text style={s.tileLabel}>{t('stats.countriesUnlocked')}</Text>
           <Text style={s.tileVal}>{countriesSeen}<Text style={s.tileUnit}> / {totalFlags}</Text></Text>
@@ -226,6 +211,51 @@ export default function StatsScreen() {
             <Text style={s.tileLabel}>{t('stats.bestTimedQuiz')}</Text>
             <Text style={s.tileVal}>{stats.bestTimeAttackScore}<Text style={s.tileUnit}> {t('stats.in60s')}</Text></Text>
           </View>
+        )}
+
+        {/* ── PRACTICE WEAK CTA ── */}
+        {weakFlagCount > 0 && (
+          <TouchableOpacity
+            style={s.practiceCta}
+            onPress={() => navigation.navigate('Game' as keyof RootStackParamList, {
+              config: { mode: 'practice', category: 'all', questionCount: weakFlagCount, displayMode: 'flag' },
+            } as never)}
+            activeOpacity={0.7}
+          >
+            <View style={s.practiceCtaLeft}>
+              <CrosshairIcon size={16} color={colors.accent} />
+            </View>
+            <View style={s.practiceCtaContent}>
+              <Text style={s.practiceCtaTitle}>{t('stats.practiceNow')}</Text>
+              <Text style={s.practiceCtaSub}>{t('results.flagsToReview', { count: weakFlagCount })}</Text>
+            </View>
+            <ChevronRightIcon size={16} color={colors.accent} />
+          </TouchableOpacity>
+        )}
+
+        {/* ── MODE BREAKDOWN ── */}
+        {playedModes.length > 0 && (
+          <>
+            <View style={s.sectionHeader}>
+              <Text style={s.sectionTitle}>{t('stats.byModeLabel')}</Text>
+            </View>
+            <View style={s.modeBreakdown}>
+              {playedModes.map(({ key, labelKey }) => {
+                const ms = stats.modeStats[key];
+                const pct = ms.total > 0 ? Math.round((ms.correct / ms.total) * 100) : 0;
+                const barWidth = Math.max(pct, 2);
+                return (
+                  <View key={key} style={s.modeRow}>
+                    <Text style={s.modeLabel}>{t(labelKey)}</Text>
+                    <View style={s.modeBarWrap}>
+                      <View style={[s.modeBarFill, { width: `${barWidth}%` }, pct >= 70 && s.modeBarGood]} />
+                    </View>
+                    <Text style={[s.modePct, pct >= 70 && s.modePctGood]}>{pct}%</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </>
         )}
 
         {/* ── BADGES ── */}
@@ -313,7 +343,7 @@ const s = StyleSheet.create({
   loadingText: { fontFamily: fontFamily.body, fontSize: fontSize.lg, color: colors.textSecondary },
   content: { padding: spacing.md, paddingBottom: spacing.xxl },
 
-  // ── Hero Summary Card
+  // ── Hero
   heroCard: {
     backgroundColor: colors.ink,
     borderRadius: borderRadius.xl,
@@ -322,59 +352,42 @@ const s = StyleSheet.create({
   },
   heroTop: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing.lg,
   },
-  heroLeft: {
+  heroGrade: {
+    fontFamily: fontFamily.display,
+    fontSize: fontSize.grade,
+    letterSpacing: -1,
+  },
+  heroAccBlock: {
     flex: 1,
   },
-  heroLabel: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    color: colors.whiteAlpha45,
-    marginBottom: spacing.xs,
-  },
-  heroValue: {
+  heroAccValue: {
     fontFamily: fontFamily.display,
     fontSize: fontSize.hero,
     color: colors.white,
     letterSpacing: -1,
     lineHeight: 56,
   },
-  heroUnit: {
+  heroAccUnit: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: fontSize.heading,
     color: colors.whiteAlpha60,
   },
-  heroSub: {
+  heroAccLabel: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: fontSize.caption,
     color: colors.whiteAlpha45,
     marginTop: spacing.xxs,
-  },
-  heroGradeWrap: {
-    paddingLeft: spacing.md,
-    paddingTop: spacing.xs,
-  },
-  heroGrade: {
-    fontFamily: fontFamily.display,
-    fontSize: fontSize.gameTitle,
-    letterSpacing: -1,
   },
   heroDivider: {
     height: 1,
     backgroundColor: colors.whiteAlpha15,
     marginVertical: spacing.md,
   },
-  heroStatsRow: {
-    flexDirection: 'row',
-  },
-  heroStatItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
+  heroStatsRow: { flexDirection: 'row' },
+  heroStatItem: { flex: 1, alignItems: 'center' },
   heroStatValue: {
     fontFamily: fontFamily.display,
     fontSize: fontSize.heading,
@@ -389,6 +402,12 @@ const s = StyleSheet.create({
     color: colors.whiteAlpha45,
     marginTop: spacing.xxs,
     textAlign: 'center',
+  },
+  heroStatHint: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.xxs,
+    color: colors.whiteAlpha45,
+    marginTop: 2,
   },
 
   // ── Tiles
@@ -449,6 +468,85 @@ const s = StyleSheet.create({
     color: colors.textTertiary,
   },
 
+  // ── Practice CTA
+  practiceCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.accentBg,
+    borderWidth: 1.5,
+    borderColor: colors.accent,
+    borderRadius: borderRadius.lg,
+    padding: 14,
+    marginTop: spacing.sm,
+    gap: spacing.md,
+  },
+  practiceCtaLeft: {
+    width: 36,
+    height: 36,
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  practiceCtaContent: { flex: 1 },
+  practiceCtaTitle: {
+    fontFamily: fontFamily.bodyBold,
+    fontSize: fontSize.body,
+    color: colors.accent,
+    marginBottom: 2,
+  },
+  practiceCtaSub: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+  },
+
+  // ── Mode Breakdown
+  modeBreakdown: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 14,
+    gap: 10,
+  },
+  modeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  modeLabel: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: fontSize.sm,
+    color: colors.ink,
+    width: 80,
+  },
+  modeBarWrap: {
+    flex: 1,
+    height: 8,
+    backgroundColor: colors.border,
+    borderRadius: borderRadius.full,
+    overflow: 'hidden',
+  },
+  modeBarFill: {
+    height: '100%',
+    backgroundColor: colors.textTertiary,
+    borderRadius: borderRadius.full,
+  },
+  modeBarGood: {
+    backgroundColor: colors.success,
+  },
+  modePct: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.sm,
+    color: colors.textTertiary,
+    width: 36,
+    textAlign: 'right',
+  },
+  modePctGood: {
+    color: colors.success,
+  },
+
   // ── Section
   sectionTitle: {
     fontFamily: fontFamily.uiLabel,
@@ -507,12 +605,8 @@ const s = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.success,
   },
-  scoreBadgeWrong: {
-    backgroundColor: colors.errorBg,
-  },
-  scoreBadgeTextWrong: {
-    color: colors.error,
-  },
+  scoreBadgeWrong: { backgroundColor: colors.errorBg },
+  scoreBadgeTextWrong: { color: colors.error },
 
   // ── Badges
   badgeGrid: {
@@ -528,16 +622,10 @@ const s = StyleSheet.create({
     borderColor: colors.border,
     padding: 14,
   },
-  badgeCardLocked: {
-    opacity: 0.45,
-  },
+  badgeCardLocked: { opacity: 0.45 },
   badgeIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 10,
+    width: 36, height: 36, borderRadius: borderRadius.md,
+    justifyContent: 'center', alignItems: 'center', marginBottom: 10,
   },
   badgeName: {
     fontFamily: fontFamily.bodyBold,
@@ -545,18 +633,14 @@ const s = StyleSheet.create({
     color: colors.ink,
     marginBottom: 3,
   },
-  badgeNameLocked: {
-    color: colors.textTertiary,
-  },
+  badgeNameLocked: { color: colors.textTertiary },
   badgeDesc: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.sm,
     color: colors.textSecondary,
     lineHeight: 16,
   },
-  badgeDescLocked: {
-    color: colors.textTertiary,
-  },
+  badgeDescLocked: { color: colors.textTertiary },
 
   // ── Footer
   settingsLink: {

@@ -134,6 +134,13 @@ const zh: typeof en = {
     yourProgress: '\u4f60\u7684\u8fdb\u5ea6',
     viewAllStats: '\u67e5\u770b\u6240\u6709\u7edf\u8ba1',
     gamesPlayed: '{count}\u573a\u6e38\u620f',
+    fastest: '\u6700\u5feb',
+    newCountries: '{count}\u4e2a\u65b0',
+    aboveAverage: '\u9ad8\u4e8e\u5e73\u5747{pct}%',
+    belowAverage: '\u4f4e\u4e8e\u5e73\u5747{pct}%',
+    firstGame: '\u7b2c\u4e00\u573a, \u4e0d\u9519',
+    practiceWeak: '\u7ec3\u4e60\u5f31\u9879\u65d7\u5e1c',
+    flagsToReview: '{count}\u4e2a\u5f85\u590d\u4e60',
   },
 
   stats: {
@@ -165,6 +172,9 @@ const zh: typeof en = {
     alwaysRight: '\u603b\u662f\u6b63\u786e',
     weakFlags: '\u5f31\u9879\u56fd\u65d7',
     practiceThese: '\u7ec3\u4e60\u8fd9\u4e9b',
+    practiceNow: '\u7acb\u5373\u7ec3\u4e60',
+    byModeLabel: '\u6309\u6a21\u5f0f',
+    overallGrade: '\u603b\u4f53\u7b49\u7ea7',
   },
 
   settings: {

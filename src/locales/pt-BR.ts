@@ -134,6 +134,13 @@ const ptBR: typeof en = {
     yourProgress: 'Seu progresso',
     viewAllStats: 'Ver todas as estat\u00edsticas',
     gamesPlayed: '{count} jogos',
+    fastest: 'Mais r\u00e1pido',
+    newCountries: '{count} novos',
+    aboveAverage: '{pct}% acima da sua m\u00e9dia',
+    belowAverage: '{pct}% abaixo da sua m\u00e9dia',
+    firstGame: 'Primeiro jogo, legal',
+    practiceWeak: 'Praticar bandeiras fracas',
+    flagsToReview: '{count} para revisar',
   },
 
   stats: {
@@ -165,6 +172,9 @@ const ptBR: typeof en = {
     alwaysRight: 'Sempre corretas',
     weakFlags: 'Bandeiras dif\u00edceis',
     practiceThese: 'Pratique estas',
+    practiceNow: 'Praticar agora',
+    byModeLabel: 'Por modo',
+    overallGrade: 'Nota geral',
   },
 
   settings: {

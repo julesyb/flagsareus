@@ -139,6 +139,13 @@ const en = {
     yourProgress: 'Your Progress',
     viewAllStats: 'View All Stats',
     gamesPlayed: '{count} games played',
+    fastest: 'Fastest',
+    newCountries: '{count} new',
+    aboveAverage: '{pct}% above your average',
+    belowAverage: '{pct}% below your average',
+    firstGame: 'First game, nice',
+    practiceWeak: 'Practice Weak Flags',
+    flagsToReview: '{count} to review',
   },
 
   // ─── Stats Screen ────────────────────────────────────────
@@ -171,6 +178,9 @@ const en = {
     alwaysRight: 'Always right',
     weakFlags: 'Weak Flags',
     practiceThese: 'Practice these',
+    practiceNow: 'Practice Now',
+    byModeLabel: 'By Mode',
+    overallGrade: 'Overall Grade',
   },
 
   // ─── Settings Screen ────────────────────────────────────

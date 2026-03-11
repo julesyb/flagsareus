@@ -134,6 +134,13 @@ const de: typeof en = {
     yourProgress: 'Dein Fortschritt',
     viewAllStats: 'Alle Statistiken',
     gamesPlayed: '{count} Spiele gespielt',
+    fastest: 'Schnellste',
+    newCountries: '{count} neu',
+    aboveAverage: '{pct}% \u00fcber deinem Schnitt',
+    belowAverage: '{pct}% unter deinem Schnitt',
+    firstGame: 'Erstes Spiel, toll',
+    practiceWeak: 'Schwache Flaggen \u00fcben',
+    flagsToReview: '{count} zu wiederholen',
   },
 
   stats: {
@@ -165,6 +172,9 @@ const de: typeof en = {
     alwaysRight: 'Immer richtig',
     weakFlags: 'Schwache Flaggen',
     practiceThese: '\u00dcbe diese',
+    practiceNow: 'Jetzt \u00fcben',
+    byModeLabel: 'Nach Modus',
+    overallGrade: 'Gesamtnote',
   },
 
   settings: {
