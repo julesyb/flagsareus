@@ -11,7 +11,7 @@ import {
 import Svg, { Rect, Circle, Path, G } from 'react-native-svg';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, buttons, borderRadius } from '../utils/theme';
-import { hapticTap, hapticCorrect, hapticWrong, playCorrectSound, playWrongSound } from '../utils/feedback';
+import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
 import { updateStats } from '../utils/storage';
 import { shuffleArray, getStreakFromResults } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
@@ -194,7 +194,7 @@ export default function FlagImpostorScreen({ navigation, route }: Props) {
     hapticTap();
 
     const isCorrect = index === round.fakeIndex;
-    if (isCorrect) { hapticCorrect(); playCorrectSound(); }
+    if (isCorrect) { hapticCorrect(); }
     else { hapticWrong(); playWrongSound(); }
 
     setResults((prev) => [...prev, {
@@ -216,10 +216,10 @@ export default function FlagImpostorScreen({ navigation, route }: Props) {
     }
 
     fadeAnim.setValue(1);
-    Animated.timing(fadeAnim, { toValue: 0, duration: 150, useNativeDriver: true }).start(() => {
+    Animated.timing(fadeAnim, { toValue: 0, duration: 120, useNativeDriver: true }).start(() => {
       setRoundIndex((i) => i + 1);
       setPicked(null);
-      Animated.timing(fadeAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
+      Animated.timing(fadeAnim, { toValue: 1, duration: 180, useNativeDriver: true }).start();
     });
   };
 

@@ -15,7 +15,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, buttons, borderRadius, nav } from '../utils/theme';
 import { GameQuestion, GameResult } from '../types';
 import { generateQuestions, checkAnswer } from '../utils/gameEngine';
-import { hapticCorrect, hapticWrong, hapticTap, playCorrectSound, playWrongSound } from '../utils/feedback';
+import { hapticCorrect, hapticWrong, hapticTap, playWrongSound } from '../utils/feedback';
 import FlagImage from '../components/FlagImage';
 import { useGameAnimations } from '../hooks/useGameAnimations';
 import { getAllFlags } from '../data';
@@ -159,17 +159,18 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
     pendingResultsRef.current = null;
 
     if (currentIndex < questions.length - 1) {
-      animateTransition();
-      setResults(newResults);
-      setCurrentIndex((i) => i + 1);
-      setShowFeedback(false);
-      setLastAnswerCorrect(false);
-      setTextInput('');
-      setShowSuggestions(false);
-      setRevealOrder(generateRevealOrder());
-      setRevealedCount(0);
-      setQuestionStartTime(Date.now());
-      Keyboard.dismiss();
+      animateTransition(() => {
+        setResults(newResults);
+        setCurrentIndex((i) => i + 1);
+        setShowFeedback(false);
+        setLastAnswerCorrect(false);
+        setTextInput('');
+        setShowSuggestions(false);
+        setRevealOrder(generateRevealOrder());
+        setRevealedCount(0);
+        setQuestionStartTime(Date.now());
+        Keyboard.dismiss();
+      });
     } else {
       navigation.replace('Results', { results: newResults, config });
     }
@@ -192,7 +193,6 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
 
       if (correct) {
         hapticCorrect();
-        playCorrectSound();
         setCurrentStreak((s) => s + 1);
         animateStreak();
       } else {

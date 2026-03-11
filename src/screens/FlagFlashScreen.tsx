@@ -17,7 +17,6 @@ import {
   hapticCorrect,
   hapticWrong,
   hapticHeavy,
-  playCorrectSound,
   playWrongSound,
   playCountdownBeep,
   playGameStartSound,
@@ -173,7 +172,6 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
 
       if (action === 'correct') {
         hapticCorrect();
-        playCorrectSound();
       } else {
         hapticWrong();
         playWrongSound();

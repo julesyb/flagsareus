@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, buttons, borderRadius } from '../utils/theme';
-import { hapticTap, hapticCorrect, hapticWrong, playCorrectSound, playWrongSound } from '../utils/feedback';
+import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
 import { updateStats, updateFlagResults } from '../utils/storage';
 import { shuffleArray, getStreakFromResults } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
@@ -177,7 +177,6 @@ export default function CapitalConnectionScreen({ navigation, route }: Props) {
 
     if (correctCount === PAIRS_PER_ROUND) {
       hapticCorrect();
-      playCorrectSound();
     } else {
       hapticWrong();
       playWrongSound();
@@ -201,12 +200,12 @@ export default function CapitalConnectionScreen({ navigation, route }: Props) {
     }
 
     fadeAnim.setValue(1);
-    Animated.timing(fadeAnim, { toValue: 0, duration: 150, useNativeDriver: true }).start(() => {
+    Animated.timing(fadeAnim, { toValue: 0, duration: 120, useNativeDriver: true }).start(() => {
       setRoundIndex((i) => i + 1);
       setPairs({});
       setSelectedFlag(null);
       setSubmitted(false);
-      Animated.timing(fadeAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
+      Animated.timing(fadeAnim, { toValue: 1, duration: 180, useNativeDriver: true }).start();
     });
   };
 

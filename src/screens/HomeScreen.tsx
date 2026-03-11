@@ -14,7 +14,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fontFamily, spacing, borderRadius } from '../utils/theme';
 import { getTotalFlagCount } from '../data';
-import { initAudio, hapticTap, hapticCorrect, hapticWrong, playCorrectSound, playWrongSound } from '../utils/feedback';
+import { initAudio, hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
 import { getStats, getDayStreak } from '../utils/storage';
 import { generateQuestions } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
@@ -76,7 +76,6 @@ function FlagTeaser() {
     setPicked(opt);
     if (opt === question.flag.name) {
       hapticCorrect();
-      playCorrectSound();
     } else {
       hapticWrong();
       playWrongSound();
