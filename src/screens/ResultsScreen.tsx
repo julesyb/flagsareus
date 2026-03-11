@@ -18,7 +18,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
 import { calculateAccuracy, getStreakFromResults, getGrade, generateDailyShareGrid, generateShareGrid, getDailyNumber } from '../utils/gameEngine';
-import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, updateLastGameBadgeFlags, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreak, getBadgeData, getMissedFlagIds, addGameHistoryEntry, getSupportData, getChallengeName, saveChallengeName } from '../utils/storage';
+import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, updateLastGameBadgeFlags, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreak, getDayStreakInfo, getBadgeData, saveBadgeData, getMissedFlagIds, addGameHistoryEntry, getSupportData, getChallengeName, saveChallengeName } from '../utils/storage';
 import { BaselineRegionId, UserStats, GameMode } from '../types';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
@@ -217,17 +217,19 @@ export default function ResultsScreen({ route, navigation }: Props) {
   useEffect(() => {
     // ── Data processing ──
     async function processResults() {
-      const [preStats, preFlagStats, preDayStreak, preBadgeData, preMissed, preSupport] = await Promise.all([
-        getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(), getSupportData(),
+      const [preStats, preFlagStats, preDayStreakInfo, preBadgeData, preMissed, preSupport] = await Promise.all([
+        getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(), getMissedFlagIds(), getSupportData(),
       ]);
       const preBadgeIds = new Set(evaluateBadges({
-        stats: preStats, flagStats: preFlagStats, dayStreak: preDayStreak,
+        stats: preStats, flagStats: preFlagStats, dayStreak: preDayStreakInfo.current,
+        bestDayStreak: preDayStreakInfo.best,
         dailyChallengesCompleted: preBadgeData.dailyChallengesCompleted,
         hasShared: preBadgeData.hasShared,
         lastGamePerfect10: preBadgeData.lastGamePerfect10,
         lastGameSRank: preBadgeData.lastGameSRank,
         weakFlagCount: preMissed.length,
         adsWatched: preSupport.totalAdsWatched,
+        earnedPracticePerfect: preBadgeData.earnedPracticePerfect,
       }).map((b) => b.id));
 
       const wasNewBestStreak = streak > preStats.bestStreak;
@@ -259,21 +261,31 @@ export default function ResultsScreen({ route, navigation }: Props) {
         await saveBaselineResult(config.category as BaselineRegionId, results);
       }
 
-      const [postStats, postFlagStats, postDayStreak, postBadgeData, postMissed, postSupport] = await Promise.all([
-        getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(), getSupportData(),
+      const [postStats, postFlagStats, postDayStreakInfo, postBadgeData, postMissed, postSupport] = await Promise.all([
+        getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(), getMissedFlagIds(), getSupportData(),
       ]);
+
+      // Persist practice_perfect as sticky once earned
+      const postCountriesSeen = Object.values(postFlagStats).filter((s) => s.right > 0).length;
+      if (!postBadgeData.earnedPracticePerfect && postCountriesSeen > 0 && postMissed.length === 0 && postStats.totalGamesPlayed >= 5) {
+        await saveBadgeData({ earnedPracticePerfect: true });
+        postBadgeData.earnedPracticePerfect = true;
+      }
+
       const postBadges = evaluateBadges({
-        stats: postStats, flagStats: postFlagStats, dayStreak: postDayStreak,
+        stats: postStats, flagStats: postFlagStats, dayStreak: postDayStreakInfo.current,
+        bestDayStreak: postDayStreakInfo.best,
         dailyChallengesCompleted: postBadgeData.dailyChallengesCompleted,
         hasShared: postBadgeData.hasShared,
         lastGamePerfect10: postBadgeData.lastGamePerfect10,
         lastGameSRank: postBadgeData.lastGameSRank,
         weakFlagCount: postMissed.length,
         adsWatched: postSupport.totalAdsWatched,
+        earnedPracticePerfect: postBadgeData.earnedPracticePerfect,
       });
 
       setOverallStats(postStats);
-      setDayStreakCount(postDayStreak);
+      setDayStreakCount(postDayStreakInfo.current);
       setTotalFlags(getTotalFlagCount());
       const seen = Object.values(postFlagStats).filter((fs) => fs.right > 0).length;
       setCountriesSeen(seen);

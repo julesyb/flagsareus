@@ -64,12 +64,14 @@ export interface BadgeCheckContext {
   stats: UserStats;
   flagStats: FlagStats;
   dayStreak: number;
+  bestDayStreak: number;
   dailyChallengesCompleted: number;
   hasShared: boolean;
   lastGamePerfect10: boolean;
   lastGameSRank: boolean;
   weakFlagCount: number;
   adsWatched: number;
+  earnedPracticePerfect: boolean;
 }
 
 export interface BadgeProgress {
@@ -96,9 +98,9 @@ export function getBadgeProgress(badge: Badge, ctx: BadgeCheckContext): BadgePro
     case 'hot_streak': progress = ctx.stats.bestStreak; target = 10; break;
     case 'on_fire': progress = ctx.stats.bestStreak; target = 25; break;
     case 'unstoppable': progress = ctx.stats.bestStreak; target = 50; break;
-    case 'day_tripper': progress = ctx.dayStreak; target = 3; break;
-    case 'week_warrior': progress = ctx.dayStreak; target = 7; break;
-    case 'month_master': progress = ctx.dayStreak; target = 30; break;
+    case 'day_tripper': progress = ctx.bestDayStreak; target = 3; break;
+    case 'week_warrior': progress = ctx.bestDayStreak; target = 7; break;
+    case 'month_master': progress = ctx.bestDayStreak; target = 30; break;
     case 'speed_demon': progress = ctx.stats.bestTimeAttackScore || 0; target = 15; break;
     case 'lightning_round': progress = ctx.stats.bestTimeAttackScore || 0; target = 25; break;
     case 'daily_devotee': progress = ctx.dailyChallengesCompleted; target = 7; break;
@@ -139,9 +141,9 @@ export function evaluateBadges(ctx: BadgeCheckContext): EarnedBadge[] {
   check('hot_streak', ctx.stats.bestStreak >= 10);
   check('on_fire', ctx.stats.bestStreak >= 25);
   check('unstoppable', ctx.stats.bestStreak >= 50);
-  check('day_tripper', ctx.dayStreak >= 3);
-  check('week_warrior', ctx.dayStreak >= 7);
-  check('month_master', ctx.dayStreak >= 30);
+  check('day_tripper', ctx.bestDayStreak >= 3);
+  check('week_warrior', ctx.bestDayStreak >= 7);
+  check('month_master', ctx.bestDayStreak >= 30);
 
   // Mode
   check('speed_demon', (ctx.stats.bestTimeAttackScore || 0) >= 15);
@@ -150,7 +152,7 @@ export function evaluateBadges(ctx: BadgeCheckContext): EarnedBadge[] {
   check('daily_legend', ctx.dailyChallengesCompleted >= 30);
 
   // Fun
-  check('practice_perfect', countriesSeen > 0 && ctx.weakFlagCount === 0 && ctx.stats.totalGamesPlayed >= 5);
+  check('practice_perfect', ctx.earnedPracticePerfect || (countriesSeen > 0 && ctx.weakFlagCount === 0 && ctx.stats.totalGamesPlayed >= 5));
   check('shared_spirit', ctx.hasShared);
   check('supporter', ctx.adsWatched > 0);
 

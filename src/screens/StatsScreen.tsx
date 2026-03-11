@@ -15,7 +15,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { colors, spacing, fontFamily, fontSize, borderRadius } from '../utils/theme';
 import { UserStats, GameMode, CategoryId } from '../types';
-import { getStats, getFlagStats, FlagStats, getDayStreak, getBadgeData, getMissedFlagIds, BadgeData, getSupportData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData } from '../utils/storage';
+import { getStats, getFlagStats, FlagStats, getDayStreak, getDayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getSupportData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData } from '../utils/storage';
 import { getAllFlags, getTotalFlagCount } from '../data';
 import { getGrade } from '../utils/gameEngine';
 import { t } from '../utils/i18n';
@@ -47,6 +47,7 @@ export default function StatsScreen() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [flagStats, setFlagStats] = useState<FlagStats>({});
   const [dayStreak, setDayStreak] = useState(0);
+  const [bestDayStreak, setBestDayStreak] = useState(0);
   const [badgeData, setBadgeData] = useState<BadgeData | null>(null);
   const [weakFlagCount, setWeakFlagCount] = useState(0);
   const [adsWatched, setAdsWatched] = useState(0);
@@ -99,13 +100,14 @@ export default function StatsScreen() {
 
       async function loadData() {
         try {
-          const [s, fs, ds, bd, missed, gh, support, bl] = await Promise.all([
-            getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(), getGameHistory(), getSupportData(), getBaselineData(),
+          const [s, fs, dsInfo, bd, missed, gh, support, bl] = await Promise.all([
+            getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(), getMissedFlagIds(), getGameHistory(), getSupportData(), getBaselineData(),
           ]);
           if (!cancelled) {
             setStats(s);
             setFlagStats(fs);
-            setDayStreak(ds);
+            setDayStreak(dsInfo.current);
+            setBestDayStreak(dsInfo.best);
             setBadgeData(bd);
             setWeakFlagCount(missed.length);
             setGameHistory(gh);
@@ -208,14 +210,16 @@ export default function StatsScreen() {
     if (!badgeData || !stats) return [];
     return evaluateBadges({
       stats, flagStats, dayStreak,
+      bestDayStreak,
       dailyChallengesCompleted: badgeData.dailyChallengesCompleted,
       hasShared: badgeData.hasShared,
       lastGamePerfect10: badgeData.lastGamePerfect10,
       lastGameSRank: badgeData.lastGameSRank,
       weakFlagCount,
       adsWatched,
+      earnedPracticePerfect: badgeData.earnedPracticePerfect,
     });
-  }, [stats, flagStats, dayStreak, badgeData, weakFlagCount, adsWatched]);
+  }, [stats, flagStats, dayStreak, bestDayStreak, badgeData, weakFlagCount, adsWatched]);
 
   // ── Next milestone computation ──
   const nextMilestone = React.useMemo(() => {
@@ -311,12 +315,14 @@ export default function StatsScreen() {
   // Badge check context for progress bars
   const badgeCtx: BadgeCheckContext | null = badgeData ? {
     stats, flagStats, dayStreak,
+    bestDayStreak,
     dailyChallengesCompleted: badgeData.dailyChallengesCompleted,
     hasShared: badgeData.hasShared,
     lastGamePerfect10: badgeData.lastGamePerfect10,
     lastGameSRank: badgeData.lastGameSRank,
     weakFlagCount,
     adsWatched,
+    earnedPracticePerfect: badgeData.earnedPracticePerfect,
   } : null;
 
   // Region accuracy data (only regions with games played)

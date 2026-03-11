@@ -33,6 +33,7 @@ export interface BadgeData {
   hasShared: boolean;
   lastGamePerfect10: boolean;
   lastGameSRank: boolean;
+  earnedPracticePerfect: boolean;
 }
 
 const DEFAULT_BADGE_DATA: BadgeData = {
@@ -40,6 +41,7 @@ const DEFAULT_BADGE_DATA: BadgeData = {
   hasShared: false,
   lastGamePerfect10: false,
   lastGameSRank: false,
+  earnedPracticePerfect: false,
 };
 
 export async function getBadgeData(): Promise<BadgeData> {
@@ -214,19 +216,29 @@ export async function resetStats(): Promise<void> {
   }
 }
 
+export interface DayStreakInfo {
+  current: number;
+  best: number;
+}
+
 export async function getDayStreak(): Promise<number> {
+  return (await getDayStreakInfo()).current;
+}
+
+export async function getDayStreakInfo(): Promise<DayStreakInfo> {
   try {
     const json = await AsyncStorage.getItem(DAY_STREAK_KEY);
-    if (!json) return 0;
-    const { lastDate, streak } = JSON.parse(json);
+    if (!json) return { current: 0, best: 0 };
+    const { lastDate, streak, best } = JSON.parse(json);
+    const bestStreak = best || streak || 0;
     const today = getTodayDate();
-    if (lastDate === today) return streak;
+    if (lastDate === today) return { current: streak, best: bestStreak };
     const diffDays = Math.round(
       (new Date(today + 'T00:00:00').getTime() - new Date(lastDate + 'T00:00:00').getTime()) / 86400000,
     );
-    return diffDays === 1 ? streak : 0;
+    return { current: diffDays === 1 ? streak : 0, best: bestStreak };
   } catch {
-    return 0;
+    return { current: 0, best: 0 };
   }
 }
 
@@ -235,15 +247,18 @@ async function recordDayPlayed(): Promise<number> {
     const today = getTodayDate();
     const json = await AsyncStorage.getItem(DAY_STREAK_KEY);
     let streak = 1;
+    let best = 0;
     if (json) {
       const data = JSON.parse(json);
+      best = data.best || data.streak || 0;
       if (data.lastDate === today) return data.streak;
       const diffDays = Math.round(
         (new Date(today + 'T00:00:00').getTime() - new Date(data.lastDate + 'T00:00:00').getTime()) / 86400000,
       );
       if (diffDays === 1) streak = data.streak + 1;
     }
-    await AsyncStorage.setItem(DAY_STREAK_KEY, JSON.stringify({ lastDate: today, streak }));
+    best = Math.max(best, streak);
+    await AsyncStorage.setItem(DAY_STREAK_KEY, JSON.stringify({ lastDate: today, streak, best }));
     return streak;
   } catch {
     return 0;
