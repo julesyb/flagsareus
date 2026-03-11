@@ -70,6 +70,7 @@ const es: typeof en = {
     bestStreak: 'Mejor racha',
     best60s: 'Mejor 60s',
     accuracy: 'Precisi\u00f3n',
+    onboardingScores: 'Puntuaciones',
   },
 
   setup: {
@@ -283,7 +284,7 @@ const es: typeof en = {
 
   onboarding: {
     subtitle: 'Veamos tu nivel',
-    regionTest: 'Quiz de 10 banderas',
+    regionTest: 'Quiz de banderas',
     flagCount: '{count} banderas',
     completed: 'Hecho',
     startPlaying: 'Empezar a jugar',
