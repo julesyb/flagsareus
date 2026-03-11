@@ -263,16 +263,19 @@ export async function saveDailyChallenge(results: GameResult[]): Promise<void> {
       score,
     };
     await AsyncStorage.setItem(DAILY_CHALLENGE_KEY, JSON.stringify(data));
-    await appendDailyLog(today, score, results.length);
+    await appendDailyLog(today, results);
   } catch {
     // Silently fail
   }
 }
 
 // ─── Daily Challenge Log ──────────────────────────────────
+// Lightweight per-day record. Questions are regenerable from the date
+// via generateDailyQuestions(date), so we only store outcomes.
 export interface DailyLogEntry {
   score: number;
   total: number;
+  answers: Array<{ flagId: string; correct: boolean }>;
 }
 
 export type DailyLog = Record<string, DailyLogEntry>;
@@ -287,10 +290,14 @@ export async function getDailyLog(): Promise<DailyLog> {
   }
 }
 
-async function appendDailyLog(date: string, score: number, total: number): Promise<void> {
+async function appendDailyLog(date: string, results: GameResult[]): Promise<void> {
   try {
     const log = await getDailyLog();
-    log[date] = { score, total };
+    log[date] = {
+      score: results.filter((r) => r.correct).length,
+      total: results.length,
+      answers: results.map((r) => ({ flagId: r.question.flag.id, correct: r.correct })),
+    };
     await AsyncStorage.setItem(DAILY_LOG_KEY, JSON.stringify(log));
   } catch {
     // Silently fail
