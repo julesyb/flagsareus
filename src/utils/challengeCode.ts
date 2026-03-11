@@ -41,6 +41,7 @@ function sanitizeName(name: string): string {
 export function encodeChallenge(data: ChallengeData): string | null {
   if (data.flagIds.some((id) => id.length !== 2)) return null;
   if (data.flagIds.length > 30) return null; // bit-packing limit
+  if (data.hostResults.length !== data.flagIds.length) return null;
   const modeIdx = MODE_INDEX.get(data.mode);
   if (modeIdx === undefined) return null;
 
@@ -119,8 +120,9 @@ function decodeV3Raw(raw: string): ChallengeData | null {
     flagIds.push(flags.slice(i, i + 2));
   }
 
-  const bits = parseInt(correctHex, 16) >>> 0; // unsigned
-  if (isNaN(bits)) return null;
+  const rawBits = parseInt(correctHex, 16);
+  if (isNaN(rawBits)) return null;
+  const bits = rawBits >>> 0; // unsigned
   const totalDeci = parseInt(totalDeciStr, 10);
   if (isNaN(totalDeci)) return null;
 

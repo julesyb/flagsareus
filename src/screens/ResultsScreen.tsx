@@ -130,7 +130,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
       return;
     }
     const shortCode = generateShortCode(challengeData);
-    const link = `flagthat.app/c/${code}`;
+    const link = `https://flagthat.app/c/${code}`;
     const headline = t('challenge.shareMessage', { correct, total: results.length });
     const message = `${headline}\n\n${link}`;
     // Save to challenge history
