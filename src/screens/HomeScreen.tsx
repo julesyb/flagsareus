@@ -24,9 +24,9 @@ import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 
 const MODES: { key: GameMode; label: string }[] = [
-  { key: 'easy', label: '2 Easy' },
-  { key: 'medium', label: '4 Hard' },
-  { key: 'hard', label: 'Type' },
+  { key: 'easy', label: '2 Pick' },
+  { key: 'medium', label: '4 Pick' },
+  { key: 'hard', label: 'Free' },
 ];
 
 const QUESTION_COUNTS = [5, 10, 15, 20];
@@ -347,8 +347,8 @@ export default function HomeScreen({ navigation }: Props) {
               <ClockIcon size={18} color={colors.white} />
             </View>
             <View style={s.modeText}>
-              <Text style={s.modeTitle}>Time Attack</Text>
-              <Text style={s.modeSub}>60 seconds - how many can you get?</Text>
+              <Text style={s.modeTitle}>Timed Quiz</Text>
+              <Text style={s.modeSub}>60 seconds — how many can you get?</Text>
             </View>
             <ChevronRightIcon size={18} color={colors.rule} />
           </TouchableOpacity>

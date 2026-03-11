@@ -40,7 +40,7 @@ function generateRevealOrder(): number[] {
 
 export default function FlagPuzzleScreen({ route, navigation }: Props) {
   const { config } = route.params;
-  const timeLimit = config.timeLimit || 30;
+  const timeLimit = config.timeLimit || 15;
   const { width: screenWidth } = useWindowDimensions();
 
   // Responsive flag dimensions

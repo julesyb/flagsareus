@@ -82,9 +82,7 @@ export function FlagImageSmall({ countryCode, emoji }: { countryCode: string; em
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
-    backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1,
-    borderColor: colors.rule2,
+    backgroundColor: 'transparent',
     borderRadius: borderRadius.sm,
   },
   image: {
@@ -95,7 +93,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.border,
+    backgroundColor: 'transparent',
   },
   placeholderText: {
     fontFamily: 'BarlowCondensed_600SemiBold',

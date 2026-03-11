@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -100,6 +100,12 @@ export default function GameSetupScreen({ navigation }: Props) {
   const isTimeAttack = mode === 'timeattack';
   const hasTimeLimit = isFlagFlash || isFlagPuzzle || isTimeAttack;
 
+  // Set sensible default time limit when mode changes
+  useEffect(() => {
+    if (isFlagPuzzle) setTimeLimit(15);
+    else if (isTimeAttack || isFlagFlash) setTimeLimit(60);
+  }, [mode]);
+
   const handleFilterTypeSelect = (type: CategoryType) => {
     if (filterType === type) {
       setFilterType(null);
@@ -151,7 +157,7 @@ export default function GameSetupScreen({ navigation }: Props) {
     return FLAGFLASH_TIMES;
   };
 
-  const showQuestionCount = !isFlagFlash && !isTimeAttack;
+  const showQuestionCount = !isFlagFlash && !isTimeAttack && !isFlagPuzzle;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -376,7 +382,7 @@ export default function GameSetupScreen({ navigation }: Props) {
         >
           <Text style={styles.startButtonText}>
             {isTimeAttack
-              ? 'Start Time Attack'
+              ? 'Start Timed Quiz'
               : isFlagFlash
                 ? 'Start FlagFlash'
                 : isFlagPuzzle
