@@ -192,8 +192,9 @@ const ptBR: typeof en = {
 
   support: {
     title: 'Pague-nos um caf\u00e9',
-    subtitle: 'Flag That \u00e9 gratuito, sem an\u00fancios. Se quiser ajudar a manter assim, assista um v\u00eddeo curto. Totalmente opcional, sempre bem-vindo.',
+    subtitle: 'Flag That \u00e9 gratuito, sem an\u00fancios. Ajude a manter assim assistindo um v\u00eddeo curto. Totalmente opcional.',
     watchButton: 'Assistir um v\u00eddeo',
+    watchAgain: 'Assistir',
     thankYou: 'Voc\u00ea \u00e9 demais. Obrigado!',
     totalWatched: 'Apoiado {count} vez',
     totalWatchedPlural: 'Apoiado {count} vezes',

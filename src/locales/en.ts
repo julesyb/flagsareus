@@ -200,8 +200,9 @@ const en = {
   // ─── Support ───────────────────────────────────────────
   support: {
     title: 'Buy us a coffee',
-    subtitle: 'Flag That is free, with no ads. If you want to help keep it that way, you can watch a quick video. Totally optional, always appreciated.',
+    subtitle: 'Flag That is free with no ads. Help keep it that way - watch a quick video. Totally optional.',
     watchButton: 'Watch a Video',
+    watchAgain: 'Watch',
     thankYou: 'You are the best. Thank you!',
     totalWatched: 'Supported {count} time',
     totalWatchedPlural: 'Supported {count} times',

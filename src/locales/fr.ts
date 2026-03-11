@@ -192,8 +192,9 @@ const fr: typeof en = {
 
   support: {
     title: 'Offrez-nous un caf\u00e9',
-    subtitle: 'Flag That est gratuit, sans pub. Si vous voulez que \u00e7a continue, regardez une courte vid\u00e9o. Totalement optionnel, toujours appr\u00e9ci\u00e9.',
+    subtitle: 'Flag That est gratuit, sans pub. Aidez-nous \u00e0 continuer en regardant une courte vid\u00e9o. Totalement optionnel.',
     watchButton: 'Regarder une vid\u00e9o',
+    watchAgain: 'Regarder',
     thankYou: 'Vous \u00eates formidable. Merci !',
     totalWatched: 'Soutenu {count} fois',
     totalWatchedPlural: 'Soutenu {count} fois',

@@ -192,8 +192,9 @@ const de: typeof en = {
 
   support: {
     title: 'Spendier uns einen Kaffee',
-    subtitle: 'Flag That ist kostenlos, ohne Werbung. Wenn du helfen m\u00f6chtest, dass das so bleibt, schau dir ein kurzes Video an. V\u00f6llig freiwillig, immer gesch\u00e4tzt.',
+    subtitle: 'Flag That ist kostenlos, ohne Werbung. Hilf uns, das beizubehalten - schau ein kurzes Video. V\u00f6llig freiwillig.',
     watchButton: 'Video ansehen',
+    watchAgain: 'Ansehen',
     thankYou: 'Du bist spitze. Danke!',
     totalWatched: '{count} Mal unterst\u00fctzt',
     totalWatchedPlural: '{count} Mal unterst\u00fctzt',

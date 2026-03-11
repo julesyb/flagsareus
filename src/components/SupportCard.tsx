@@ -8,7 +8,6 @@ import { getSupportData, recordAdWatched, SupportData } from '../utils/storage';
 import { hapticTap, hapticCorrect } from '../utils/feedback';
 import { t } from '../utils/i18n';
 
-// Only show after the user has played enough to be genuinely engaged
 const MIN_GAMES_BEFORE_SHOWING = 3;
 
 interface SupportCardProps {
@@ -29,7 +28,6 @@ export default function SupportCard({ gamesPlayed }: SupportCardProps) {
     }, []),
   );
 
-  // Don't show on web, before the user is engaged, or while loading data
   if (!isAdAvailable()) return null;
   if (gamesPlayed < MIN_GAMES_BEFORE_SHOWING) return null;
 
@@ -45,7 +43,7 @@ export default function SupportCard({ gamesPlayed }: SupportCardProps) {
       setSupport(updated);
       setJustThanked(true);
       hapticCorrect();
-      setTimeout(() => setJustThanked(false), 4000);
+      setTimeout(() => setJustThanked(false), 5000);
     } else {
       setAdFailed(true);
       setTimeout(() => setAdFailed(false), 4000);
@@ -56,6 +54,45 @@ export default function SupportCard({ gamesPlayed }: SupportCardProps) {
   const totalWatched = support?.totalAdsWatched ?? 0;
   const isSupporter = totalWatched > 0;
 
+  // ── Thank-you state (shown briefly after watching)
+  if (justThanked) {
+    return (
+      <View style={[s.card, s.cardThanked]}>
+        <HeartIcon size={16} color={colors.success} strokeWidth={2} filled />
+        <Text style={s.thankedText}>{t('support.thankYou')}</Text>
+      </View>
+    );
+  }
+
+  // ── Returning supporter: compact row
+  if (isSupporter) {
+    return (
+      <TouchableOpacity
+        style={[s.card, s.cardCompact]}
+        onPress={handleWatch}
+        activeOpacity={0.85}
+        disabled={loading}
+      >
+        <HeartIcon size={14} color={colors.accent} strokeWidth={2} filled />
+        <Text style={s.compactText}>
+          {totalWatched === 1
+            ? t('support.totalWatched', { count: totalWatched })
+            : t('support.totalWatchedPlural', { count: totalWatched })}
+        </Text>
+        <View style={s.compactBtn}>
+          <PlayIcon size={8} color={colors.white} />
+          <Text style={s.compactBtnText}>
+            {loading ? '...' : t('support.watchAgain')}
+          </Text>
+        </View>
+        {adFailed && (
+          <Text style={s.failedText}>{t('support.adFailed')}</Text>
+        )}
+      </TouchableOpacity>
+    );
+  }
+
+  // ── First-time: full pitch
   return (
     <View style={s.card}>
       <View style={s.header}>
@@ -65,34 +102,20 @@ export default function SupportCard({ gamesPlayed }: SupportCardProps) {
 
       <Text style={s.subtitle}>{t('support.subtitle')}</Text>
 
-      {justThanked ? (
-        <View style={s.thankYouWrap}>
-          <Text style={s.thankYouText}>{t('support.thankYou')}</Text>
-        </View>
-      ) : (
-        <TouchableOpacity
-          style={[s.watchBtn, loading && s.watchBtnDisabled]}
-          onPress={handleWatch}
-          activeOpacity={0.85}
-          disabled={loading}
-        >
-          <PlayIcon size={10} color={colors.white} />
-          <Text style={s.watchBtnText}>
-            {loading ? '...' : t('support.watchButton')}
-          </Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity
+        style={[s.watchBtn, loading && s.watchBtnDisabled]}
+        onPress={handleWatch}
+        activeOpacity={0.85}
+        disabled={loading}
+      >
+        <PlayIcon size={10} color={colors.white} />
+        <Text style={s.watchBtnText}>
+          {loading ? '...' : t('support.watchButton')}
+        </Text>
+      </TouchableOpacity>
 
       {adFailed && (
-        <Text style={s.metaText}>{t('support.adFailed')}</Text>
-      )}
-
-      {isSupporter && !justThanked && (
-        <Text style={s.metaText}>
-          {totalWatched === 1
-            ? t('support.totalWatched', { count: totalWatched })
-            : t('support.totalWatchedPlural', { count: totalWatched })}
-        </Text>
+        <Text style={s.failedText}>{t('support.adFailed')}</Text>
       )}
     </View>
   );
@@ -100,13 +123,27 @@ export default function SupportCard({ gamesPlayed }: SupportCardProps) {
 
 const s = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.accentBg,
     borderWidth: 1,
     borderColor: colors.rule,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     marginHorizontal: spacing.md,
     marginTop: spacing.sm,
+  },
+  cardThanked: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.successBg,
+    paddingVertical: 14,
+  },
+  cardCompact: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: 12,
   },
   header: {
     flexDirection: 'row',
@@ -122,8 +159,8 @@ const s = StyleSheet.create({
   subtitle: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.caption,
-    color: colors.textTertiary,
-    lineHeight: 18,
+    color: colors.textSecondary,
+    lineHeight: 20,
     marginBottom: spacing.md,
   },
   watchBtn: {
@@ -145,18 +182,34 @@ const s = StyleSheet.create({
     textTransform: 'uppercase',
     color: colors.white,
   },
-  thankYouWrap: {
-    backgroundColor: colors.successBg,
-    borderRadius: borderRadius.md,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  thankYouText: {
+  thankedText: {
     fontFamily: fontFamily.bodyBold,
     fontSize: fontSize.body,
     color: colors.success,
   },
-  metaText: {
+  compactText: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.caption,
+    color: colors.textSecondary,
+    flex: 1,
+  },
+  compactBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.ink,
+    borderRadius: borderRadius.sm,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  compactBtnText: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.sm,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    color: colors.white,
+  },
+  failedText: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.sm,
     color: colors.textTertiary,

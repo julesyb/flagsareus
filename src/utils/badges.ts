@@ -56,7 +56,7 @@ export const BADGES: Badge[] = [
   // ── Fun/Hidden
   { id: 'practice_perfect', name: 'Practice Perfect', description: 'Clear all flags from practice', tier: 'gold', category: 'fun', icon: 'crosshair' },
   { id: 'shared_spirit', name: 'Shared Spirit', description: 'Share your results', tier: 'bronze', category: 'fun', icon: 'link' },
-  { id: 'supporter', name: 'Supporter', description: 'Support by watching a video', tier: 'gold', category: 'fun', icon: 'heart' },
+  { id: 'supporter', name: 'Supporter', description: 'Support by watching a video', tier: 'bronze', category: 'fun', icon: 'heart' },
 ];
 
 export interface BadgeCheckContext {
