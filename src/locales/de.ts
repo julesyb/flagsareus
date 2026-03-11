@@ -70,7 +70,7 @@ const de: typeof en = {
     bestStreak: 'Beste Serie',
     best60s: 'Beste 60s',
     accuracy: 'Genauigkeit',
-    onboardingLabel: 'Einstufungstest',
+    onboardingScores: 'Ergebnisse',
   },
 
   setup: {

@@ -72,7 +72,7 @@ const en = {
     bestStreak: 'Best Streak',
     best60s: 'Best 60s',
     accuracy: 'Accuracy',
-    onboardingLabel: 'Baseline quiz',
+    onboardingScores: 'Scores',
   },
 
   // ─── Game Setup ──────────────────────────────────────────
