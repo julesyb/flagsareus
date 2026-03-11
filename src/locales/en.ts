@@ -283,6 +283,31 @@ const en = {
     whatIsCapital: 'What is the capital of {name}?',
   },
 
+  // ─── Challenge Mode ────────────────────────────────────
+  challenge: {
+    joinTitle: 'Challenge',
+    joinSubtitle: 'Paste a challenge code from a friend and race to beat their score on the same flags.',
+    homeDesc: 'Race a friend on the same flags',
+    yourName: 'Your name',
+    namePlaceholder: 'Enter your name',
+    code: 'Challenge code',
+    codePlaceholder: 'Paste challenge code here...',
+    codeHint: 'Get a code from a friend who shared their game.',
+    play: 'Play',
+    invalidCodeTitle: 'Invalid code',
+    invalidCode: 'This challenge code is not valid. Check that you pasted the full code.',
+    challengeFriend: 'Challenge a Friend',
+    challengeDesc: 'Share your game so a friend can try the same flags',
+    enterName: 'Your name',
+    enterNameDesc: 'This will be shown to your opponent.',
+    shareMessage: 'I challenge you to beat my score on Flag That! Paste this code in the Challenge section:',
+    headToHead: 'Head to head',
+    you: 'You',
+    youWin: 'You win!',
+    theyWin: '{name} wins!',
+    tie: 'Tie!',
+  },
+
   // ─── Notifications ─────────────────────────────────────
   notification: {
     title1: 'Daily Challenge is ready',

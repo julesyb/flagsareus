@@ -59,7 +59,7 @@ function generateQuestions(count: number): QuestionData[] {
 }
 
 export default function CapitalConnectionScreen({ navigation, route }: Props) {
-  const { config } = route.params;
+  const { config, challenge, playerName } = route.params;
   const questions = useMemo(() => generateQuestions(config.questionCount), [config.questionCount]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -107,7 +107,7 @@ export default function CapitalConnectionScreen({ navigation, route }: Props) {
         Animated.timing(fadeAnim, { toValue: 1, duration: 150, useNativeDriver: true }).start();
       });
     } else {
-      navigation.replace('Results', { results: newResults, config });
+      navigation.replace('Results', { results: newResults, config, ...(challenge && { challenge, playerName }) });
     }
   }, [currentIndex, questions, navigation, config, fadeAnim]);
 

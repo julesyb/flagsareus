@@ -26,11 +26,12 @@ import { getFlagByName, getFlagsForCategory } from '../data';
 import { RootStackParamList } from '../types/navigation';
 import GameTopBar from '../components/GameTopBar';
 import ScreenContainer from '../components/ScreenContainer';
+import { buildChallengeQuestions } from '../utils/challengeCode';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
 
 export default function GameScreen({ route, navigation }: Props) {
-  const { config } = route.params;
+  const { config, challenge, playerName } = route.params;
   const isTimeAttack = config.mode === 'timeattack';
   const [questions, setQuestions] = useState<GameQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -48,7 +49,11 @@ export default function GameScreen({ route, navigation }: Props) {
   const { fadeAnim, streakScale, shakeAnim, animateStreak, animateWrong, animateTransition } = useGameAnimations();
 
   useEffect(() => {
-    if (config.mode === 'daily') {
+    if (challenge) {
+      const q = buildChallengeQuestions(challenge.flagIds, challenge.mode) || [];
+      setQuestions(q);
+      setQuestionStartTime(Date.now());
+    } else if (config.mode === 'daily') {
       const q = generateDailyQuestions();
       setQuestions(q);
       setQuestionStartTime(Date.now());
@@ -104,7 +109,7 @@ export default function GameScreen({ route, navigation }: Props) {
           clearTimeout(autoAdvanceRef.current);
           autoAdvanceRef.current = null;
         }
-        navigation.replace('Results', { results: finalResults, config });
+        navigation.replace('Results', { results: finalResults, config, ...(challenge && { challenge, playerName }) });
       }
     }
   }, [timeLeft]);
@@ -155,7 +160,7 @@ export default function GameScreen({ route, navigation }: Props) {
         Keyboard.dismiss();
       });
     } else {
-      navigation.replace('Results', { results: newResults, config });
+      navigation.replace('Results', { results: newResults, config, ...(challenge && { challenge, playerName }) });
     }
   }, [currentIndex, questions, navigation, config, animateTransition]);
 
@@ -205,7 +210,7 @@ export default function GameScreen({ route, navigation }: Props) {
 
       if (isEliminated) {
         autoAdvanceRef.current = setTimeout(() => {
-          navigation.replace('Results', { results: newResults, config });
+          navigation.replace('Results', { results: newResults, config, ...(challenge && { challenge, playerName }) });
         }, feedbackDelay);
       } else {
         autoAdvanceRef.current = setTimeout(() => {
@@ -259,7 +264,7 @@ export default function GameScreen({ route, navigation }: Props) {
           if (autoAdvanceRef.current) clearTimeout(autoAdvanceRef.current);
           const currentResults = pendingResultsRef.current ?? results;
           if (currentResults.length > 0) {
-            navigation.replace('Results', { results: currentResults, config });
+            navigation.replace('Results', { results: currentResults, config, ...(challenge && { challenge, playerName }) });
           } else {
             navigation.popToTop();
           }

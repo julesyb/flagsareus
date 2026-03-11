@@ -9,6 +9,10 @@ import {
   Animated,
   Easing,
   Share,
+  TextInput,
+  Modal,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
@@ -18,7 +22,7 @@ import { BaselineRegionId, UserStats, GameMode } from '../types';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
 import { FlagImageSmall } from '../components/FlagImage';
-import { CheckIcon, CrossIcon, ChevronRightIcon, BarChartIcon, FlagIcon, GlobeIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon, HeartIcon } from '../components/Icons';
+import { CheckIcon, CrossIcon, ChevronRightIcon, BarChartIcon, FlagIcon, GlobeIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon, HeartIcon, UsersIcon } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
@@ -26,12 +30,15 @@ import { RootStackParamList } from '../types/navigation';
 import { evaluateBadges, BADGES, TIER_COLORS, BadgeIcon, EarnedBadge } from '../utils/badges';
 import { getTotalFlagCount } from '../data';
 import { useInterstitialAdUnit, shouldShowAd, recordAdImpression, incrementGameCount } from '../utils/ads';
+import { encodeChallenge, ChallengeData, CHALLENGE_MODES } from '../utils/challengeCode';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
 
 export default function ResultsScreen({ route, navigation }: Props) {
   const onNavigate = useNavTabs();
-  const { results, config, reviewOnly } = route.params;
+  const { results, config, reviewOnly, challenge, playerName } = route.params;
+  const isChallenge = !!challenge;
+  const canChallenge = CHALLENGE_MODES.includes(config.mode);
   const correct = results.filter((r) => r.correct).length;
   const accuracy = calculateAccuracy(results);
   const streak = getStreakFromResults(results);
@@ -89,6 +96,46 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const [newCountriesCount, setNewCountriesCount] = useState(0);
   const [prevAccuracy, setPrevAccuracy] = useState<number | null>(null);
   const [weakFlagCount, setWeakFlagCount] = useState(0);
+
+  // Challenge modal state
+  const [showChallengeModal, setShowChallengeModal] = useState(false);
+  const [challengeName, setChallengeName] = useState('');
+
+  const handleChallengeShare = async () => {
+    if (challengeName.trim().length === 0) return;
+    Keyboard.dismiss();
+    setShowChallengeModal(false);
+    hapticTap();
+    const flagIds = results.map((r) => r.question.flag.id);
+    const hostResults = results.map((r) => ({ correct: r.correct, timeMs: r.timeTaken }));
+    const code = encodeChallenge({
+      hostName: challengeName.trim(),
+      mode: config.mode,
+      timeLimit: config.timeLimit || 15,
+      flagIds,
+      hostResults,
+    });
+    try {
+      await Share.share({ message: `${t('challenge.shareMessage')}\n\n${code}` });
+    } catch { /* cancelled */ }
+  };
+
+  // Head-to-head comparison data
+  const h2h = isChallenge && challenge ? (() => {
+    const hostCorrect = challenge.hostResults.filter((r) => r.correct).length;
+    const playerCorrect = results.filter((r) => r.correct).length;
+    const hostAvg = challenge.hostResults.length > 0
+      ? Math.round(challenge.hostResults.reduce((s, r) => s + r.timeMs, 0) / challenge.hostResults.length / 100) / 10
+      : 0;
+    const playerAvg = avgTime;
+    // Winner: more correct wins. Tie-break: faster avg time.
+    let winner: 'host' | 'player' | 'tie' = 'tie';
+    if (playerCorrect > hostCorrect) winner = 'player';
+    else if (hostCorrect > playerCorrect) winner = 'host';
+    else if (playerAvg < hostAvg) winner = 'player';
+    else if (hostAvg < playerAvg) winner = 'host';
+    return { hostCorrect, playerCorrect, hostAvg, playerAvg, winner };
+  })() : null;
 
   // Load ad if frequency cap allows (skip for daily/baseline/review)
   useEffect(() => {
@@ -424,6 +471,43 @@ export default function ResultsScreen({ route, navigation }: Props) {
           </Animated.Text>
         </Animated.View>
 
+        {/* ── HEAD-TO-HEAD (challenge mode) ── */}
+        {h2h && challenge && (
+          <Animated.View style={[st.h2hCard, { opacity: scoreFade }]}>
+            <Text style={st.h2hTitle}>{t('challenge.headToHead')}</Text>
+            <View style={st.h2hRow}>
+              <View style={st.h2hPlayer}>
+                <Text style={[
+                  st.h2hName,
+                  h2h.winner === 'player' && st.h2hNameWinner,
+                ]}>{playerName || t('challenge.you')}</Text>
+                <Text style={st.h2hScore}>{h2h.playerCorrect}/{results.length}</Text>
+                <Text style={st.h2hTime}>{h2h.playerAvg}s {t('results.avgTime').toLowerCase()}</Text>
+              </View>
+              <View style={st.h2hVs}>
+                <Text style={st.h2hVsText}>vs</Text>
+              </View>
+              <View style={st.h2hPlayer}>
+                <Text style={[
+                  st.h2hName,
+                  h2h.winner === 'host' && st.h2hNameWinner,
+                ]}>{challenge.hostName}</Text>
+                <Text style={st.h2hScore}>{h2h.hostCorrect}/{results.length}</Text>
+                <Text style={st.h2hTime}>{h2h.hostAvg}s {t('results.avgTime').toLowerCase()}</Text>
+              </View>
+            </View>
+            <Text style={[st.h2hResult, {
+              color: h2h.winner === 'player' ? colors.success
+                : h2h.winner === 'host' ? colors.error
+                : colors.textSecondary,
+            }]}>
+              {h2h.winner === 'player' ? t('challenge.youWin')
+                : h2h.winner === 'host' ? t('challenge.theyWin', { name: challenge.hostName })
+                : t('challenge.tie')}
+            </Text>
+          </Animated.View>
+        )}
+
         {/* ══════════════════════════════════════════════════════════
             STREAK TIMELINE: Dots appear one-by-one showing the flow
             ══════════════════════════════════════════════════════════ */}
@@ -542,6 +626,24 @@ export default function ResultsScreen({ route, navigation }: Props) {
           )}
         </Animated.View>
 
+        {/* ── CHALLENGE A FRIEND ── */}
+        {canChallenge && !isChallenge && !reviewOnly && (
+          <Animated.View style={{ opacity: restFade }}>
+            <TouchableOpacity
+              style={st.challengeButton}
+              onPress={() => { hapticTap(); setShowChallengeModal(true); }}
+              activeOpacity={0.7}
+            >
+              <UsersIcon size={18} color={colors.ink} />
+              <View style={st.challengeButtonContent}>
+                <Text style={st.challengeButtonTitle}>{t('challenge.challengeFriend')}</Text>
+                <Text style={st.challengeButtonSub}>{t('challenge.challengeDesc')}</Text>
+              </View>
+              <ChevronRightIcon size={16} color={colors.textTertiary} />
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
         {/* ── NEWLY EARNED BADGES ── */}
         {newBadges.length > 0 && (
           <Animated.View style={[st.badgesSection, { opacity: restFade }]}>
@@ -629,6 +731,11 @@ export default function ResultsScreen({ route, navigation }: Props) {
         {results.map((result, index) => {
           const itemTime = Math.round(result.timeTaken / 100) / 10;
           const isFastest = fastestCorrect && result.correct && result.timeTaken === fastestCorrect.time;
+          const opponentResult = challenge?.hostResults[index];
+          const opponentTime = opponentResult ? Math.round(opponentResult.timeMs / 100) / 10 : null;
+          const wonThisRound = opponentResult && result.correct && opponentResult.correct
+            ? result.timeTaken < opponentResult.timeMs
+            : result.correct && opponentResult && !opponentResult.correct;
           return (
             <Animated.View
               key={index}
@@ -653,9 +760,14 @@ export default function ResultsScreen({ route, navigation }: Props) {
                 {result.userAnswer === 'SKIPPED' && (
                   <Text style={st.reviewAnswer}>{t('results.skipped')}</Text>
                 )}
+                {isChallenge && opponentTime !== null && (
+                  <Text style={st.reviewOpponent}>
+                    {challenge.hostName}: {opponentTime}s {opponentResult?.correct ? '' : '(x)'}
+                  </Text>
+                )}
               </View>
               <View style={st.reviewRight}>
-                <Text style={[st.reviewTime, isFastest && st.reviewTimeFastest]}>{itemTime}s</Text>
+                <Text style={[st.reviewTime, isFastest && st.reviewTimeFastest, wonThisRound && st.reviewTimeWon]}>{itemTime}s</Text>
                 {result.correct ? <CheckIcon size={18} color={colors.success} /> : <CrossIcon size={18} color={colors.error} />}
               </View>
             </Animated.View>
@@ -666,6 +778,55 @@ export default function ResultsScreen({ route, navigation }: Props) {
         </ScreenContainer>
       </ScrollView>
       <BottomNav activeTab="Play" onNavigate={onNavigate} />
+
+      {/* ── Challenge name modal ── */}
+      <Modal
+        visible={showChallengeModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowChallengeModal(false)}
+      >
+        <TouchableOpacity
+          style={st.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowChallengeModal(false)}
+        >
+          <TouchableOpacity activeOpacity={1} style={st.modalCard} onPress={() => {}}>
+            <Text style={st.modalTitle}>{t('challenge.enterName')}</Text>
+            <Text style={st.modalSubtitle}>{t('challenge.enterNameDesc')}</Text>
+            <TextInput
+              style={st.modalInput}
+              value={challengeName}
+              onChangeText={setChallengeName}
+              placeholder={t('challenge.namePlaceholder')}
+              placeholderTextColor={colors.textTertiary}
+              autoCapitalize="words"
+              autoCorrect={false}
+              maxLength={20}
+              autoFocus
+              returnKeyType="done"
+              onSubmitEditing={challengeName.trim().length > 0 ? handleChallengeShare : undefined}
+            />
+            <View style={st.modalButtons}>
+              <TouchableOpacity
+                style={st.modalCancel}
+                onPress={() => setShowChallengeModal(false)}
+                activeOpacity={0.7}
+              >
+                <Text style={st.modalCancelText}>{t('common.cancel')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[st.modalShare, challengeName.trim().length === 0 && st.modalShareDisabled]}
+                onPress={handleChallengeShare}
+                disabled={challengeName.trim().length === 0}
+                activeOpacity={0.7}
+              >
+                <Text style={st.modalShareText}>{t('common.share')}</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -872,4 +1033,107 @@ const st = StyleSheet.create({
   reviewRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   reviewTime: { fontFamily: fontFamily.bodyMedium, fontSize: fontSize.sm, color: colors.textTertiary },
   reviewTimeFastest: { color: colors.success },
+  reviewTimeWon: { color: colors.success },
+  reviewOpponent: { fontFamily: fontFamily.body, fontSize: fontSize.sm, color: colors.textTertiary, marginTop: spacing.xxs },
+
+  // ── Head-to-head
+  h2hCard: {
+    backgroundColor: colors.surface, borderRadius: borderRadius.lg,
+    borderWidth: 2, borderColor: colors.ink, padding: spacing.lg,
+    marginBottom: spacing.sm,
+  },
+  h2hTitle: {
+    fontFamily: fontFamily.uiLabel, fontSize: fontSize.xxs,
+    letterSpacing: 1.2, textTransform: 'uppercase',
+    color: colors.textTertiary, textAlign: 'center', marginBottom: spacing.md,
+  },
+  h2hRow: {
+    flexDirection: 'row', alignItems: 'center',
+  },
+  h2hPlayer: { flex: 1, alignItems: 'center' },
+  h2hName: {
+    fontFamily: fontFamily.bodyBold, fontSize: fontSize.body,
+    color: colors.ink, marginBottom: spacing.xs,
+  },
+  h2hNameWinner: { color: colors.success },
+  h2hScore: {
+    fontFamily: fontFamily.display, fontSize: fontSize.title,
+    color: colors.ink, letterSpacing: -0.5,
+  },
+  h2hTime: {
+    fontFamily: fontFamily.body, fontSize: fontSize.sm,
+    color: colors.textTertiary, marginTop: spacing.xxs,
+  },
+  h2hVs: {
+    width: 40, height: 40, borderRadius: borderRadius.full,
+    backgroundColor: colors.surfaceSecondary,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  h2hVsText: {
+    fontFamily: fontFamily.uiLabel, fontSize: fontSize.sm,
+    color: colors.textTertiary, textTransform: 'uppercase',
+  },
+  h2hResult: {
+    fontFamily: fontFamily.uiLabel, fontSize: fontSize.lg,
+    letterSpacing: 0.8, textTransform: 'uppercase',
+    textAlign: 'center', marginTop: spacing.md,
+  },
+
+  // ── Challenge button
+  challengeButton: {
+    flexDirection: 'row', alignItems: 'center', gap: spacing.md,
+    backgroundColor: colors.surface, borderWidth: 2, borderColor: colors.ink,
+    borderRadius: borderRadius.lg, padding: spacing.md, marginBottom: spacing.md,
+  },
+  challengeButtonContent: { flex: 1 },
+  challengeButtonTitle: {
+    fontFamily: fontFamily.bodyBold, fontSize: fontSize.body, color: colors.ink,
+  },
+  challengeButtonSub: {
+    fontFamily: fontFamily.body, fontSize: fontSize.sm, color: colors.textTertiary, marginTop: 2,
+  },
+
+  // ── Challenge modal
+  modalOverlay: {
+    flex: 1, backgroundColor: colors.overlay,
+    justifyContent: 'center', alignItems: 'center', padding: spacing.lg,
+  },
+  modalCard: {
+    backgroundColor: colors.surface, borderRadius: borderRadius.xl,
+    padding: spacing.xl, width: '100%', maxWidth: 360,
+  },
+  modalTitle: {
+    fontFamily: fontFamily.display, fontSize: fontSize.heading,
+    color: colors.ink, textAlign: 'center', letterSpacing: -0.5,
+  },
+  modalSubtitle: {
+    fontFamily: fontFamily.body, fontSize: fontSize.caption,
+    color: colors.textSecondary, textAlign: 'center',
+    marginTop: spacing.sm, marginBottom: spacing.lg,
+  },
+  modalInput: {
+    backgroundColor: colors.surfaceSecondary, borderWidth: 2, borderColor: colors.border,
+    borderRadius: borderRadius.md, padding: spacing.md,
+    ...typography.body, color: colors.text, textAlign: 'center',
+  },
+  modalButtons: {
+    flexDirection: 'row', gap: spacing.sm, marginTop: spacing.lg,
+  },
+  modalCancel: {
+    flex: 1, paddingVertical: 14, alignItems: 'center',
+    borderRadius: borderRadius.md, borderWidth: 2, borderColor: colors.border,
+  },
+  modalCancelText: {
+    fontFamily: fontFamily.uiLabel, fontSize: fontSize.caption,
+    letterSpacing: 0.5, textTransform: 'uppercase', color: colors.textSecondary,
+  },
+  modalShare: {
+    flex: 1, paddingVertical: 14, alignItems: 'center',
+    borderRadius: borderRadius.md, backgroundColor: colors.ink,
+  },
+  modalShareDisabled: { backgroundColor: colors.textTertiary },
+  modalShareText: {
+    fontFamily: fontFamily.uiLabel, fontSize: fontSize.caption,
+    letterSpacing: 0.5, textTransform: 'uppercase', color: colors.white,
+  },
 });

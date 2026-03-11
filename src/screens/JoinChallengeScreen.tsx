@@ -1,0 +1,213 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  Keyboard,
+  Alert,
+  Platform,
+} from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
+import { RootStackParamList } from '../types/navigation';
+import { decodeChallenge, buildChallengeQuestions, getScreenForMode } from '../utils/challengeCode';
+import { hapticTap, hapticWrong } from '../utils/feedback';
+import { UsersIcon } from '../components/Icons';
+import ScreenContainer from '../components/ScreenContainer';
+import BottomNav from '../components/BottomNav';
+import { useNavTabs } from '../hooks/useNavTabs';
+import { t } from '../utils/i18n';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'JoinChallenge'>;
+
+export default function JoinChallengeScreen({ navigation }: Props) {
+  const onNavigate = useNavTabs();
+  const [code, setCode] = useState('');
+  const [name, setName] = useState('');
+
+  const canPlay = code.trim().length > 0 && name.trim().length > 0;
+
+  const handlePlay = () => {
+    Keyboard.dismiss();
+    hapticTap();
+
+    const challenge = decodeChallenge(code.trim());
+    if (!challenge) {
+      hapticWrong();
+      const msg = t('challenge.invalidCode');
+      if (Platform.OS === 'web') {
+        alert(msg);
+      } else {
+        Alert.alert(t('challenge.invalidCodeTitle'), msg);
+      }
+      return;
+    }
+
+    const questions = buildChallengeQuestions(challenge.flagIds, challenge.mode);
+    if (!questions) {
+      hapticWrong();
+      const msg = t('challenge.invalidCode');
+      if (Platform.OS === 'web') {
+        alert(msg);
+      } else {
+        Alert.alert(t('challenge.invalidCodeTitle'), msg);
+      }
+      return;
+    }
+
+    const screen = getScreenForMode(challenge.mode) as keyof RootStackParamList;
+    const params = {
+      config: {
+        mode: challenge.mode,
+        category: 'all' as const,
+        questionCount: challenge.flagIds.length,
+        timeLimit: challenge.timeLimit,
+      },
+      challenge,
+      playerName: name.trim(),
+    };
+
+    navigation.replace(screen as 'Game', params);
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <ScreenContainer>
+          <View style={styles.iconWrap}>
+            <UsersIcon size={28} color={colors.white} />
+          </View>
+
+          <Text style={styles.title}>{t('challenge.joinTitle')}</Text>
+          <Text style={styles.subtitle}>{t('challenge.joinSubtitle')}</Text>
+
+          <View style={styles.form}>
+            <Text style={styles.label}>{t('challenge.yourName')}</Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+              placeholder={t('challenge.namePlaceholder')}
+              placeholderTextColor={colors.textTertiary}
+              autoCapitalize="words"
+              autoCorrect={false}
+              maxLength={20}
+              returnKeyType="next"
+            />
+
+            <Text style={[styles.label, { marginTop: spacing.lg }]}>{t('challenge.code')}</Text>
+            <TextInput
+              style={[styles.input, styles.codeInput]}
+              value={code}
+              onChangeText={setCode}
+              placeholder={t('challenge.codePlaceholder')}
+              placeholderTextColor={colors.textTertiary}
+              autoCapitalize="none"
+              autoCorrect={false}
+              multiline
+              returnKeyType="done"
+              onSubmitEditing={canPlay ? handlePlay : undefined}
+            />
+            <Text style={styles.hint}>{t('challenge.codeHint')}</Text>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.playButton, !canPlay && styles.playButtonDisabled]}
+            onPress={handlePlay}
+            disabled={!canPlay}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.playButtonText}>{t('challenge.play')}</Text>
+          </TouchableOpacity>
+        </ScreenContainer>
+      </ScrollView>
+      <BottomNav activeTab="Play" onNavigate={onNavigate} />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  content: {
+    padding: spacing.lg,
+    paddingTop: spacing.xl,
+  },
+  iconWrap: {
+    width: 56,
+    height: 56,
+    backgroundColor: colors.ink,
+    borderRadius: borderRadius.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginBottom: spacing.lg,
+  },
+  title: {
+    fontFamily: fontFamily.display,
+    fontSize: fontSize.title,
+    color: colors.ink,
+    textAlign: 'center',
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginTop: spacing.sm,
+    marginBottom: spacing.xl,
+    lineHeight: 22,
+  },
+  form: {},
+  label: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.xxs,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: colors.textTertiary,
+    marginBottom: spacing.sm,
+  },
+  input: {
+    backgroundColor: colors.surface,
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderRadius: borderRadius.md,
+    padding: spacing.lg,
+    ...typography.body,
+    color: colors.text,
+  },
+  codeInput: {
+    minHeight: 80,
+    textAlignVertical: 'top',
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.caption,
+  },
+  hint: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.sm,
+    color: colors.textTertiary,
+    marginTop: spacing.xs,
+  },
+  playButton: {
+    ...buttons.primary,
+    marginTop: spacing.xl,
+  },
+  playButtonDisabled: {
+    backgroundColor: colors.textTertiary,
+    shadowColor: colors.textTertiary,
+  },
+  playButtonText: {
+    ...buttons.primaryText,
+  },
+});

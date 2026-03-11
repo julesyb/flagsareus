@@ -69,7 +69,7 @@ function generateRounds(count: number): RoundData[] {
 }
 
 export default function NeighborsScreen({ navigation, route }: Props) {
-  const { config } = route.params;
+  const { config, challenge, playerName } = route.params;
   const rounds = useMemo(() => generateRounds(config.questionCount), [config.questionCount]);
   const [roundIndex, setRoundIndex] = useState(0);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -137,7 +137,7 @@ export default function NeighborsScreen({ navigation, route }: Props) {
     const currentResults = [...results];
     const isEliminated = guessLimit > 0 && currentResults.filter((r) => !r.correct).length >= guessLimit;
     if (isLastRound || isEliminated) {
-      navigation.replace('Results', { results: currentResults, config });
+      navigation.replace('Results', { results: currentResults, config, ...(challenge && { challenge, playerName }) });
       return;
     }
 

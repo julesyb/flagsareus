@@ -26,6 +26,7 @@ import GameTopBar from '../components/GameTopBar';
 import ScreenContainer from '../components/ScreenContainer';
 import { t } from '../utils/i18n';
 import { flagName } from '../data/countryNames';
+import { buildChallengeQuestions } from '../utils/challengeCode';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FlagPuzzle'>;
 
@@ -44,7 +45,7 @@ function generateRevealOrder(): number[] {
 }
 
 export default function FlagPuzzleScreen({ route, navigation }: Props) {
-  const { config } = route.params;
+  const { config, challenge, playerName } = route.params;
   const timeLimit = config.timeLimit || 15;
   const { width: screenWidth } = useWindowDimensions();
 
@@ -77,7 +78,12 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
   const { fadeAnim, streakScale, shakeAnim, animateStreak, animateWrong, animateTransition } = useGameAnimations();
 
   useEffect(() => {
-    const q = generateQuestions(config);
+    let q: GameQuestion[];
+    if (challenge) {
+      q = buildChallengeQuestions(challenge.flagIds, challenge.mode) || [];
+    } else {
+      q = generateQuestions(config);
+    }
     setQuestions(q);
     setQuestionStartTime(Date.now());
   }, []);
@@ -177,9 +183,13 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
         Keyboard.dismiss();
       });
     } else {
-      navigation.replace('Results', { results: newResults, config });
+      navigation.replace('Results', {
+        results: newResults,
+        config,
+        ...(challenge && { challenge, playerName }),
+      });
     }
-  }, [currentIndex, questions, navigation, config, animateTransition]);
+  }, [currentIndex, questions, navigation, config, challenge, playerName, animateTransition]);
 
   const handleAnswer = useCallback(
     (answer: string) => {
