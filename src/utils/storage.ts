@@ -32,53 +32,87 @@ export async function saveChallengeName(name: string): Promise<void> {
 export interface BadgeData {
   dailyChallengesCompleted: number;
   hasShared: boolean;
-  lastGamePerfect10: boolean;
-  lastGameSRank: boolean;
+  earnedBadgeIds: string[];
 }
 
 const DEFAULT_BADGE_DATA: BadgeData = {
   dailyChallengesCompleted: 0,
   hasShared: false,
-  lastGamePerfect10: false,
-  lastGameSRank: false,
+  earnedBadgeIds: [],
 };
+
+// Migrate legacy per-badge sticky flags into earnedBadgeIds
+const LEGACY_FLAG_MAP: Record<string, string> = {
+  lastGamePerfect10: 'perfect_10',
+  lastGameSRank: 's_rank',
+  earnedPracticePerfect: 'practice_perfect',
+  earnedQuickDraw: 'quick_draw',
+  earnedRegionAce: 'region_ace',
+};
+
+function migrateBadgeData(raw: Record<string, unknown>): { data: BadgeData; needsSave: boolean } {
+  const data: BadgeData = {
+    dailyChallengesCompleted: (raw.dailyChallengesCompleted as number) || 0,
+    hasShared: (raw.hasShared as boolean) || false,
+    earnedBadgeIds: (raw.earnedBadgeIds as string[]) || [],
+  };
+  const ids = new Set(data.earnedBadgeIds);
+  let needsSave = false;
+  for (const [flag, badgeId] of Object.entries(LEGACY_FLAG_MAP)) {
+    if (raw[flag] && !ids.has(badgeId)) {
+      ids.add(badgeId);
+      needsSave = true;
+    }
+  }
+  if (needsSave) data.earnedBadgeIds = [...ids];
+  return { data, needsSave };
+}
 
 export async function getBadgeData(): Promise<BadgeData> {
   try {
     const json = await AsyncStorage.getItem(BADGE_DATA_KEY);
-    if (json) return { ...DEFAULT_BADGE_DATA, ...JSON.parse(json) };
+    if (json) {
+      const { data, needsSave } = migrateBadgeData(JSON.parse(json));
+      if (needsSave) await AsyncStorage.setItem(BADGE_DATA_KEY, JSON.stringify(data));
+      return data;
+    }
     return { ...DEFAULT_BADGE_DATA };
   } catch {
     return { ...DEFAULT_BADGE_DATA };
   }
 }
 
-export async function saveBadgeData(data: Partial<BadgeData>): Promise<void> {
+export async function saveBadgeData(data: BadgeData): Promise<void> {
   try {
-    const current = await getBadgeData();
-    const updated = { ...current, ...data };
-    await AsyncStorage.setItem(BADGE_DATA_KEY, JSON.stringify(updated));
+    await AsyncStorage.setItem(BADGE_DATA_KEY, JSON.stringify(data));
   } catch {
     // Silently fail
   }
 }
 
 export async function markShared(): Promise<void> {
-  await saveBadgeData({ hasShared: true });
+  const data = await getBadgeData();
+  data.hasShared = true;
+  await saveBadgeData(data);
 }
 
 export async function incrementDailyChallenges(): Promise<void> {
   const data = await getBadgeData();
-  await saveBadgeData({ dailyChallengesCompleted: data.dailyChallengesCompleted + 1 });
+  data.dailyChallengesCompleted += 1;
+  await saveBadgeData(data);
 }
 
-export async function updateLastGameBadgeFlags(correct: number, total: number): Promise<void> {
+export async function persistEarnedBadges(badgeIds: string[]): Promise<void> {
   const data = await getBadgeData();
-  const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
-  await saveBadgeData({
-    lastGamePerfect10: data.lastGamePerfect10 || (correct === total && total >= 10),
-    lastGameSRank: data.lastGameSRank || (accuracy >= 95 && total >= 5),
-  });
+  const ids = new Set(data.earnedBadgeIds);
+  let changed = false;
+  for (const id of badgeIds) {
+    if (!ids.has(id)) { ids.add(id); changed = true; }
+  }
+  if (changed) {
+    data.earnedBadgeIds = [...ids];
+    await saveBadgeData(data);
+  }
 }
 
 // ─── App Settings ──────────────────────────────────────────
@@ -119,7 +153,11 @@ export async function saveSettings(settings: AppSettings): Promise<void> {
 }
 
 function getTodayDate(): string {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
 }
 
 const DEFAULT_STATS: UserStats = {
@@ -212,19 +250,29 @@ export async function resetStats(): Promise<void> {
   }
 }
 
+export interface DayStreakInfo {
+  current: number;
+  best: number;
+}
+
 export async function getDayStreak(): Promise<number> {
+  return (await getDayStreakInfo()).current;
+}
+
+export async function getDayStreakInfo(): Promise<DayStreakInfo> {
   try {
     const json = await AsyncStorage.getItem(DAY_STREAK_KEY);
-    if (!json) return 0;
-    const { lastDate, streak } = JSON.parse(json);
+    if (!json) return { current: 0, best: 0 };
+    const { lastDate, streak, best } = JSON.parse(json);
+    const bestStreak = best || streak || 0;
     const today = getTodayDate();
-    if (lastDate === today) return streak;
+    if (lastDate === today) return { current: streak, best: bestStreak };
     const diffDays = Math.round(
       (new Date(today + 'T00:00:00').getTime() - new Date(lastDate + 'T00:00:00').getTime()) / 86400000,
     );
-    return diffDays === 1 ? streak : 0;
+    return { current: diffDays === 1 ? streak : 0, best: bestStreak };
   } catch {
-    return 0;
+    return { current: 0, best: 0 };
   }
 }
 
@@ -233,15 +281,18 @@ async function recordDayPlayed(): Promise<number> {
     const today = getTodayDate();
     const json = await AsyncStorage.getItem(DAY_STREAK_KEY);
     let streak = 1;
+    let best = 0;
     if (json) {
       const data = JSON.parse(json);
+      best = data.best || data.streak || 0;
       if (data.lastDate === today) return data.streak;
       const diffDays = Math.round(
         (new Date(today + 'T00:00:00').getTime() - new Date(data.lastDate + 'T00:00:00').getTime()) / 86400000,
       );
       if (diffDays === 1) streak = data.streak + 1;
     }
-    await AsyncStorage.setItem(DAY_STREAK_KEY, JSON.stringify({ lastDate: today, streak }));
+    best = Math.max(best, streak);
+    await AsyncStorage.setItem(DAY_STREAK_KEY, JSON.stringify({ lastDate: today, streak, best }));
     return streak;
   } catch {
     return 0;
