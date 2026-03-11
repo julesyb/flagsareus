@@ -222,10 +222,46 @@ export function MapPinIcon({ size = 16, color = colors.textSecondary, strokeWidt
   );
 }
 
+export function CompassIcon({ size = 16, color = colors.textSecondary, strokeWidth = 1.5 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Circle cx={12} cy={12} r={10} />
+      <Polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill={color} stroke="none" />
+    </Svg>
+  );
+}
+
 export function ChevronDownIcon({ size = 16, color = colors.textTertiary, strokeWidth = 2 }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
       <Polyline points="6 9 12 15 18 9" />
     </Svg>
   );
+}
+
+// ── Badge icon renderer (shared by ResultsScreen + StatsScreen) ──
+import type { BadgeIcon as BadgeIconType } from '../utils/badges';
+
+interface BadgeIconViewProps {
+  icon: BadgeIconType;
+  size?: number;
+  color: string;
+}
+
+export function BadgeIconView({ icon, size = 18, color }: BadgeIconViewProps) {
+  switch (icon) {
+    case 'flag': return <FlagIcon size={size} color={color} />;
+    case 'globe': return <GlobeIcon size={size} color={color} />;
+    case 'check': return <CheckIcon size={size} color={color} />;
+    case 'play': return <PlayIcon size={size} color={color} />;
+    case 'lightning': return <LightningIcon size={size} color={color} />;
+    case 'calendar': return <CalendarIcon size={size} color={color} />;
+    case 'clock': return <ClockIcon size={size} color={color} />;
+    case 'crosshair': return <CrosshairIcon size={size} color={color} />;
+    case 'link': return <LinkIcon size={size} color={color} />;
+    case 'eye': return <EyeIcon size={size} color={color} />;
+    case 'heart': return <HeartIcon size={size} color={color} filled />;
+    case 'compass': return <CompassIcon size={size} color={color} />;
+    default: return <FlagIcon size={size} color={color} />;
+  }
 }

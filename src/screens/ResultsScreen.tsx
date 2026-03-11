@@ -18,17 +18,17 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
 import { calculateAccuracy, getStreakFromResults, getGrade, generateDailyShareGrid, generateShareGrid, getDailyNumber } from '../utils/gameEngine';
-import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, updateLastGameBadgeFlags, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreak, getBadgeData, getMissedFlagIds, addGameHistoryEntry, getSupportData, getChallengeName, saveChallengeName } from '../utils/storage';
+import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreakInfo, getBadgeData, persistEarnedBadges, getMissedFlagIds, addGameHistoryEntry, getSupportData, getChallengeName, saveChallengeName } from '../utils/storage';
 import { BaselineRegionId, UserStats, GameMode } from '../types';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
 import { FlagImageSmall } from '../components/FlagImage';
-import { CheckIcon, CrossIcon, ChevronRightIcon, BarChartIcon, FlagIcon, GlobeIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon, HeartIcon, UsersIcon } from '../components/Icons';
+import { CheckIcon, CrossIcon, ChevronRightIcon, BarChartIcon, GlobeIcon, CalendarIcon, UsersIcon, CrosshairIcon, BadgeIconView } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { RootStackParamList } from '../types/navigation';
-import { evaluateBadges, BADGES, TIER_COLORS, BadgeIcon, EarnedBadge } from '../utils/badges';
+import { getAllEarnedBadges, detectPerGameBadges, buildBadgeContext, BADGES, TIER_COLORS, EarnedBadge } from '../utils/badges';
 import { getTotalFlagCount } from '../data';
 import { useInterstitialAdUnit, shouldShowAd, recordAdImpression, incrementGameCount } from '../utils/ads';
 import { encodeChallenge, ChallengeData, CHALLENGE_MODES } from '../utils/challengeCode';
@@ -166,7 +166,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const h2h = isChallenge && challenge ? (() => {
     const hostCorrect = challenge.hostResults.filter((r) => r.correct).length;
     const playerCorrect = results.filter((r) => r.correct).length;
-    const totalFlags = challenge.flagIds.length;
+    const h2hTotal = challenge.flagIds.length;
     // Compute raw averages in ms for fair comparison (host times have 100ms granularity from encoding)
     const hostAvgMs = challenge.hostResults.length > 0
       ? challenge.hostResults.reduce((s, r) => s + r.timeMs, 0) / challenge.hostResults.length
@@ -183,7 +183,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
     else if (hostCorrect > playerCorrect) winner = 'host';
     else if (playerAvgMs < hostAvgMs) winner = 'player';
     else if (hostAvgMs < playerAvgMs) winner = 'host';
-    return { hostCorrect, playerCorrect, hostAvg, playerAvg, totalFlags, winner };
+    return { hostCorrect, playerCorrect, hostAvg, playerAvg, h2hTotal, winner };
   })() : null;
 
   // Load ad if frequency cap allows (skip for daily/baseline/review)
@@ -217,18 +217,12 @@ export default function ResultsScreen({ route, navigation }: Props) {
   useEffect(() => {
     // ── Data processing ──
     async function processResults() {
-      const [preStats, preFlagStats, preDayStreak, preBadgeData, preMissed, preSupport] = await Promise.all([
-        getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(), getSupportData(),
+      // ── Snapshot pre-game state ──
+      const [preStats, preFlagStats, preDayStreakInfo, preBadgeData, preMissed, preSupport] = await Promise.all([
+        getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(), getMissedFlagIds(), getSupportData(),
       ]);
-      const preBadgeIds = new Set(evaluateBadges({
-        stats: preStats, flagStats: preFlagStats, dayStreak: preDayStreak,
-        dailyChallengesCompleted: preBadgeData.dailyChallengesCompleted,
-        hasShared: preBadgeData.hasShared,
-        lastGamePerfect10: preBadgeData.lastGamePerfect10,
-        lastGameSRank: preBadgeData.lastGameSRank,
-        weakFlagCount: preMissed.length,
-        adsWatched: preSupport.totalAdsWatched,
-      }).map((b) => b.id));
+      const preCtx = buildBadgeContext(preStats, preFlagStats, preDayStreakInfo, preBadgeData, preMissed.length, preSupport.totalAdsWatched);
+      const preBadgeIds = new Set(getAllEarnedBadges(preCtx, preBadgeData.earnedBadgeIds).map((b) => b.id));
 
       const wasNewBestStreak = streak > preStats.bestStreak;
       const prevAcc = preStats.totalAnswered > 0
@@ -242,10 +236,10 @@ export default function ResultsScreen({ route, navigation }: Props) {
         }
       }
 
+      // ── Persist game data ──
       if (!reviewOnly) {
         await updateStats(correct, results.length, streak, config.mode, config.category);
         await updateFlagResults(results);
-        await updateLastGameBadgeFlags(correct, results.length);
         await addGameHistoryEntry(accuracy, config.mode);
         if (!skipAds) {
           incrementGameCount();
@@ -259,22 +253,22 @@ export default function ResultsScreen({ route, navigation }: Props) {
         await saveBaselineResult(config.category as BaselineRegionId, results);
       }
 
-      const [postStats, postFlagStats, postDayStreak, postBadgeData, postMissed, postSupport] = await Promise.all([
-        getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(), getSupportData(),
+      // ── Snapshot post-game state and evaluate badges ──
+      const [postStats, postFlagStats, postDayStreakInfo, postBadgeData, postMissed, postSupport] = await Promise.all([
+        getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(), getMissedFlagIds(), getSupportData(),
       ]);
-      const postBadges = evaluateBadges({
-        stats: postStats, flagStats: postFlagStats, dayStreak: postDayStreak,
-        dailyChallengesCompleted: postBadgeData.dailyChallengesCompleted,
-        hasShared: postBadgeData.hasShared,
-        lastGamePerfect10: postBadgeData.lastGamePerfect10,
-        lastGameSRank: postBadgeData.lastGameSRank,
-        weakFlagCount: postMissed.length,
-        adsWatched: postSupport.totalAdsWatched,
-      });
+      const postCtx = buildBadgeContext(postStats, postFlagStats, postDayStreakInfo, postBadgeData, postMissed.length, postSupport.totalAdsWatched);
+      // Merge persisted IDs + per-game badges detected from results, then evaluate
+      const perGameIds = !reviewOnly ? detectPerGameBadges(results, correct, results.length) : [];
+      const allPersistedIds = [...postBadgeData.earnedBadgeIds, ...perGameIds];
+      const postBadges = getAllEarnedBadges(postCtx, allPersistedIds);
+      // Single persist call for all earned badges
+      await persistEarnedBadges(postBadges.map((b) => b.id));
 
       setOverallStats(postStats);
-      setDayStreakCount(postDayStreak);
-      setTotalFlags(getTotalFlagCount());
+      setDayStreakCount(postDayStreakInfo.current);
+      const totalF = getTotalFlagCount();
+      setTotalFlags(totalF);
       const seen = Object.values(postFlagStats).filter((fs) => fs.right > 0).length;
       setCountriesSeen(seen);
       setNewBadges(postBadges.filter((b) => !preBadgeIds.has(b.id)));
@@ -285,7 +279,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
       setWeakFlagCount(postMissed.length);
 
       // Animate progress bar after data loads
-      const totalF = getTotalFlagCount();
       const pct = totalF > 0 ? seen / totalF : 0;
       Animated.timing(progressBarAnim, {
         toValue: pct,
@@ -444,29 +437,15 @@ export default function ResultsScreen({ route, navigation }: Props) {
           : t('results.playAgain');
 
   const progressPct = totalFlags > 0 ? Math.round((countriesSeen / totalFlags) * 100) : 0;
+  const dataLoaded = overallStats !== null;
   const accDiff = prevAccuracy !== null ? accuracy - prevAccuracy : null;
-  const accInsight = prevAccuracy === null
+  const accInsight = !dataLoaded
+    ? null
+    : prevAccuracy === null
     ? t('results.firstGame')
     : accDiff !== null && accDiff > 0 ? t('results.aboveAverage', { pct: accDiff })
     : accDiff !== null && accDiff < 0 ? t('results.belowAverage', { pct: Math.abs(accDiff) })
     : null;
-
-  const renderBadgeIcon = (icon: BadgeIcon, tierColor: string) => {
-    const size = 18;
-    switch (icon) {
-      case 'flag': return <FlagIcon size={size} color={tierColor} />;
-      case 'globe': return <GlobeIcon size={size} color={tierColor} />;
-      case 'check': return <CheckIcon size={size} color={tierColor} />;
-      case 'play': return <PlayIcon size={size} color={tierColor} />;
-      case 'lightning': return <LightningIcon size={size} color={tierColor} />;
-      case 'calendar': return <CalendarIcon size={size} color={tierColor} />;
-      case 'clock': return <ClockIcon size={size} color={tierColor} />;
-      case 'crosshair': return <CrosshairIcon size={size} color={tierColor} />;
-      case 'link': return <LinkIcon size={size} color={tierColor} />;
-      case 'heart': return <HeartIcon size={size} color={tierColor} filled />;
-      default: return <FlagIcon size={size} color={tierColor} />;
-    }
-  };
 
   // Interpolate progress bar width
   const progressBarWidth = progressBarAnim.interpolate({
@@ -530,7 +509,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
                   st.h2hName,
                   h2h.winner === 'player' && st.h2hNameWinner,
                 ]}>{playerName || t('challenge.you')}</Text>
-                <Text style={st.h2hScore}>{h2h.playerCorrect}/{h2h.totalFlags}</Text>
+                <Text style={st.h2hScore}>{h2h.playerCorrect}/{h2h.h2hTotal}</Text>
                 <Text style={st.h2hTime}>{h2h.playerAvg}s {t('results.avgTime').toLowerCase()}</Text>
               </View>
               <View style={st.h2hVs}>
@@ -541,7 +520,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
                   st.h2hName,
                   h2h.winner === 'host' && st.h2hNameWinner,
                 ]}>{challenge.hostName}</Text>
-                <Text style={st.h2hScore}>{h2h.hostCorrect}/{h2h.totalFlags}</Text>
+                <Text style={st.h2hScore}>{h2h.hostCorrect}/{h2h.h2hTotal}</Text>
                 <Text style={st.h2hTime}>{h2h.hostAvg}s {t('results.avgTime').toLowerCase()}</Text>
               </View>
             </View>
@@ -726,7 +705,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
               return (
                 <View key={badge.id} style={st.badgeRow}>
                   <View style={[st.badgeIconWrap, { backgroundColor: tierColor + '18' }]}>
-                    {renderBadgeIcon(badge.icon, tierColor)}
+                    <BadgeIconView icon={badge.icon} color={tierColor} />
                   </View>
                   <View style={st.badgeContent}>
                     <Text style={st.badgeName}>{badge.name}</Text>

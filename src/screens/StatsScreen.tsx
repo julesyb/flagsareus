@@ -14,8 +14,8 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { colors, spacing, fontFamily, fontSize, borderRadius } from '../utils/theme';
-import { UserStats, CategoryId } from '../types';
-import { getStats, getFlagStats, FlagStats, getDayStreak, getBadgeData, getMissedFlagIds, BadgeData, getSupportData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData } from '../utils/storage';
+import { UserStats, GameMode, CategoryId } from '../types';
+import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getSupportData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData } from '../utils/storage';
 import { getAllFlags, getTotalFlagCount } from '../data';
 
 import { t } from '../utils/i18n';
@@ -23,8 +23,8 @@ import { FlagImageSmall } from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
-import { evaluateBadges, BADGES, TIER_COLORS, BadgeIcon, BadgeCheckContext, getBadgeProgress } from '../utils/badges';
-import { FlagIcon, GlobeIcon, CheckIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon, HeartIcon, ChevronRightIcon } from '../components/Icons';
+import { getAllEarnedBadges, buildBadgeContext, deriveFromContext, BADGES, TIER_COLORS, getBadgeProgress } from '../utils/badges';
+import { ChevronRightIcon, CrosshairIcon, BadgeIconView } from '../components/Icons';
 
 const RANK_COLORS = [colors.gradeS, colors.textTertiary, colors.warning];
 
@@ -35,7 +35,7 @@ export default function StatsScreen() {
   const onNavigate = useNavTabs();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [flagStats, setFlagStats] = useState<FlagStats>({});
-  const [dayStreak, setDayStreak] = useState(0);
+  const [dayStreakInfo, setDayStreakInfo] = useState<DayStreakInfo>({ current: 0, best: 0 });
   const [badgeData, setBadgeData] = useState<BadgeData | null>(null);
   const [weakFlagCount, setWeakFlagCount] = useState(0);
   const [adsWatched, setAdsWatched] = useState(0);
@@ -82,13 +82,13 @@ export default function StatsScreen() {
 
       async function loadData() {
         try {
-          const [s, fs, ds, bd, missed, gh, support, bl] = await Promise.all([
-            getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(), getGameHistory(), getSupportData(), getBaselineData(),
+          const [s, fs, dsInfo, bd, missed, gh, support, bl] = await Promise.all([
+            getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(), getMissedFlagIds(), getGameHistory(), getSupportData(), getBaselineData(),
           ]);
           if (!cancelled) {
             setStats(s);
             setFlagStats(fs);
-            setDayStreak(ds);
+            setDayStreakInfo(dsInfo);
             setBadgeData(bd);
             setWeakFlagCount(missed.length);
             setGameHistory(gh);
@@ -171,66 +171,43 @@ export default function StatsScreen() {
       .slice(0, 10);
   }, [flagStats]);
 
+  // Single badge context memo — consumed by earnedBadges, nextMilestone, and badge grid
+  const badgeCtx = React.useMemo(() => {
+    if (!badgeData || !stats) return null;
+    return buildBadgeContext(stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched);
+  }, [stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched]);
+
+  // Pre-compute derived values once (countriesSeen, totalFlags, modesPlayed)
+  // so getBadgeProgress doesn't recompute them per badge in loops
+  const derived = React.useMemo(() => {
+    return badgeCtx ? deriveFromContext(badgeCtx) : null;
+  }, [badgeCtx]);
+
   const earnedBadges = React.useMemo(() => {
-    if (!badgeData || !stats) return [];
-    return evaluateBadges({
-      stats, flagStats, dayStreak,
-      dailyChallengesCompleted: badgeData.dailyChallengesCompleted,
-      hasShared: badgeData.hasShared,
-      lastGamePerfect10: badgeData.lastGamePerfect10,
-      lastGameSRank: badgeData.lastGameSRank,
-      weakFlagCount,
-      adsWatched,
-    });
-  }, [stats, flagStats, dayStreak, badgeData, weakFlagCount, adsWatched]);
+    if (!badgeCtx || !badgeData) return [];
+    return getAllEarnedBadges(badgeCtx, badgeData.earnedBadgeIds);
+  }, [badgeCtx, badgeData]);
 
-  // ── Next milestone computation ──
+  // ── Next milestone computation (uses shared getBadgeProgress) ──
   const nextMilestone = React.useMemo(() => {
-    if (!stats) return null;
-    const earnedIds = new Set(earnedBadges.map((b) => b.id));
-    const countriesSeen = Object.values(flagStats).filter((fs) => fs.right > 0).length;
-    const totalF = getTotalFlagCount();
+    if (!badgeCtx || !derived) return null;
+    const earnedIdSet = new Set(earnedBadges.map((b) => b.id));
 
-    // Check each badge for proximity
     const candidates: { badge: typeof BADGES[0]; progress: number; target: number; remaining: number }[] = [];
 
     for (const badge of BADGES) {
-      if (earnedIds.has(badge.id)) continue;
-      let progress = 0;
-      let target = 0;
-
-      switch (badge.id) {
-        case 'first_flag': progress = stats.totalGamesPlayed; target = 1; break;
-        case 'globe_trotter': progress = countriesSeen; target = 50; break;
-        case 'world_citizen': progress = countriesSeen; target = 100; break;
-        case 'flag_master': progress = countriesSeen; target = totalF; break;
-        case 'ten_timer': progress = stats.totalGamesPlayed; target = 10; break;
-        case 'century_club': progress = stats.totalGamesPlayed; target = 100; break;
-        case 'hot_streak': progress = stats.bestStreak; target = 10; break;
-        case 'on_fire': progress = stats.bestStreak; target = 25; break;
-        case 'unstoppable': progress = stats.bestStreak; target = 50; break;
-        case 'day_tripper': progress = dayStreak; target = 3; break;
-        case 'week_warrior': progress = dayStreak; target = 7; break;
-        case 'month_master': progress = dayStreak; target = 30; break;
-        case 'speed_demon': progress = stats.bestTimeAttackScore; target = 15; break;
-        case 'lightning_round': progress = stats.bestTimeAttackScore; target = 25; break;
-        default: continue;
-      }
-
-      if (target > 0 && progress > 0) {
-        const remaining = target - progress;
-        const pctComplete = progress / target;
-        if (pctComplete >= 0.3) {
-          candidates.push({ badge, progress, target, remaining });
-        }
+      if (earnedIdSet.has(badge.id)) continue;
+      const bp = getBadgeProgress(badge, badgeCtx, derived);
+      if (!bp || bp.target === 0 || bp.progress === 0) continue;
+      if (bp.pct >= 30) {
+        candidates.push({ badge, progress: bp.progress, target: bp.target, remaining: bp.target - bp.progress });
       }
     }
 
     if (candidates.length === 0) return null;
-    // Pick the one closest to completion
     candidates.sort((a, b) => (a.remaining / a.target) - (b.remaining / b.target));
     return candidates[0];
-  }, [stats, earnedBadges, flagStats, dayStreak]);
+  }, [badgeCtx, derived, earnedBadges]);
 
   // Score distribution: bucket accuracies into ranges
   // (must be above the early return to satisfy Rules of Hooks)
@@ -272,16 +249,7 @@ export default function StatsScreen() {
   const progressPct = totalFlags > 0 ? Math.round((countriesSeen / totalFlags) * 100) : 0;
   const earnedIds = new Set(earnedBadges.map((b) => b.id));
 
-  // Badge check context for progress bars
-  const badgeCtx: BadgeCheckContext | null = badgeData ? {
-    stats, flagStats, dayStreak,
-    dailyChallengesCompleted: badgeData.dailyChallengesCompleted,
-    hasShared: badgeData.hasShared,
-    lastGamePerfect10: badgeData.lastGamePerfect10,
-    lastGameSRank: badgeData.lastGameSRank,
-    weakFlagCount,
-    adsWatched,
-  } : null;
+  const playedModes = MODE_BREAKDOWN.filter(({ key }) => stats.modeStats[key].total > 0);
 
   // Region accuracy data (only regions with games played)
   const regionData = REGIONS
@@ -298,23 +266,11 @@ export default function StatsScreen() {
     outputRange: ['0%', '100%'],
   });
 
-  const renderBadgeIcon = (icon: BadgeIcon, earned: boolean, tierColor: string) => {
-    const iconColor = earned ? tierColor : colors.textTertiary;
-    const size = 18;
-    switch (icon) {
-      case 'flag': return <FlagIcon size={size} color={iconColor} />;
-      case 'globe': return <GlobeIcon size={size} color={iconColor} />;
-      case 'check': return <CheckIcon size={size} color={iconColor} />;
-      case 'play': return <PlayIcon size={size} color={iconColor} />;
-      case 'lightning': return <LightningIcon size={size} color={iconColor} />;
-      case 'calendar': return <CalendarIcon size={size} color={iconColor} />;
-      case 'clock': return <ClockIcon size={size} color={iconColor} />;
-      case 'crosshair': return <CrosshairIcon size={size} color={iconColor} />;
-      case 'link': return <LinkIcon size={size} color={iconColor} />;
-      case 'heart': return <HeartIcon size={size} color={iconColor} filled />;
-      default: return <FlagIcon size={size} color={iconColor} />;
-    }
-  };
+  const accuracyLabel =
+    overallAccuracy === 100 ? t('stats.perfect') :
+    overallAccuracy >= 90 ? t('stats.excellent') :
+    overallAccuracy >= 70 ? t('stats.great') :
+    overallAccuracy > 0 ? t('stats.keepGoing') : '';
 
   return (
     <SafeAreaView style={s.container}>
@@ -346,9 +302,9 @@ export default function StatsScreen() {
               <Text style={s.heroStatLabel}>{t('stats.gamesPlayed')}</Text>
             </View>
             <View style={s.heroStatItem}>
-              <Text style={s.heroStatValue}>{dayStreak}</Text>
+              <Text style={s.heroStatValue}>{dayStreakInfo.current}</Text>
               <Text style={s.heroStatLabel}>{t('stats.dayStreak')}</Text>
-              {dayStreak > 0 && <Text style={s.heroStatHint}>{t('stats.playTomorrow')}</Text>}
+              {dayStreakInfo.current > 0 && <Text style={s.heroStatHint}>{t('stats.playTomorrow')}</Text>}
             </View>
           </View>
         </Animated.View>
@@ -377,7 +333,7 @@ export default function StatsScreen() {
         {nextMilestone && (
           <Animated.View style={[s.milestoneCard, { opacity: progressFade }]}>
             <View style={[s.milestoneIconWrap, { backgroundColor: TIER_COLORS[nextMilestone.badge.tier] + '18' }]}>
-              {renderBadgeIcon(nextMilestone.badge.icon, true, TIER_COLORS[nextMilestone.badge.tier])}
+              <BadgeIconView icon={nextMilestone.badge.icon} color={TIER_COLORS[nextMilestone.badge.tier]} />
             </View>
             <View style={s.milestoneContent}>
               <Text style={s.milestoneTitle}>{nextMilestone.badge.name}</Text>
@@ -522,11 +478,11 @@ export default function StatsScreen() {
             {BADGES.map((badge) => {
               const earned = earnedIds.has(badge.id);
               const tierColor = TIER_COLORS[badge.tier];
-              const progress = !earned && badgeCtx ? getBadgeProgress(badge, badgeCtx) : null;
+              const progress = !earned && badgeCtx && derived ? getBadgeProgress(badge, badgeCtx, derived) : null;
               return (
                 <View key={badge.id} style={[s.badgeCard, !earned && s.badgeCardLocked]}>
                   <View style={[s.badgeIconWrap, { backgroundColor: earned ? tierColor + '18' : colors.surfaceSecondary }]}>
-                    {renderBadgeIcon(badge.icon, earned, tierColor)}
+                    <BadgeIconView icon={badge.icon} color={earned ? tierColor : colors.textTertiary} />
                   </View>
                   <Text style={[s.badgeName, !earned && s.badgeNameLocked]}>{badge.name}</Text>
                   <Text style={[s.badgeDesc, !earned && s.badgeDescLocked]}>{badge.description}</Text>
