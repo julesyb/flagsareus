@@ -144,7 +144,7 @@ function FlagTeaser() {
         </View>
       ) : (
         <View style={s.teaserResult}>
-          <Text style={s.teaserResultText}>
+          <Text style={[s.teaserResultText, picked === question.flag.name ? s.teaserResultCorrect : s.teaserResultWrong]}>
             {picked === question.flag.name ? 'Correct!' : question.flag.name}
           </Text>
           <TouchableOpacity
@@ -686,7 +686,14 @@ const s = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 1,
     textTransform: 'uppercase',
-    color: colors.whiteAlpha70,
+    color: colors.white,
+  },
+  teaserResultCorrect: {
+    color: colors.successTextOnDark,
+  },
+  teaserResultWrong: {
+    color: colors.white,
+    fontSize: 18,
   },
   teaserPlayBtn: {
     flexDirection: 'row',
