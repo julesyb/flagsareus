@@ -295,6 +295,7 @@ const en = {
   onboarding: {
     subtitle: "Let's see where you stand",
     regionTest: '10-flag quiz',
+    flagCount: '{count} flags',
     completed: 'Done',
     startPlaying: 'Start Playing',
     skip: 'Skip',

@@ -279,6 +279,7 @@ const fr: typeof en = {
   onboarding: {
     subtitle: 'Voyons o\u00f9 vous en \u00eates',
     regionTest: 'Quiz de 10 drapeaux',
+    flagCount: '{count} drapeaux',
     completed: 'Termin\u00e9',
     startPlaying: 'Commencer \u00e0 jouer',
     skip: 'Passer',

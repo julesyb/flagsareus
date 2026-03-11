@@ -279,6 +279,7 @@ const de: typeof en = {
   onboarding: {
     subtitle: 'Mal sehen, wo du stehst',
     regionTest: '10-Flaggen-Quiz',
+    flagCount: '{count} Flaggen',
     completed: 'Fertig',
     startPlaying: 'Losspielen',
     skip: '\u00dcberspringen',

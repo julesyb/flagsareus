@@ -279,6 +279,7 @@ const es: typeof en = {
   onboarding: {
     subtitle: 'Veamos tu nivel',
     regionTest: 'Quiz de 10 banderas',
+    flagCount: '{count} banderas',
     completed: 'Hecho',
     startPlaying: 'Empezar a jugar',
     skip: 'Omitir',

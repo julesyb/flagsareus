@@ -279,6 +279,7 @@ const zh: typeof en = {
   onboarding: {
     subtitle: '\u770b\u770b\u4f60\u7684\u6c34\u5e73',
     regionTest: '10\u9898\u6d4b\u8bd5',
+    flagCount: '{count} \u9762\u56fd\u65d7',
     completed: '\u5b8c\u6210',
     startPlaying: '\u5f00\u59cb\u73a9',
     skip: '\u8df3\u8fc7',

@@ -119,7 +119,7 @@ export default function OnboardingScreen({ navigation }: Props) {
                     <Text style={s.regionSub}>
                       {isDone
                         ? `${result!.correct}/${result!.total} - ${result!.accuracy}%`
-                        : `${flagCount} flags - ${t('onboarding.regionTest')}`}
+                        : `${t('onboarding.flagCount', { count: flagCount })} - ${t('onboarding.regionTest')}`}
                     </Text>
                   </View>
                   {isDone ? (

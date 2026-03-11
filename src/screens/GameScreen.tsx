@@ -121,13 +121,19 @@ export default function GameScreen({ route, navigation }: Props) {
     [config.category],
   );
 
+  // Build pairs of { english, display } for suggestion matching on translated names
+  const namePairs = useMemo(
+    () => categoryCountryNames.map((name) => ({ english: name, display: translateName(name) })),
+    [categoryCountryNames],
+  );
+
   const suggestions = useMemo(() => {
     if (!isAutocomplete || textInput.trim().length < 1 || showFeedback) return [];
     const query = textInput.trim().toLowerCase();
-    return categoryCountryNames
-      .filter((name) => name.toLowerCase().includes(query))
+    return namePairs
+      .filter((p) => p.display.toLowerCase().includes(query) || p.english.toLowerCase().includes(query))
       .slice(0, 5);
-  }, [isAutocomplete, textInput, showFeedback, categoryCountryNames]);
+  }, [isAutocomplete, textInput, showFeedback, namePairs]);
   const progress = questions.length > 0 ? (currentIndex + 1) / questions.length : 0;
 
   const goToNext = useCallback(() => {
@@ -345,14 +351,14 @@ export default function GameScreen({ route, navigation }: Props) {
                 keyboardShouldPersistTaps="handled"
                 nestedScrollEnabled
               >
-                {suggestions.map((name) => (
+                {suggestions.map((pair) => (
                   <TouchableOpacity
-                    key={name}
+                    key={pair.english}
                     style={styles.suggestionItem}
-                    onPress={() => handleSelectSuggestion(name)}
+                    onPress={() => handleSelectSuggestion(pair.english)}
                     activeOpacity={0.7}
                   >
-                    <Text style={styles.suggestionText}>{translateName(name)}</Text>
+                    <Text style={styles.suggestionText}>{pair.display}</Text>
                   </TouchableOpacity>
                 ))}
               </ScrollView>

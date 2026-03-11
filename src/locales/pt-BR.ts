@@ -279,6 +279,7 @@ const ptBR: typeof en = {
   onboarding: {
     subtitle: 'Vamos ver seu n\u00edvel',
     regionTest: 'Quiz de 10 bandeiras',
+    flagCount: '{count} bandeiras',
     completed: 'Feito',
     startPlaying: 'Come\u00e7ar a jogar',
     skip: 'Pular',
