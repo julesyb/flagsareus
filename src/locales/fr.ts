@@ -190,6 +190,18 @@ const fr: typeof en = {
     reset: 'R\u00e9initialiser',
   },
 
+  support: {
+    title: 'Soutenez Flag That',
+    subtitle: 'Vous aimez l\'appli ? Regardez une courte vid\u00e9o pour soutenir le d\u00e9veloppement.',
+    watchButton: 'Regarder une courte vid\u00e9o',
+    thankYou: 'Merci pour votre soutien !',
+    totalWatched: '{count} vid\u00e9o vue',
+    totalWatchedPlural: '{count} vid\u00e9os vues',
+    adFailed: 'Aucune vid\u00e9o disponible pour le moment. R\u00e9essayez plus tard.',
+    settingsTitle: 'Soutien',
+    settingsDesc: 'Soutenez Flag That en regardant une courte vid\u00e9o',
+  },
+
   browse: {
     searchPlaceholder: 'Rechercher des drapeaux...',
     all: 'Tous',

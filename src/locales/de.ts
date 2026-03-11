@@ -190,6 +190,18 @@ const de: typeof en = {
     reset: 'Zur\u00fccksetzen',
   },
 
+  support: {
+    title: 'Flag That unterst\u00fctzen',
+    subtitle: 'Gef\u00e4llt dir die App? Schau ein kurzes Video, um die Entwicklung zu unterst\u00fctzen.',
+    watchButton: 'Kurzes Video ansehen',
+    thankYou: 'Danke f\u00fcr deine Unterst\u00fctzung!',
+    totalWatched: '{count} Video angesehen',
+    totalWatchedPlural: '{count} Videos angesehen',
+    adFailed: 'Kein Video verf\u00fcgbar. Versuche es sp\u00e4ter erneut.',
+    settingsTitle: 'Unterst\u00fctzung',
+    settingsDesc: 'Unterst\u00fctze Flag That, indem du ein kurzes Video anschaust',
+  },
+
   browse: {
     searchPlaceholder: 'Flaggen suchen...',
     all: 'Alle',

@@ -7,6 +7,7 @@ const DAY_STREAK_KEY = '@flagsareus_day_streak';
 const DAILY_CHALLENGE_KEY = '@flagsareus_daily_challenge';
 const SETTINGS_KEY = '@flagsareus_settings';
 const BADGE_DATA_KEY = '@flagsareus_badge_data';
+const SUPPORT_KEY = '@flagsareus_support';
 
 // ─── Badge Tracking Data ───────────────────────────────────
 export interface BadgeData {
@@ -313,4 +314,39 @@ export async function getMissedFlagIds(): Promise<string[]> {
     .filter(([, s]) => s.wrong > 0 && s.rightStreak < 3)
     .sort(([, a], [, b]) => b.wrong - a.wrong)
     .map(([id]) => id);
+}
+
+// ─── Support (Opt-in Ad Tracking) ─────────────────────────
+export interface SupportData {
+  totalAdsWatched: number;
+  lastWatchedDate: string | null;
+}
+
+const DEFAULT_SUPPORT: SupportData = {
+  totalAdsWatched: 0,
+  lastWatchedDate: null,
+};
+
+export async function getSupportData(): Promise<SupportData> {
+  try {
+    const json = await AsyncStorage.getItem(SUPPORT_KEY);
+    if (json) return { ...DEFAULT_SUPPORT, ...JSON.parse(json) };
+    return { ...DEFAULT_SUPPORT };
+  } catch {
+    return { ...DEFAULT_SUPPORT };
+  }
+}
+
+export async function recordAdWatched(): Promise<SupportData> {
+  try {
+    const data = await getSupportData();
+    const updated: SupportData = {
+      totalAdsWatched: data.totalAdsWatched + 1,
+      lastWatchedDate: getTodayDate(),
+    };
+    await AsyncStorage.setItem(SUPPORT_KEY, JSON.stringify(updated));
+    return updated;
+  } catch {
+    return { ...DEFAULT_SUPPORT };
+  }
 }

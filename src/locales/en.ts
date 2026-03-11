@@ -197,6 +197,19 @@ const en = {
     reset: 'Reset',
   },
 
+  // ─── Support ───────────────────────────────────────────
+  support: {
+    title: 'Support Flag That',
+    subtitle: 'Enjoying the app? Watch a short video to support development.',
+    watchButton: 'Watch a Short Video',
+    thankYou: 'Thank you for your support!',
+    totalWatched: '{count} video watched',
+    totalWatchedPlural: '{count} videos watched',
+    adFailed: 'No video available right now. Try again later.',
+    settingsTitle: 'Support',
+    settingsDesc: 'Help support Flag That by watching a short video',
+  },
+
   // ─── Browse Screen ──────────────────────────────────────
   browse: {
     searchPlaceholder: 'Search flags...',

@@ -190,6 +190,18 @@ const es: typeof en = {
     reset: 'Restablecer',
   },
 
+  support: {
+    title: 'Apoya Flag That',
+    subtitle: 'Te gusta la app? Mira un video corto para apoyar el desarrollo.',
+    watchButton: 'Ver un video corto',
+    thankYou: 'Gracias por tu apoyo!',
+    totalWatched: '{count} video visto',
+    totalWatchedPlural: '{count} videos vistos',
+    adFailed: 'No hay video disponible ahora. Intenta m\u00e1s tarde.',
+    settingsTitle: 'Apoyo',
+    settingsDesc: 'Ayuda a Flag That viendo un video corto',
+  },
+
   browse: {
     searchPlaceholder: 'Buscar banderas...',
     all: 'Todas',

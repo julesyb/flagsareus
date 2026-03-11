@@ -190,6 +190,18 @@ const zh: typeof en = {
     reset: '\u91cd\u7f6e',
   },
 
+  support: {
+    title: '\u652f\u6301 Flag That',
+    subtitle: '\u559c\u6b22\u8fd9\u4e2a\u5e94\u7528\u5417\uff1f\u89c2\u770b\u4e00\u4e2a\u77ed\u89c6\u9891\u6765\u652f\u6301\u5f00\u53d1\u3002',
+    watchButton: '\u89c2\u770b\u77ed\u89c6\u9891',
+    thankYou: '\u611f\u8c22\u4f60\u7684\u652f\u6301\uff01',
+    totalWatched: '\u5df2\u89c2\u770b{count}\u4e2a\u89c6\u9891',
+    totalWatchedPlural: '\u5df2\u89c2\u770b{count}\u4e2a\u89c6\u9891',
+    adFailed: '\u6682\u65e0\u53ef\u7528\u89c6\u9891\uff0c\u8bf7\u7a0d\u540e\u518d\u8bd5\u3002',
+    settingsTitle: '\u652f\u6301',
+    settingsDesc: '\u89c2\u770b\u77ed\u89c6\u9891\u6765\u652f\u6301 Flag That',
+  },
+
   browse: {
     searchPlaceholder: '\u641c\u7d22\u56fd\u65d7...',
     all: '\u5168\u90e8',

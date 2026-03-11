@@ -190,6 +190,18 @@ const ptBR: typeof en = {
     reset: 'Redefinir',
   },
 
+  support: {
+    title: 'Apoie o Flag That',
+    subtitle: 'Curtindo o app? Assista um v\u00eddeo curto para apoiar o desenvolvimento.',
+    watchButton: 'Assistir um v\u00eddeo curto',
+    thankYou: 'Obrigado pelo seu apoio!',
+    totalWatched: '{count} v\u00eddeo assistido',
+    totalWatchedPlural: '{count} v\u00eddeos assistidos',
+    adFailed: 'Nenhum v\u00eddeo dispon\u00edvel agora. Tente novamente mais tarde.',
+    settingsTitle: 'Apoio',
+    settingsDesc: 'Apoie o Flag That assistindo um v\u00eddeo curto',
+  },
+
   browse: {
     searchPlaceholder: 'Buscar bandeiras...',
     all: 'Todas',

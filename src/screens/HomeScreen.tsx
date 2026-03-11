@@ -22,6 +22,7 @@ import { GameMode, UserStats, GameQuestion } from '../types';
 import { PlayIcon, ChevronRightIcon, ClockIcon, UsersIcon, EyeIcon, CalendarIcon, CrosshairIcon, LightningIcon, GearIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
+import SupportCard from '../components/SupportCard';
 import { t } from '../utils/i18n';
 
 const MODE_KEYS: GameMode[] = ['easy', 'medium', 'hard'];
@@ -484,6 +485,9 @@ export default function HomeScreen({ navigation }: Props) {
             </View>
           </View>
         )}
+
+        {/* ── SUPPORT ── */}
+        {hasPlayed && <SupportCard />}
 
         <View style={{ height: spacing.md }} />
         </View>
