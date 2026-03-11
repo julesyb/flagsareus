@@ -61,13 +61,13 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
   const [timeRemaining, setTimeRemaining] = useState(timeLimit);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-
   const [revealOrder, setRevealOrder] = useState<number[]>(() => generateRevealOrder());
   const [revealedCount, setRevealedCount] = useState(0);
   const revealIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [showSuggestions, setShowSuggestions] = useState(false);
   const allFlagNames = useMemo(() => getAllFlags().map((f) => f.name).sort(), []);
+  const handleAnswerRef = useRef<(answer: string) => void>(() => {});
 
   const { fadeAnim, streakScale, shakeAnim, animateStreak, animateWrong, animateTransition } = useGameAnimations();
 
@@ -125,9 +125,9 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
 
   useEffect(() => {
     if (timeRemaining === 0 && !showFeedback && questions.length > 0) {
-      handleAnswer('');
+      handleAnswerRef.current('');
     }
-  }, [timeRemaining]);
+  }, [timeRemaining, showFeedback, questions.length]);
 
   const currentQuestion = questions[currentIndex];
   const progress = questions.length > 0 ? (currentIndex + 1) / questions.length : 0;
@@ -218,6 +218,8 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
     },
     [showFeedback, currentQuestion, questionStartTime, results, animateStreak, animateWrong, goToNext],
   );
+
+  handleAnswerRef.current = handleAnswer;
 
   const handleSubmit = () => {
     if (textInput.trim().length > 0) {

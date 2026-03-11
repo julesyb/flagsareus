@@ -66,10 +66,20 @@ export default function GameScreen({ route, navigation }: Props) {
     return () => clearInterval(interval);
   }, [isTimeAttack]);
 
+  const pendingResultsRef = useRef<GameResult[] | null>(null);
+  const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // When timeLeft hits 0, navigate to results
   useEffect(() => {
-    if (isTimeAttack && timeLeft === 0 && results.length > 0) {
-      navigation.replace('Results', { results, config });
+    if (isTimeAttack && timeLeft === 0) {
+      const finalResults = pendingResultsRef.current ?? results;
+      if (finalResults.length > 0) {
+        if (autoAdvanceRef.current) {
+          clearTimeout(autoAdvanceRef.current);
+          autoAdvanceRef.current = null;
+        }
+        navigation.replace('Results', { results: finalResults, config });
+      }
     }
   }, [timeLeft]);
 
@@ -77,9 +87,6 @@ export default function GameScreen({ route, navigation }: Props) {
   const isHard = config.mode === 'hard';
   const isMapMode = config.displayMode === 'map';
   const progress = questions.length > 0 ? (currentIndex + 1) / questions.length : 0;
-
-  const pendingResultsRef = useRef<GameResult[] | null>(null);
-  const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const goToNext = useCallback(() => {
     if (autoAdvanceRef.current) {
