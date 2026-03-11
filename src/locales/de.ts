@@ -124,7 +124,7 @@ const de: typeof en = {
     skipped: '\u00dcbersprungen',
     shareTitle: 'Flag That #{number}',
     shareScore: '{correct}/10',
-    shareFooter: 'Kannst du mich schlagen?\nhttps://flagthat.app',
+    shareFooter: 'Kannst du mich schlagen?\n{appUrl}',
     perfectShareNote: 'PERFEKTE PUNKTZAHL!',
     newBest: 'Neuer Rekord',
     badgesUnlocked: 'Abzeichen freigeschaltet',
@@ -385,7 +385,7 @@ const de: typeof en = {
     challengeDesc: 'Teile dein Spiel, damit ein Freund dieselben Flaggen probieren kann',
     enterName: 'Dein Name',
     enterNameDesc: 'Dieser Name wird deinem Gegner angezeigt.',
-    shareMessage: 'Ich hab {correct}/{total} bei Flag That geschafft. Schaffst du mehr?',
+    shareMessage: '{correct}/{total} bei Flag That - schaffst du mehr?',
     headToHead: 'Kopf an Kopf',
     you: 'Du',
     youWin: 'Du gewinnst!',
@@ -399,6 +399,10 @@ const de: typeof en = {
     previewHostScore: '{name} hat {correct}/{total} richtig',
     challengeBack: 'Zur\u00fcckfordern',
     challengeBackDesc: 'Spiel eine neue Runde und sende sie zur\u00fcck',
+    recentChallenges: 'Letzte Herausforderungen',
+    last10: 'Letzte 10',
+    sent: 'Gesendet',
+    received: 'Gespielt',
   },
 };
 

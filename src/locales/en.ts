@@ -129,7 +129,7 @@ const en = {
     skipped: 'Skipped',
     shareTitle: 'Flag That #{number}',
     shareScore: '{correct}/10',
-    shareFooter: 'Can you beat my score?\nhttps://flagthat.app',
+    shareFooter: 'Can you beat my score?\n{appUrl}',
     perfectShareNote: 'PERFECT SCORE!',
     newBest: 'New Best',
     badgesUnlocked: 'Badges Unlocked',
@@ -301,7 +301,7 @@ const en = {
     challengeDesc: 'Share your game so a friend can try the same flags',
     enterName: 'Your name',
     enterNameDesc: 'This will be shown to your opponent.',
-    shareMessage: 'I got {correct}/{total} on Flag That. Think you can beat me?',
+    shareMessage: '{correct}/{total} on Flag That - beat me?',
     headToHead: 'Head to head',
     you: 'You',
     youWin: 'You win!',
@@ -315,6 +315,10 @@ const en = {
     previewHostScore: '{name} got {correct}/{total}',
     challengeBack: 'Challenge Back',
     challengeBackDesc: 'Play a new round and send it back',
+    recentChallenges: 'Recent Challenges',
+    last10: 'Last 10',
+    sent: 'Sent',
+    received: 'Played',
   },
 
   // ─── Notifications ─────────────────────────────────────

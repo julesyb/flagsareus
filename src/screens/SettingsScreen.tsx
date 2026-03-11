@@ -15,7 +15,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import Constants from 'expo-constants';
-import { colors, spacing, typography, fontFamily, fontSize, borderRadius } from '../utils/theme';
+import { colors, spacing, typography, fontFamily, fontSize, borderRadius, APP_URL, APP_DOMAIN } from '../utils/theme';
 import { getSettings, saveSettings, AppSettings, resetStats } from '../utils/storage';
 import {
   setSoundsEnabled,
@@ -287,7 +287,7 @@ export default function SettingsScreen() {
           <View style={styles.settingDivider} />
           <TouchableOpacity
             style={styles.settingRow}
-            onPress={() => Linking.openURL('https://flagthat.app/privacy')}
+            onPress={() => Linking.openURL(`${APP_URL}/privacy`)}
             activeOpacity={0.7}
           >
             <Text style={styles.settingLabel}>{t('settings.privacyPolicy')}</Text>
@@ -296,7 +296,7 @@ export default function SettingsScreen() {
           <View style={styles.settingDivider} />
           <TouchableOpacity
             style={styles.settingRow}
-            onPress={() => Linking.openURL('https://flagthat.app/terms')}
+            onPress={() => Linking.openURL(`${APP_URL}/terms`)}
             activeOpacity={0.7}
           >
             <Text style={styles.settingLabel}>Terms of Service</Text>
@@ -305,7 +305,7 @@ export default function SettingsScreen() {
           <View style={styles.settingDivider} />
           <TouchableOpacity
             style={styles.settingRow}
-            onPress={() => Linking.openURL('mailto:support@flagthat.app')}
+            onPress={() => Linking.openURL(`mailto:support@${APP_DOMAIN}`)}
             activeOpacity={0.7}
           >
             <Text style={styles.settingLabel}>Support</Text>

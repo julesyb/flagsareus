@@ -12,11 +12,10 @@ import {
   Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
+import { colors, spacing, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
 import { RootStackParamList } from '../types/navigation';
-import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName, DecodeResult } from '../utils/challengeCode';
+import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName } from '../utils/challengeCode';
 import { hapticTap, hapticWrong } from '../utils/feedback';
-import { UsersIcon, CheckIcon, CrossIcon } from '../components/Icons';
 import ScreenContainer from '../components/ScreenContainer';
 import BottomNav from '../components/BottomNav';
 import { useNavTabs } from '../hooks/useNavTabs';
@@ -30,35 +29,21 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
   const initialCode = route.params?.code ?? '';
   const [code, setCode] = useState(initialCode);
   const [name, setName] = useState('');
-  const [debouncedCode, setDebouncedCode] = useState(initialCode);
 
-  // Load saved name on mount
   useEffect(() => {
     getChallengeName().then((saved) => {
       if (saved) setName(saved);
     });
   }, []);
 
-  // Debounce code changes (300ms)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedCode(code);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [code]);
-
-  // Decode challenge from debounced code for live preview
-  const decoded: DecodeResult | null = useMemo(() => {
-    const trimmed = debouncedCode.trim();
+  const decoded = useMemo(() => {
+    const trimmed = code.trim();
     if (trimmed.length === 0) return null;
     return decodeChallenge(trimmed);
-  }, [debouncedCode]);
+  }, [code]);
 
   const preview: ChallengeData | null = decoded?.status === 'ok' ? decoded.data : null;
-  const isUnsupported = decoded?.status === 'unsupported';
-
-  const hasValidCode = decoded?.status === 'ok';
-  const canPlay = hasValidCode && name.trim().length > 0;
+  const canPlay = decoded?.status === 'ok' && name.trim().length > 0;
 
   const showError = (msg: string) => {
     hapticWrong();
@@ -90,7 +75,6 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
       return;
     }
 
-    // Save name for next time
     saveChallengeName(name.trim());
 
     const screen: ChallengeScreenName = getScreenForMode(challenge.mode);
@@ -105,11 +89,9 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
       playerName: name.trim(),
     };
 
-    // All ChallengeScreenName screens share the same param shape
     (navigation.replace as (screen: string, params: typeof params) => void)(screen, params);
   };
 
-  const modeLabel = preview ? t(`modes.${preview.mode}`) : '';
   const hostScore = preview
     ? preview.hostResults.filter((r) => r.correct).length
     : 0;
@@ -122,77 +104,53 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         <ScreenContainer>
-          <View style={styles.iconWrap}>
-            <UsersIcon size={28} color={colors.white} />
-          </View>
+          {/* Challenge headline when code is valid */}
+          {preview ? (
+            <View style={styles.headline}>
+              <Text style={styles.headlineScore}>{hostScore}/{preview.flagIds.length}</Text>
+              <Text style={styles.headlineSub}>
+                {t('challenge.previewHostScore', { name: preview.hostName, correct: hostScore, total: preview.flagIds.length })}
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.title}>{t('challenge.joinTitle')}</Text>
+          )}
 
-          <Text style={styles.title}>{t('challenge.joinTitle')}</Text>
-          <Text style={styles.subtitle}>{t('challenge.joinSubtitle')}</Text>
-
-          <View style={styles.form}>
-            <Text style={styles.label}>{t('challenge.yourName')}</Text>
+          {/* Code input - only show if no code pre-filled */}
+          {!initialCode && (
             <TextInput
               style={styles.input}
-              value={name}
-              onChangeText={setName}
-              placeholder={t('challenge.namePlaceholder')}
-              placeholderTextColor={colors.textTertiary}
-              autoCapitalize="words"
-              autoCorrect={false}
-              maxLength={20}
-              returnKeyType="next"
-            />
-
-            <Text style={[styles.label, { marginTop: spacing.lg }]}>{t('challenge.code')}</Text>
-            <TextInput
-              style={[styles.input, styles.codeInput]}
               value={code}
               onChangeText={setCode}
               placeholder={t('challenge.codePlaceholder')}
               placeholderTextColor={colors.textTertiary}
               autoCapitalize="none"
               autoCorrect={false}
-              multiline
-              returnKeyType="done"
-              onSubmitEditing={canPlay ? handlePlay : undefined}
+              returnKeyType="next"
             />
-            <Text style={styles.hint}>{t('challenge.codeHint')}</Text>
-          </View>
-
-          {/* Unsupported format warning */}
-          {isUnsupported && (
-            <View style={[styles.previewCard, { borderColor: colors.accent }]}>
-              <View style={styles.previewHeader}>
-                <CrossIcon size={16} color={colors.accent} />
-                <Text style={[styles.previewHeaderText, { color: colors.accent }]}>{t('challenge.unsupportedCodeShort')}</Text>
-              </View>
-              <Text style={styles.previewLabel}>{t('challenge.unsupportedCode')}</Text>
-            </View>
           )}
 
-          {/* Live preview when a valid code is pasted */}
-          {preview && (
-            <View style={styles.previewCard}>
-              <View style={styles.previewHeader}>
-                <CheckIcon size={16} color={colors.success} />
-                <Text style={styles.previewHeaderText}>{t('challenge.previewValid')}</Text>
-              </View>
-              <View style={styles.previewRow}>
-                <Text style={styles.previewLabel}>{t('challenge.previewMode')}</Text>
-                <Text style={styles.previewValue}>{modeLabel}</Text>
-              </View>
-              <View style={styles.previewRow}>
-                <Text style={styles.previewLabel}>{t('challenge.previewFlags', { count: preview.flagIds.length })}</Text>
-                <Text style={styles.previewValue}>
-                  {t('challenge.previewHostScore', { name: preview.hostName, correct: hostScore, total: preview.flagIds.length })}
-                </Text>
-              </View>
-              {preview.timeLimit > 0 && (
-                <View style={styles.previewRow}>
-                  <Text style={styles.previewLabel}>{t('challenge.previewTimeLimit', { seconds: preview.timeLimit })}</Text>
-                </View>
-              )}
-            </View>
+          {/* Name input */}
+          <TextInput
+            style={styles.input}
+            value={name}
+            onChangeText={setName}
+            placeholder={t('challenge.namePlaceholder')}
+            placeholderTextColor={colors.textTertiary}
+            autoCapitalize="words"
+            autoCorrect={false}
+            maxLength={20}
+            autoFocus={!!initialCode}
+            returnKeyType="done"
+            onSubmitEditing={canPlay ? handlePlay : undefined}
+          />
+
+          {/* Error state */}
+          {code.trim().length > 0 && decoded?.status === 'invalid' && (
+            <Text style={styles.error}>{t('challenge.invalidCode')}</Text>
+          )}
+          {decoded?.status === 'unsupported' && (
+            <Text style={styles.error}>{t('challenge.unsupportedCode')}</Text>
           )}
 
           <TouchableOpacity
@@ -217,17 +175,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing.lg,
-    paddingTop: spacing.xl,
-  },
-  iconWrap: {
-    width: 56,
-    height: 56,
-    backgroundColor: colors.ink,
-    borderRadius: borderRadius.lg,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    marginBottom: spacing.lg,
+    paddingTop: spacing.xxl,
   },
   title: {
     fontFamily: fontFamily.display,
@@ -235,86 +183,45 @@ const styles = StyleSheet.create({
     color: colors.ink,
     textAlign: 'center',
     letterSpacing: -0.5,
+    marginBottom: spacing.lg,
   },
-  subtitle: {
+  headline: {
+    alignItems: 'center',
+    marginBottom: spacing.xl,
+  },
+  headlineScore: {
+    fontFamily: fontFamily.display,
+    fontSize: fontSize.countdown,
+    color: colors.ink,
+    letterSpacing: -2,
+    lineHeight: 80,
+  },
+  headlineSub: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.body,
     color: colors.textSecondary,
-    textAlign: 'center',
-    marginTop: spacing.sm,
-    marginBottom: spacing.xl,
-    lineHeight: 22,
-  },
-  form: {},
-  label: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    color: colors.textTertiary,
-    marginBottom: spacing.sm,
+    marginTop: spacing.xs,
   },
   input: {
     backgroundColor: colors.surface,
     borderWidth: 2,
     borderColor: colors.border,
     borderRadius: borderRadius.md,
-    padding: spacing.lg,
-    ...typography.body,
-    color: colors.text,
-  },
-  codeInput: {
-    minHeight: 80,
-    textAlignVertical: 'top',
+    padding: spacing.md,
     fontFamily: fontFamily.body,
-    fontSize: fontSize.caption,
+    fontSize: fontSize.body,
+    color: colors.text,
+    marginBottom: spacing.sm,
   },
-  hint: {
+  error: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.sm,
-    color: colors.textTertiary,
-    marginTop: spacing.xs,
-  },
-  previewCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 2,
-    borderColor: colors.success,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    marginTop: spacing.lg,
-    gap: spacing.xs,
-  },
-  previewHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    marginBottom: spacing.xs,
-  },
-  previewHeaderText: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    color: colors.success,
-  },
-  previewRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  previewLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.caption,
-    color: colors.textSecondary,
-  },
-  previewValue: {
-    fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.caption,
-    color: colors.ink,
+    color: colors.error,
+    marginBottom: spacing.sm,
   },
   playButton: {
     ...buttons.primary,
-    marginTop: spacing.xl,
+    marginTop: spacing.md,
   },
   playButtonDisabled: {
     backgroundColor: colors.textTertiary,

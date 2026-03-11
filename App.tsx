@@ -31,7 +31,7 @@ import JoinChallengeScreen from './src/screens/JoinChallengeScreen';
 import ErrorBoundary from './src/components/ErrorBoundary';
 import { ChevronLeftIcon } from './src/components/Icons';
 import { RootStackParamList } from './src/types/navigation';
-import { colors, fontFamily, fontSize } from './src/utils/theme';
+import { colors, fontFamily, fontSize, APP_URL } from './src/utils/theme';
 import { configureNotificationHandler, syncNotificationSchedule } from './src/utils/notifications';
 import { initLocale, t } from './src/utils/i18n';
 import { hasCompletedOnboarding } from './src/utils/storage';
@@ -40,7 +40,7 @@ import { initializeAds, requestConsent } from './src/utils/ads';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const linking = {
-  prefixes: ['https://flagthat.app', 'flagthat://'],
+  prefixes: [APP_URL, 'flagthat://'],
   config: {
     screens: {
       JoinChallenge: {

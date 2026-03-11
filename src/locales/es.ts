@@ -124,7 +124,7 @@ const es: typeof en = {
     skipped: 'Omitida',
     shareTitle: 'Flag That #{number}',
     shareScore: '{correct}/10',
-    shareFooter: '\u00bfPuedes superar mi puntuaci\u00f3n?\nhttps://flagthat.app',
+    shareFooter: '\u00bfPuedes superar mi puntuaci\u00f3n?\n{appUrl}',
     perfectShareNote: '\u00a1PUNTUACI\u00d3N PERFECTA!',
     newBest: 'Nuevo record',
     badgesUnlocked: 'Insignias desbloqueadas',
@@ -384,7 +384,7 @@ const es: typeof en = {
     challengeDesc: 'Comparte tu partida para que un amigo pruebe las mismas banderas',
     enterName: 'Tu nombre',
     enterNameDesc: 'Este nombre se mostrar\u00e1 a tu oponente.',
-    shareMessage: 'Hice {correct}/{total} en Flag That. \u00bfPuedes superarme?',
+    shareMessage: '{correct}/{total} en Flag That - supera eso!',
     headToHead: 'Cara a cara',
     you: 'T\u00fa',
     youWin: '\u00a1Ganaste!',
@@ -398,6 +398,10 @@ const es: typeof en = {
     previewHostScore: '{name} obtuvo {correct}/{total}',
     challengeBack: 'Contradesaf\u00edo',
     challengeBackDesc: 'Juega una nueva ronda y env\u00edala de vuelta',
+    recentChallenges: 'Desafios recientes',
+    last10: 'Ultimos 10',
+    sent: 'Enviado',
+    received: 'Jugado',
   },
 };
 
