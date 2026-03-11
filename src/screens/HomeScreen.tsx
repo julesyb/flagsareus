@@ -15,11 +15,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fontFamily, spacing, borderRadius } from '../utils/theme';
 import { getTotalFlagCount } from '../data';
 import { initAudio, hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
-import { getStats, getDayStreak } from '../utils/storage';
-import { generateQuestions } from '../utils/gameEngine';
+import { getStats, getDayStreak, getDailyChallenge, DailyChallengeData } from '../utils/storage';
+import { generateQuestions, getDailyNumber } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion } from '../types';
-import { PlayIcon, ChevronRightIcon, ClockIcon, UsersIcon, EyeIcon, MapPinIcon, LinkIcon } from '../components/Icons';
+import { PlayIcon, ChevronRightIcon, ClockIcon, UsersIcon, EyeIcon, MapPinIcon, LinkIcon, CalendarIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 
@@ -174,6 +174,7 @@ export default function HomeScreen({ navigation }: Props) {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [dayStreak, setDayStreak] = useState(0);
   const [teaserKey, setTeaserKey] = useState(0);
+  const [dailyDone, setDailyDone] = useState<DailyChallengeData | null>(null);
 
   useEffect(() => {
     initAudio();
@@ -183,6 +184,7 @@ export default function HomeScreen({ navigation }: Props) {
     useCallback(() => {
       getStats().then(setStats);
       getDayStreak().then(setDayStreak);
+      getDailyChallenge().then(setDailyDone);
       setTeaserKey((k) => k + 1);
     }, []),
   );
@@ -225,6 +227,40 @@ export default function HomeScreen({ navigation }: Props) {
             )}
           </View>
         </View>
+
+        {/* ── DAILY CHALLENGE ── */}
+        <TouchableOpacity
+          style={[s.dailyCard, dailyDone?.completed && s.dailyCardDone]}
+          activeOpacity={0.85}
+          onPress={() => {
+            hapticTap();
+            if (!dailyDone?.completed) {
+              navigation.navigate('Game', {
+                config: { mode: 'daily', category: 'all', questionCount: 10, displayMode: 'flag' },
+              });
+            }
+          }}
+          disabled={dailyDone?.completed}
+        >
+          <View style={s.dailyLeft}>
+            <CalendarIcon size={18} color={dailyDone?.completed ? colors.textTertiary : colors.accent} />
+          </View>
+          <View style={s.dailyContent}>
+            <Text style={[s.dailyTitle, dailyDone?.completed && s.dailyTitleDone]}>
+              Daily #{getDailyNumber()}
+            </Text>
+            <Text style={s.dailySub}>
+              {dailyDone?.completed
+                ? `${dailyDone.score}/10 - Come back tomorrow`
+                : '10 flags, same for everyone'}
+            </Text>
+          </View>
+          {dailyDone?.completed ? (
+            <Text style={s.dailyScore}>{dailyDone.score}/10</Text>
+          ) : (
+            <ChevronRightIcon size={18} color={colors.accent} />
+          )}
+        </TouchableOpacity>
 
         {/* ── FLAG TEASER ── */}
         <FlagTeaser key={teaserKey} />
@@ -493,6 +529,56 @@ const s = StyleSheet.create({
     textTransform: 'uppercase',
     color: colors.textTertiary,
     marginTop: 1,
+  },
+
+  // ── Daily Challenge
+  dailyCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderWidth: 2,
+    borderColor: colors.accent,
+    borderRadius: borderRadius.lg,
+    padding: 14,
+    paddingHorizontal: 16,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md,
+    gap: 12,
+  },
+  dailyCardDone: {
+    borderColor: colors.rule,
+    opacity: 0.7,
+  },
+  dailyLeft: {
+    width: 40,
+    height: 40,
+    backgroundColor: colors.accentBg,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dailyContent: {
+    flex: 1,
+  },
+  dailyTitle: {
+    fontFamily: fontFamily.bodyBold,
+    fontSize: 15,
+    color: colors.ink,
+    marginBottom: 2,
+  },
+  dailyTitleDone: {
+    color: colors.textTertiary,
+  },
+  dailySub: {
+    fontFamily: fontFamily.body,
+    fontSize: 12,
+    color: colors.textTertiary,
+    lineHeight: 16,
+  },
+  dailyScore: {
+    fontFamily: fontFamily.display,
+    fontSize: 20,
+    color: colors.textTertiary,
   },
 
   // ── Hero flag teaser

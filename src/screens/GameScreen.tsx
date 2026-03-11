@@ -14,7 +14,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, nav, buttons, borderRadius } from '../utils/theme';
 import { GameQuestion, GameResult } from '../types';
-import { generateQuestions, checkAnswer } from '../utils/gameEngine';
+import { generateQuestions, generateDailyQuestions, checkAnswer } from '../utils/gameEngine';
 import { hapticCorrect, hapticWrong, hapticTap, playWrongSound } from '../utils/feedback';
 import FlagImage from '../components/FlagImage';
 import MapImage from '../components/MapImage';
@@ -46,10 +46,15 @@ export default function GameScreen({ route, navigation }: Props) {
   const { fadeAnim, streakScale, shakeAnim, animateStreak, animateWrong, animateTransition } = useGameAnimations();
 
   useEffect(() => {
-    const timeAttackConfig = isTimeAttack
-      ? { ...config, questionCount: 999 }
-      : config;
-    const q = generateQuestions(timeAttackConfig);
+    let q: GameQuestion[];
+    if (config.mode === 'daily') {
+      q = generateDailyQuestions();
+    } else {
+      const timeAttackConfig = isTimeAttack
+        ? { ...config, questionCount: 999 }
+        : config;
+      q = generateQuestions(timeAttackConfig);
+    }
     setQuestions(q);
     setQuestionStartTime(Date.now());
   }, []);
@@ -407,7 +412,9 @@ export default function GameScreen({ route, navigation }: Props) {
             {lastAnswerCorrect ? (
               <Text style={styles.feedbackCorrect} accessibilityLiveRegion="polite">Correct!</Text>
             ) : (
-              <Text style={styles.feedbackWrong} accessibilityLiveRegion="polite">Wrong</Text>
+              <Text style={styles.feedbackWrong} accessibilityLiveRegion="polite">
+                {currentQuestion.flag.name}
+              </Text>
             )}
           </View>
         )}
