@@ -19,7 +19,7 @@ import { getStats, getDayStreak, getSettings, getMissedFlagIds, getBaselineData,
 import { generateQuestions } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion, CategoryId } from '../types';
-import { PlayIcon, ChevronRightIcon, ChevronDownIcon, ClockIcon, UsersIcon, EyeIcon, CrosshairIcon, LightningIcon, GearIcon, PuzzleIcon, CheckIcon } from '../components/Icons';
+import { PlayIcon, ChevronRightIcon, ChevronDownIcon, ClockIcon, EyeIcon, CrosshairIcon, GearIcon, PuzzleIcon, CheckIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
@@ -408,66 +408,6 @@ export default function HomeScreen({ navigation }: Props) {
             activeOpacity={0.85}
             onPress={() => {
               hapticTap();
-              navigation.navigate('Game', {
-                config: { mode: 'timeattack', category: 'all', questionCount: 999, timeLimit: 60, displayMode: 'flag' },
-              });
-            }}
-          >
-            <View style={[s.modeIcon, { backgroundColor: colors.teal }]}>
-              <ClockIcon size={18} color={colors.white} />
-            </View>
-            <View style={s.modeText}>
-              <Text style={s.modeTitle}>{t('home.timedQuiz')}</Text>
-              <Text style={s.modeSub}>{t('home.timedQuizDesc')}</Text>
-            </View>
-            <ChevronRightIcon size={18} color={colors.rule} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={s.modeCard}
-            activeOpacity={0.85}
-            onPress={() => {
-              hapticTap();
-              navigation.navigate('FlagFlash', {
-                config: { mode: 'flagflash', category: 'all', questionCount: 999, timeLimit: 60, displayMode: 'flag' },
-              });
-            }}
-          >
-            <View style={[s.modeIcon, { backgroundColor: colors.amber }]}>
-              <LightningIcon size={18} color={colors.white} />
-            </View>
-            <View style={s.modeText}>
-              <Text style={s.modeTitle}>FlagFlash</Text>
-              <Text style={s.modeSub}>Party mode - tilt your phone to play</Text>
-            </View>
-            <ChevronRightIcon size={18} color={colors.rule} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={s.modeCard}
-            activeOpacity={0.85}
-            onPress={() => {
-              hapticTap();
-              navigation.navigate('Neighbors', {
-                config: { mode: 'neighbors', category: 'all', questionCount: 10, displayMode: 'flag' },
-              });
-            }}
-          >
-            <View style={[s.modeIcon, { backgroundColor: colors.blue }]}>
-              <UsersIcon size={18} color={colors.white} />
-            </View>
-            <View style={s.modeText}>
-              <Text style={s.modeTitle}>{t('home.neighbors')}</Text>
-              <Text style={s.modeSub}>{t('home.neighborsDesc')}</Text>
-            </View>
-            <ChevronRightIcon size={18} color={colors.rule} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={s.modeCard}
-            activeOpacity={0.85}
-            onPress={() => {
-              hapticTap();
               navigation.navigate('FlagImpostor', {
                 config: { mode: 'impostor', category: 'all', questionCount: 10, displayMode: 'flag' },
               });
@@ -479,6 +419,26 @@ export default function HomeScreen({ navigation }: Props) {
             <View style={s.modeText}>
               <Text style={s.modeTitle}>{t('home.flagImpostor')}</Text>
               <Text style={s.modeSub}>{t('home.flagImpostorDesc')}</Text>
+            </View>
+            <ChevronRightIcon size={18} color={colors.rule} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={s.modeCard}
+            activeOpacity={0.85}
+            onPress={() => {
+              hapticTap();
+              navigation.navigate('Game', {
+                config: { mode: 'timeattack', category: 'all', questionCount: 999, timeLimit: 60, displayMode: 'flag' },
+              });
+            }}
+          >
+            <View style={[s.modeIcon, { backgroundColor: colors.teal }]}>
+              <ClockIcon size={18} color={colors.white} />
+            </View>
+            <View style={s.modeText}>
+              <Text style={s.modeTitle}>{t('home.timedQuiz')}</Text>
+              <Text style={s.modeSub}>{t('home.timedQuizDesc')}</Text>
             </View>
             <ChevronRightIcon size={18} color={colors.rule} />
           </TouchableOpacity>
