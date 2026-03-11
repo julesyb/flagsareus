@@ -245,16 +245,21 @@ export default function HomeScreen({ navigation }: Props) {
           activeOpacity={0.85}
           onPress={() => {
             hapticTap();
-            if (!dailyDone?.completed) {
+            if (dailyDone?.completed && dailyDone.results) {
+              navigation.navigate('Results', {
+                results: dailyDone.results,
+                config: { mode: 'daily', category: 'all', questionCount: 10, displayMode: 'flag' },
+                reviewOnly: true,
+              });
+            } else {
               navigation.navigate('Game', {
                 config: { mode: 'daily', category: 'all', questionCount: 10, displayMode: 'flag' },
               });
             }
           }}
-          disabled={dailyDone?.completed}
         >
           <View style={s.dailyLeft}>
-            <CalendarIcon size={18} color={dailyDone?.completed ? colors.textTertiary : colors.accent} />
+            <CalendarIcon size={18} color={dailyDone?.completed ? colors.success : colors.accent} />
           </View>
           <View style={s.dailyContent}>
             <Text style={[s.dailyTitle, dailyDone?.completed && s.dailyTitleDone]}>
@@ -588,8 +593,7 @@ const s = StyleSheet.create({
     gap: spacing.md,
   },
   dailyCardDone: {
-    borderColor: colors.rule,
-    opacity: 0.7,
+    borderColor: colors.success,
   },
   dailyLeft: {
     width: 40,

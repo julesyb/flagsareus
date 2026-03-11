@@ -7,20 +7,19 @@ import {
   ScrollView,
   SafeAreaView,
   ActivityIndicator,
-  Share,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { colors, spacing, fontFamily, borderRadius } from '../utils/theme';
-import { UserStats, GAME_MODES, GameMode } from '../types';
-import { getStats, getFlagStats, FlagStats, getDayStreak, markShared, getBadgeData, getMissedFlagIds, BadgeData } from '../utils/storage';
+import { UserStats } from '../types';
+import { getStats, getFlagStats, FlagStats, getDayStreak, getBadgeData, getMissedFlagIds, BadgeData } from '../utils/storage';
 import { getAllFlags, getTotalFlagCount } from '../data';
-import { hapticTap } from '../utils/feedback';
 import { t } from '../utils/i18n';
 import { FlagImageSmall } from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
-import { evaluateBadges, BADGES, TIER_COLORS } from '../utils/badges';
+import { evaluateBadges, BADGES, TIER_COLORS, BadgeIcon } from '../utils/badges';
+import { FlagIcon, GlobeIcon, CheckIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon } from '../components/Icons';
 
 const RANK_COLORS = [colors.gradeS, colors.textTertiary, colors.warning];
 
@@ -143,24 +142,24 @@ export default function StatsScreen() {
       : 0;
   const progressPct = totalFlags > 0 ? Math.round((countriesSeen / totalFlags) * 100) : 0;
 
-  const handleShare = async () => {
-    hapticTap();
-    const message =
-      `Flag That\n\n` +
-      `${stats.bestStreak} streak | ${overallAccuracy}% accuracy\n` +
-      `${countriesSeen}/${totalFlags} countries\n` +
-      `${stats.totalGamesPlayed} games played\n\n` +
-      `Can you beat this?\nhttps://flagthat.app`;
+  const earnedIds = new Set(earnedBadges.map((b) => b.id));
 
-    try {
-      await Share.share({ message });
-      markShared();
-    } catch {
-      // Share cancelled
+  const renderBadgeIcon = (icon: BadgeIcon, earned: boolean, tierColor: string) => {
+    const iconColor = earned ? tierColor : colors.textTertiary;
+    const size = 18;
+    switch (icon) {
+      case 'flag': return <FlagIcon size={size} color={iconColor} />;
+      case 'globe': return <GlobeIcon size={size} color={iconColor} />;
+      case 'check': return <CheckIcon size={size} color={iconColor} />;
+      case 'play': return <PlayIcon size={size} color={iconColor} />;
+      case 'lightning': return <LightningIcon size={size} color={iconColor} />;
+      case 'calendar': return <CalendarIcon size={size} color={iconColor} />;
+      case 'clock': return <ClockIcon size={size} color={iconColor} />;
+      case 'crosshair': return <CrosshairIcon size={size} color={iconColor} />;
+      case 'link': return <LinkIcon size={size} color={iconColor} />;
+      default: return <FlagIcon size={size} color={iconColor} />;
     }
   };
-
-  const earnedIds = new Set(earnedBadges.map((b) => b.id));
 
   const accuracyLabel =
     overallAccuracy === 100 ? t('stats.perfect') :
@@ -175,33 +174,6 @@ export default function StatsScreen() {
         contentContainerStyle={s.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── CHALLENGE CARD ── */}
-        <View style={s.challengeCard}>
-          <Text style={s.cardEyebrow}>{t('stats.yourResults')}</Text>
-          <Text style={s.cardHeadline}>
-            {t('stats.streakAcc', { streak: stats.bestStreak, accuracy: overallAccuracy })}
-          </Text>
-          <Text style={s.cardSub}>
-            {t('stats.countriesGames', { countries: countriesSeen, games: stats.totalGamesPlayed })}
-          </Text>
-          <View style={s.cardPills}>
-            <View style={s.pill}>
-              <Text style={s.pillText}><Text style={s.pillBold}>{stats.bestStreak}</Text> {t('stats.bestStreak')}</Text>
-            </View>
-            {dayStreak > 0 && (
-              <View style={s.pill}>
-                <Text style={s.pillText}><Text style={s.pillBold}>{dayStreak}</Text> {t('stats.dayStreak')}</Text>
-              </View>
-            )}
-            <View style={s.pill}>
-              <Text style={s.pillText}><Text style={s.pillBold}>{countriesSeen}/{totalFlags}</Text> {t('home.countries')}</Text>
-            </View>
-          </View>
-          <TouchableOpacity style={s.shareBtn} onPress={handleShare} activeOpacity={0.85}>
-            <Text style={s.shareBtnText}>{t('common.share')}</Text>
-          </TouchableOpacity>
-        </View>
-
         {/* ── STAT TILES ── */}
         <View style={s.tileGrid}>
           <View style={s.tileRow}>
@@ -259,40 +231,18 @@ export default function StatsScreen() {
         <View style={s.badgeGrid}>
           {BADGES.map((badge) => {
             const earned = earnedIds.has(badge.id);
+            const tierColor = TIER_COLORS[badge.tier];
             return (
               <View key={badge.id} style={[s.badgeCard, !earned && s.badgeCardLocked]}>
-                <View style={[s.badgeTierDot, { backgroundColor: earned ? TIER_COLORS[badge.tier] : colors.rule }]} />
+                <View style={[s.badgeIconWrap, { backgroundColor: earned ? tierColor + '18' : colors.surfaceSecondary }]}>
+                  {renderBadgeIcon(badge.icon, earned, tierColor)}
+                </View>
                 <Text style={[s.badgeName, !earned && s.badgeNameLocked]}>{badge.name}</Text>
                 <Text style={[s.badgeDesc, !earned && s.badgeDescLocked]}>{badge.description}</Text>
               </View>
             );
           })}
         </View>
-
-        {/* ── BY MODE ── */}
-        <Text style={s.sectionTitle}>{t('stats.byMode')}</Text>
-        {(Object.keys(GAME_MODES) as GameMode[])
-          .filter((m) => !GAME_MODES[m].hidden && m !== 'daily' && m !== 'practice')
-          .map((m) => {
-            const ms = stats.modeStats[m] ?? { correct: 0, total: 0 };
-            const acc = ms.total > 0 ? Math.round((ms.correct / ms.total) * 100) : 0;
-            const played = ms.total > 0;
-            return (
-              <View key={m} style={s.modeCard}>
-                <View style={{ flex: 1 }}>
-                  <Text style={s.modeName}>{t(`modes.${m}`)}</Text>
-                  <Text style={s.modeDetail}>
-                    {played ? t('stats.modeCorrect', { correct: ms.correct, total: ms.total, pct: acc }) : t('stats.notPlayedYet')}
-                  </Text>
-                </View>
-                <View style={[s.badge, played ? s.badgePlayed : s.badgeUnplayed]}>
-                  <Text style={[s.badgeText, played ? s.badgeTextPlayed : s.badgeTextUnplayed]}>
-                    {played ? `${acc}%` : t('common.new')}
-                  </Text>
-                </View>
-              </View>
-            );
-          })}
 
         {/* ── TOP 10 ── */}
         {top10.length > 0 && (
@@ -356,73 +306,6 @@ const s = StyleSheet.create({
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   loadingText: { fontFamily: fontFamily.body, fontSize: 18, color: colors.textSecondary },
   content: { padding: spacing.md, paddingBottom: spacing.xxl },
-
-  // ── Challenge Card
-  challengeCard: {
-    backgroundColor: colors.ink,
-    borderRadius: borderRadius.xl,
-    padding: 24,
-    marginBottom: spacing.md,
-  },
-  cardEyebrow: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: 11,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    color: colors.accent,
-    marginBottom: 10,
-  },
-  cardHeadline: {
-    fontFamily: fontFamily.display,
-    fontSize: 40,
-    lineHeight: 42,
-    color: colors.white,
-    letterSpacing: -0.5,
-  },
-  cardSub: {
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    color: colors.whiteAlpha45,
-    marginTop: 8,
-  },
-  cardPills: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 18,
-  },
-  pill: {
-    backgroundColor: colors.darkSurface,
-    borderWidth: 1,
-    borderColor: colors.darkBorder,
-    borderRadius: borderRadius.full,
-    paddingVertical: 5,
-    paddingHorizontal: 12,
-  },
-  pillText: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 13,
-    color: colors.whiteAlpha60,
-  },
-  pillBold: {
-    fontFamily: fontFamily.bodyBold,
-    color: colors.white,
-  },
-  shareBtn: {
-    backgroundColor: colors.accent,
-    borderRadius: borderRadius.full,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignSelf: 'flex-start',
-    marginTop: 18,
-  },
-  shareBtnText: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: 14,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-    color: colors.white,
-  },
 
   // ── Tile Grid
   tileGrid: { gap: 8, marginBottom: spacing.md },
@@ -521,46 +404,6 @@ const s = StyleSheet.create({
     color: colors.textTertiary,
   },
 
-  // ── Mode Cards
-  modeCard: {
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 14,
-    paddingHorizontal: 16,
-    marginBottom: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  modeName: {
-    fontFamily: fontFamily.bodyBold,
-    fontSize: 16,
-    color: colors.ink,
-  },
-  modeDetail: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.textTertiary,
-    marginTop: 2,
-  },
-  badge: {
-    borderRadius: borderRadius.full,
-    paddingVertical: 5,
-    paddingHorizontal: 11,
-  },
-  badgePlayed: { backgroundColor: colors.successBg },
-  badgeUnplayed: { backgroundColor: colors.surfaceSecondary },
-  badgeText: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: 12,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
-  badgeTextPlayed: { color: colors.success },
-  badgeTextUnplayed: { color: colors.textTertiary },
-
   // ── Rank Rows
   rankRow: {
     backgroundColor: colors.surface,
@@ -622,11 +465,13 @@ const s = StyleSheet.create({
   badgeCardLocked: {
     opacity: 0.45,
   },
-  badgeTierDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginBottom: 8,
+  badgeIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   badgeName: {
     fontFamily: fontFamily.bodyBold,

@@ -24,7 +24,7 @@ import { RootStackParamList } from '../types/navigation';
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
 
 export default function ResultsScreen({ route, navigation }: Props) {
-  const { results, config } = route.params;
+  const { results, config, reviewOnly } = route.params;
   const correct = results.filter((r) => r.correct).length;
   const accuracy = calculateAccuracy(results);
   const streak = getStreakFromResults(results);
@@ -40,12 +40,14 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const isDaily = config.mode === 'daily';
 
   useEffect(() => {
-    updateStats(correct, results.length, streak, config.mode, config.category);
-    updateFlagResults(results);
-    updateLastGameBadgeFlags(correct, results.length);
-    if (isDaily) {
-      saveDailyChallenge(results);
-      incrementDailyChallenges();
+    if (!reviewOnly) {
+      updateStats(correct, results.length, streak, config.mode, config.category);
+      updateFlagResults(results);
+      updateLastGameBadgeFlags(correct, results.length);
+      if (isDaily) {
+        saveDailyChallenge(results);
+        incrementDailyChallenges();
+      }
     }
 
     Animated.spring(gradeScale, {
