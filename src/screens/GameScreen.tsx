@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,6 @@ import { generateQuestions, checkAnswer } from '../utils/gameEngine';
 import { hapticCorrect, hapticWrong, hapticTap, playCorrectSound, playWrongSound } from '../utils/feedback';
 import FlagImage from '../components/FlagImage';
 import MapImage from '../components/MapImage';
-import GameTopBar from '../components/GameTopBar';
 import { useGameAnimations } from '../hooks/useGameAnimations';
 import { getFlagByName } from '../data';
 import { RootStackParamList } from '../types/navigation';
@@ -78,11 +77,6 @@ export default function GameScreen({ route, navigation }: Props) {
   const isHard = config.mode === 'hard';
   const isMapMode = config.displayMode === 'map';
   const progress = questions.length > 0 ? (currentIndex + 1) / questions.length : 0;
-
-  const correctCount = useMemo(
-    () => results.filter((r) => r.correct).length,
-    [results],
-  );
 
   const pendingResultsRef = useRef<GameResult[] | null>(null);
   const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);

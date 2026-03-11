@@ -378,7 +378,7 @@ export default function GameSetupScreen({ navigation }: Props) {
           onPress={startGame}
           activeOpacity={0.8}
           accessibilityRole="button"
-          accessibilityLabel={isFlagFlash ? 'Start FlagFlash' : isFlagPuzzle ? 'Start Flag Puzzle' : 'Start Game'}
+          accessibilityLabel={isTimeAttack ? 'Start Timed Quiz' : isFlagFlash ? 'Start FlagFlash' : isFlagPuzzle ? 'Start Flag Puzzle' : 'Start Game'}
         >
           <Text style={styles.startButtonText}>
             {isTimeAttack

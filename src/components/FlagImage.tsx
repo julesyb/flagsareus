@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   placeholderText: {
-    fontFamily: 'BarlowCondensed_600SemiBold',
+    fontFamily: fontFamily.uiLabelMedium,
     fontSize: 12,
     letterSpacing: 1,
     color: colors.textTertiary,

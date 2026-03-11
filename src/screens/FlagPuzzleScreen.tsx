@@ -17,7 +17,6 @@ import { GameQuestion, GameResult } from '../types';
 import { generateQuestions, checkAnswer } from '../utils/gameEngine';
 import { hapticCorrect, hapticWrong, hapticTap, playCorrectSound, playWrongSound } from '../utils/feedback';
 import FlagImage from '../components/FlagImage';
-import GameTopBar from '../components/GameTopBar';
 import { useGameAnimations } from '../hooks/useGameAnimations';
 import { getAllFlags } from '../data';
 import { RootStackParamList } from '../types/navigation';
@@ -131,11 +130,6 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
 
   const currentQuestion = questions[currentIndex];
   const progress = questions.length > 0 ? (currentIndex + 1) / questions.length : 0;
-
-  const correctCount = useMemo(
-    () => results.filter((r) => r.correct).length,
-    [results],
-  );
 
   const revealedTiles = useMemo(() => {
     const set = new Set<number>();
