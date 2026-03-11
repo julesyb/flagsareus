@@ -137,6 +137,8 @@ export default function ResultsScreen({ route, navigation }: Props) {
           style={styles.shareButton}
           onPress={handleShare}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel="Share results"
         >
           <Text style={styles.shareButtonText}>Share Results</Text>
         </TouchableOpacity>
@@ -174,6 +176,8 @@ export default function ResultsScreen({ route, navigation }: Props) {
             style={styles.secondaryButton}
             onPress={() => navigation.popToTop()}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Go home"
           >
             <Text style={styles.secondaryButtonText}>Home</Text>
           </TouchableOpacity>
@@ -181,6 +185,8 @@ export default function ResultsScreen({ route, navigation }: Props) {
             style={styles.primaryButton}
             onPress={playAgain}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Play again"
           >
             <Text style={styles.primaryButtonText}>Play Again</Text>
           </TouchableOpacity>

@@ -161,7 +161,6 @@ function FlagTeaser() {
   );
 }
 
-// ─── Main Screen ─────────────────────────────────────────────
 export default function HomeScreen({ navigation }: Props) {
   const totalFlags = getTotalFlagCount();
   const [mode, setMode] = useState<GameMode>('medium');

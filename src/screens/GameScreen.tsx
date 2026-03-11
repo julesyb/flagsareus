@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import { generateQuestions, checkAnswer } from '../utils/gameEngine';
 import { hapticCorrect, hapticWrong, hapticTap, playCorrectSound, playWrongSound } from '../utils/feedback';
 import FlagImage from '../components/FlagImage';
 import MapImage from '../components/MapImage';
+import GameTopBar from '../components/GameTopBar';
+import { useGameAnimations } from '../hooks/useGameAnimations';
 import { getFlagByName } from '../data';
 import { RootStackParamList } from '../types/navigation';
 
@@ -74,25 +76,10 @@ export default function GameScreen({ route, navigation }: Props) {
   const isMapMode = config.displayMode === 'map';
   const progress = questions.length > 0 ? (currentIndex + 1) / questions.length : 0;
 
-  const animateStreak = () => {
-    streakScale.setValue(1.5);
-    Animated.spring(streakScale, {
-      toValue: 1,
-      friction: 3,
-      tension: 150,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const animateWrong = () => {
-    Animated.sequence([
-      Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -10, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 8, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -8, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 0, duration: 50, useNativeDriver: true }),
-    ]).start();
-  };
+  const correctCount = useMemo(
+    () => results.filter((r) => r.correct).length,
+    [results],
+  );
 
   const handleAnswer = useCallback(
     (answer: string) => {
@@ -133,19 +120,7 @@ export default function GameScreen({ route, navigation }: Props) {
 
       setTimeout(() => {
         if (currentIndex < questions.length - 1) {
-          Animated.sequence([
-            Animated.timing(fadeAnim, {
-              toValue: 0,
-              duration: 150,
-              useNativeDriver: true,
-            }),
-            Animated.timing(fadeAnim, {
-              toValue: 1,
-              duration: 150,
-              useNativeDriver: true,
-            }),
-          ]).start();
-
+          animateTransition();
           setResults(newResults);
           setCurrentIndex((i) => i + 1);
           setSelectedAnswer(null);
@@ -236,10 +211,7 @@ export default function GameScreen({ route, navigation }: Props) {
       >
         <View style={styles.flagContainer}>
           {isMapMode ? (
-            <MapImage
-              countryCode={currentQuestion.flag.id}
-              size="hero"
-            />
+            <MapImage countryCode={currentQuestion.flag.id} size="hero" />
           ) : (
             <FlagImage
               countryCode={currentQuestion.flag.id}
@@ -272,6 +244,7 @@ export default function GameScreen({ route, navigation }: Props) {
               returnKeyType="done"
               onSubmitEditing={handleSubmitHard}
               editable={!showFeedback}
+              accessibilityLabel="Type your answer"
             />
             <TouchableOpacity
               style={[
@@ -281,6 +254,8 @@ export default function GameScreen({ route, navigation }: Props) {
               onPress={handleSubmitHard}
               disabled={textInput.trim().length === 0 || showFeedback}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel="Submit answer"
             >
               <Text style={styles.submitButtonText}>Submit</Text>
             </TouchableOpacity>
@@ -316,6 +291,8 @@ export default function GameScreen({ route, navigation }: Props) {
                   onPress={() => handleAnswer(option)}
                   disabled={showFeedback}
                   activeOpacity={0.7}
+                  accessibilityRole="button"
+                  accessibilityLabel={isMapMode && optionFlag ? optionFlag.name : option}
                 >
                   {isMapMode && optionFlag ? (
                     <FlagImage
@@ -335,9 +312,9 @@ export default function GameScreen({ route, navigation }: Props) {
         {showFeedback && (
           <View style={styles.feedbackContainer}>
             {lastAnswerCorrect ? (
-              <Text style={styles.feedbackCorrect}>Correct!</Text>
+              <Text style={styles.feedbackCorrect} accessibilityLiveRegion="polite">Correct!</Text>
             ) : (
-              <Text style={styles.feedbackWrong}>
+              <Text style={styles.feedbackWrong} accessibilityLiveRegion="polite">
                 It was {currentQuestion.flag.name}
               </Text>
             )}
