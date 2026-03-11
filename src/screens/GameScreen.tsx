@@ -230,23 +230,33 @@ export default function GameScreen({ route, navigation }: Props) {
     handleAnswer(name);
   };
 
-  // Keyboard shortcuts for web (1-4 to select options in multiple-choice mode)
+  // Keyboard shortcuts for web
   useEffect(() => {
-    if (Platform.OS !== 'web' || isHard) return;
+    if (Platform.OS !== 'web') return;
     const handler = (e: KeyboardEvent) => {
-      if (showFeedback) return;
-      const key = e.key;
-      if (key >= '1' && key <= '4' && currentQuestion) {
-        const idx = parseInt(key, 10) - 1;
-        if (idx < currentQuestion.options.length) {
-          e.preventDefault();
-          handleAnswer(currentQuestion.options[idx]);
+      // When feedback is showing, Enter/Space advances to next
+      if (showFeedback && (e.key === 'Enter' || e.key === ' ')) {
+        // Don't intercept Enter in hard mode input
+        if (isHard && e.key === 'Enter') return;
+        e.preventDefault();
+        goToNext();
+        return;
+      }
+      // 1-4 to select options in multiple-choice mode
+      if (!isHard && !showFeedback) {
+        const key = e.key;
+        if (key >= '1' && key <= '4' && currentQuestion) {
+          const idx = parseInt(key, 10) - 1;
+          if (idx < currentQuestion.options.length) {
+            e.preventDefault();
+            handleAnswer(currentQuestion.options[idx]);
+          }
         }
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [showFeedback, currentQuestion, handleAnswer, isHard]);
+  }, [showFeedback, currentQuestion, handleAnswer, isHard, goToNext]);
 
   if (questions.length === 0) {
     return (

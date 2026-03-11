@@ -16,6 +16,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import Constants from 'expo-constants';
 import { colors, spacing, typography, fontFamily, fontSize, borderRadius } from '../utils/theme';
+import { useLayout } from '../utils/useLayout';
 import { getSettings, saveSettings, AppSettings, resetStats } from '../utils/storage';
 import {
   setSoundsEnabled,
@@ -31,6 +32,7 @@ import { useNavTabs } from '../hooks/useNavTabs';
 export default function SettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const onNavigate = useNavTabs();
+  const { isDesktop } = useLayout();
   const [settings, setSettings] = useState<AppSettings>({
     soundEnabled: true,
     hapticsEnabled: true,
@@ -159,6 +161,9 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <ScreenContainer>
+        <View style={isDesktop ? styles.settingsGrid : undefined}>
+        {/* Column 1 on desktop */}
+        <View style={isDesktop ? styles.settingsCol : undefined}>
         {/* Sound & Haptics */}
         <Text style={styles.sectionTitle}>{t('settings.soundHaptics')}</Text>
 
@@ -237,6 +242,7 @@ export default function SettingsScreen() {
         {/* Language */}
         <Text style={styles.sectionTitle}>{t('settings.language')}</Text>
 
+
         <View style={styles.settingCard}>
           <TouchableOpacity
             style={styles.settingRow}
@@ -276,6 +282,9 @@ export default function SettingsScreen() {
           )}
         </View>
 
+        </View>
+        {/* Column 2 on desktop */}
+        <View style={isDesktop ? styles.settingsCol : undefined}>
         {/* About */}
         <Text style={styles.sectionTitle}>{t('settings.about')}</Text>
 
@@ -323,6 +332,8 @@ export default function SettingsScreen() {
         >
           <Text style={styles.resetButtonText}>{t('settings.resetAllData')}</Text>
         </TouchableOpacity>
+        </View>
+        </View>
         </ScreenContainer>
       </ScrollView>
       <BottomNav activeTab="Play" onNavigate={onNavigate} />
@@ -338,6 +349,13 @@ const styles = StyleSheet.create({
   content: {
     padding: spacing.lg,
     paddingBottom: spacing.xxl,
+  },
+  settingsGrid: {
+    flexDirection: 'row',
+    gap: spacing.xl,
+  },
+  settingsCol: {
+    flex: 1,
   },
   sectionTitle: {
     fontFamily: fontFamily.uiLabel,

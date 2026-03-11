@@ -10,10 +10,11 @@ import {
   Keyboard,
   ScrollView,
   ActivityIndicator,
-  useWindowDimensions,
+  Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, typography, fontFamily, buttons, borderRadius, nav } from '../utils/theme';
+import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius, nav } from '../utils/theme';
+import { useLayout } from '../utils/useLayout';
 import { GameQuestion, GameResult } from '../types';
 import { generateQuestions, checkAnswer } from '../utils/gameEngine';
 import { hapticCorrect, hapticWrong, hapticTap, playWrongSound } from '../utils/feedback';
@@ -45,10 +46,10 @@ function generateRevealOrder(): number[] {
 export default function FlagPuzzleScreen({ route, navigation }: Props) {
   const { config } = route.params;
   const timeLimit = config.timeLimit || 15;
-  const { width: screenWidth } = useWindowDimensions();
+  const { screenWidth, isDesktop } = useLayout();
 
-  // Responsive flag dimensions
-  const flagWidth = Math.min(screenWidth - spacing.lg * 2, 320);
+  // Responsive flag dimensions - wider on desktop
+  const flagWidth = Math.min(screenWidth - spacing.lg * 2, isDesktop ? 480 : 320);
   const flagHeight = Math.round(flagWidth / FLAG_ASPECT);
   const tileW = flagWidth / GRID_COLS;
   const tileH = flagHeight / GRID_ROWS;
@@ -224,6 +225,19 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
   );
 
   handleAnswerRef.current = handleAnswer;
+
+  // Keyboard shortcut: Enter to advance when feedback is showing
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const handler = (e: KeyboardEvent) => {
+      if (showFeedback && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        goToNext();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [showFeedback, goToNext]);
 
   const handleSubmit = () => {
     if (textInput.trim().length > 0) {
@@ -476,6 +490,11 @@ const styles = StyleSheet.create({
   questionContainer: {
     flex: 1,
     padding: spacing.lg,
+    justifyContent: 'center',
+  },
+  questionContainerDesktop: {
+    flex: 1,
+    padding: spacing.xl,
     justifyContent: 'center',
   },
   flagContainer: {

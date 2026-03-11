@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,11 @@ import {
   SafeAreaView,
   ScrollView,
   Animated,
+  Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
+import { useLayout } from '../utils/useLayout';
 import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
 import { updateStats, updateFlagResults } from '../utils/storage';
 import { shuffleArray, getStreakFromResults } from '../utils/gameEngine';
@@ -70,6 +72,7 @@ function generateRounds(count: number): RoundData[] {
 
 export default function NeighborsScreen({ navigation, route }: Props) {
   const { config } = route.params;
+  const { isDesktop } = useLayout();
   const rounds = useMemo(() => generateRounds(config.questionCount), [config.questionCount]);
   const [roundIndex, setRoundIndex] = useState(0);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -133,6 +136,23 @@ export default function NeighborsScreen({ navigation, route }: Props) {
     }]);
   };
 
+  // Keyboard shortcut: Enter to submit or advance
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (submitted) {
+          handleNext();
+        } else if (selected.size > 0) {
+          handleSubmit();
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [submitted, selected.size]);
+
   const handleNext = () => {
     const currentResults = [...results];
     const isEliminated = guessLimit > 0 && currentResults.filter((r) => !r.correct).length >= guessLimit;
@@ -184,7 +204,7 @@ export default function NeighborsScreen({ navigation, route }: Props) {
             <Text style={styles.countryName}>{flagName(round.country)}</Text>
           </View>
 
-          <View style={styles.optionsGrid}>
+          <View style={[styles.optionsGrid, isDesktop && styles.optionsGridDesktop]}>
             {round.options.map((flag) => {
               const isSelected = selected.has(flag.id);
               const isNeighbor = neighborSet.has(flag.id);
@@ -320,6 +340,7 @@ const styles = StyleSheet.create({
   flagCenter: { alignItems: 'center', marginBottom: spacing.lg },
   countryName: { fontFamily: fontFamily.display, fontSize: fontSize.heading, color: colors.ink, marginTop: spacing.sm },
   optionsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, justifyContent: 'center' },
+  optionsGridDesktop: { gap: spacing.md },
   optionCard: {
     width: '30%',
     minWidth: 95,

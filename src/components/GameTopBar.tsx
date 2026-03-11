@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { colors, spacing, nav } from '../utils/theme';
+import { useLayout } from '../utils/useLayout';
 import { t } from '../utils/i18n';
 
 interface GameTopBarProps {
@@ -14,8 +15,9 @@ interface GameTopBarProps {
  * Provides a consistent Exit button on the left, with optional center and right slots.
  */
 export default function GameTopBar({ onExit, center, right }: GameTopBarProps) {
+  const { isDesktop } = useLayout();
   return (
-    <View style={styles.topBar}>
+    <View style={[styles.topBar, isDesktop && styles.topBarDesktop]}>
       <TouchableOpacity
         onPress={onExit}
         style={styles.exitButton}
@@ -38,6 +40,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
+  },
+  topBarDesktop: {
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
   },
   exitButton: {
     ...nav.backButton,

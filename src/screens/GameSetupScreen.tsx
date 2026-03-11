@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
+import { useLayout } from '../utils/useLayout';
 import {
   GameMode,
   DisplayMode,
@@ -90,6 +91,7 @@ function SegBtn({ label, active, onPress }: { label: string; active: boolean; on
 
 export default function GameSetupScreen({ navigation }: Props) {
   const onNavigate = useNavTabs();
+  const { isDesktop } = useLayout();
   const [displayMode, setDisplayMode] = useState<DisplayMode>('flag');
   const [setupMode, setSetupMode] = useState<SetupMode>('quiz');
   const [difficulty, setDifficulty] = useState<QuizDifficulty>('medium');
@@ -195,7 +197,7 @@ export default function GameSetupScreen({ navigation }: Props) {
       >
         <ScreenContainer>
         {/* Game Mode Grid */}
-        <View style={styles.modeGrid}>
+        <View style={[styles.modeGrid, isDesktop && styles.modeGridDesktop]}>
           {SETUP_MODES.map((m) => {
             const isActive = setupMode === m.key;
             return (
@@ -352,7 +354,7 @@ export default function GameSetupScreen({ navigation }: Props) {
         </View>
 
         {filterType && (
-          <View style={styles.categoryRow}>
+          <View style={[styles.categoryRow, isDesktop && styles.categoryRowDesktop]}>
             {filteredCategories.map((cat) => {
               const count = getCategoryCount(cat.id);
               const isActive = selectedCategory === cat.id;
@@ -443,6 +445,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
+  },
+  modeGridDesktop: {
+    gap: spacing.md,
   },
   modeCard: {
     width: '48%',
@@ -583,6 +588,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
+  },
+  categoryRowDesktop: {
+    gap: spacing.md,
   },
   categoryChip: {
     flexDirection: 'row',

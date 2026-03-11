@@ -113,14 +113,20 @@ function AppContent() {
       style.textContent = [
         // Pointer cursor on all touchable/pressable elements
         '[role="button"], [role="tab"], [role="link"] { cursor: pointer; }',
-        // Subtle hover lift for cards and buttons
-        '[role="button"]:hover, [role="tab"]:hover { opacity: 0.85; }',
+        // Subtle hover lift for cards and buttons (only on desktop, not touch)
+        '@media (hover: hover) { [role="button"]:hover, [role="tab"]:hover { opacity: 0.85; } }',
         // Smooth transitions
         '[role="button"], [role="tab"] { transition: opacity 0.15s ease; }',
+        // Focus-visible outline for keyboard navigation
+        '[role="button"]:focus-visible, [role="tab"]:focus-visible, input:focus-visible { outline: 2px solid #CC3344; outline-offset: 2px; }',
+        // Remove default focus ring for mouse users
+        '[role="button"]:focus:not(:focus-visible), [role="tab"]:focus:not(:focus-visible) { outline: none; }',
         // Hide mobile-style scrollbar on desktop
         '::-webkit-scrollbar { width: 6px; }',
         '::-webkit-scrollbar-track { background: transparent; }',
         '::-webkit-scrollbar-thumb { background: rgba(26,26,46,0.15); border-radius: 3px; }',
+        // Prevent text selection on interactive elements
+        '[role="button"], [role="tab"] { user-select: none; -webkit-user-select: none; }',
       ].join('\n');
       document.head.appendChild(style);
     }

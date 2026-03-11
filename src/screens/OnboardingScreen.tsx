@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { colors, fontFamily, spacing, borderRadius } from '../utils/theme';
+import { colors, fontFamily, spacing, borderRadius, fontSize } from '../utils/theme';
+import { useLayout } from '../utils/useLayout';
 import { getBaselineData, BaselineData, skipOnboarding } from '../utils/storage';
 import { getCategoryCount } from '../data';
 import { hapticTap } from '../utils/feedback';
@@ -31,6 +32,7 @@ const REGIONS: { id: BaselineRegionId; categoryId: CategoryId }[] = [
 ];
 
 export default function OnboardingScreen({ navigation }: Props) {
+  const { isDesktop } = useLayout();
   const [baseline, setBaseline] = useState<BaselineData | null>(null);
 
   useFocusEffect(
@@ -79,19 +81,22 @@ export default function OnboardingScreen({ navigation }: Props) {
         <ScreenContainer>
           {/* Header */}
           <View style={s.header}>
-            <View style={s.wordmark}>
-              <Text style={s.wmLine1}>Flag</Text>
-              <Text style={s.wmLine2}>That</Text>
-            </View>
+            {!isDesktop && (
+              <View style={s.wordmark}>
+                <Text style={s.wmLine1}>Flag</Text>
+                <Text style={s.wmLine2}>That</Text>
+              </View>
+            )}
+            {isDesktop && <View style={{ flex: 1 }} />}
             <TouchableOpacity onPress={handleSkip} activeOpacity={0.6}>
               <Text style={s.skipText}>{t('onboarding.skip')}</Text>
             </TouchableOpacity>
           </View>
 
-          <Text style={s.subtitle}>{t('onboarding.subtitle')}</Text>
+          <Text style={[s.subtitle, isDesktop && s.subtitleDesktop]}>{t('onboarding.subtitle')}</Text>
 
           {/* Region cards */}
-          <View style={s.regionList}>
+          <View style={[s.regionList, isDesktop && s.regionListDesktop]}>
             {REGIONS.map((region) => {
               const result = baseline?.regions[region.id];
               const isDone = !!result;
@@ -100,7 +105,7 @@ export default function OnboardingScreen({ navigation }: Props) {
               return (
                 <TouchableOpacity
                   key={region.id}
-                  style={[s.regionCard, isDone && s.regionCardDone]}
+                  style={[s.regionCard, isDone && s.regionCardDone, isDesktop && s.regionCardDesktop]}
                   activeOpacity={isDone ? 1 : 0.85}
                   onPress={() => !isDone && handleRegionPress(region.id)}
                   disabled={isDone}
@@ -216,11 +221,20 @@ const s = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.lg,
   },
+  subtitleDesktop: {
+    fontSize: fontSize.xl,
+    marginBottom: spacing.xl,
+  },
 
   // Region cards
   regionList: {
     paddingHorizontal: spacing.md,
     gap: spacing.sm,
+  },
+  regionListDesktop: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
   },
   regionCard: {
     flexDirection: 'row',
@@ -236,6 +250,10 @@ const s = StyleSheet.create({
   regionCardDone: {
     borderColor: colors.rule,
     opacity: 0.7,
+  },
+  regionCardDesktop: {
+    flexBasis: '47%',
+    flexGrow: 1,
   },
   regionLeft: {
     width: 32,

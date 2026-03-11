@@ -25,6 +25,7 @@ import { flagName } from '../data/countryNames';
 import MapImage from '../components/MapImage';
 import { RootStackParamList } from '../types/navigation';
 import ScreenContainer from '../components/ScreenContainer';
+import { useLayout } from '../utils/useLayout';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FlagFlash'>;
 
@@ -62,6 +63,7 @@ async function requestMotionPermission(): Promise<boolean> {
 
 export default function FlagFlashScreen({ route, navigation }: Props) {
   const { config } = route.params;
+  const { isDesktop } = useLayout();
   const [questions, setQuestions] = useState<GameQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<GameResult[]>([]);
@@ -353,13 +355,24 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
                 <View style={[styles.tiltDemo, { backgroundColor: colors.success }]}>
                   <Text style={styles.tiltDemoText}>CORRECT</Text>
                 </View>
-                <Text style={styles.stepText}>Click or press Left arrow</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.stepText}>Click or press Left/Down arrow</Text>
+                </View>
               </View>
               <View style={styles.tutorialStep}>
                 <View style={[styles.tiltDemo, { backgroundColor: colors.error }]}>
                   <Text style={styles.tiltDemoText}>SKIP</Text>
                 </View>
-                <Text style={styles.stepText}>Click or press Right arrow</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.stepText}>Click or press Right/Up arrow</Text>
+                </View>
+              </View>
+              <View style={styles.keyboardHintRow}>
+                <View style={styles.keyBadge}><Text style={styles.keyBadgeText}>←</Text></View>
+                <Text style={styles.keyHintLabel}>Correct</Text>
+                <View style={{ width: spacing.lg }} />
+                <View style={styles.keyBadge}><Text style={styles.keyBadgeText}>→</Text></View>
+                <Text style={styles.keyHintLabel}>Skip</Text>
               </View>
             </>
           )}
@@ -459,20 +472,26 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
 
       {/* Web button controls */}
       {isWeb && tiltState === 'neutral' && (
-        <View style={styles.webControls}>
+        <View style={[styles.webControls, isDesktop && styles.webControlsDesktop]}>
           <TouchableOpacity
             style={[styles.webButton, styles.webButtonCorrect]}
             onPress={() => handleTilt('correct')}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Correct"
           >
             <Text style={styles.webButtonText}>Correct</Text>
+            {isDesktop && <Text style={styles.webKeyHint}>← / ↓</Text>}
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.webButton, styles.webButtonSkip]}
             onPress={() => handleTilt('skip')}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Skip"
           >
             <Text style={styles.webButtonText}>Skip</Text>
+            {isDesktop && <Text style={styles.webKeyHint}>→ / ↑</Text>}
           </TouchableOpacity>
         </View>
       )}
@@ -638,6 +657,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     marginBottom: spacing.md,
   },
+  webControlsDesktop: {
+    gap: spacing.xl,
+  },
   webButton: {
     flex: 1,
     maxWidth: 200,
@@ -654,6 +676,40 @@ const styles = StyleSheet.create({
   webButtonText: {
     ...typography.bodyBold,
     color: colors.white,
+  },
+  webKeyHint: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.sm,
+    color: colors.whiteAlpha60,
+    marginTop: spacing.xxs,
+  },
+  // Keyboard hint row (desktop tutorial)
+  keyboardHintRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.sm,
+    gap: spacing.sm,
+  },
+  keyBadge: {
+    width: 32,
+    height: 28,
+    backgroundColor: colors.whiteAlpha15,
+    borderRadius: borderRadius.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.whiteAlpha20,
+  },
+  keyBadgeText: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.body,
+    color: colors.white,
+  },
+  keyHintLabel: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.caption,
+    color: colors.whiteAlpha60,
   },
   bottomBar: {
     flexDirection: 'row',

@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Animated,
+  Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
+import { useLayout } from '../utils/useLayout';
 import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
 import { shuffleArray } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
@@ -60,6 +62,7 @@ function generateQuestions(count: number): QuestionData[] {
 
 export default function CapitalConnectionScreen({ navigation, route }: Props) {
   const { config } = route.params;
+  const { isDesktop } = useLayout();
   const questions = useMemo(() => generateQuestions(config.questionCount), [config.questionCount]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -110,6 +113,23 @@ export default function CapitalConnectionScreen({ navigation, route }: Props) {
       navigation.replace('Results', { results: newResults, config });
     }
   }, [currentIndex, questions, navigation, config, fadeAnim]);
+
+  // Keyboard shortcuts: 1-4 to select options
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const handler = (e: KeyboardEvent) => {
+      if (showFeedback) return;
+      if (e.key >= '1' && e.key <= '4' && question) {
+        const idx = parseInt(e.key, 10) - 1;
+        if (idx < question.options.length) {
+          e.preventDefault();
+          handleAnswer(question.options[idx]);
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [showFeedback, question]);
 
   const handleAnswer = useCallback((answer: string) => {
     if (showFeedback || !question) return;
@@ -199,7 +219,7 @@ export default function CapitalConnectionScreen({ navigation, route }: Props) {
 
         <Text style={styles.prompt}>{t('capital.whatIsCapital', { name: flagName(question.flag) })}</Text>
 
-        <View style={styles.optionsContainer}>
+        <View style={[styles.optionsContainer, isDesktop && styles.optionsContainerDesktop]}>
           {question.options.map((option, index) => {
             const isSelected = selectedAnswer === option;
             const isCorrect = option === question.correctCapital;
@@ -217,17 +237,22 @@ export default function CapitalConnectionScreen({ navigation, route }: Props) {
               }
             }
 
+            const keyHint = isDesktop && !showFeedback ? `${index + 1}` : null;
+
             return (
               <TouchableOpacity
                 key={`${currentIndex}-${index}`}
-                style={optionStyle}
+                style={[optionStyle, isDesktop && styles.optionButtonDesktop]}
                 onPress={() => handleAnswer(option)}
                 disabled={showFeedback}
                 activeOpacity={0.7}
                 accessibilityRole="button"
                 accessibilityLabel={option}
               >
-                <Text style={textStyle}>{option}</Text>
+                <View style={styles.optionInner}>
+                  {keyHint && <Text style={styles.keyHint}>{keyHint}</Text>}
+                  <Text style={textStyle}>{option}</Text>
+                </View>
               </TouchableOpacity>
             );
           })}
@@ -314,6 +339,34 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     gap: spacing.xs,
+  },
+  optionsContainerDesktop: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  optionButtonDesktop: {
+    flexBasis: '48%',
+    flexGrow: 1,
+  },
+  optionInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+  },
+  keyHint: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.sm,
+    color: colors.textTertiary,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: borderRadius.sm,
+    width: 22,
+    height: 22,
+    lineHeight: 20,
+    textAlign: 'center',
+    overflow: 'hidden',
   },
   optionButton: {
     backgroundColor: colors.surface,

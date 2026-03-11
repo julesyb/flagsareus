@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,12 @@ import {
   SafeAreaView,
   ScrollView,
   Animated,
+  Platform,
 } from 'react-native';
 import Svg, { Rect, Path, Circle } from 'react-native-svg';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
+import { useLayout } from '../utils/useLayout';
 import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
 import { updateStats, updateFlagResults } from '../utils/storage';
 import { shuffleArray, getStreakFromResults } from '../utils/gameEngine';
@@ -400,6 +402,7 @@ function generateRounds(count: number): RoundData[] {
 
 export default function FlagImpostorScreen({ navigation, route }: Props) {
   const { config } = route.params;
+  const { isDesktop } = useLayout();
   const rounds = useMemo(() => generateRounds(config.questionCount), [config.questionCount]);
   const [roundIndex, setRoundIndex] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
@@ -455,6 +458,27 @@ export default function FlagImpostorScreen({ navigation, route }: Props) {
     navigation.replace('Results', { results: finalResults, config });
   };
 
+  // Keyboard shortcuts: 1-4 to pick, Enter to advance
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const handler = (e: KeyboardEvent) => {
+      if (picked !== null && e.key === 'Enter') {
+        e.preventDefault();
+        handleNext();
+        return;
+      }
+      if (picked === null && e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        const idx = parseInt(e.key, 10) - 1;
+        if (idx < grid.length) {
+          handlePick(idx);
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [picked, grid.length]);
+
   const handleNext = () => {
     const isEliminated = guessLimit > 0 && results.filter((r) => !r.correct).length >= guessLimit;
     if (isLastRound || isEliminated) {
@@ -471,8 +495,8 @@ export default function FlagImpostorScreen({ navigation, route }: Props) {
     });
   };
 
-  const FLAG_W = 120;
-  const FLAG_H = 80;
+  const FLAG_W = isDesktop ? 180 : 120;
+  const FLAG_H = isDesktop ? 120 : 80;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -518,12 +542,17 @@ export default function FlagImpostorScreen({ navigation, route }: Props) {
                   activeOpacity={0.7}
                   disabled={picked !== null}
                 >
+                  {isDesktop && picked === null && (
+                    <View style={styles.keyHintBadge}>
+                      <Text style={styles.keyHintText}>{item.index + 1}</Text>
+                    </View>
+                  )}
                   {item.isFake ? (
-                    <View style={styles.flagWrapper}>
+                    <View style={[styles.flagWrapper, { width: FLAG_W, height: FLAG_H }]}>
                       <FakeFlagSvg flag={item.fakeFlag!} width={FLAG_W} height={FLAG_H} />
                     </View>
                   ) : (
-                    <FlagImage countryCode={item.flag!.id} emoji={item.flag!.emoji} size="medium" />
+                    <FlagImage countryCode={item.flag!.id} emoji={item.flag!.emoji} size={isDesktop ? 'large' : 'medium'} />
                   )}
 
                   {isRevealed && (
@@ -609,11 +638,28 @@ const styles = StyleSheet.create({
   gridCardCorrect: { borderColor: colors.success, backgroundColor: colors.successBg },
   gridCardWrong: { borderColor: colors.error, backgroundColor: colors.errorBg },
   flagWrapper: {
-    width: 120,
-    height: 80,
     overflow: 'hidden',
     borderRadius: 0,
     backgroundColor: 'transparent',
+  },
+  keyHintBadge: {
+    position: 'absolute',
+    top: spacing.xs,
+    left: spacing.xs,
+    width: 22,
+    height: 22,
+    backgroundColor: colors.surfaceSecondary,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  keyHintText: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.sm,
+    color: colors.textTertiary,
   },
   revealInfo: { alignItems: 'center', gap: spacing.xxs },
   fakeLabel: { fontFamily: fontFamily.uiLabel, fontSize: fontSize.caption, letterSpacing: 2, color: colors.accent, textTransform: 'uppercase' },
