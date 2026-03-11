@@ -72,6 +72,7 @@ const en = {
     bestStreak: 'Best Streak',
     best60s: 'Best 60s',
     accuracy: 'Accuracy',
+    onboardingScores: 'Scores',
   },
 
   // ─── Game Setup ──────────────────────────────────────────
@@ -219,6 +220,18 @@ const en = {
     reset: 'Reset',
   },
 
+  // ─── Support ───────────────────────────────────────────
+  support: {
+    title: 'Buy us a coffee',
+    subtitle: 'Flag That is free with no ads. Help keep it that way - watch a quick video. Totally optional.',
+    watchButton: 'Watch a Video',
+    watchAgain: 'Watch',
+    thankYou: 'You are the best. Thank you!',
+    totalWatched: 'Supported {count} time',
+    totalWatchedPlural: 'Supported {count} times',
+    adFailed: 'Nothing available right now. Try again later!',
+  },
+
   // ─── Browse Screen ──────────────────────────────────────
   browse: {
     searchPlaceholder: 'Search flags...',
@@ -316,6 +329,19 @@ const en = {
     daily_legend: { name: 'Daily Legend', description: 'Complete 30 daily challenges' },
     practice_perfect: { name: 'Practice Perfect', description: 'Clear all flags from practice' },
     shared_spirit: { name: 'Shared Spirit', description: 'Share your results' },
+    supporter: { name: 'Supporter', description: 'Support by watching a video' },
+  },
+
+  // ─── Onboarding ───────────────────────────────────────────
+  onboarding: {
+    subtitle: "Let's see where you stand",
+    regionTest: 'Flag quiz',
+    flagCount: '{count} flags',
+    completed: 'Done',
+    startPlaying: 'Start Playing',
+    skip: 'Skip',
+    next: 'Next Region',
+    allDone: 'All done, nice work',
   },
 
   // ─── Game Modes (for labels) ────────────────────────────
@@ -331,6 +357,7 @@ const en = {
     capitalconnection: 'Capital Connection',
     daily: 'Daily',
     practice: 'Practice',
+    baseline: 'Baseline',
   },
 
   // ─── Categories ─────────────────────────────────────────

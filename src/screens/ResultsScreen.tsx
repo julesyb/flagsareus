@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -13,16 +13,18 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
 import { calculateAccuracy, getStreakFromResults, getGrade, generateDailyShareGrid, generateShareGrid, getDailyNumber } from '../utils/gameEngine';
-import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, updateLastGameBadgeFlags, markShared, getStats, getFlagStats, getDayStreak, getBadgeData, getMissedFlagIds, addGameHistoryEntry } from '../utils/storage';
+import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, updateLastGameBadgeFlags, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreak, getBadgeData, getMissedFlagIds, addGameHistoryEntry, getSupportData } from '../utils/storage';
+import { BaselineRegionId } from '../types';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
 import { FlagImageSmall } from '../components/FlagImage';
-import { CheckIcon, CrossIcon, ChevronRightIcon, BarChartIcon, FlagIcon, GlobeIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon } from '../components/Icons';
+import { CheckIcon, CrossIcon, ChevronRightIcon, BarChartIcon, FlagIcon, GlobeIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon, HeartIcon } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
 import { UserStats, GameMode } from '../types';
 import { RootStackParamList } from '../types/navigation';
 import { evaluateBadges, BADGES, TIER_COLORS, BadgeIcon, EarnedBadge } from '../utils/badges';
 import { getTotalFlagCount } from '../data';
+import { useInterstitialAdUnit, shouldShowAd, recordAdImpression, incrementGameCount } from '../utils/ads';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
 
@@ -37,6 +39,12 @@ export default function ResultsScreen({ route, navigation }: Props) {
     : 0;
   const isPerfect = accuracy === 100 && results.length > 0;
   const isDaily = config.mode === 'daily';
+  const isBaseline = config.mode === 'baseline';
+
+  const skipAds = isDaily || isBaseline || reviewOnly;
+  const interstitial = useInterstitialAdUnit();
+  const [adEligible, setAdEligible] = useState(false);
+  const pendingNavRef = useRef<(() => void) | null>(null);
 
   const fastestCorrect = results
     .filter((r) => r.correct)
@@ -80,6 +88,26 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const [prevAccuracy, setPrevAccuracy] = useState<number | null>(null);
   const [weakFlagCount, setWeakFlagCount] = useState(0);
 
+  // Load ad if frequency cap allows (skip for daily/baseline/review)
+  useEffect(() => {
+    if (skipAds) return;
+    shouldShowAd().then((eligible) => {
+      setAdEligible(eligible);
+      if (eligible) {
+        interstitial.load();
+      }
+    });
+  }, [interstitial.load, skipAds]);
+
+  // When ad closes, execute pending navigation
+  useEffect(() => {
+    if (interstitial.isClosed && pendingNavRef.current) {
+      const nav = pendingNavRef.current;
+      pendingNavRef.current = null;
+      recordAdImpression().then(nav);
+    }
+  }, [interstitial.isClosed]);
+
   useEffect(() => {
     // Listen to count-up animation for display
     const listenerId = countAnim.addListener(({ value }) => {
@@ -91,8 +119,8 @@ export default function ResultsScreen({ route, navigation }: Props) {
   useEffect(() => {
     // ── Data processing ──
     async function processResults() {
-      const [preStats, preFlagStats, preDayStreak, preBadgeData, preMissed] = await Promise.all([
-        getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(),
+      const [preStats, preFlagStats, preDayStreak, preBadgeData, preMissed, preSupport] = await Promise.all([
+        getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(), getSupportData(),
       ]);
       const preBadgeIds = new Set(evaluateBadges({
         stats: preStats, flagStats: preFlagStats, dayStreak: preDayStreak,
@@ -101,6 +129,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
         lastGamePerfect10: preBadgeData.lastGamePerfect10,
         lastGameSRank: preBadgeData.lastGameSRank,
         weakFlagCount: preMissed.length,
+        adsWatched: preSupport.totalAdsWatched,
       }).map((b) => b.id));
 
       const wasNewBestStreak = streak > preStats.bestStreak;
@@ -120,14 +149,20 @@ export default function ResultsScreen({ route, navigation }: Props) {
         await updateFlagResults(results);
         await updateLastGameBadgeFlags(correct, results.length);
         await addGameHistoryEntry(accuracy, config.mode);
+        if (!skipAds) {
+          incrementGameCount();
+        }
         if (isDaily) {
           await saveDailyChallenge(results);
           await incrementDailyChallenges();
         }
       }
+      if (isBaseline) {
+        await saveBaselineResult(config.category as BaselineRegionId, results);
+      }
 
-      const [postStats, postFlagStats, postDayStreak, postBadgeData, postMissed] = await Promise.all([
-        getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(),
+      const [postStats, postFlagStats, postDayStreak, postBadgeData, postMissed, postSupport] = await Promise.all([
+        getStats(), getFlagStats(), getDayStreak(), getBadgeData(), getMissedFlagIds(), getSupportData(),
       ]);
       const postBadges = evaluateBadges({
         stats: postStats, flagStats: postFlagStats, dayStreak: postDayStreak,
@@ -136,6 +171,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
         lastGamePerfect10: postBadgeData.lastGamePerfect10,
         lastGameSRank: postBadgeData.lastGameSRank,
         weakFlagCount: postMissed.length,
+        adsWatched: postSupport.totalAdsWatched,
       });
 
       setOverallStats(postStats);
@@ -265,17 +301,40 @@ export default function ResultsScreen({ route, navigation }: Props) {
   };
 
   const goHome = () => navigation.popToTop();
-  const playAgain = () => {
-    if (isDaily) { navigation.popToTop(); return; }
+
+  const navigatePlayAgain = useCallback(() => {
+    if (isDaily || isBaseline) {
+      navigation.popToTop();
+      return;
+    }
     const map: Partial<Record<GameMode, keyof RootStackParamList>> = {
       flagflash: 'FlagFlash', flagpuzzle: 'FlagPuzzle', neighbors: 'Neighbors',
       impostor: 'FlagImpostor', capitalconnection: 'CapitalConnection',
     };
     navigation.replace((map[config.mode] || 'Game') as 'Game', { config });
+  }, [isDaily, isBaseline, config, navigation]);
+
+  const playAgain = () => {
+    if (adEligible && interstitial.isLoaded) {
+      pendingNavRef.current = navigatePlayAgain;
+      interstitial.show();
+      // Safety: if ad never fires isClosed (SDK bug, network), unblock after 10s
+      setTimeout(() => {
+        if (pendingNavRef.current) {
+          const nav = pendingNavRef.current;
+          pendingNavRef.current = null;
+          recordAdImpression().then(nav);
+        }
+      }, 10000);
+    } else {
+      navigatePlayAgain();
+    }
   };
 
   // Contextual Play CTA text
-  const playCtaText = isDaily
+  const playCtaText = isBaseline
+    ? t('onboarding.next')
+    : isDaily
     ? t('common.home')
     : overallStats && accuracy < (overallStats.totalAnswered > 0
         ? Math.round((overallStats.totalCorrect / overallStats.totalAnswered) * 100) : 100)
@@ -306,6 +365,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
       case 'clock': return <ClockIcon size={size} color={tierColor} />;
       case 'crosshair': return <CrosshairIcon size={size} color={tierColor} />;
       case 'link': return <LinkIcon size={size} color={tierColor} />;
+      case 'heart': return <HeartIcon size={size} color={tierColor} filled />;
       default: return <FlagIcon size={size} color={tierColor} />;
     }
   };
@@ -464,13 +524,15 @@ export default function ResultsScreen({ route, navigation }: Props) {
 
         {/* ── ACTION BUTTONS ── */}
         <Animated.View style={[st.buttonRow, { opacity: restFade }]}>
-          <TouchableOpacity style={st.secondaryButton} onPress={handleShare} activeOpacity={0.7}>
-            <Text style={st.secondaryButtonText}>{t('common.share')}</Text>
-          </TouchableOpacity>
+          {!isBaseline && (
+            <TouchableOpacity style={st.secondaryButton} onPress={handleShare} activeOpacity={0.7}>
+              <Text style={st.secondaryButtonText}>{t('common.share')}</Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity style={st.primaryButton} onPress={playAgain} activeOpacity={0.7}>
             <Text style={st.primaryButtonText}>{playCtaText}</Text>
           </TouchableOpacity>
-          {!isDaily && (
+          {!isDaily && !isBaseline && (
             <TouchableOpacity style={st.secondaryButton} onPress={goHome} activeOpacity={0.7}>
               <Text style={st.secondaryButtonText}>{t('common.home')}</Text>
             </TouchableOpacity>

@@ -26,12 +26,15 @@ import FlagPuzzleScreen from './src/screens/FlagPuzzleScreen';
 import NeighborsScreen from './src/screens/NeighborsScreen';
 import FlagImpostorScreen from './src/screens/FlagImpostorScreen';
 import CapitalConnectionScreen from './src/screens/CapitalConnectionScreen';
+import OnboardingScreen from './src/screens/OnboardingScreen';
 import ErrorBoundary from './src/components/ErrorBoundary';
 import { ChevronLeftIcon } from './src/components/Icons';
 import { RootStackParamList } from './src/types/navigation';
 import { colors, fontFamily, fontSize } from './src/utils/theme';
 import { configureNotificationHandler, syncNotificationSchedule } from './src/utils/notifications';
 import { initLocale, t } from './src/utils/i18n';
+import { hasCompletedOnboarding } from './src/utils/storage';
+import { initializeAds, requestConsent } from './src/utils/ads';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -72,16 +75,19 @@ configureNotificationHandler();
 
 function AppContent() {
   const [localeReady, setLocaleReady] = useState(false);
+  const [initialRoute, setInitialRoute] = useState<keyof RootStackParamList>('Home');
 
   useEffect(() => {
     if (Platform.OS === 'web') {
       document.title = 'Flag That';
     }
-    // Initialize locale from saved settings, then sync notifications
     initLocale()
-      .then(() => {
+      .then(async () => {
+        const onboarded = await hasCompletedOnboarding();
+        setInitialRoute(onboarded ? 'Home' : 'Onboarding');
         setLocaleReady(true);
         syncNotificationSchedule();
+        requestConsent().then(() => initializeAds());
       })
       .catch(() => {
         setLocaleReady(true);
@@ -92,7 +98,12 @@ function AppContent() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={screenOptions}>
+      <Stack.Navigator screenOptions={screenOptions} initialRouteName={initialRoute}>
+        <Stack.Screen
+          name="Onboarding"
+          component={OnboardingScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Home"
           component={HomeScreen}

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserStats, GameMode, CategoryId, GameResult } from '../types';
+import { UserStats, GameMode, CategoryId, GameResult, BaselineRegionId } from '../types';
 
 const STATS_KEY = '@flagsareus_stats';
 const FLAG_STATS_KEY = '@flagsareus_flag_stats';
@@ -8,6 +8,8 @@ const DAILY_CHALLENGE_KEY = '@flagsareus_daily_challenge';
 const SETTINGS_KEY = '@flagsareus_settings';
 const BADGE_DATA_KEY = '@flagsareus_badge_data';
 const GAME_HISTORY_KEY = '@flagsareus_game_history';
+const SUPPORT_KEY = '@flagsareus_support';
+const BASELINE_KEY = '@flagsareus_baseline';
 
 // ─── Badge Tracking Data ───────────────────────────────────
 export interface BadgeData {
@@ -121,6 +123,7 @@ const DEFAULT_STATS: UserStats = {
     capitalconnection: { correct: 0, total: 0 },
     daily: { correct: 0, total: 0 },
     practice: { correct: 0, total: 0 },
+    baseline: { correct: 0, total: 0 },
   },
   categoryStats: {},
 };
@@ -184,6 +187,7 @@ export async function resetStats(): Promise<void> {
     await AsyncStorage.removeItem(BADGE_DATA_KEY);
     await AsyncStorage.removeItem(DAILY_CHALLENGE_KEY);
     await AsyncStorage.removeItem(GAME_HISTORY_KEY);
+    await AsyncStorage.removeItem(BASELINE_KEY);
   } catch {
     // Silently fail
   }
@@ -346,4 +350,115 @@ export async function addGameHistoryEntry(accuracy: number, mode: GameMode): Pro
   } catch {
     // Silently fail
   }
+}
+
+// ─── Support (Opt-in Ad Tracking) ─────────────────────────
+export interface SupportData {
+  totalAdsWatched: number;
+  lastWatchedDate: string | null;
+}
+
+const DEFAULT_SUPPORT: SupportData = {
+  totalAdsWatched: 0,
+  lastWatchedDate: null,
+};
+
+export async function getSupportData(): Promise<SupportData> {
+  try {
+    const json = await AsyncStorage.getItem(SUPPORT_KEY);
+    if (json) return { ...DEFAULT_SUPPORT, ...JSON.parse(json) };
+    return { ...DEFAULT_SUPPORT };
+  } catch {
+    return { ...DEFAULT_SUPPORT };
+  }
+}
+
+export async function recordAdWatched(): Promise<SupportData> {
+  try {
+    const data = await getSupportData();
+    const updated: SupportData = {
+      totalAdsWatched: data.totalAdsWatched + 1,
+      lastWatchedDate: getTodayDate(),
+    };
+    await AsyncStorage.setItem(SUPPORT_KEY, JSON.stringify(updated));
+    return updated;
+  } catch {
+    return { ...DEFAULT_SUPPORT };
+  }
+}
+
+// ─── Baseline Data ────────────────────────────────────────
+export interface BaselineRegionResult {
+  accuracy: number;
+  correct: number;
+  total: number;
+  completedAt: string;
+}
+
+export interface BaselineData {
+  regions: Partial<Record<BaselineRegionId, BaselineRegionResult>>;
+  startedAt: string;
+  completedAt: string | null;
+  skipped?: boolean;
+}
+
+const BASELINE_REGIONS: BaselineRegionId[] = ['africa', 'asia', 'europe', 'americas', 'oceania'];
+
+export async function getBaselineData(): Promise<BaselineData | null> {
+  try {
+    const json = await AsyncStorage.getItem(BASELINE_KEY);
+    if (json) return JSON.parse(json);
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveBaselineResult(
+  region: BaselineRegionId,
+  results: GameResult[],
+): Promise<BaselineData> {
+  const existing = await getBaselineData();
+  const correct = results.filter((r) => r.correct).length;
+  const total = results.length;
+  const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  const data: BaselineData = existing ?? {
+    regions: {},
+    startedAt: new Date().toISOString(),
+    completedAt: null,
+  };
+
+  data.regions[region] = {
+    accuracy,
+    correct,
+    total,
+    completedAt: new Date().toISOString(),
+  };
+
+  // Check if all 5 regions are done
+  const allDone = BASELINE_REGIONS.every((r) => data.regions[r]);
+  if (allDone && !data.completedAt) {
+    data.completedAt = new Date().toISOString();
+  }
+
+  await AsyncStorage.setItem(BASELINE_KEY, JSON.stringify(data));
+  return data;
+}
+
+export async function hasCompletedOnboarding(): Promise<boolean> {
+  const data = await getBaselineData();
+  if (!data) return false;
+  return data.completedAt !== null || data.skipped === true;
+}
+
+export async function skipOnboarding(): Promise<void> {
+  const existing = await getBaselineData();
+  const data: BaselineData = existing ?? {
+    regions: {},
+    startedAt: new Date().toISOString(),
+    completedAt: null,
+  };
+  data.skipped = true;
+  await AsyncStorage.setItem(BASELINE_KEY, JSON.stringify(data));
 }

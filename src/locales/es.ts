@@ -70,6 +70,7 @@ const es: typeof en = {
     bestStreak: 'Mejor racha',
     best60s: 'Mejor 60s',
     accuracy: 'Precisi\u00f3n',
+    onboardingScores: 'Puntuaciones',
   },
 
   setup: {
@@ -212,6 +213,17 @@ const es: typeof en = {
     reset: 'Restablecer',
   },
 
+  support: {
+    title: 'Inv\u00edtanos a un caf\u00e9',
+    subtitle: 'Flag That es gratis, sin anuncios. Ay\u00fadanos a seguir as\u00ed viendo un video corto. Totalmente opcional.',
+    watchButton: 'Ver un video',
+    watchAgain: 'Ver',
+    thankYou: 'Eres el mejor. \u00a1Gracias!',
+    totalWatched: 'Apoyado {count} vez',
+    totalWatchedPlural: 'Apoyado {count} veces',
+    adFailed: 'Nada disponible ahora. \u00a1Int\u00e9ntalo m\u00e1s tarde!',
+  },
+
   browse: {
     searchPlaceholder: 'Buscar banderas...',
     all: 'Todas',
@@ -301,6 +313,18 @@ const es: typeof en = {
     daily_legend: { name: 'Leyenda diaria', description: '30 desaf\u00edos diarios completados' },
     practice_perfect: { name: 'Pr\u00e1ctica perfecta', description: 'Sin banderas pendientes de practicar' },
     shared_spirit: { name: 'Esp\u00edritu compartido', description: 'Comparte tus resultados' },
+    supporter: { name: 'Patrocinador', description: 'Apoya viendo un video' },
+  },
+
+  onboarding: {
+    subtitle: 'Veamos tu nivel',
+    regionTest: 'Quiz de banderas',
+    flagCount: '{count} banderas',
+    completed: 'Hecho',
+    startPlaying: 'Empezar a jugar',
+    skip: 'Omitir',
+    next: 'Siguiente regi\u00f3n',
+    allDone: 'Todo listo, buen trabajo',
   },
 
   modes: {
@@ -315,6 +339,7 @@ const es: typeof en = {
     capitalconnection: 'Quiz capitales',
     daily: 'Diario',
     practice: 'Pr\u00e1ctica',
+    baseline: 'L\u00ednea base',
   },
 
   categories: {
