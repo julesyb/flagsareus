@@ -271,9 +271,9 @@ export default function CapitalConnectionScreen({ navigation, route }: Props) {
         {showFeedback && (
           <View style={styles.feedbackContainer}>
             {selectedAnswer === question.correctCapital ? (
-              <Text style={styles.feedbackCorrect}>{t('common.correct')}</Text>
+              <Text style={styles.feedbackCorrect} accessibilityLiveRegion="polite">{t('common.correct')}</Text>
             ) : (
-              <Text style={styles.feedbackWrong}>{question.correctCapital}</Text>
+              <Text style={styles.feedbackWrong} accessibilityLiveRegion="polite">{question.correctCapital}</Text>
             )}
           </View>
         )}
