@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, Platform } from 'react-native';
+import { Analytics } from '@vercel/analytics/react';
 import { useFonts } from 'expo-font';
 import {
   LibreBaskerville_700Bold,
@@ -195,6 +196,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <AppContent />
+      {Platform.OS === 'web' && <Analytics />}
     </ErrorBoundary>
   );
 }
