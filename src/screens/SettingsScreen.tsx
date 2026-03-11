@@ -20,7 +20,7 @@ import {
   setSoundsEnabled,
   setHapticsEnabled,
 } from '../utils/feedback';
-import { toggleDailyReminder } from '../utils/notifications';
+import { toggleDailyReminder, syncNotificationSchedule } from '../utils/notifications';
 import { t, setLocale, getLocale, SUPPORTED_LOCALES, LocaleCode } from '../utils/i18n';
 import { ChevronRightIcon } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
@@ -119,6 +119,10 @@ export default function SettingsScreen() {
     setSettings(updated);
     await saveSettings(updated);
     forceRender((n) => n + 1);
+    // Reschedule notification with new language text
+    if (settings.dailyReminderEnabled) {
+      syncNotificationSchedule();
+    }
   };
 
   const currentLocaleName = SUPPORTED_LOCALES.find((l) => l.code === getLocale())?.name ?? 'English';
