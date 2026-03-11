@@ -191,6 +191,17 @@ const fr: typeof en = {
     reset: 'R\u00e9initialiser',
   },
 
+  support: {
+    title: 'Offrez-nous un caf\u00e9',
+    subtitle: 'Flag That est gratuit, sans pub. Aidez-nous \u00e0 continuer en regardant une courte vid\u00e9o. Totalement optionnel.',
+    watchButton: 'Regarder une vid\u00e9o',
+    watchAgain: 'Regarder',
+    thankYou: 'Vous \u00eates formidable. Merci !',
+    totalWatched: 'Soutenu {count} fois',
+    totalWatchedPlural: 'Soutenu {count} fois',
+    adFailed: 'Rien de disponible pour le moment. R\u00e9essayez plus tard !',
+  },
+
   browse: {
     searchPlaceholder: 'Rechercher des drapeaux...',
     all: 'Tous',
@@ -280,6 +291,7 @@ const fr: typeof en = {
     daily_legend: { name: 'L\u00e9gende quotidienne', description: '30 d\u00e9fis quotidiens termin\u00e9s' },
     practice_perfect: { name: 'R\u00e9vision parfaite', description: 'Plus aucun drapeau \u00e0 r\u00e9viser' },
     shared_spirit: { name: 'Esprit de partage', description: 'Partagez vos r\u00e9sultats' },
+    supporter: { name: 'Soutien', description: 'Soutenez en regardant une vid\u00e9o' },
   },
 
   onboarding: {

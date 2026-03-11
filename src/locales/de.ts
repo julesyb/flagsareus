@@ -191,6 +191,17 @@ const de: typeof en = {
     reset: 'Zur\u00fccksetzen',
   },
 
+  support: {
+    title: 'Spendier uns einen Kaffee',
+    subtitle: 'Flag That ist kostenlos, ohne Werbung. Hilf uns, das beizubehalten - schau ein kurzes Video. V\u00f6llig freiwillig.',
+    watchButton: 'Video ansehen',
+    watchAgain: 'Ansehen',
+    thankYou: 'Du bist spitze. Danke!',
+    totalWatched: '{count} Mal unterst\u00fctzt',
+    totalWatchedPlural: '{count} Mal unterst\u00fctzt',
+    adFailed: 'Gerade nichts verf\u00fcgbar. Versuch es sp\u00e4ter!',
+  },
+
   browse: {
     searchPlaceholder: 'Flaggen suchen...',
     all: 'Alle',
@@ -280,6 +291,7 @@ const de: typeof en = {
     daily_legend: { name: 'T\u00e4gliche Legende', description: '30 t\u00e4gliche Herausforderungen' },
     practice_perfect: { name: 'Perfekt ge\u00fcbt', description: 'Keine Flaggen mehr zum \u00dcben' },
     shared_spirit: { name: 'Teilender Geist', description: 'Teile deine Ergebnisse' },
+    supporter: { name: 'Unterst\u00fctzer', description: 'Unterst\u00fctze durch ein Video' },
   },
 
   onboarding: {

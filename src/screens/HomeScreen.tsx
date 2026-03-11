@@ -22,6 +22,8 @@ import { GameMode, UserStats, GameQuestion, CategoryId } from '../types';
 import { PlayIcon, ChevronRightIcon, ChevronDownIcon, ClockIcon, UsersIcon, EyeIcon, CalendarIcon, CrosshairIcon, LightningIcon, GearIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
+import SupportCard from '../components/SupportCard';
+import { preloadRewardedAd } from '../utils/ads';
 import { t } from '../utils/i18n';
 import { translateName, flagName } from '../data/countryNames';
 
@@ -180,6 +182,7 @@ export default function HomeScreen({ navigation }: Props) {
 
   useEffect(() => {
     initAudio();
+    preloadRewardedAd();
     getSettings().then((s) => {
       setSoundsEnabled(s.soundEnabled);
       setHapticsEnabled(s.hapticsEnabled);
@@ -526,6 +529,9 @@ export default function HomeScreen({ navigation }: Props) {
             </TouchableOpacity>
           )}
         </View>
+
+        {/* ── SUPPORT ── */}
+        <SupportCard gamesPlayed={stats?.totalGamesPlayed ?? 0} />
 
         {/* ── YOUR STATS ── */}
         {hasPlayed && (
