@@ -238,3 +238,30 @@ export function ChevronDownIcon({ size = 16, color = colors.textTertiary, stroke
     </Svg>
   );
 }
+
+// ── Badge icon renderer (shared by ResultsScreen + StatsScreen) ──
+import type { BadgeIcon as BadgeIconType } from '../utils/badges';
+
+interface BadgeIconViewProps {
+  icon: BadgeIconType;
+  size?: number;
+  color: string;
+}
+
+export function BadgeIconView({ icon, size = 18, color }: BadgeIconViewProps) {
+  switch (icon) {
+    case 'flag': return <FlagIcon size={size} color={color} />;
+    case 'globe': return <GlobeIcon size={size} color={color} />;
+    case 'check': return <CheckIcon size={size} color={color} />;
+    case 'play': return <PlayIcon size={size} color={color} />;
+    case 'lightning': return <LightningIcon size={size} color={color} />;
+    case 'calendar': return <CalendarIcon size={size} color={color} />;
+    case 'clock': return <ClockIcon size={size} color={color} />;
+    case 'crosshair': return <CrosshairIcon size={size} color={color} />;
+    case 'link': return <LinkIcon size={size} color={color} />;
+    case 'eye': return <EyeIcon size={size} color={color} />;
+    case 'heart': return <HeartIcon size={size} color={color} filled />;
+    case 'compass': return <CompassIcon size={size} color={color} />;
+    default: return <FlagIcon size={size} color={color} />;
+  }
+}

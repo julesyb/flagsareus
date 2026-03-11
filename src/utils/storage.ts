@@ -41,27 +41,40 @@ const DEFAULT_BADGE_DATA: BadgeData = {
 };
 
 // Migrate legacy per-badge sticky flags into earnedBadgeIds
-function migrateBadgeData(raw: Record<string, unknown>): BadgeData {
+const LEGACY_FLAG_MAP: Record<string, string> = {
+  lastGamePerfect10: 'perfect_10',
+  lastGameSRank: 's_rank',
+  earnedPracticePerfect: 'practice_perfect',
+  earnedQuickDraw: 'quick_draw',
+  earnedRegionAce: 'region_ace',
+};
+
+function migrateBadgeData(raw: Record<string, unknown>): { data: BadgeData; needsSave: boolean } {
   const data: BadgeData = {
     dailyChallengesCompleted: (raw.dailyChallengesCompleted as number) || 0,
     hasShared: (raw.hasShared as boolean) || false,
     earnedBadgeIds: (raw.earnedBadgeIds as string[]) || [],
   };
-  // One-time migration from old sticky flags
   const ids = new Set(data.earnedBadgeIds);
-  if (raw.lastGamePerfect10 && !ids.has('perfect_10')) ids.add('perfect_10');
-  if (raw.lastGameSRank && !ids.has('s_rank')) ids.add('s_rank');
-  if (raw.earnedPracticePerfect && !ids.has('practice_perfect')) ids.add('practice_perfect');
-  if (raw.earnedQuickDraw && !ids.has('quick_draw')) ids.add('quick_draw');
-  if (raw.earnedRegionAce && !ids.has('region_ace')) ids.add('region_ace');
-  data.earnedBadgeIds = [...ids];
-  return data;
+  let needsSave = false;
+  for (const [flag, badgeId] of Object.entries(LEGACY_FLAG_MAP)) {
+    if (raw[flag] && !ids.has(badgeId)) {
+      ids.add(badgeId);
+      needsSave = true;
+    }
+  }
+  if (needsSave) data.earnedBadgeIds = [...ids];
+  return { data, needsSave };
 }
 
 export async function getBadgeData(): Promise<BadgeData> {
   try {
     const json = await AsyncStorage.getItem(BADGE_DATA_KEY);
-    if (json) return migrateBadgeData(JSON.parse(json));
+    if (json) {
+      const { data, needsSave } = migrateBadgeData(JSON.parse(json));
+      if (needsSave) await AsyncStorage.setItem(BADGE_DATA_KEY, JSON.stringify(data));
+      return data;
+    }
     return { ...DEFAULT_BADGE_DATA };
   } catch {
     return { ...DEFAULT_BADGE_DATA };

@@ -23,12 +23,12 @@ import { BaselineRegionId, UserStats, GameMode } from '../types';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
 import { FlagImageSmall } from '../components/FlagImage';
-import { CheckIcon, CrossIcon, ChevronRightIcon, BarChartIcon, FlagIcon, GlobeIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon, HeartIcon, UsersIcon, CompassIcon } from '../components/Icons';
+import { CheckIcon, CrossIcon, ChevronRightIcon, BarChartIcon, GlobeIcon, CalendarIcon, UsersIcon, BadgeIconView } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { RootStackParamList } from '../types/navigation';
-import { getAllEarnedBadges, detectPerGameBadges, buildBadgeContext, BADGES, TIER_COLORS, BadgeIcon, EarnedBadge } from '../utils/badges';
+import { getAllEarnedBadges, detectPerGameBadges, buildBadgeContext, BADGES, TIER_COLORS, EarnedBadge } from '../utils/badges';
 import { getTotalFlagCount } from '../data';
 import { useInterstitialAdUnit, shouldShowAd, recordAdImpression, incrementGameCount } from '../utils/ads';
 import { encodeChallenge, ChallengeData, CHALLENGE_MODES } from '../utils/challengeCode';
@@ -166,7 +166,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const h2h = isChallenge && challenge ? (() => {
     const hostCorrect = challenge.hostResults.filter((r) => r.correct).length;
     const playerCorrect = results.filter((r) => r.correct).length;
-    const totalFlags = challenge.flagIds.length;
+    const h2hTotal = challenge.flagIds.length;
     // Compute raw averages in ms for fair comparison (host times have 100ms granularity from encoding)
     const hostAvgMs = challenge.hostResults.length > 0
       ? challenge.hostResults.reduce((s, r) => s + r.timeMs, 0) / challenge.hostResults.length
@@ -183,7 +183,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
     else if (hostCorrect > playerCorrect) winner = 'host';
     else if (playerAvgMs < hostAvgMs) winner = 'player';
     else if (hostAvgMs < playerAvgMs) winner = 'host';
-    return { hostCorrect, playerCorrect, hostAvg, playerAvg, totalFlags, winner };
+    return { hostCorrect, playerCorrect, hostAvg, playerAvg, h2hTotal, winner };
   })() : null;
 
   // Load ad if frequency cap allows (skip for daily/baseline/review)
@@ -241,9 +241,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
         await updateStats(correct, results.length, streak, config.mode, config.category);
         await updateFlagResults(results);
         await addGameHistoryEntry(accuracy, config.mode);
-        // Detect and persist per-game badges (perfect_10, s_rank, quick_draw)
-        const perGameIds = detectPerGameBadges(results, correct, results.length);
-        if (perGameIds.length > 0) await persistEarnedBadges(perGameIds);
         if (!skipAds) {
           incrementGameCount();
         }
@@ -261,11 +258,12 @@ export default function ResultsScreen({ route, navigation }: Props) {
         getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(), getMissedFlagIds(), getSupportData(),
       ]);
       const postCtx = buildBadgeContext(postStats, postFlagStats, postDayStreakInfo, postBadgeData, postMissed.length, postSupport.totalAdsWatched);
-      const postBadges = getAllEarnedBadges(postCtx, postBadgeData.earnedBadgeIds);
-
-      // Persist any newly earned cumulative badges
-      const postBadgeIdsList = postBadges.map((b) => b.id);
-      await persistEarnedBadges(postBadgeIdsList);
+      // Merge persisted IDs + per-game badges detected from results, then evaluate
+      const perGameIds = !reviewOnly ? detectPerGameBadges(results, correct, results.length) : [];
+      const allPersistedIds = [...postBadgeData.earnedBadgeIds, ...perGameIds];
+      const postBadges = getAllEarnedBadges(postCtx, allPersistedIds);
+      // Single persist call for all earned badges
+      await persistEarnedBadges(postBadges.map((b) => b.id));
 
       setOverallStats(postStats);
       setDayStreakCount(postDayStreakInfo.current);
@@ -449,23 +447,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
     : accDiff !== null && accDiff < 0 ? t('results.belowAverage', { pct: Math.abs(accDiff) })
     : null;
 
-  const renderBadgeIcon = (icon: BadgeIcon, tierColor: string) => {
-    const size = 18;
-    switch (icon) {
-      case 'flag': return <FlagIcon size={size} color={tierColor} />;
-      case 'globe': return <GlobeIcon size={size} color={tierColor} />;
-      case 'check': return <CheckIcon size={size} color={tierColor} />;
-      case 'play': return <PlayIcon size={size} color={tierColor} />;
-      case 'lightning': return <LightningIcon size={size} color={tierColor} />;
-      case 'calendar': return <CalendarIcon size={size} color={tierColor} />;
-      case 'clock': return <ClockIcon size={size} color={tierColor} />;
-      case 'crosshair': return <CrosshairIcon size={size} color={tierColor} />;
-      case 'link': return <LinkIcon size={size} color={tierColor} />;
-      case 'heart': return <HeartIcon size={size} color={tierColor} filled />;
-      case 'compass': return <CompassIcon size={size} color={tierColor} />;
-      default: return <FlagIcon size={size} color={tierColor} />;
-    }
-  };
+  // Badge icon rendering handled by shared BadgeIconView component
 
   // Interpolate progress bar width
   const progressBarWidth = progressBarAnim.interpolate({
@@ -529,7 +511,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
                   st.h2hName,
                   h2h.winner === 'player' && st.h2hNameWinner,
                 ]}>{playerName || t('challenge.you')}</Text>
-                <Text style={st.h2hScore}>{h2h.playerCorrect}/{h2h.totalFlags}</Text>
+                <Text style={st.h2hScore}>{h2h.playerCorrect}/{h2h.h2hTotal}</Text>
                 <Text style={st.h2hTime}>{h2h.playerAvg}s {t('results.avgTime').toLowerCase()}</Text>
               </View>
               <View style={st.h2hVs}>
@@ -540,7 +522,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
                   st.h2hName,
                   h2h.winner === 'host' && st.h2hNameWinner,
                 ]}>{challenge.hostName}</Text>
-                <Text style={st.h2hScore}>{h2h.hostCorrect}/{h2h.totalFlags}</Text>
+                <Text style={st.h2hScore}>{h2h.hostCorrect}/{h2h.h2hTotal}</Text>
                 <Text style={st.h2hTime}>{h2h.hostAvg}s {t('results.avgTime').toLowerCase()}</Text>
               </View>
             </View>
@@ -725,7 +707,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
               return (
                 <View key={badge.id} style={st.badgeRow}>
                   <View style={[st.badgeIconWrap, { backgroundColor: tierColor + '18' }]}>
-                    {renderBadgeIcon(badge.icon, tierColor)}
+                    <BadgeIconView icon={badge.icon} color={tierColor} />
                   </View>
                   <View style={st.badgeContent}>
                     <Text style={st.badgeName}>{badge.name}</Text>

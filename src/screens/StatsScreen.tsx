@@ -23,8 +23,8 @@ import { FlagImageSmall } from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
-import { getAllEarnedBadges, buildBadgeContext, BADGES, TIER_COLORS, BadgeIcon, BadgeCheckContext, getBadgeProgress } from '../utils/badges';
-import { FlagIcon, GlobeIcon, CheckIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon, HeartIcon, ChevronRightIcon, BarChartIcon, CompassIcon } from '../components/Icons';
+import { getAllEarnedBadges, buildBadgeContext, BADGES, TIER_COLORS, BadgeCheckContext, getBadgeProgress } from '../utils/badges';
+import { ChevronRightIcon, CrosshairIcon, BadgeIconView } from '../components/Icons';
 
 const RANK_COLORS = [colors.gradeS, colors.textTertiary, colors.warning];
 
@@ -210,53 +210,27 @@ export default function StatsScreen() {
     return getAllEarnedBadges(ctx, badgeData.earnedBadgeIds);
   }, [stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched]);
 
-  // ── Next milestone computation ──
+  // ── Next milestone computation (uses shared getBadgeProgress) ──
   const nextMilestone = React.useMemo(() => {
-    if (!stats) return null;
-    const earnedIds = new Set(earnedBadges.map((b) => b.id));
-    const countriesSeen = Object.values(flagStats).filter((fs) => fs.right > 0).length;
-    const totalF = getTotalFlagCount();
+    if (!stats || !badgeData) return null;
+    const earnedIdSet = new Set(earnedBadges.map((b) => b.id));
+    const ctx = buildBadgeContext(stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched);
 
-    // Check each badge for proximity
     const candidates: { badge: typeof BADGES[0]; progress: number; target: number; remaining: number }[] = [];
 
     for (const badge of BADGES) {
-      if (earnedIds.has(badge.id)) continue;
-      let progress = 0;
-      let target = 0;
-
-      switch (badge.id) {
-        case 'first_flag': progress = stats.totalGamesPlayed; target = 1; break;
-        case 'globe_trotter': progress = countriesSeen; target = 50; break;
-        case 'world_citizen': progress = countriesSeen; target = 100; break;
-        case 'flag_master': progress = countriesSeen; target = totalF; break;
-        case 'ten_timer': progress = stats.totalGamesPlayed; target = 10; break;
-        case 'century_club': progress = stats.totalGamesPlayed; target = 100; break;
-        case 'hot_streak': progress = stats.bestStreak; target = 10; break;
-        case 'on_fire': progress = stats.bestStreak; target = 25; break;
-        case 'unstoppable': progress = stats.bestStreak; target = 50; break;
-        case 'day_tripper': progress = dayStreakInfo.best; target = 3; break;
-        case 'week_warrior': progress = dayStreakInfo.best; target = 7; break;
-        case 'month_master': progress = dayStreakInfo.best; target = 30; break;
-        case 'speed_demon': progress = stats.bestTimeAttackScore; target = 15; break;
-        case 'lightning_round': progress = stats.bestTimeAttackScore; target = 25; break;
-        default: continue;
-      }
-
-      if (target > 0 && progress > 0) {
-        const remaining = target - progress;
-        const pctComplete = progress / target;
-        if (pctComplete >= 0.3) {
-          candidates.push({ badge, progress, target, remaining });
-        }
+      if (earnedIdSet.has(badge.id)) continue;
+      const bp = getBadgeProgress(badge, ctx);
+      if (!bp || bp.target === 0 || bp.progress === 0) continue;
+      if (bp.pct >= 30) {
+        candidates.push({ badge, progress: bp.progress, target: bp.target, remaining: bp.target - bp.progress });
       }
     }
 
     if (candidates.length === 0) return null;
-    // Pick the one closest to completion
     candidates.sort((a, b) => (a.remaining / a.target) - (b.remaining / b.target));
     return candidates[0];
-  }, [stats, earnedBadges, flagStats, dayStreakInfo]);
+  }, [stats, earnedBadges, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched]);
 
   // Score distribution: bucket accuracies into ranges
   // (must be above the early return to satisfy Rules of Hooks)
@@ -320,25 +294,6 @@ export default function StatsScreen() {
     inputRange: [0, 1],
     outputRange: ['0%', '100%'],
   });
-
-  const renderBadgeIcon = (icon: BadgeIcon, earned: boolean, tierColor: string) => {
-    const iconColor = earned ? tierColor : colors.textTertiary;
-    const size = 18;
-    switch (icon) {
-      case 'flag': return <FlagIcon size={size} color={iconColor} />;
-      case 'globe': return <GlobeIcon size={size} color={iconColor} />;
-      case 'check': return <CheckIcon size={size} color={iconColor} />;
-      case 'play': return <PlayIcon size={size} color={iconColor} />;
-      case 'lightning': return <LightningIcon size={size} color={iconColor} />;
-      case 'calendar': return <CalendarIcon size={size} color={iconColor} />;
-      case 'clock': return <ClockIcon size={size} color={iconColor} />;
-      case 'crosshair': return <CrosshairIcon size={size} color={iconColor} />;
-      case 'link': return <LinkIcon size={size} color={iconColor} />;
-      case 'heart': return <HeartIcon size={size} color={iconColor} filled />;
-      case 'compass': return <CompassIcon size={size} color={iconColor} />;
-      default: return <FlagIcon size={size} color={iconColor} />;
-    }
-  };
 
   const accuracyLabel =
     overallAccuracy === 100 ? t('stats.perfect') :
@@ -422,7 +377,7 @@ export default function StatsScreen() {
         {nextMilestone && (
           <Animated.View style={[s.milestoneCard, { opacity: progressFade }]}>
             <View style={[s.milestoneIconWrap, { backgroundColor: TIER_COLORS[nextMilestone.badge.tier] + '18' }]}>
-              {renderBadgeIcon(nextMilestone.badge.icon, true, TIER_COLORS[nextMilestone.badge.tier])}
+              <BadgeIconView icon={nextMilestone.badge.icon} color={TIER_COLORS[nextMilestone.badge.tier]} />
             </View>
             <View style={s.milestoneContent}>
               <Text style={s.milestoneTitle}>{nextMilestone.badge.name}</Text>
@@ -596,7 +551,7 @@ export default function StatsScreen() {
               return (
                 <View key={badge.id} style={[s.badgeCard, !earned && s.badgeCardLocked]}>
                   <View style={[s.badgeIconWrap, { backgroundColor: earned ? tierColor + '18' : colors.surfaceSecondary }]}>
-                    {renderBadgeIcon(badge.icon, earned, tierColor)}
+                    <BadgeIconView icon={badge.icon} color={earned ? tierColor : colors.textTertiary} />
                   </View>
                   <Text style={[s.badgeName, !earned && s.badgeNameLocked]}>{badge.name}</Text>
                   <Text style={[s.badgeDesc, !earned && s.badgeDescLocked]}>{badge.description}</Text>
