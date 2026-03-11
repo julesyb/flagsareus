@@ -62,10 +62,9 @@ export default function ResultsScreen({ route, navigation }: Props) {
   // When ad closes, execute pending navigation
   useEffect(() => {
     if (interstitial.isClosed && pendingNavRef.current) {
-      recordAdImpression();
       const nav = pendingNavRef.current;
       pendingNavRef.current = null;
-      nav();
+      recordAdImpression().then(nav);
     }
   }, [interstitial.isClosed]);
 
@@ -162,6 +161,14 @@ export default function ResultsScreen({ route, navigation }: Props) {
     if (adEligible && interstitial.isLoaded) {
       pendingNavRef.current = navigatePlayAgain;
       interstitial.show();
+      // Safety: if ad never fires isClosed (SDK bug, network), unblock after 10s
+      setTimeout(() => {
+        if (pendingNavRef.current) {
+          const nav = pendingNavRef.current;
+          pendingNavRef.current = null;
+          recordAdImpression().then(nav);
+        }
+      }, 10000);
     } else {
       navigatePlayAgain();
     }

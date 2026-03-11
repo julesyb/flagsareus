@@ -5,10 +5,7 @@ import {
   AdsConsentStatus,
   useInterstitialAd as useInterstitialAdNative,
 } from 'react-native-google-mobile-ads';
-import {
-  requestTrackingPermissionsAsync,
-  getTrackingPermissionsAsync,
-} from 'expo-tracking-transparency';
+import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const INTERSTITIAL_ID = TestIds.INTERSTITIAL;
