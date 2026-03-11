@@ -18,7 +18,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
 import { calculateAccuracy, getStreakFromResults, getGrade, generateDailyShareGrid, generateShareGrid, getDailyNumber } from '../utils/gameEngine';
-import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, updateLastGameBadgeFlags, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreak, getDayStreakInfo, getBadgeData, saveBadgeData, getMissedFlagIds, addGameHistoryEntry, getSupportData, getChallengeName, saveChallengeName } from '../utils/storage';
+import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreakInfo, getBadgeData, persistEarnedBadges, getMissedFlagIds, addGameHistoryEntry, getSupportData, getChallengeName, saveChallengeName } from '../utils/storage';
 import { BaselineRegionId, UserStats, GameMode } from '../types';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
@@ -28,7 +28,7 @@ import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { RootStackParamList } from '../types/navigation';
-import { evaluateBadges, BADGES, TIER_COLORS, BadgeIcon, EarnedBadge } from '../utils/badges';
+import { getAllEarnedBadges, detectPerGameBadges, buildBadgeContext, BADGES, TIER_COLORS, BadgeIcon, EarnedBadge } from '../utils/badges';
 import { getTotalFlagCount } from '../data';
 import { useInterstitialAdUnit, shouldShowAd, recordAdImpression, incrementGameCount } from '../utils/ads';
 import { encodeChallenge, ChallengeData, CHALLENGE_MODES } from '../utils/challengeCode';
@@ -217,22 +217,12 @@ export default function ResultsScreen({ route, navigation }: Props) {
   useEffect(() => {
     // ── Data processing ──
     async function processResults() {
+      // ── Snapshot pre-game state ──
       const [preStats, preFlagStats, preDayStreakInfo, preBadgeData, preMissed, preSupport] = await Promise.all([
         getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(), getMissedFlagIds(), getSupportData(),
       ]);
-      const preBadgeIds = new Set(evaluateBadges({
-        stats: preStats, flagStats: preFlagStats, dayStreak: preDayStreakInfo.current,
-        bestDayStreak: preDayStreakInfo.best,
-        dailyChallengesCompleted: preBadgeData.dailyChallengesCompleted,
-        hasShared: preBadgeData.hasShared,
-        lastGamePerfect10: preBadgeData.lastGamePerfect10,
-        lastGameSRank: preBadgeData.lastGameSRank,
-        weakFlagCount: preMissed.length,
-        adsWatched: preSupport.totalAdsWatched,
-        earnedPracticePerfect: preBadgeData.earnedPracticePerfect,
-        earnedQuickDraw: preBadgeData.earnedQuickDraw,
-        earnedRegionAce: preBadgeData.earnedRegionAce,
-      }).map((b) => b.id));
+      const preCtx = buildBadgeContext(preStats, preFlagStats, preDayStreakInfo, preBadgeData, preMissed.length, preSupport.totalAdsWatched);
+      const preBadgeIds = new Set(getAllEarnedBadges(preCtx, preBadgeData.earnedBadgeIds).map((b) => b.id));
 
       const wasNewBestStreak = streak > preStats.bestStreak;
       const prevAcc = preStats.totalAnswered > 0
@@ -246,11 +236,14 @@ export default function ResultsScreen({ route, navigation }: Props) {
         }
       }
 
+      // ── Persist game data ──
       if (!reviewOnly) {
         await updateStats(correct, results.length, streak, config.mode, config.category);
         await updateFlagResults(results);
-        await updateLastGameBadgeFlags(correct, results.length);
         await addGameHistoryEntry(accuracy, config.mode);
+        // Detect and persist per-game badges (perfect_10, s_rank, quick_draw)
+        const perGameIds = detectPerGameBadges(results, correct, results.length);
+        if (perGameIds.length > 0) await persistEarnedBadges(perGameIds);
         if (!skipAds) {
           incrementGameCount();
         }
@@ -263,47 +256,16 @@ export default function ResultsScreen({ route, navigation }: Props) {
         await saveBaselineResult(config.category as BaselineRegionId, results);
       }
 
+      // ── Snapshot post-game state and evaluate badges ──
       const [postStats, postFlagStats, postDayStreakInfo, postBadgeData, postMissed, postSupport] = await Promise.all([
         getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(), getMissedFlagIds(), getSupportData(),
       ]);
+      const postCtx = buildBadgeContext(postStats, postFlagStats, postDayStreakInfo, postBadgeData, postMissed.length, postSupport.totalAdsWatched);
+      const postBadges = getAllEarnedBadges(postCtx, postBadgeData.earnedBadgeIds);
 
-      // Persist sticky badge flags once conditions are met
-      const stickyUpdates: Partial<typeof postBadgeData> = {};
-      const postCountriesSeen = Object.values(postFlagStats).filter((s) => s.right > 0).length;
-      if (!postBadgeData.earnedPracticePerfect && postCountriesSeen > 0 && postMissed.length === 0 && postStats.totalGamesPlayed >= 5) {
-        stickyUpdates.earnedPracticePerfect = true;
-      }
-      if (!postBadgeData.earnedQuickDraw && results.some((r) => r.correct && r.timeTaken < 1500)) {
-        stickyUpdates.earnedQuickDraw = true;
-      }
-      if (!postBadgeData.earnedRegionAce) {
-        const regions = ['africa', 'asia', 'europe', 'americas', 'oceania'] as const;
-        for (const region of regions) {
-          const rs = postStats.categoryStats[region];
-          if (rs && rs.total >= 20 && Math.round((rs.correct / rs.total) * 100) >= 90) {
-            stickyUpdates.earnedRegionAce = true;
-            break;
-          }
-        }
-      }
-      if (Object.keys(stickyUpdates).length > 0) {
-        await saveBadgeData(stickyUpdates);
-        Object.assign(postBadgeData, stickyUpdates);
-      }
-
-      const postBadges = evaluateBadges({
-        stats: postStats, flagStats: postFlagStats, dayStreak: postDayStreakInfo.current,
-        bestDayStreak: postDayStreakInfo.best,
-        dailyChallengesCompleted: postBadgeData.dailyChallengesCompleted,
-        hasShared: postBadgeData.hasShared,
-        lastGamePerfect10: postBadgeData.lastGamePerfect10,
-        lastGameSRank: postBadgeData.lastGameSRank,
-        weakFlagCount: postMissed.length,
-        adsWatched: postSupport.totalAdsWatched,
-        earnedPracticePerfect: postBadgeData.earnedPracticePerfect,
-        earnedQuickDraw: postBadgeData.earnedQuickDraw,
-        earnedRegionAce: postBadgeData.earnedRegionAce,
-      });
+      // Persist any newly earned cumulative badges
+      const postBadgeIdsList = postBadges.map((b) => b.id);
+      await persistEarnedBadges(postBadgeIdsList);
 
       setOverallStats(postStats);
       setDayStreakCount(postDayStreakInfo.current);

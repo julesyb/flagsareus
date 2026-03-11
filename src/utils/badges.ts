@@ -1,5 +1,5 @@
-import { UserStats } from '../types';
-import { FlagStats } from './storage';
+import { UserStats, GameResult } from '../types';
+import { FlagStats, DayStreakInfo, BadgeData } from './storage';
 import { getTotalFlagCount } from '../data';
 import { colors } from './theme';
 
@@ -67,6 +67,11 @@ export const BADGES: Badge[] = [
   { id: 'supporter', name: 'Supporter', description: 'Support by watching a video', tier: 'bronze', category: 'fun', icon: 'heart' },
 ];
 
+// ── Shared constants ──────────────────────────────────────────
+const PLAYABLE_MODES = ['easy', 'medium', 'hard', 'flagflash', 'flagpuzzle', 'timeattack', 'neighbors', 'impostor', 'capitalconnection'] as const;
+const REGION_IDS = ['africa', 'asia', 'europe', 'americas', 'oceania'] as const;
+
+// ── Badge context (only live cumulative data, no sticky flags) ──
 export interface BadgeCheckContext {
   stats: UserStats;
   flagStats: FlagStats;
@@ -74,22 +79,38 @@ export interface BadgeCheckContext {
   bestDayStreak: number;
   dailyChallengesCompleted: number;
   hasShared: boolean;
-  lastGamePerfect10: boolean;
-  lastGameSRank: boolean;
   weakFlagCount: number;
   adsWatched: number;
-  earnedPracticePerfect: boolean;
-  earnedQuickDraw: boolean;
-  earnedRegionAce: boolean;
 }
 
+// Build context from raw data sources (single place, no duplication)
+export function buildBadgeContext(
+  stats: UserStats,
+  flagStats: FlagStats,
+  dayStreakInfo: DayStreakInfo,
+  badgeData: BadgeData,
+  weakFlagCount: number,
+  adsWatched: number,
+): BadgeCheckContext {
+  return {
+    stats,
+    flagStats,
+    dayStreak: dayStreakInfo.current,
+    bestDayStreak: dayStreakInfo.best,
+    dailyChallengesCompleted: badgeData.dailyChallengesCompleted,
+    hasShared: badgeData.hasShared,
+    weakFlagCount,
+    adsWatched,
+  };
+}
+
+// ── Progress tracking ─────────────────────────────────────────
 export interface BadgeProgress {
   progress: number;
   target: number;
   pct: number; // 0-100
 }
 
-// Returns progress toward a badge (null if not trackable or already earned)
 export function getBadgeProgress(badge: Badge, ctx: BadgeCheckContext): BadgeProgress | null {
   const totalFlags = getTotalFlagCount();
   const countriesSeen = Object.values(ctx.flagStats).filter((s) => s.right > 0).length;
@@ -117,10 +138,11 @@ export function getBadgeProgress(badge: Badge, ctx: BadgeCheckContext): BadgePro
     case 'daily_devotee': progress = ctx.dailyChallengesCompleted; target = 7; break;
     case 'daily_legend': progress = ctx.dailyChallengesCompleted; target = 30; break;
     case 'explorer': {
-      const played = (['easy', 'medium', 'hard', 'flagflash', 'flagpuzzle', 'timeattack', 'neighbors', 'impostor', 'capitalconnection'] as const)
-        .filter((m) => ctx.stats.modeStats[m].total > 0).length;
+      const played = PLAYABLE_MODES.filter((m) => ctx.stats.modeStats[m].total > 0).length;
       progress = played; target = 5; break;
     }
+    // Per-game badges (perfect_10, s_rank, quick_draw) and volatile badges
+    // (region_ace, practice_perfect) have no meaningful progress bar
     default: return null;
   }
 
@@ -129,17 +151,12 @@ export function getBadgeProgress(badge: Badge, ctx: BadgeCheckContext): BadgePro
   return { progress: clamped, target, pct: Math.round((clamped / target) * 100) };
 }
 
-const REGION_IDS = ['africa', 'asia', 'europe', 'americas', 'oceania'] as const;
-
-function hasRegionAce(ctx: BadgeCheckContext): boolean {
-  for (const region of REGION_IDS) {
-    const rs = ctx.stats.categoryStats[region];
-    if (rs && rs.total >= 20 && Math.round((rs.correct / rs.total) * 100) >= 90) return true;
-  }
-  return false;
-}
-
-export function evaluateBadges(ctx: BadgeCheckContext): EarnedBadge[] {
+// ── Evaluation (cumulative state only) ────────────────────────
+// Returns badges earnable from current cumulative stats.
+// Per-game badges (perfect_10, s_rank, quick_draw) are NOT evaluated here
+// because individual game data isn't in cumulative stats. They're handled
+// by detectPerGameBadges() and persisted via earnedBadgeIds.
+function evaluateBadges(ctx: BadgeCheckContext): EarnedBadge[] {
   const earned: EarnedBadge[] = [];
   const totalFlags = getTotalFlagCount();
   const countriesSeen = Object.values(ctx.flagStats).filter((s) => s.right > 0).length;
@@ -160,11 +177,6 @@ export function evaluateBadges(ctx: BadgeCheckContext): EarnedBadge[] {
   check('marathon', ctx.stats.totalGamesPlayed >= 50);
   check('century_club', ctx.stats.totalGamesPlayed >= 100);
 
-  // Accuracy
-  check('perfect_10', ctx.lastGamePerfect10);
-  check('s_rank', ctx.lastGameSRank);
-  check('quick_draw', ctx.earnedQuickDraw);
-
   // Streaks
   check('hot_streak', ctx.stats.bestStreak >= 10);
   check('on_fire', ctx.stats.bestStreak >= 25);
@@ -181,15 +193,45 @@ export function evaluateBadges(ctx: BadgeCheckContext): EarnedBadge[] {
   check('daily_legend', ctx.dailyChallengesCompleted >= 30);
 
   // Category
-  check('region_ace', ctx.earnedRegionAce || hasRegionAce(ctx));
+  check('region_ace', hasRegionAce(ctx));
 
   // Fun
-  const modesPlayed = (['easy', 'medium', 'hard', 'flagflash', 'flagpuzzle', 'timeattack', 'neighbors', 'impostor', 'capitalconnection'] as const)
-    .filter((m) => ctx.stats.modeStats[m].total > 0).length;
+  const modesPlayed = PLAYABLE_MODES.filter((m) => ctx.stats.modeStats[m].total > 0).length;
   check('explorer', modesPlayed >= 5);
-  check('practice_perfect', ctx.earnedPracticePerfect || (countriesSeen > 0 && ctx.weakFlagCount === 0 && ctx.stats.totalGamesPlayed >= 5));
+  check('practice_perfect', countriesSeen > 0 && ctx.weakFlagCount === 0 && ctx.stats.totalGamesPlayed >= 5);
   check('shared_spirit', ctx.hasShared);
   check('supporter', ctx.adsWatched > 0);
 
   return earned;
+}
+
+function hasRegionAce(ctx: BadgeCheckContext): boolean {
+  for (const region of REGION_IDS) {
+    const rs = ctx.stats.categoryStats[region];
+    if (rs && rs.total >= 20 && Math.round((rs.correct / rs.total) * 100) >= 90) return true;
+  }
+  return false;
+}
+
+// ── Per-game badge detection ──────────────────────────────────
+// Checks conditions that depend on individual game results (not cumulative stats).
+// Called once per game in ResultsScreen; results are persisted to earnedBadgeIds.
+export function detectPerGameBadges(results: GameResult[], correct: number, total: number): string[] {
+  const ids: string[] = [];
+  if (correct === total && total >= 10) ids.push('perfect_10');
+  const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+  if (accuracy >= 95 && total >= 5) ids.push('s_rank');
+  if (results.some((r) => r.correct && r.timeTaken < 1500)) ids.push('quick_draw');
+  return ids;
+}
+
+// ── Public API: get all earned badges ─────────────────────────
+// Merges live evaluation with persisted badge IDs (permanent achievements).
+// This is the single function both ResultsScreen and StatsScreen should use.
+export function getAllEarnedBadges(ctx: BadgeCheckContext, persistedBadgeIds: string[]): EarnedBadge[] {
+  const evaluated = evaluateBadges(ctx);
+  const allIds = new Set([...evaluated.map((b) => b.id), ...persistedBadgeIds]);
+  return BADGES
+    .filter((b) => allIds.has(b.id))
+    .map((b) => ({ ...b, earned: true as const }));
 }

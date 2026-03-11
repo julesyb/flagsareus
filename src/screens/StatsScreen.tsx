@@ -15,7 +15,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { colors, spacing, fontFamily, fontSize, borderRadius } from '../utils/theme';
 import { UserStats, GameMode, CategoryId } from '../types';
-import { getStats, getFlagStats, FlagStats, getDayStreak, getDayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getSupportData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData } from '../utils/storage';
+import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getSupportData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData } from '../utils/storage';
 import { getAllFlags, getTotalFlagCount } from '../data';
 import { getGrade } from '../utils/gameEngine';
 import { t } from '../utils/i18n';
@@ -23,7 +23,7 @@ import { FlagImageSmall } from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
-import { evaluateBadges, BADGES, TIER_COLORS, BadgeIcon, BadgeCheckContext, getBadgeProgress } from '../utils/badges';
+import { getAllEarnedBadges, buildBadgeContext, BADGES, TIER_COLORS, BadgeIcon, BadgeCheckContext, getBadgeProgress } from '../utils/badges';
 import { FlagIcon, GlobeIcon, CheckIcon, PlayIcon, LightningIcon, CalendarIcon, ClockIcon, CrosshairIcon, LinkIcon, HeartIcon, ChevronRightIcon, BarChartIcon, CompassIcon } from '../components/Icons';
 
 const RANK_COLORS = [colors.gradeS, colors.textTertiary, colors.warning];
@@ -46,8 +46,7 @@ export default function StatsScreen() {
   const onNavigate = useNavTabs();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [flagStats, setFlagStats] = useState<FlagStats>({});
-  const [dayStreak, setDayStreak] = useState(0);
-  const [bestDayStreak, setBestDayStreak] = useState(0);
+  const [dayStreakInfo, setDayStreakInfo] = useState<DayStreakInfo>({ current: 0, best: 0 });
   const [badgeData, setBadgeData] = useState<BadgeData | null>(null);
   const [weakFlagCount, setWeakFlagCount] = useState(0);
   const [adsWatched, setAdsWatched] = useState(0);
@@ -106,8 +105,7 @@ export default function StatsScreen() {
           if (!cancelled) {
             setStats(s);
             setFlagStats(fs);
-            setDayStreak(dsInfo.current);
-            setBestDayStreak(dsInfo.best);
+            setDayStreakInfo(dsInfo);
             setBadgeData(bd);
             setWeakFlagCount(missed.length);
             setGameHistory(gh);
@@ -208,20 +206,9 @@ export default function StatsScreen() {
 
   const earnedBadges = React.useMemo(() => {
     if (!badgeData || !stats) return [];
-    return evaluateBadges({
-      stats, flagStats, dayStreak,
-      bestDayStreak,
-      dailyChallengesCompleted: badgeData.dailyChallengesCompleted,
-      hasShared: badgeData.hasShared,
-      lastGamePerfect10: badgeData.lastGamePerfect10,
-      lastGameSRank: badgeData.lastGameSRank,
-      weakFlagCount,
-      adsWatched,
-      earnedPracticePerfect: badgeData.earnedPracticePerfect,
-      earnedQuickDraw: badgeData.earnedQuickDraw,
-      earnedRegionAce: badgeData.earnedRegionAce,
-    });
-  }, [stats, flagStats, dayStreak, bestDayStreak, badgeData, weakFlagCount, adsWatched]);
+    const ctx = buildBadgeContext(stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched);
+    return getAllEarnedBadges(ctx, badgeData.earnedBadgeIds);
+  }, [stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched]);
 
   // ── Next milestone computation ──
   const nextMilestone = React.useMemo(() => {
@@ -248,9 +235,9 @@ export default function StatsScreen() {
         case 'hot_streak': progress = stats.bestStreak; target = 10; break;
         case 'on_fire': progress = stats.bestStreak; target = 25; break;
         case 'unstoppable': progress = stats.bestStreak; target = 50; break;
-        case 'day_tripper': progress = dayStreak; target = 3; break;
-        case 'week_warrior': progress = dayStreak; target = 7; break;
-        case 'month_master': progress = dayStreak; target = 30; break;
+        case 'day_tripper': progress = dayStreakInfo.best; target = 3; break;
+        case 'week_warrior': progress = dayStreakInfo.best; target = 7; break;
+        case 'month_master': progress = dayStreakInfo.best; target = 30; break;
         case 'speed_demon': progress = stats.bestTimeAttackScore; target = 15; break;
         case 'lightning_round': progress = stats.bestTimeAttackScore; target = 25; break;
         default: continue;
@@ -269,7 +256,7 @@ export default function StatsScreen() {
     // Pick the one closest to completion
     candidates.sort((a, b) => (a.remaining / a.target) - (b.remaining / b.target));
     return candidates[0];
-  }, [stats, earnedBadges, flagStats, dayStreak]);
+  }, [stats, earnedBadges, flagStats, dayStreakInfo]);
 
   // Score distribution: bucket accuracies into ranges
   // (must be above the early return to satisfy Rules of Hooks)
@@ -315,19 +302,9 @@ export default function StatsScreen() {
   const playedModes = MODE_BREAKDOWN.filter(({ key }) => stats.modeStats[key].total > 0);
 
   // Badge check context for progress bars
-  const badgeCtx: BadgeCheckContext | null = badgeData ? {
-    stats, flagStats, dayStreak,
-    bestDayStreak,
-    dailyChallengesCompleted: badgeData.dailyChallengesCompleted,
-    hasShared: badgeData.hasShared,
-    lastGamePerfect10: badgeData.lastGamePerfect10,
-    lastGameSRank: badgeData.lastGameSRank,
-    weakFlagCount,
-    adsWatched,
-    earnedPracticePerfect: badgeData.earnedPracticePerfect,
-    earnedQuickDraw: badgeData.earnedQuickDraw,
-    earnedRegionAce: badgeData.earnedRegionAce,
-  } : null;
+  const badgeCtx: BadgeCheckContext | null = badgeData
+    ? buildBadgeContext(stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched)
+    : null;
 
   // Region accuracy data (only regions with games played)
   const regionData = REGIONS
@@ -414,9 +391,9 @@ export default function StatsScreen() {
               <Text style={s.heroStatLabel}>{t('stats.gamesPlayed')}</Text>
             </View>
             <View style={s.heroStatItem}>
-              <Text style={s.heroStatValue}>{dayStreak}</Text>
+              <Text style={s.heroStatValue}>{dayStreakInfo.current}</Text>
               <Text style={s.heroStatLabel}>{t('stats.dayStreak')}</Text>
-              {dayStreak > 0 && <Text style={s.heroStatHint}>{t('stats.playTomorrow')}</Text>}
+              {dayStreakInfo.current > 0 && <Text style={s.heroStatHint}>{t('stats.playTomorrow')}</Text>}
             </View>
           </View>
         </Animated.View>

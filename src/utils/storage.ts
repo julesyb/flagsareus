@@ -31,59 +31,74 @@ export async function saveChallengeName(name: string): Promise<void> {
 export interface BadgeData {
   dailyChallengesCompleted: number;
   hasShared: boolean;
-  lastGamePerfect10: boolean;
-  lastGameSRank: boolean;
-  earnedPracticePerfect: boolean;
-  earnedQuickDraw: boolean;
-  earnedRegionAce: boolean;
+  earnedBadgeIds: string[];
 }
 
 const DEFAULT_BADGE_DATA: BadgeData = {
   dailyChallengesCompleted: 0,
   hasShared: false,
-  lastGamePerfect10: false,
-  lastGameSRank: false,
-  earnedPracticePerfect: false,
-  earnedQuickDraw: false,
-  earnedRegionAce: false,
+  earnedBadgeIds: [],
 };
+
+// Migrate legacy per-badge sticky flags into earnedBadgeIds
+function migrateBadgeData(raw: Record<string, unknown>): BadgeData {
+  const data: BadgeData = {
+    dailyChallengesCompleted: (raw.dailyChallengesCompleted as number) || 0,
+    hasShared: (raw.hasShared as boolean) || false,
+    earnedBadgeIds: (raw.earnedBadgeIds as string[]) || [],
+  };
+  // One-time migration from old sticky flags
+  const ids = new Set(data.earnedBadgeIds);
+  if (raw.lastGamePerfect10 && !ids.has('perfect_10')) ids.add('perfect_10');
+  if (raw.lastGameSRank && !ids.has('s_rank')) ids.add('s_rank');
+  if (raw.earnedPracticePerfect && !ids.has('practice_perfect')) ids.add('practice_perfect');
+  if (raw.earnedQuickDraw && !ids.has('quick_draw')) ids.add('quick_draw');
+  if (raw.earnedRegionAce && !ids.has('region_ace')) ids.add('region_ace');
+  data.earnedBadgeIds = [...ids];
+  return data;
+}
 
 export async function getBadgeData(): Promise<BadgeData> {
   try {
     const json = await AsyncStorage.getItem(BADGE_DATA_KEY);
-    if (json) return { ...DEFAULT_BADGE_DATA, ...JSON.parse(json) };
+    if (json) return migrateBadgeData(JSON.parse(json));
     return { ...DEFAULT_BADGE_DATA };
   } catch {
     return { ...DEFAULT_BADGE_DATA };
   }
 }
 
-export async function saveBadgeData(data: Partial<BadgeData>): Promise<void> {
+export async function saveBadgeData(data: BadgeData): Promise<void> {
   try {
-    const current = await getBadgeData();
-    const updated = { ...current, ...data };
-    await AsyncStorage.setItem(BADGE_DATA_KEY, JSON.stringify(updated));
+    await AsyncStorage.setItem(BADGE_DATA_KEY, JSON.stringify(data));
   } catch {
     // Silently fail
   }
 }
 
 export async function markShared(): Promise<void> {
-  await saveBadgeData({ hasShared: true });
+  const data = await getBadgeData();
+  data.hasShared = true;
+  await saveBadgeData(data);
 }
 
 export async function incrementDailyChallenges(): Promise<void> {
   const data = await getBadgeData();
-  await saveBadgeData({ dailyChallengesCompleted: data.dailyChallengesCompleted + 1 });
+  data.dailyChallengesCompleted += 1;
+  await saveBadgeData(data);
 }
 
-export async function updateLastGameBadgeFlags(correct: number, total: number): Promise<void> {
+export async function persistEarnedBadges(badgeIds: string[]): Promise<void> {
   const data = await getBadgeData();
-  const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
-  await saveBadgeData({
-    lastGamePerfect10: data.lastGamePerfect10 || (correct === total && total >= 10),
-    lastGameSRank: data.lastGameSRank || (accuracy >= 95 && total >= 5),
-  });
+  const ids = new Set(data.earnedBadgeIds);
+  let changed = false;
+  for (const id of badgeIds) {
+    if (!ids.has(id)) { ids.add(id); changed = true; }
+  }
+  if (changed) {
+    data.earnedBadgeIds = [...ids];
+    await saveBadgeData(data);
+  }
 }
 
 // ─── App Settings ──────────────────────────────────────────
