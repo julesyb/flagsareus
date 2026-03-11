@@ -10,7 +10,7 @@ import {
   Keyboard,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, typography, fontFamily, nav, buttons } from '../utils/theme';
+import { colors, spacing, typography, fontFamily, nav, buttons, borderRadius } from '../utils/theme';
 import { GameQuestion, GameResult } from '../types';
 import { generateQuestions, checkAnswer } from '../utils/gameEngine';
 import { hapticCorrect, hapticWrong, hapticTap, playCorrectSound, playWrongSound } from '../utils/feedback';
@@ -23,6 +23,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
 
 export default function GameScreen({ route, navigation }: Props) {
   const { config } = route.params;
+  const isTimeAttack = config.mode === 'timeattack';
   const [questions, setQuestions] = useState<GameQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<GameResult[]>([]);
@@ -32,15 +33,41 @@ export default function GameScreen({ route, navigation }: Props) {
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState(false);
   const [currentStreak, setCurrentStreak] = useState(0);
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
+  const [timeLeft, setTimeLeft] = useState(config.timeLimit || 60);
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const streakScale = useRef(new Animated.Value(1)).current;
   const shakeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const q = generateQuestions(config);
+    const timeAttackConfig = isTimeAttack
+      ? { ...config, questionCount: 999 }
+      : config;
+    const q = generateQuestions(timeAttackConfig);
     setQuestions(q);
     setQuestionStartTime(Date.now());
   }, []);
+
+  // Countdown timer for timeattack mode
+  useEffect(() => {
+    if (!isTimeAttack) return;
+    const interval = setInterval(() => {
+      setTimeLeft((t) => {
+        if (t <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isTimeAttack]);
+
+  // When timeLeft hits 0, navigate to results
+  useEffect(() => {
+    if (isTimeAttack && timeLeft === 0 && results.length > 0) {
+      navigation.replace('Results', { results, config });
+    }
+  }, [timeLeft]);
 
   const currentQuestion = questions[currentIndex];
   const isHard = config.mode === 'hard';
@@ -100,6 +127,10 @@ export default function GameScreen({ route, navigation }: Props) {
 
       const newResults = [...results, result];
 
+      const feedbackDelay = isTimeAttack
+        ? (correct ? 300 : 600)
+        : (correct ? 600 : 1200);
+
       setTimeout(() => {
         if (currentIndex < questions.length - 1) {
           Animated.sequence([
@@ -124,11 +155,12 @@ export default function GameScreen({ route, navigation }: Props) {
           setQuestionStartTime(Date.now());
           Keyboard.dismiss();
         } else {
+          // Questions exhausted (unlikely for timeattack with 999)
           navigation.replace('Results', { results: newResults, config });
         }
-      }, correct ? 600 : 1200);
+      }, feedbackDelay);
     },
-    [showFeedback, currentQuestion, questionStartTime, results, currentIndex, questions, fadeAnim, navigation, config],
+    [showFeedback, currentQuestion, questionStartTime, results, currentIndex, questions, fadeAnim, navigation, config, isTimeAttack],
   );
 
   const handleSubmitHard = () => {
@@ -149,9 +181,18 @@ export default function GameScreen({ route, navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.progressBar}>
-        <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
-      </View>
+      {isTimeAttack ? (
+        <View style={styles.timerBar}>
+          <Text style={[styles.timerText, timeLeft <= 10 && styles.timerTextUrgent]}>
+            {timeLeft}s
+          </Text>
+          <View style={[styles.timerFill, { width: `${(timeLeft / (config.timeLimit || 60)) * 100}%` }]} />
+        </View>
+      ) : (
+        <View style={styles.progressBar}>
+          <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+        </View>
+      )}
 
       <View style={styles.topBar}>
         <TouchableOpacity
@@ -161,9 +202,15 @@ export default function GameScreen({ route, navigation }: Props) {
           <Text style={styles.quitText}>Exit</Text>
         </TouchableOpacity>
         <View style={styles.centerInfo}>
-          <Text style={styles.counter}>
-            {currentIndex + 1} / {questions.length}
-          </Text>
+          {isTimeAttack ? (
+            <Text style={styles.counter}>
+              {results.filter((r) => r.correct).length} correct
+            </Text>
+          ) : (
+            <Text style={styles.counter}>
+              {currentIndex + 1} / {questions.length}
+            </Text>
+          )}
           {currentStreak >= 2 ? (
             <Animated.Text
               style={[styles.streakText, { transform: [{ scale: streakScale }] }]}
@@ -171,9 +218,11 @@ export default function GameScreen({ route, navigation }: Props) {
               {currentStreak}x streak
             </Animated.Text>
           ) : (
-            <Text style={styles.score}>
-              {results.filter((r) => r.correct).length} correct
-            </Text>
+            !isTimeAttack && (
+              <Text style={styles.score}>
+                {results.filter((r) => r.correct).length} correct
+              </Text>
+            )
           )}
         </View>
         <View style={styles.quitSpacer} />
@@ -320,6 +369,30 @@ const styles = StyleSheet.create({
   progressFill: {
     height: '100%',
     backgroundColor: colors.ink,
+  },
+  timerBar: {
+    height: 28,
+    backgroundColor: colors.border,
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  timerText: {
+    ...typography.captionBold,
+    color: colors.text,
+    textAlign: 'center',
+    zIndex: 1,
+  },
+  timerTextUrgent: {
+    color: colors.error,
+  },
+  timerFill: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: colors.accent,
+    opacity: 0.15,
+    borderRadius: borderRadius.none,
   },
   topBar: {
     flexDirection: 'row',

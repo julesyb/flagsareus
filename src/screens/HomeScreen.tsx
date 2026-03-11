@@ -11,21 +11,16 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { colors, fontFamily, spacing } from '../utils/theme';
+import { colors, fontFamily, spacing, borderRadius } from '../utils/theme';
 import { getTotalFlagCount, getCategoryCount } from '../data';
 import { initAudio, hapticTap, hapticCorrect, hapticWrong, playCorrectSound, playWrongSound } from '../utils/feedback';
 import { getStats, getDayStreak } from '../utils/storage';
 import { generateQuestions } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion, CategoryId } from '../types';
-import { LightningIcon, CrosshairIcon, BarChartIcon, GlobeIcon } from '../components/Icons';
+import { LightningIcon, CrosshairIcon, ChevronRightIcon, ClockIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
-
-// ─── Local border radii (home screen uses rounded cards) ─────
-const R_SM = 8;
-const R_MD = 10;
-const R_LG = 14;
-const R_XL = 18;
+import BottomNav from '../components/BottomNav';
 
 const MODES: { key: GameMode; label: string }[] = [
   { key: 'easy', label: '2 Easy' },
@@ -99,7 +94,7 @@ function FlagTeaser() {
           countryCode={question.flag.id}
           emoji={question.flag.emoji}
           size="hero"
-          style={{ borderRadius: R_SM }}
+          style={{ borderRadius: borderRadius.sm }}
         />
         <Animated.View style={[s.flagCover, { opacity: coverOpacity }]}>
           <Text style={s.coverQ}>?</Text>
@@ -297,7 +292,7 @@ export default function HomeScreen({ navigation }: Props) {
               <Text style={s.modeTitle}>Quick Play</Text>
               <Text style={s.modeSub}>{questionCountAll ? `All ${totalFlags}` : questionCount} random flags, all {totalFlags} countries</Text>
             </View>
-            <Text style={s.modeChev}>{'\u203A'}</Text>
+            <ChevronRightIcon size={18} color={colors.rule} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -312,7 +307,7 @@ export default function HomeScreen({ navigation }: Props) {
               <Text style={s.modeTitle}>Game Mode</Text>
               <Text style={s.modeSub}>Choose difficulty and region</Text>
             </View>
-            <Text style={s.modeChev}>{'\u203A'}</Text>
+            <ChevronRightIcon size={18} color={colors.rule} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -320,19 +315,19 @@ export default function HomeScreen({ navigation }: Props) {
             activeOpacity={0.85}
             onPress={() => {
               hapticTap();
-              navigation.navigate('FlagFlash', {
-                config: { mode: 'flagflash', category: 'all', questionCount: 999, timeLimit: 60 },
+              navigation.navigate('Game', {
+                config: { mode: 'timeattack', category: 'all', questionCount: 999, timeLimit: 60, displayMode: 'flag' },
               });
             }}
           >
             <View style={s.modeIcon}>
-              <LightningIcon size={18} color={colors.white} filled={false} />
+              <ClockIcon size={18} color={colors.white} />
             </View>
             <View style={s.modeText}>
-              <Text style={s.modeTitle}>FlagFlash</Text>
-              <Text style={s.modeSub}>Speed round — how fast are you?</Text>
+              <Text style={s.modeTitle}>Time Attack</Text>
+              <Text style={s.modeSub}>60 seconds - how many can you get?</Text>
             </View>
-            <Text style={s.modeChev}>{'\u203A'}</Text>
+            <ChevronRightIcon size={18} color={colors.rule} />
           </TouchableOpacity>
         </View>
 
@@ -356,54 +351,15 @@ export default function HomeScreen({ navigation }: Props) {
       </ScrollView>
 
       {/* ── BOTTOM NAV ── */}
-      <View style={s.bottomNav}>
-        <TouchableOpacity style={s.navTab} onPress={play} activeOpacity={0.6}>
-          <LightningIcon size={20} color={colors.ink} filled />
-          <Text style={[s.navLbl, s.navLblActive]}>Play</Text>
-          <View style={s.navDot} />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={s.navTab}
-          onPress={() => { hapticTap(); navigation.navigate('GameSetup'); }}
-          activeOpacity={0.6}
-        >
-          <CrosshairIcon size={20} color={colors.textTertiary} />
-          <Text style={s.navLbl}>Modes</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={s.navTab}
-          onPress={() => {
-            hapticTap();
-            navigation.navigate('FlagFlash', {
-              config: { mode: 'flagflash', category: 'all', questionCount: 999, timeLimit: 60 },
-            });
-          }}
-          activeOpacity={0.6}
-        >
-          <LightningIcon size={20} color={colors.textTertiary} filled={false} />
-          <Text style={s.navLbl}>Flash</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={s.navTab}
-          onPress={() => { hapticTap(); navigation.navigate('Stats'); }}
-          activeOpacity={0.6}
-        >
-          <BarChartIcon size={20} color={colors.textTertiary} />
-          <Text style={s.navLbl}>Stats</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={s.navTab}
-          onPress={() => { hapticTap(); navigation.navigate('Browse'); }}
-          activeOpacity={0.6}
-        >
-          <GlobeIcon size={20} color={colors.textTertiary} />
-          <Text style={s.navLbl}>Browse</Text>
-        </TouchableOpacity>
-      </View>
+      <BottomNav
+        activeTab="Play"
+        onNavigate={(tab) => {
+          hapticTap();
+          if (tab === 'Modes') navigation.navigate('GameSetup');
+          else if (tab === 'Stats') navigation.navigate('Stats');
+          else if (tab === 'Browse') navigation.navigate('Browse');
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -478,7 +434,7 @@ const s = StyleSheet.create({
     backgroundColor: colors.ink,
     marginHorizontal: spacing.md,
     marginTop: spacing.md,
-    borderRadius: R_XL,
+    borderRadius: borderRadius.xl,
     padding: 22,
     paddingTop: 24,
   },
@@ -493,7 +449,7 @@ const s = StyleSheet.create({
   flagWrap: {
     width: '100%',
     aspectRatio: 3 / 2,
-    borderRadius: R_SM,
+    borderRadius: borderRadius.sm,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -522,21 +478,21 @@ const s = StyleSheet.create({
     flex: 1,
   },
   optBtn: {
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: colors.darkSurface,
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.1)',
-    borderRadius: R_MD,
+    borderColor: colors.darkBorder,
+    borderRadius: borderRadius.md,
     paddingVertical: 13,
     paddingHorizontal: 10,
     alignItems: 'center',
   },
   optCorrect: {
-    backgroundColor: 'rgba(56,195,100,0.2)',
-    borderColor: 'rgba(56,195,100,0.5)',
+    backgroundColor: colors.successOnDark,
+    borderColor: colors.successBorderOnDark,
   },
   optWrong: {
-    backgroundColor: 'rgba(207,35,24,0.2)',
-    borderColor: 'rgba(207,35,24,0.45)',
+    backgroundColor: colors.errorOnDark,
+    borderColor: colors.errorBorderOnDark,
   },
   optText: {
     fontFamily: fontFamily.bodyMedium,
@@ -545,10 +501,10 @@ const s = StyleSheet.create({
     textAlign: 'center',
   },
   optTextCorrect: {
-    color: '#7ee8a2',
+    color: colors.successTextOnDark,
   },
   optTextWrong: {
-    color: '#f8a09a',
+    color: colors.errorTextOnDark,
   },
 
   // ── Play button
@@ -562,7 +518,7 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
     backgroundColor: colors.ink,
-    borderRadius: R_LG,
+    borderRadius: borderRadius.lg,
     paddingVertical: 18,
   },
   playBolt: {
@@ -586,7 +542,7 @@ const s = StyleSheet.create({
     marginHorizontal: spacing.md,
     marginTop: 10,
     backgroundColor: colors.white,
-    borderRadius: R_LG,
+    borderRadius: borderRadius.lg,
     borderWidth: 1,
     borderColor: colors.rule,
     overflow: 'hidden',
@@ -622,7 +578,7 @@ const s = StyleSheet.create({
     backgroundColor: colors.surfaceSecondary,
     borderWidth: 1.5,
     borderColor: colors.rule,
-    borderRadius: R_SM,
+    borderRadius: borderRadius.sm,
     alignItems: 'center',
   },
   segBtnOn: {
@@ -658,7 +614,7 @@ const s = StyleSheet.create({
     backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.rule,
-    borderRadius: R_LG,
+    borderRadius: borderRadius.lg,
     padding: 14,
     paddingHorizontal: 16,
     marginBottom: 7,
@@ -668,7 +624,7 @@ const s = StyleSheet.create({
     width: 40,
     height: 40,
     backgroundColor: colors.ink,
-    borderRadius: R_MD,
+    borderRadius: borderRadius.md,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -690,18 +646,13 @@ const s = StyleSheet.create({
     color: colors.textTertiary,
     lineHeight: 16,
   },
-  modeChev: {
-    fontFamily: fontFamily.body,
-    fontSize: 22,
-    color: colors.rule,
-  },
 
   // ── Progress card
   progressCard: {
     marginHorizontal: spacing.md,
     marginTop: 10,
     backgroundColor: colors.white,
-    borderRadius: R_LG,
+    borderRadius: borderRadius.lg,
     borderWidth: 1,
     borderColor: colors.rule,
     padding: 16,
@@ -737,39 +688,5 @@ const s = StyleSheet.create({
     color: colors.ink,
     width: 28,
     textAlign: 'right',
-  },
-
-  // ── Bottom nav
-  bottomNav: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: colors.rule,
-    backgroundColor: colors.background,
-    paddingTop: 6,
-    paddingBottom: 20,
-  },
-  navTab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingTop: 8,
-    paddingBottom: 4,
-    gap: 3,
-  },
-  navLbl: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: 9,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    color: colors.textTertiary,
-  },
-  navLblActive: {
-    color: colors.ink,
-  },
-  navDot: {
-    width: 4,
-    height: 4,
-    backgroundColor: colors.accent,
-    borderRadius: 2,
-    marginTop: 2,
   },
 });

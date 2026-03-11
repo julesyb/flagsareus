@@ -16,13 +16,14 @@ import { RootStackParamList } from '../types/navigation';
 import { getAllFlags } from '../data';
 import { FlagImageSmall } from '../components/FlagImage';
 import { getMissedFlagIds, getFlagStats, FlagStats } from '../utils/storage';
+import BottomNav from '../components/BottomNav';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Browse'>;
 
 const REGIONS = ['All', 'Africa', 'Asia', 'Europe', 'Americas', 'Oceania'];
 const PRACTICE_MORE = 'Practice More';
 
-export default function BrowseScreen({ route }: Props) {
+export default function BrowseScreen({ route, navigation }: Props) {
   const initialRegion = route.params?.region ?? 'All';
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState(initialRegion);
@@ -82,7 +83,7 @@ export default function BrowseScreen({ route }: Props) {
           <Text style={styles.flagRegion}>
             {item.region}
             {showWrongCount
-              ? ` \u2022 missed ${stats.wrong} time${stats.wrong !== 1 ? 's' : ''}`
+              ? ` · missed ${stats.wrong} time${stats.wrong !== 1 ? 's' : ''}`
               : ''}
           </Text>
         </View>
@@ -135,7 +136,7 @@ export default function BrowseScreen({ route }: Props) {
 
       <Text style={styles.resultCount}>
         {selectedFilter === PRACTICE_MORE && filteredFlags.length === 0
-          ? 'No missed flags yet \u2014 keep playing!'
+          ? 'No missed flags yet - keep playing!'
           : `${filteredFlags.length} flag${filteredFlags.length !== 1 ? 's' : ''}`}
       </Text>
 
@@ -145,7 +146,13 @@ export default function BrowseScreen({ route }: Props) {
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
+        style={{ flex: 1 }}
       />
+      <BottomNav activeTab="Browse" onNavigate={(tab) => {
+        if (tab === 'Play') navigation.navigate('Home');
+        else if (tab === 'Modes') navigation.navigate('GameSetup');
+        else if (tab === 'Stats') navigation.navigate('Stats');
+      }} />
     </SafeAreaView>
   );
 }

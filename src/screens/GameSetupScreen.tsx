@@ -21,12 +21,15 @@ import {
 } from '../types';
 import { getCategoryCount, getTotalFlagCount } from '../data';
 import { RootStackParamList } from '../types/navigation';
+import { FlagIcon, MapPinIcon } from '../components/Icons';
+import BottomNav from '../components/BottomNav';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'GameSetup'>;
 
 const QUESTION_COUNTS = [10, 20, 50, 100];
 const FLAGFLASH_TIMES = [15, 30, 60, 90];
 const FLAGPUZZLE_TIMES = [15, 30, 60];
+const TIMEATTACK_TIMES = [30, 60, 90, 120];
 
 export default function GameSetupScreen({ navigation }: Props) {
   const [displayMode, setDisplayMode] = useState<DisplayMode>('flag');
@@ -40,16 +43,19 @@ export default function GameSetupScreen({ navigation }: Props) {
   const totalFlags = getTotalFlagCount();
   const isFlagFlash = mode === 'flagflash';
   const isFlagPuzzle = mode === 'flagpuzzle';
-  const hasTimeLimit = isFlagFlash || isFlagPuzzle;
+  const isTimeAttack = mode === 'timeattack';
+  const hasTimeLimit = isFlagFlash || isFlagPuzzle || isTimeAttack;
 
   const handleFilterTypeSelect = (type: CategoryType) => {
     if (filterType === type) {
-      // Deselect filter type, reset to all
       setFilterType(null);
       setSelectedCategory('all');
     } else {
       setFilterType(type);
       setSelectedCategory('all');
+      if (type === 'theme') {
+        setQuestionCountAll(true);
+      }
     }
   };
 
@@ -69,12 +75,14 @@ export default function GameSetupScreen({ navigation }: Props) {
     const config: GameConfig = {
       mode,
       category: selectedCategory,
-      questionCount: isFlagFlash ? 999 : effectiveQuestionCount,
+      questionCount: (isFlagFlash || isTimeAttack) ? 999 : effectiveQuestionCount,
       displayMode,
       ...(hasTimeLimit && { timeLimit }),
     };
 
-    if (isFlagFlash) {
+    if (isTimeAttack) {
+      navigation.navigate('Game', { config });
+    } else if (isFlagFlash) {
       navigation.navigate('FlagFlash', { config });
     } else if (isFlagPuzzle) {
       navigation.navigate('FlagPuzzle', { config });
@@ -87,9 +95,18 @@ export default function GameSetupScreen({ navigation }: Props) {
     ? CATEGORIES.filter((c) => c.type === filterType)
     : [];
 
+  const getTimeLimitOptions = () => {
+    if (isFlagPuzzle) return FLAGPUZZLE_TIMES;
+    if (isTimeAttack) return TIMEATTACK_TIMES;
+    return FLAGFLASH_TIMES;
+  };
+
+  const showQuestionCount = !isFlagFlash && !isTimeAttack;
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
+        style={styles.scrollView}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
@@ -104,9 +121,13 @@ export default function GameSetupScreen({ navigation }: Props) {
                 onPress={() => setDisplayMode(dm)}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.displayToggleIcon, isActive && styles.displayToggleIconActive]}>
-                  {dm === 'flag' ? '\u2691' : '\u2609'}
-                </Text>
+                <View style={[styles.displayToggleIconWrapper, isActive && styles.displayToggleIconWrapperActive]}>
+                  {dm === 'flag' ? (
+                    <FlagIcon size={24} color={isActive ? colors.ink : colors.textSecondary} />
+                  ) : (
+                    <MapPinIcon size={24} color={isActive ? colors.ink : colors.textSecondary} />
+                  )}
+                </View>
                 <Text style={[styles.displayToggleText, isActive && styles.displayToggleTextActive]}>
                   {dm === 'flag' ? 'Flag Mode' : 'Map Mode'}
                 </Text>
@@ -200,7 +221,7 @@ export default function GameSetupScreen({ navigation }: Props) {
           <>
             <Text style={styles.sectionTitle}>Time Limit</Text>
             <View style={styles.optionRow}>
-              {(isFlagPuzzle ? FLAGPUZZLE_TIMES : FLAGFLASH_TIMES).map((t) => (
+              {getTimeLimitOptions().map((t) => (
                 <TouchableOpacity
                   key={t}
                   style={[
@@ -312,15 +333,29 @@ export default function GameSetupScreen({ navigation }: Props) {
         )}
 
         <TouchableOpacity
-          style={[styles.startButton, (isFlagFlash || isFlagPuzzle) && styles.startButtonParty]}
+          style={[styles.startButton, (isFlagFlash || isFlagPuzzle || isTimeAttack) && styles.startButtonParty]}
           onPress={startGame}
           activeOpacity={0.8}
         >
           <Text style={styles.startButtonText}>
-            {isFlagFlash ? 'Start FlagFlash' : isFlagPuzzle ? 'Start Flag Puzzle' : 'Start Game'}
+            {isTimeAttack
+              ? 'Start Time Attack'
+              : isFlagFlash
+                ? 'Start FlagFlash'
+                : isFlagPuzzle
+                  ? 'Start Flag Puzzle'
+                  : 'Start Game'}
           </Text>
         </TouchableOpacity>
       </ScrollView>
+      <BottomNav
+        activeTab="Modes"
+        onNavigate={(tab) => {
+          if (tab === 'Play') navigation.navigate('Home');
+          else if (tab === 'Stats') navigation.navigate('Stats');
+          else if (tab === 'Browse') navigation.navigate('Browse');
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -329,6 +364,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  scrollView: {
+    flex: 1,
   },
   content: {
     padding: spacing.lg,
@@ -351,14 +389,12 @@ const styles = StyleSheet.create({
     borderColor: colors.ink,
     backgroundColor: colors.surfaceSecondary,
   },
-  displayToggleIcon: {
-    fontSize: 24,
-    color: colors.textSecondary,
+  displayToggleIconWrapper: {
     marginBottom: spacing.xs,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  displayToggleIconActive: {
-    color: colors.ink,
-  },
+  displayToggleIconWrapperActive: {},
   displayToggleText: {
     ...typography.bodyBold,
     color: colors.text,

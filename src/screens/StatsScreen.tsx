@@ -9,13 +9,15 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { colors, spacing, typography, fontFamily } from '../utils/theme';
 import { UserStats, GAME_MODES, CATEGORIES, GameMode } from '../types';
 import { getStats, resetStats, getFlagStats, FlagStats } from '../utils/storage';
 import { getAllFlags } from '../data';
+import BottomNav from '../components/BottomNav';
 
 export default function StatsScreen() {
+  const navigation = useNavigation();
   const [stats, setStats] = useState<UserStats | null>(null);
   const [flagStats, setFlagStats] = useState<FlagStats>({});
 
@@ -92,6 +94,7 @@ export default function StatsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
+        style={{ flex: 1 }}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
@@ -127,7 +130,7 @@ export default function StatsScreen() {
                 <View style={[styles.statBar, { width: `${acc}%` }]} />
               </View>
               <Text style={styles.statRowValue}>
-                {s.total > 0 ? `${acc}%` : '\u2014'}
+                {s.total > 0 ? `${acc}%` : '-'}
               </Text>
             </View>
           );
@@ -144,7 +147,7 @@ export default function StatsScreen() {
                 <View style={[styles.statBar, { width: `${acc}%` }]} />
               </View>
               <Text style={styles.statRowValue}>
-                {s && s.total > 0 ? `${acc}%` : '\u2014'}
+                {s && s.total > 0 ? `${acc}%` : '-'}
               </Text>
             </View>
           );
@@ -188,6 +191,11 @@ export default function StatsScreen() {
           <Text style={styles.resetButtonText}>Reset Statistics</Text>
         </TouchableOpacity>
       </ScrollView>
+      <BottomNav activeTab="Stats" onNavigate={(tab) => {
+        if (tab === 'Play') navigation.navigate('Home' as never);
+        else if (tab === 'Modes') navigation.navigate('GameSetup' as never);
+        else if (tab === 'Browse') navigation.navigate('Browse' as never);
+      }} />
     </SafeAreaView>
   );
 }

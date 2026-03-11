@@ -83,13 +83,18 @@ export default function MapImage({ countryCode, size = 'hero', style }: MapImage
   if (!coord) {
     return (
       <View style={[styles.fallback, dimensions, style]}>
-        <Text style={styles.fallbackText}>?</Text>
+        <Text style={styles.fallbackText}>-</Text>
       </View>
     );
   }
 
   const zoom = coord.zoom + zoomDelta;
-  const gridSize = size === 'small' || size === 'medium' ? 3 : 7;
+  const gridSize = (() => {
+    if (size === 'small' || size === 'medium') return 3;
+    if (zoom <= 2) return 11;
+    if (zoom <= 4) return 9;
+    return 7;
+  })();
   const totalPx = gridSize * TILE_SIZE;
 
   const tiles = useMemo(() => getTileGrid(coord.lat, coord.lng, zoom, gridSize), [coord.lat, coord.lng, zoom, gridSize]);
@@ -157,11 +162,11 @@ export default function MapImage({ countryCode, size = 'hero', style }: MapImage
   }
 
   const handleZoomIn = () => {
-    setZoomDelta((d) => Math.min(d + 1, 4));
+    setZoomDelta((d) => Math.min(d + 1, 6));
   };
 
   const handleZoomOut = () => {
-    setZoomDelta((d) => Math.max(d - 1, -2));
+    setZoomDelta((d) => Math.max(d - 1, -(coord.zoom - 1)));
   };
 
   // Interactive: ScrollView with pinch-to-zoom + pan
@@ -233,7 +238,7 @@ export function MapImageSmall({ countryCode }: { countryCode: string }) {
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
-    backgroundColor: '#e8e4df',
+    backgroundColor: colors.mapBackground,
     borderWidth: 1,
     borderColor: colors.rule2,
   },
@@ -260,7 +265,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
     borderWidth: 3,
     borderColor: colors.white,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
@@ -286,7 +291,7 @@ const styles = StyleSheet.create({
   zoomButton: {
     width: 36,
     height: 36,
-    backgroundColor: 'rgba(255,255,255,0.92)',
+    backgroundColor: colors.mapZoomSurface,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
