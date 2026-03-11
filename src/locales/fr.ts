@@ -385,7 +385,7 @@ const fr: typeof en = {
     challengeDesc: 'Partagez votre partie pour qu\u2019un ami essaie les m\u00eames drapeaux',
     enterName: 'Ton nom',
     enterNameDesc: 'Ce nom sera visible par ton adversaire.',
-    shareMessage: 'Je te d\u00e9fie de battre mon score sur Flag That ! Colle ce code dans la section D\u00e9fi :',
+    shareMessage: 'J\u0027ai fait {correct}/{total} sur Flag That. Tu peux faire mieux ?',
     headToHead: 'Face \u00e0 face',
     you: 'Toi',
     youWin: 'Tu gagnes !',

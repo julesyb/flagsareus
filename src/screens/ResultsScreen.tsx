@@ -109,16 +109,11 @@ export default function ResultsScreen({ route, navigation }: Props) {
     });
   }, []);
 
-  const handleChallengeShare = async () => {
-    if (challengeName.trim().length === 0) return;
-    Keyboard.dismiss();
-    setShowChallengeModal(false);
-    hapticTap();
-    saveChallengeName(challengeName.trim());
+  const doShareChallenge = async (name: string) => {
     const flagIds = results.map((r) => r.question.flag.id);
     const hostResults = results.map((r) => ({ correct: r.correct, timeMs: r.timeTaken }));
     const code = encodeChallenge({
-      hostName: challengeName.trim(),
+      hostName: name,
       mode: config.mode,
       timeLimit: config.timeLimit || 15,
       flagIds,
@@ -133,9 +128,38 @@ export default function ResultsScreen({ route, navigation }: Props) {
       }
       return;
     }
+    const link = `https://flagthat.app/c/${encodeURIComponent(code)}`;
+    const headline = t('challenge.shareMessage', { correct, total: results.length });
+    // Build score grid (rows of 5, matching daily share style)
+    const grid = results.map((r) => (r.correct ? '\u2b1b' : '\u2b1c')).join('');
+    const rows: string[] = [];
+    for (let i = 0; i < grid.length; i += 5) {
+      rows.push(grid.slice(i, i + 5));
+    }
+    const gridStr = rows.join('\n');
     try {
-      await Share.share({ message: `${t('challenge.shareMessage')}\n\n${code}` });
+      await Share.share({ message: `${headline}\n\n${gridStr}\n\n${link}` });
     } catch { /* share cancelled */ }
+  };
+
+  const handleChallengeShare = async () => {
+    if (challengeName.trim().length === 0) return;
+    Keyboard.dismiss();
+    setShowChallengeModal(false);
+    hapticTap();
+    saveChallengeName(challengeName.trim());
+    await doShareChallenge(challengeName.trim());
+  };
+
+  const handleChallengeTap = () => {
+    hapticTap();
+    if (challengeName.trim().length > 0) {
+      // Name already saved, share directly
+      doShareChallenge(challengeName.trim());
+    } else {
+      // Need name first
+      setShowChallengeModal(true);
+    }
   };
 
   // Head-to-head comparison data
@@ -656,7 +680,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
           <Animated.View style={{ opacity: restFade }}>
             <TouchableOpacity
               style={st.challengeButton}
-              onPress={() => { hapticTap(); setShowChallengeModal(true); }}
+              onPress={handleChallengeTap}
               activeOpacity={0.7}
             >
               <UsersIcon size={18} color={colors.ink} />
