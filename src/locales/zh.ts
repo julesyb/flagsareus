@@ -492,6 +492,8 @@ const zh: DeepPartial<TranslationStrings> = {
     last10: '最近10场',
     sent: '已发送',
     received: '已完成',
+    copyCode: '复制代码',
+    codeCopied: '已复制!',
   },
 };
 

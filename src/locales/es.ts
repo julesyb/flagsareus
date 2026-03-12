@@ -492,6 +492,8 @@ const es: DeepPartial<TranslationStrings> = {
     last10: 'Ultimos 10',
     sent: 'Enviado',
     received: 'Jugado',
+    copyCode: 'Copiar codigo',
+    codeCopied: 'Copiado!',
   },
 };
 

@@ -448,6 +448,8 @@ const en = {
     last10: 'Last 10',
     sent: 'Sent',
     received: 'Played',
+    copyCode: 'Copy Code',
+    codeCopied: 'Copied!',
   },
 
   // ─── Notifications ─────────────────────────────────────
