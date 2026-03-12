@@ -221,6 +221,27 @@ export default function StatsScreen() {
     return candidates[0];
   }, [badgeCtx, derived, earnedBadges]);
 
+  // Activity heatmap: 7x4 grid of last 28 days
+  const activityGrid = React.useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const cells: { date: string; count: number }[] = [];
+    for (let i = 27; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      cells.push({ date: `${yyyy}-${mm}-${dd}`, count: 0 });
+    }
+    for (const entry of gameHistory) {
+      const cell = cells.find((c) => c.date === entry.date);
+      if (cell) cell.count++;
+    }
+    const maxCount = Math.max(...cells.map((c) => c.count), 1);
+    return { cells, maxCount };
+  }, [gameHistory]);
+
   // Score distribution: bucket accuracies into ranges
   // (must be above the early return to satisfy Rules of Hooks)
   const distribution = React.useMemo(() => {
@@ -327,6 +348,39 @@ export default function StatsScreen() {
             <Text style={styles.progressLabelMuted}>{t('stats.toGo', { count: totalFlags - countriesSeen })}</Text>
           </View>
         </Animated.View>
+
+        {/* ── ACTIVITY HEATMAP (last 28 days, 7x4 grid) ── */}
+        {gameHistory.length > 0 && (
+          <Animated.View style={{ opacity: progressFade }}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>{t('stats.activityTitle')}</Text>
+              <Text style={styles.sectionMeta}>{t('stats.last28Days')}</Text>
+            </View>
+            <View style={styles.heatmapCard}>
+              <View style={styles.heatmapGrid}>
+                {activityGrid.cells.map((cell, i) => {
+                  const level = cell.count === 0 ? 0
+                    : cell.count <= activityGrid.maxCount * 0.25 ? 1
+                    : cell.count <= activityGrid.maxCount * 0.5 ? 2
+                    : cell.count <= activityGrid.maxCount * 0.75 ? 3
+                    : 4;
+                  return (
+                    <View
+                      key={cell.date}
+                      style={[
+                        styles.heatmapCell,
+                        level === 1 && styles.heatmapL1,
+                        level === 2 && styles.heatmapL2,
+                        level === 3 && styles.heatmapL3,
+                        level === 4 && styles.heatmapL4,
+                      ]}
+                    />
+                  );
+                })}
+              </View>
+            </View>
+          </Animated.View>
+        )}
 
         {(stats.bestTimeAttackScore || 0) > 0 && (
           <Animated.View style={[styles.tile, { marginTop: 8, opacity: progressFade }]}>
@@ -597,16 +651,19 @@ export default function StatsScreen() {
               <Text style={styles.sectionTitle}>{t('stats.weakFlags')}</Text>
               <Text style={styles.sectionMeta}>{t('stats.practiceThese')}</Text>
             </View>
-            {bottom10.map(([id, fs], i) => (
-              <View key={id} style={styles.rankRow}>
-                <Text style={styles.rank}>{i + 1}</Text>
-                <FlagImageSmall countryCode={id} />
-                <Text style={styles.rankName}>{flagNameMap[id] || id}</Text>
-                <View style={[styles.scoreBadge, styles.scoreBadgeWrong]}>
-                  <Text style={[styles.scoreBadgeText, styles.scoreBadgeTextWrong]}>{fs.wrong}x</Text>
+            {bottom10.map(([id, fs], i) => {
+              const totalSeen = fs.right + fs.wrong;
+              return (
+                <View key={id} style={styles.rankRow}>
+                  <Text style={styles.rank}>{i + 1}</Text>
+                  <FlagImageSmall countryCode={id} />
+                  <Text style={styles.rankName}>{flagNameMap[id] || id}</Text>
+                  <View style={[styles.scoreBadge, styles.scoreBadgeWrong]}>
+                    <Text style={[styles.scoreBadgeText, styles.scoreBadgeTextWrong]}>{fs.right}/{totalSeen}</Text>
+                  </View>
                 </View>
-              </View>
-            ))}
+              );
+            })}
           </Animated.View>
         )}
 
@@ -1172,6 +1229,45 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     fontSize: fontSize.xs,
     color: colors.textTertiary,
     marginTop: 3,
+  },
+
+  // ── Activity Heatmap
+  heatmapCard: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 14,
+  },
+  heatmapGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 5,
+    justifyContent: 'center',
+  },
+  heatmapCell: {
+    width: 36,
+    height: 36,
+    borderRadius: 4,
+    backgroundColor: colors.surfaceSecondary,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  heatmapL1: {
+    backgroundColor: colors.goldBright + '33',
+    borderColor: colors.goldBright + '26',
+  },
+  heatmapL2: {
+    backgroundColor: colors.goldBright + '66',
+    borderColor: colors.goldBright + '4D',
+  },
+  heatmapL3: {
+    backgroundColor: colors.goldBright + 'A6',
+    borderColor: colors.goldBright + '80',
+  },
+  heatmapL4: {
+    backgroundColor: colors.goldBright,
+    borderColor: colors.goldBright,
   },
 
   // ── Footer

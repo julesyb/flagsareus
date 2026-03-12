@@ -198,6 +198,8 @@ const en = {
     roundsPlayed: 'rounds played',
     streak: 'Streak',
     mastered: 'Mastered',
+    activityTitle: 'Activity',
+    last28Days: 'Last 28 days',
   },
 
   // ─── Settings Screen ────────────────────────────────────
