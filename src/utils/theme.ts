@@ -83,16 +83,14 @@ const lightPalette = {
   playText: '#130F00',      // dark text on gold CTA
 };
 
-// Keep backward-compat alias
-const palette = darkPalette;
-
-function buildColors(p: typeof darkPalette) {
+function buildColors(p: typeof darkPalette, isDark: boolean) {
+  const dk = isDark;
   return {
     // Brand palette (direct access for commonly needed raw colors)
     ink: p.ink,
     red: p.red,
-    rule: p === darkPalette ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)',
-    ruleDark: p === darkPalette ? 'rgba(255,255,255,0.13)' : 'rgba(0,0,0,0.10)',
+    rule: dk ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)',
+    ruleDark: dk ? 'rgba(255,255,255,0.13)' : 'rgba(0,0,0,0.10)',
     white: p.white,
     black: p.black,
     gold: p.gold,
@@ -114,53 +112,53 @@ function buildColors(p: typeof darkPalette) {
     text: p.ink,
     textSecondary: p.inkSecondary,
     textTertiary: p.muted,
-    border: p === darkPalette ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)',
-    borderLight: p === darkPalette ? 'rgba(255,255,255,0.13)' : 'rgba(0,0,0,0.12)',
-    shadow: p === darkPalette ? 'rgba(0, 0, 0, 0.22)' : 'rgba(0, 0, 0, 0.10)',
+    border: dk ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)',
+    borderLight: dk ? 'rgba(255,255,255,0.13)' : 'rgba(0,0,0,0.12)',
+    shadow: dk ? 'rgba(0, 0, 0, 0.22)' : 'rgba(0, 0, 0, 0.10)',
     overlay: 'rgba(0, 0, 0, 0.6)',
-    inkAlpha10: p === darkPalette ? 'rgba(238, 233, 226, 0.10)' : 'rgba(26, 24, 32, 0.08)',
+    inkAlpha10: dk ? 'rgba(238, 233, 226, 0.10)' : 'rgba(26, 24, 32, 0.08)',
     playText: p.playText,
 
     // Grade colors
     gradeS: raw.goldBright,
-    gradeA: p === darkPalette ? raw.greenBright : raw.green,
+    gradeA: dk ? raw.greenBright : raw.green,
     gradeB: raw.blue,
     gradeC: p.muted,
-    gradeD: p === darkPalette ? raw.redLight : raw.red,
+    gradeD: dk ? raw.redLight : raw.red,
     gradeF: p.ink,
 
     // Difficulty colors
-    diffEasy: p === darkPalette ? raw.greenBright : raw.green,
+    diffEasy: dk ? raw.greenBright : raw.green,
     diffMedium: raw.goldBright,
-    diffHard: p === darkPalette ? raw.redLight : raw.red,
-    diffEasyBg: p === darkPalette ? 'rgba(61, 191, 128, 0.12)' : 'rgba(30, 143, 86, 0.10)',
-    diffEasyBorder: p === darkPalette ? 'rgba(61, 191, 128, 0.30)' : 'rgba(30, 143, 86, 0.25)',
+    diffHard: dk ? raw.redLight : raw.red,
+    diffEasyBg: dk ? 'rgba(61, 191, 128, 0.12)' : 'rgba(30, 143, 86, 0.10)',
+    diffEasyBorder: dk ? 'rgba(61, 191, 128, 0.30)' : 'rgba(30, 143, 86, 0.25)',
     diffMediumBg: 'rgba(233, 186, 76, 0.12)',
-    diffMediumBorder: p === darkPalette ? 'rgba(233, 186, 76, 0.40)' : 'rgba(154, 92, 10, 0.25)',
-    diffHardBg: p === darkPalette ? 'rgba(236, 102, 102, 0.12)' : 'rgba(196, 48, 48, 0.10)',
-    diffHardBorder: p === darkPalette ? 'rgba(236, 102, 102, 0.30)' : 'rgba(196, 48, 48, 0.25)',
+    diffMediumBorder: dk ? 'rgba(233, 186, 76, 0.40)' : 'rgba(154, 92, 10, 0.25)',
+    diffHardBg: dk ? 'rgba(236, 102, 102, 0.12)' : 'rgba(196, 48, 48, 0.10)',
+    diffHardBorder: dk ? 'rgba(236, 102, 102, 0.30)' : 'rgba(196, 48, 48, 0.25)',
 
     // Translucent helpers
-    whiteAlpha15: p === darkPalette ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.06)',
-    whiteAlpha20: p === darkPalette ? 'rgba(255,255,255,0.20)' : 'rgba(0,0,0,0.08)',
-    whiteAlpha45: p === darkPalette ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.20)',
-    whiteAlpha50: p === darkPalette ? 'rgba(255,255,255,0.50)' : 'rgba(0,0,0,0.25)',
-    whiteAlpha60: p === darkPalette ? 'rgba(255,255,255,0.60)' : 'rgba(0,0,0,0.35)',
-    whiteAlpha70: p === darkPalette ? 'rgba(255,255,255,0.70)' : 'rgba(0,0,0,0.45)',
+    whiteAlpha15: dk ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.06)',
+    whiteAlpha20: dk ? 'rgba(255,255,255,0.20)' : 'rgba(0,0,0,0.08)',
+    whiteAlpha45: dk ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.20)',
+    whiteAlpha50: dk ? 'rgba(255,255,255,0.50)' : 'rgba(0,0,0,0.25)',
+    whiteAlpha60: dk ? 'rgba(255,255,255,0.60)' : 'rgba(0,0,0,0.35)',
+    whiteAlpha70: dk ? 'rgba(255,255,255,0.70)' : 'rgba(0,0,0,0.45)',
 
     // Surface feedback
-    darkSurface: p === darkPalette ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.04)',
-    darkBorder: p === darkPalette ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
-    successOnDark: p === darkPalette ? 'rgba(61,191,128,0.15)' : 'rgba(30,143,86,0.10)',
-    successBorderOnDark: p === darkPalette ? 'rgba(61,191,128,0.35)' : 'rgba(30,143,86,0.25)',
-    successTextOnDark: p === darkPalette ? raw.greenBright : raw.green,
-    errorOnDark: p === darkPalette ? 'rgba(236,102,102,0.15)' : 'rgba(196,48,48,0.10)',
-    errorBorderOnDark: p === darkPalette ? 'rgba(236,102,102,0.35)' : 'rgba(196,48,48,0.25)',
-    errorTextOnDark: p === darkPalette ? raw.redLight : raw.red,
+    darkSurface: dk ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.04)',
+    darkBorder: dk ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
+    successOnDark: dk ? 'rgba(61,191,128,0.15)' : 'rgba(30,143,86,0.10)',
+    successBorderOnDark: dk ? 'rgba(61,191,128,0.35)' : 'rgba(30,143,86,0.25)',
+    successTextOnDark: dk ? raw.greenBright : raw.green,
+    errorOnDark: dk ? 'rgba(236,102,102,0.15)' : 'rgba(196,48,48,0.10)',
+    errorBorderOnDark: dk ? 'rgba(236,102,102,0.35)' : 'rgba(196,48,48,0.25)',
+    errorTextOnDark: dk ? raw.redLight : raw.red,
 
     // Feedback backgrounds
-    successBg: p === darkPalette ? 'rgba(61, 191, 128, 0.12)' : 'rgba(30, 143, 86, 0.10)',
-    errorBg: p === darkPalette ? 'rgba(236, 102, 102, 0.12)' : 'rgba(196, 48, 48, 0.08)',
+    successBg: dk ? 'rgba(61, 191, 128, 0.12)' : 'rgba(30, 143, 86, 0.10)',
+    errorBg: dk ? 'rgba(236, 102, 102, 0.12)' : 'rgba(196, 48, 48, 0.08)',
     warningBg: 'rgba(233, 186, 76, 0.12)',
     accentBg: 'rgba(233, 186, 76, 0.08)',
 
@@ -171,11 +169,11 @@ function buildColors(p: typeof darkPalette) {
     tierPlatinum: '#8B8DFF',
 
     // Nav
-    navBg: p === darkPalette ? 'rgba(21,20,26,0.97)' : 'rgba(245,239,230,0.97)',
+    navBg: dk ? 'rgba(21,20,26,0.97)' : 'rgba(245,239,230,0.97)',
 
     // Map
     mapBackground: p.paperDark,
-    mapZoomSurface: p === darkPalette ? 'rgba(29, 28, 35, 0.92)' : 'rgba(255, 255, 255, 0.92)',
+    mapZoomSurface: dk ? 'rgba(29, 28, 35, 0.92)' : 'rgba(255, 255, 255, 0.92)',
 
     // Streak / progress
     pipActive: raw.goldBright,
@@ -197,8 +195,8 @@ function buildColors(p: typeof darkPalette) {
   };
 }
 
-export const darkColors = buildColors(darkPalette);
-export const lightColors = buildColors(lightPalette);
+export const darkColors = buildColors(darkPalette, true);
+export const lightColors = buildColors(lightPalette, false);
 
 /** Color values type — use with useTheme() hook */
 export type ThemeColors = typeof darkColors;
