@@ -217,18 +217,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
       const prevAcc = preStats.totalAnswered > 0
         ? Math.round((preStats.totalCorrect / preStats.totalAnswered) * 100) : null;
 
-      let newCountries = 0;
-      const rightCounts: Record<string, number> = {};
-      for (const r of results) {
-        if (!r.correct) continue;
-        const id = r.question.flag.id;
-        if (!(id in rightCounts)) {
-          rightCounts[id] = preFlagStats[id]?.right ?? 0;
-        }
-        rightCounts[id]++;
-        if (rightCounts[id] === UNLOCK_THRESHOLD) newCountries++;
-      }
-
       // ── Persist game data ──
       if (!reviewOnly) {
         const correctResults = results.filter((r) => r.correct);
@@ -287,11 +275,12 @@ export default function ResultsScreen({ route, navigation }: Props) {
       const totalF = getTotalFlagCount();
       setTotalFlags(totalF);
       const seen = Object.values(postFlagStats).filter((fs) => fs.right >= UNLOCK_THRESHOLD).length;
+      const preSeen = Object.values(preFlagStats).filter((fs) => fs.right >= UNLOCK_THRESHOLD).length;
       setCountriesSeen(seen);
       setNewBadges(postBadges.filter((b) => !preBadgeIds.has(b.id)));
       setTotalBadgesEarned(postBadges.length);
       setIsNewBestStreak(wasNewBestStreak && !reviewOnly);
-      setNewCountriesCount(reviewOnly ? 0 : newCountries);
+      setNewCountriesCount(reviewOnly ? 0 : seen - preSeen);
       setPrevAccuracy(prevAcc);
       setWeakFlagCount(postMissed.length);
 
