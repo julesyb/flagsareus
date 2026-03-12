@@ -350,7 +350,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   content: { padding: spacing.lg, paddingBottom: 120 },
   prompt: { ...typography.headingUpper, color: colors.text, textAlign: 'center', marginBottom: spacing.lg },
   flagCenter: { alignItems: 'center', marginBottom: spacing.lg },
-  countryName: { fontFamily: fontFamily.display, fontSize: fontSize.lg, color: colors.ink, marginTop: spacing.sm },
+  countryName: { ...typography.statValue, color: colors.ink, marginTop: spacing.sm },
   optionsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, justifyContent: 'center' },
   optionCard: {
     width: '30%',
@@ -367,7 +367,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   optionCorrect: { borderColor: colors.success, backgroundColor: colors.successBg },
   optionWrong: { borderColor: colors.error, backgroundColor: colors.errorBg },
   optionMissed: { borderColor: colors.warning, backgroundColor: colors.warningBg },
-  optionName: { fontFamily: fontFamily.bodyMedium, fontSize: fontSize.xs, color: colors.textSecondary, textAlign: 'center' },
+  optionName: { ...typography.microMedium, color: colors.textSecondary, textAlign: 'center' },
   optionNameCorrect: { color: colors.success, fontFamily: fontFamily.bodyBold },
   optionNameMissed: { color: colors.warning, fontFamily: fontFamily.bodyBold },
   optionNameWrong: { color: colors.error },
@@ -412,7 +412,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     paddingVertical: spacing.xs,
     gap: spacing.xs,
   },
-  neighborChipText: { fontFamily: fontFamily.bodyMedium, fontSize: fontSize.xs, color: colors.success },
+  neighborChipText: { ...typography.microMedium, color: colors.success },
   bottomBar: {
     position: 'absolute',
     bottom: 0, left: 0, right: 0,

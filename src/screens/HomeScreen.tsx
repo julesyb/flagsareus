@@ -566,14 +566,12 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     flex: 1,
   },
   onboardingTitle: {
-    fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.body,
+    ...typography.bodyBold,
     color: colors.ink,
     marginBottom: 2,
   },
   onboardingCount: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textTertiary,
   },
   onboardingCta: {
@@ -607,8 +605,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     borderRadius: borderRadius.full,
   },
   onboardingMotivation: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textTertiary,
     fontStyle: 'italic',
   },
@@ -637,8 +634,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     borderColor: colors.goldBright,
   },
   onboardingChipText: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.xs,
+    ...typography.microMedium,
     color: colors.textTertiary,
   },
   onboardingChipTextDone: {
@@ -648,8 +644,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     color: colors.goldBright,
   },
   onboardingChipPct: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
+    ...typography.tag,
     color: colors.success,
   },
 
@@ -702,8 +697,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     borderColor: colors.error,
   },
   optText: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.body,
+    ...typography.label,
     color: colors.ink,
     textAlign: 'center',
   },
@@ -766,8 +760,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     color: colors.ink,
   },
   sectionAll: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.xs,
+    ...typography.microMedium,
     color: colors.textTertiary,
   },
   modeList: {},
@@ -793,8 +786,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     letterSpacing: -0.1,
   },
   modeTag: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textTertiary,
   },
 

@@ -926,8 +926,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   timelineStat: { flex: 1, alignItems: 'center' },
   timelineDivider: { width: 1, height: 36, backgroundColor: colors.border },
   timelineStatValue: {
-    fontFamily: fontFamily.display, fontSize: fontSize.lg,
-    color: colors.ink, letterSpacing: -0.5,
+    ...typography.statValue, color: colors.ink,
   },
   timelineStatUnit: {
     ...typography.captionBold, color: colors.textTertiary,
@@ -966,7 +965,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
     borderRadius: borderRadius.full, paddingVertical: 6, paddingHorizontal: 12,
   },
-  insightText: { fontFamily: fontFamily.bodyMedium, fontSize: fontSize.xs, color: colors.textSecondary },
+  insightText: { ...typography.microMedium, color: colors.textSecondary },
 
   // ── Buttons
   buttonRow: { gap: spacing.sm, marginBottom: spacing.md },
@@ -984,8 +983,8 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   },
   badgeIconWrap: { width: 36, height: 36, borderRadius: borderRadius.md, justifyContent: 'center', alignItems: 'center' },
   badgeContent: { flex: 1 },
-  badgeName: { ...typography.captionBold, fontFamily: fontFamily.bodyBold, color: colors.ink, marginBottom: 2 },
-  badgeDesc: { ...typography.caption, fontSize: fontSize.xs, color: colors.textSecondary },
+  badgeName: { ...typography.captionStrong, color: colors.ink, marginBottom: 2 },
+  badgeDesc: { ...typography.micro, color: colors.textSecondary },
   badgeTierPill: { borderRadius: borderRadius.full, paddingVertical: 3, paddingHorizontal: 10 },
   badgeTierText: { ...typography.eyebrow },
 
@@ -997,7 +996,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   },
   progressTopRow: { flexDirection: 'row', gap: spacing.lg, marginBottom: 14 },
   progressStat: { alignItems: 'center', flex: 1 },
-  progressStatValue: { fontFamily: fontFamily.display, fontSize: fontSize.lg, color: colors.ink, letterSpacing: -0.5 },
+  progressStatValue: { ...typography.statValue, color: colors.ink },
   progressStatLabel: {
     ...typography.eyebrow,
     color: colors.textTertiary, marginTop: spacing.xxs, textAlign: 'center',
@@ -1006,7 +1005,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     height: 7, backgroundColor: colors.border, borderRadius: borderRadius.full, overflow: 'hidden',
   },
   progressBarFill: { height: '100%', backgroundColor: colors.accent, borderRadius: borderRadius.full },
-  progressPctLabel: { fontFamily: fontFamily.bodyBold, fontSize: fontSize.xs, color: colors.ink, marginTop: 6 },
+  progressPctLabel: { ...typography.microBold, color: colors.ink, marginTop: 6 },
   practiceButton: {
     flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
     backgroundColor: colors.accentBg, borderRadius: borderRadius.lg,
@@ -1017,7 +1016,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     letterSpacing: 0.8, textTransform: 'uppercase', color: colors.accent,
   },
   practiceButtonMeta: {
-    fontFamily: fontFamily.body, fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textTertiary, flex: 1, textAlign: 'right',
   },
   viewStatsButton: {
@@ -1039,7 +1038,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   sectionTitle: {
     ...typography.eyebrow, color: colors.textTertiary,
   },
-  sectionMeta: { fontFamily: fontFamily.body, fontSize: fontSize.xs, color: colors.textTertiary },
+  sectionMeta: { ...typography.micro, color: colors.textTertiary },
 
   // ── Review
   reviewItem: {
@@ -1053,12 +1052,12 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   reviewIndexCorrect: { color: colors.success },
   reviewIndexWrong: { color: colors.error },
   reviewContent: { flex: 1 },
-  reviewName: { fontFamily: fontFamily.bodyBold, fontSize: fontSize.body, color: colors.text },
-  reviewAnswer: { fontFamily: fontFamily.body, fontSize: fontSize.xs, color: colors.error, marginTop: spacing.xxs },
+  reviewName: { ...typography.bodyBold, color: colors.text },
+  reviewAnswer: { ...typography.micro, color: colors.error, marginTop: spacing.xxs },
   reviewRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  reviewTime: { fontFamily: fontFamily.bodyMedium, fontSize: fontSize.xs, color: colors.textTertiary },
+  reviewTime: { ...typography.microMedium, color: colors.textTertiary },
   reviewTimeFastest: { color: colors.success },
-  reviewOpponent: { fontFamily: fontFamily.body, fontSize: fontSize.xs, color: colors.textTertiary, marginTop: spacing.xxs },
+  reviewOpponent: { ...typography.micro, color: colors.textTertiary, marginTop: spacing.xxs },
 
   // ── Head-to-head
   h2hCard: {
@@ -1084,7 +1083,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     color: colors.ink,
   },
   h2hTime: {
-    fontFamily: fontFamily.body, fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textTertiary, marginTop: spacing.xxs,
   },
   h2hVs: {
@@ -1122,13 +1121,13 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     padding: spacing.xl, width: '100%', maxWidth: 360,
   },
   modalTitle: {
-    fontFamily: fontFamily.bodyBold, fontSize: fontSize.body,
+    ...typography.bodyBold,
     color: colors.ink, textAlign: 'center', marginBottom: spacing.md,
   },
   modalInput: {
     backgroundColor: colors.surfaceSecondary, borderWidth: 2, borderColor: colors.border,
     borderRadius: borderRadius.md, padding: spacing.md,
-    fontFamily: fontFamily.body, fontSize: fontSize.body,
+    ...typography.body,
     color: colors.text, textAlign: 'center', marginBottom: spacing.md,
   },
   modalShare: {

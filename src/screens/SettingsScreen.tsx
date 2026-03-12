@@ -482,7 +482,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   langOptionText: {
     ...typography.body,
     color: colors.text,
-    fontSize: fontSize.body,
   },
   langOptionActive: {
     fontFamily: fontFamily.bodyBold,

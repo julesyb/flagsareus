@@ -255,8 +255,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.body,
+    ...typography.body,
     color: colors.text,
     paddingVertical: 0,
   },
@@ -280,8 +279,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderColor: colors.goldBright,
   },
   chipLabel: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
+    ...typography.tag,
     color: colors.textSecondary,
   },
   chipLabelActive: {
@@ -311,8 +309,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     alignItems: 'center',
   },
   countryName: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.xs,
+    ...typography.microMedium,
     color: colors.text,
     textAlign: 'center',
     marginTop: spacing.xs,

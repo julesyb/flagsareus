@@ -669,10 +669,8 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderLeftColor: colors.border,
   },
   heroStatValue: {
-    fontFamily: fontFamily.display,
-    fontSize: fontSize.display,
+    ...typography.displayValue,
     color: colors.ink,
-    letterSpacing: -1,
     lineHeight: 36,
     marginBottom: 5,
   },
@@ -695,11 +693,9 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     marginBottom: spacing.sm,
   },
   tileVal: {
-    fontFamily: fontFamily.display,
-    fontSize: fontSize.display,
+    ...typography.displayValue,
     lineHeight: 40,
     color: colors.ink,
-    letterSpacing: -0.5,
   },
   tileUnit: {
     ...typography.label,
@@ -725,13 +721,11 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     marginTop: 6,
   },
   progressLabelBold: {
-    fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.xs,
+    ...typography.microBold,
     color: colors.ink,
   },
   progressLabelMuted: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textTertiary,
   },
 
@@ -753,8 +747,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   milestoneContent: { flex: 1 },
   milestoneTitle: {
-    fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.sm,
+    ...typography.captionStrong,
     color: colors.ink,
     marginBottom: 6,
   },
@@ -768,8 +761,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderRadius: borderRadius.full,
   },
   milestoneSub: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textTertiary,
     marginTop: 4,
   },
@@ -796,14 +788,12 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   practiceCtaContent: { flex: 1 },
   practiceCtaTitle: {
-    fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.body,
+    ...typography.bodyBold,
     color: colors.accent,
     marginBottom: 2,
   },
   practiceCtaSub: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textSecondary,
   },
 
@@ -822,8 +812,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     gap: 10,
   },
   modeLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.xs,
+    ...typography.microMedium,
     color: colors.ink,
     width: 80,
   },
@@ -843,8 +832,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     backgroundColor: colors.success,
   },
   modePct: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
+    ...typography.tag,
     color: colors.textTertiary,
     width: 36,
     textAlign: 'right',
@@ -890,18 +878,15 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     color: colors.textTertiary,
   },
   regionImprovNow: {
-    fontFamily: fontFamily.display,
-    fontSize: fontSize.lg,
+    ...typography.statValue,
     color: colors.ink,
-    letterSpacing: -0.5,
     textAlign: 'right',
   },
   regionImprovNowGood: {
     color: colors.success,
   },
   regionImprovDiff: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.sm,
+    ...typography.captionBold,
     color: colors.textTertiary,
   },
   regionImprovDiffUp: {
@@ -924,8 +909,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     marginBottom: spacing.sm,
   },
   sectionMeta: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textTertiary,
   },
 
@@ -943,15 +927,13 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     gap: 12,
   },
   rank: {
-    fontFamily: fontFamily.display,
-    fontSize: fontSize.lg,
+    ...typography.statValue,
     color: colors.textTertiary,
     minWidth: 20,
     textAlign: 'center',
   },
   rankName: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.body,
+    ...typography.label,
     color: colors.ink,
     flex: 1,
   },
@@ -962,8 +944,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     paddingHorizontal: 10,
   },
   scoreBadgeText: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
+    ...typography.tag,
     color: colors.success,
   },
   scoreBadgeWrong: { backgroundColor: colors.errorBg },
@@ -984,8 +965,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     gap: 10,
   },
   distLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.xs,
+    ...typography.microMedium,
     color: colors.textTertiary,
     width: 56,
     textAlign: 'right',
@@ -1006,8 +986,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     backgroundColor: colors.success,
   },
   distCount: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
+    ...typography.tag,
     color: colors.textTertiary,
     width: 24,
     textAlign: 'right',
@@ -1054,13 +1033,11 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     color: colors.ink,
   },
   challengeDate: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textTertiary,
   },
   challengeMode: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textTertiary,
     marginBottom: 4,
   },
@@ -1070,24 +1047,20 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     gap: 4,
   },
   challengeScoreLabel: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textSecondary,
   },
   challengeScore: {
-    fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.xs,
+    ...typography.microBold,
     color: colors.ink,
   },
   challengeVs: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textTertiary,
     marginHorizontal: 4,
   },
   challengeResult: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.xs,
+    ...typography.microMedium,
     marginTop: 2,
   },
   challengeDirectionPill: {
@@ -1124,15 +1097,13 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     justifyContent: 'center', alignItems: 'center', marginBottom: 10,
   },
   badgeName: {
-    fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.sm,
+    ...typography.captionStrong,
     color: colors.ink,
     marginBottom: 3,
   },
   badgeNameLocked: { color: colors.textTertiary },
   badgeDesc: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textSecondary,
     lineHeight: 16,
   },
@@ -1150,8 +1121,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderRadius: borderRadius.full,
   },
   badgeProgressText: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xs,
+    ...typography.micro,
     color: colors.textTertiary,
     marginTop: 3,
   },
@@ -1166,8 +1136,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     padding: spacing.md,
   },
   settingsLinkText: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.body,
+    ...typography.label,
     color: colors.textTertiary,
   },
 });
