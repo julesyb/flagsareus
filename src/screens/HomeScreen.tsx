@@ -20,7 +20,7 @@ import { getStats, getDayStreak, getSettings, getMissedFlagIds, getBaselineData,
 import { generateQuestions } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion, CategoryId, BASELINE_REGIONS } from '../types';
-import { PlayIcon, ChevronRightIcon, ChevronDownIcon, ClockIcon, EyeIcon, CrosshairIcon, PuzzleIcon, CheckIcon, FlameIcon, UsersIcon, LinkIcon } from '../components/Icons';
+import { PlayIcon, ChevronRightIcon, CheckIcon, FlameIcon, LinkIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
@@ -30,11 +30,9 @@ import { useNavTabs } from '../hooks/useNavTabs';
 import { computeLevelProgress, LevelProgress } from '../utils/levels';
 import { t } from '../utils/i18n';
 import { translateName, flagName } from '../data/countryNames';
-import { HOME_QUESTION_COUNTS, ANIM_PULSE_DURATION_MS, ANIM_PULSE_DELAY_MS, ANIM_STAGGER_MS, ANIM_OPTION_DELAY_MS } from '../utils/config';
+import { HOME_QUESTION_COUNTS, ANIM_PULSE_DURATION_MS, ANIM_PULSE_DELAY_MS, ANIM_STAGGER_MS, ANIM_OPTION_DELAY_MS, UNLIMITED_QUESTIONS, TEASER_QUESTION_COUNT, IMPOSTOR_DEFAULT_COUNT, FLAGPUZZLE_DEFAULT_COUNT, FLAGPUZZLE_DEFAULT_TIME, TIMEATTACK_DEFAULT_TIME } from '../utils/config';
 
 const MODE_KEYS: GameMode[] = ['easy', 'medium', 'hard'];
-
-const QUESTION_COUNTS = HOME_QUESTION_COUNTS;
 
 
 
@@ -46,7 +44,7 @@ function FlagTeaser({ onAnswer }: { onAnswer?: () => void }) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const question = useMemo<GameQuestion | null>(() => {
-    const qs = generateQuestions({ mode: 'medium', category: 'all', questionCount: 1, displayMode: 'flag' });
+    const qs = generateQuestions({ mode: 'medium', category: 'all', questionCount: TEASER_QUESTION_COUNT, displayMode: 'flag' });
     return qs[0] ?? null;
   }, []);
 
@@ -202,10 +200,9 @@ export default function HomeScreen({ navigation }: Props) {
     });
   };
 
-  const ONBOARDING_REGIONS = BASELINE_REGIONS;
   const onboardingComplete = baseline ? baseline.completedAt !== null : true;
-  const onboardingCount = baseline ? ONBOARDING_REGIONS.filter((r) => baseline.regions[r]).length : 0;
-  const nextRegion = baseline ? ONBOARDING_REGIONS.find((r) => !baseline.regions[r]) ?? 'africa' : 'africa';
+  const onboardingCount = baseline ? BASELINE_REGIONS.filter((r) => baseline.regions[r]).length : 0;
+  const nextRegion = baseline ? BASELINE_REGIONS.find((r) => !baseline.regions[r]) ?? BASELINE_REGIONS[0] : BASELINE_REGIONS[0];
 
 
   return (
@@ -268,7 +265,7 @@ export default function HomeScreen({ navigation }: Props) {
         <View style={{ marginHorizontal: spacing.md, marginTop: spacing.sm }}>
           <ConfigCard>
             <ConfigRow label={t('home.cards')} showDivider={false}>
-              {QUESTION_COUNTS.map((c) => (
+              {HOME_QUESTION_COUNTS.map((c) => (
                 <SegBtn
                   key={c}
                   label={String(c)}
@@ -335,7 +332,7 @@ export default function HomeScreen({ navigation }: Props) {
               onPress={() => {
                 hapticTap();
                 navigation.navigate('Game', {
-                  config: { mode: 'timeattack', category: 'all', questionCount: 999, timeLimit: 60, displayMode: 'flag' },
+                  config: { mode: 'timeattack', category: 'all', questionCount: UNLIMITED_QUESTIONS, timeLimit: TIMEATTACK_DEFAULT_TIME, displayMode: 'flag' },
                 });
               }}
               accessibilityRole="button"
@@ -354,7 +351,7 @@ export default function HomeScreen({ navigation }: Props) {
               onPress={() => {
                 hapticTap();
                 navigation.navigate('FlagImpostor', {
-                  config: { mode: 'impostor', category: 'all', questionCount: 10, displayMode: 'flag' },
+                  config: { mode: 'impostor', category: 'all', questionCount: IMPOSTOR_DEFAULT_COUNT, displayMode: 'flag' },
                 });
               }}
               accessibilityRole="button"
@@ -373,7 +370,7 @@ export default function HomeScreen({ navigation }: Props) {
               onPress={() => {
                 hapticTap();
                 navigation.navigate('FlagPuzzle', {
-                  config: { mode: 'flagpuzzle', category: 'all', questionCount: 10, timeLimit: 15, displayMode: 'flag' },
+                  config: { mode: 'flagpuzzle', category: 'all', questionCount: FLAGPUZZLE_DEFAULT_COUNT, timeLimit: FLAGPUZZLE_DEFAULT_TIME, displayMode: 'flag' },
                 });
               }}
               accessibilityRole="button"
@@ -435,7 +432,7 @@ export default function HomeScreen({ navigation }: Props) {
               <View style={styles.onboardingTopLeft}>
                 <Text style={styles.onboardingTitle}>{t('onboarding.baselineProgress')}</Text>
                 <Text style={styles.onboardingCount}>
-                  {t('onboarding.regionsComplete', { count: onboardingCount, total: ONBOARDING_REGIONS.length })}
+                  {t('onboarding.regionsComplete', { count: onboardingCount, total: BASELINE_REGIONS.length })}
                 </Text>
               </View>
               <TouchableOpacity
@@ -461,7 +458,7 @@ export default function HomeScreen({ navigation }: Props) {
                 <Animated.View
                   style={[
                     styles.onboardingBarFill,
-                    { width: `${(onboardingCount / ONBOARDING_REGIONS.length) * 100}%` },
+                    { width: `${(onboardingCount / BASELINE_REGIONS.length) * 100}%` },
                   ]}
                 />
               </View>
@@ -469,7 +466,7 @@ export default function HomeScreen({ navigation }: Props) {
             </View>
             {/* Region chips */}
             <View style={styles.onboardingChips}>
-              {ONBOARDING_REGIONS.map((r) => {
+              {BASELINE_REGIONS.map((r) => {
                 const result = baseline?.regions[r];
                 const isDone = !!result;
                 return (
@@ -811,7 +808,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     flexDirection: 'row',
     justifyContent: 'center',
     gap: spacing.sm,
-    paddingVertical: spacing.md - 1,
+    paddingVertical: 15,
   },
   playBtnText: {
     ...btn.primaryText,
@@ -840,8 +837,8 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   modeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm + 4,
-    paddingVertical: spacing.sm + 3,
+    gap: 12,
+    paddingVertical: 11,
     paddingHorizontal: 2,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,

@@ -42,11 +42,10 @@ import {
   TIMEATTACK_TIMES,
   DEFAULT_GUESS_LIMIT,
   GUESS_LIMIT_OPTIONS,
+  UNLIMITED_QUESTIONS,
 } from '../utils/config';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'GameSetup'>;
-
-const QUESTION_COUNTS = SETUP_QUESTION_COUNTS;
 
 type SetupMode = 'quiz' | 'flashflag' | 'flagpuzzle' | 'timeattack' | 'neighbors' | 'capitalconnection';
 type QuizDifficulty = 'easy' | 'medium' | 'hard';
@@ -162,7 +161,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
     const config: GameConfig = {
       mode: resolvedMode,
       category: selectedCategory,
-      questionCount: (isTimeAttack || isFlashFlag) ? 999 : effectiveQuestionCount,
+      questionCount: (isTimeAttack || isFlashFlag) ? UNLIMITED_QUESTIONS : effectiveQuestionCount,
       ...(showMapToggle && { displayMode }),
       ...(hasTimeLimit && { timeLimit }),
       ...(difficulty === 'hard' && isQuiz && { autocomplete }),
@@ -341,7 +340,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
           {/* Question Count (for FlagPuzzle within time modes) */}
           {hasTimeLimit && isFlagPuzzle && (
             <ConfigRow label={t('setup.questions')}>
-              {QUESTION_COUNTS.map((count) => (
+              {SETUP_QUESTION_COUNTS.map((count) => (
                 <SegBtn
                   key={count}
                   label={String(count)}
@@ -362,7 +361,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
           {/* Question Count (everything except Flash Flag/TimeAttack/FlagPuzzle) */}
           {showQuestionCount && (
             <ConfigRow label={t('setup.questions')}>
-              {QUESTION_COUNTS.map((count) => (
+              {SETUP_QUESTION_COUNTS.map((count) => (
                 <SegBtn
                   key={count}
                   label={String(count)}
@@ -513,8 +512,8 @@ const createStyles = (colors: ThemeColors) => {
   },
   diffBtn: {
     flex: 1,
-    paddingVertical: spacing.sm + 5,
-    paddingHorizontal: spacing.sm,
+    paddingVertical: 13,
+    paddingHorizontal: 8,
     borderRadius: borderRadius.md,
     borderWidth: 1,
     borderColor: colors.border,

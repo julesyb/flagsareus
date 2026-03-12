@@ -25,6 +25,7 @@ import MapImage from '../components/MapImage';
 import { useGameAnimations } from '../hooks/useGameAnimations';
 import { getFlagByName, getFlagsForCategory } from '../data';
 import { RootStackParamList } from '../types/navigation';
+import { UNLIMITED_QUESTIONS } from '../utils/config';
 import GameTopBar from '../components/GameTopBar';
 import ScreenContainer from '../components/ScreenContainer';
 import { buildChallengeQuestions } from '../utils/challengeCode';
@@ -69,7 +70,7 @@ export default function GameScreen({ route, navigation }: Props) {
       });
     } else {
       const timeAttackConfig = isTimeAttack
-        ? { ...config, questionCount: 999 }
+        ? { ...config, questionCount: UNLIMITED_QUESTIONS }
         : config;
       const q = generateQuestions(timeAttackConfig);
       setQuestions(q);
