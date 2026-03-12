@@ -409,7 +409,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
     try { await Share.share({ message }); markShared(); } catch { /* cancelled */ }
   };
 
-  const goHome = () => navigation.popToTop();
+
 
   const navigatePlayAgain = useCallback(() => {
     if (isDaily || isBaseline) {
@@ -723,17 +723,12 @@ export default function ResultsScreen({ route, navigation }: Props) {
 
         {/* ── ACTION BUTTONS ── */}
         <Animated.View style={[styles.buttonRow, { opacity: restFade }]}>
-          {!isBaseline && (
-            <TouchableOpacity style={styles.secondaryButton} onPress={handleShare} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={t('common.share')}>
-              <Text style={styles.secondaryButtonText}>{t('common.share')}</Text>
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity style={styles.primaryButton} onPress={playAgain} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={playCtaText}>
+          <TouchableOpacity style={[styles.primaryButton, !isBaseline && styles.buttonHalf]} onPress={playAgain} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={playCtaText}>
             <Text style={styles.primaryButtonText}>{playCtaText}</Text>
           </TouchableOpacity>
-          {!isDaily && !isBaseline && (
-            <TouchableOpacity style={styles.secondaryButton} onPress={goHome} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={t('common.home')}>
-              <Text style={styles.secondaryButtonText}>{t('common.home')}</Text>
+          {!isBaseline && (
+            <TouchableOpacity style={[styles.secondaryButton, styles.buttonHalf]} onPress={handleShare} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={t('common.share')}>
+              <Text style={styles.secondaryButtonText}>{t('common.share')}</Text>
             </TouchableOpacity>
           )}
         </Animated.View>
@@ -1036,7 +1031,8 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   insightText: { ...typography.microMedium, color: colors.textSecondary },
 
   // ── Buttons
-  buttonRow: { gap: spacing.sm, marginBottom: spacing.md },
+  buttonRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
+  buttonHalf: { flex: 1 },
   secondaryButton: { ...btn.secondary, justifyContent: 'center', alignItems: 'center' },
   secondaryButtonText: { ...btn.secondaryText, textAlign: 'center' },
   primaryButton: { ...btn.primary, justifyContent: 'center', alignItems: 'center' },

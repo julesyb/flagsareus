@@ -174,12 +174,9 @@ export default function StatsScreen() {
     return Object.entries(flagStats)
       .filter(([, s]) => s.right >= UNLOCK_THRESHOLD)
       .sort(([, a], [, b]) => {
-        const totalA = a.right + a.wrong;
-        const totalB = b.right + b.wrong;
-        if (totalA === 0 || totalB === 0) return totalB - totalA;
-        const accA = a.right / totalA;
-        const accB = b.right / totalB;
-        if (accA !== accB) return accB - accA;
+        // Primary: most correct answers first
+        if (a.right !== b.right) return b.right - a.right;
+        // Tiebreaker: fastest average response time first
         const avgA = a.totalTimeRight && a.right > 0 ? a.totalTimeRight / a.right : Infinity;
         const avgB = b.totalTimeRight && b.right > 0 ? b.totalTimeRight / b.right : Infinity;
         return avgA - avgB;
@@ -191,12 +188,12 @@ export default function StatsScreen() {
     return Object.entries(flagStats)
       .filter(([, s]) => s.wrong > 0 && s.rightStreak < MASTERED_STREAK)
       .sort(([, a], [, b]) => {
-        const totalA = a.right + a.wrong;
-        const totalB = b.right + b.wrong;
-        if (totalA === 0 || totalB === 0) return totalA - totalB;
-        const accA = a.right / totalA;
-        const accB = b.right / totalB;
-        return accA - accB; // worst accuracy first
+        // Primary: most wrong answers first
+        if (a.wrong !== b.wrong) return b.wrong - a.wrong;
+        // Tiebreaker: slowest average wrong response time first (less confident)
+        const avgA = a.totalTimeWrong && a.wrong > 0 ? a.totalTimeWrong / a.wrong : 0;
+        const avgB = b.totalTimeWrong && b.wrong > 0 ? b.totalTimeWrong / b.wrong : 0;
+        return avgB - avgA;
       })
       .slice(0, 10);
   }, [flagStats]);
