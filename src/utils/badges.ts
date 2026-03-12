@@ -2,6 +2,7 @@ import { UserStats, GameResult } from '../types';
 import { FlagStats, DayStreakInfo, BadgeData, UNLOCK_THRESHOLD } from './storage';
 import { getTotalFlagCount } from '../data';
 import { colors } from './theme';
+import { t } from './i18n';
 
 export type BadgeTier = 'bronze' | 'silver' | 'gold' | 'platinum';
 
@@ -26,6 +27,16 @@ export const TIER_COLORS: Record<BadgeTier, string> = {
   gold: colors.tierGold,
   platinum: colors.tierPlatinum,
 };
+
+/** Get the localized name for a badge */
+export function getBadgeName(badge: Badge): string {
+  return t(`badges.${badge.id}.name`);
+}
+
+/** Get the localized description for a badge */
+export function getBadgeDescription(badge: Badge): string {
+  return t(`badges.${badge.id}.description`);
+}
 
 export const BADGES: Badge[] = [
   // ── Progression

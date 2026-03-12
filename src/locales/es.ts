@@ -243,6 +243,13 @@ const es: DeepPartial<TranslationStrings> = {
     badgeDetailLocked: 'Sigue jugando para desbloquear',
     badgeDetailProgress: '{progress}/{target}',
     challengeDetail: 'Detalle del desafío',
+    daySat: 'S',
+    daySun: 'D',
+    dayMon: 'L',
+    dayTue: 'M',
+    dayWed: 'X',
+    dayThu: 'J',
+    dayFri: 'V',
     unlockHint: 'Responde correctamente {count} veces para desbloquear',
   },
 
@@ -388,6 +395,11 @@ const es: DeepPartial<TranslationStrings> = {
     daily_legend: { name: 'Leyenda diaria', description: '30 desaf\u00edos diarios completados' },
     practice_perfect: { name: 'Pr\u00e1ctica perfecta', description: 'Sin banderas pendientes de practicar' },
     shared_spirit: { name: 'Esp\u00edritu compartido', description: 'Comparte tus resultados' },
+    marathon: { name: 'Marat\u00f3n', description: 'Juega 50 partidas' },
+    quick_draw: { name: 'Desenfunde r\u00e1pido', description: 'Identifica una bandera en menos de 1,5 segundos' },
+    hard_hitter: { name: 'Golpeador', description: 'Responde 100 preguntas en modo dif\u00edcil' },
+    region_ace: { name: 'As regional', description: '90%+ en cualquier regi\u00f3n (20+ banderas)' },
+    explorer: { name: 'Explorador', description: 'Prueba 5 modos de juego diferentes' },
   },
 
   onboarding: {

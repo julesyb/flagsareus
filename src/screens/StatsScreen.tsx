@@ -26,7 +26,7 @@ import { FlagImageSmall } from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
-import { getAllEarnedBadges, buildBadgeContext, deriveFromContext, BADGES, TIER_COLORS, getBadgeProgress, Badge } from '../utils/badges';
+import { getAllEarnedBadges, buildBadgeContext, deriveFromContext, BADGES, TIER_COLORS, getBadgeProgress, getBadgeName, getBadgeDescription, Badge } from '../utils/badges';
 import { computeLevelProgress, LevelProgress, getTierLabel, getLevelTier } from '../utils/levels';
 import { ChevronRightIcon, BadgeIconView, UsersIcon, CheckIcon, CrossIcon } from '../components/Icons';
 import PageHeader from '../components/PageHeader';
@@ -258,8 +258,11 @@ export default function StatsScreen() {
     endDate.setDate(endDate.getDate() - daysSinceFriday);
 
     const cells: { date: string; count: number; dayLabel: string }[] = [];
-    // Sat=S, Sun=S, Mon=M, Tue=T, Wed=W, Thu=T, Fri=F
-    const dayLabels = ['S', 'S', 'M', 'T', 'W', 'T', 'F'];
+    // Sat, Sun, Mon, Tue, Wed, Thu, Fri
+    const dayLabels = [
+      t('stats.daySat'), t('stats.daySun'), t('stats.dayMon'),
+      t('stats.dayTue'), t('stats.dayWed'), t('stats.dayThu'), t('stats.dayFri'),
+    ];
     let hasActivity = false;
     // Start from Saturday (27 days before end Friday = 4 weeks, Sat to Fri)
     const startDate = new Date(endDate);
@@ -597,7 +600,7 @@ export default function StatsScreen() {
                   <View style={[styles.badgeIconWrap, { backgroundColor: earned ? tierColor + '18' : colors.surfaceSecondary }]}>
                     <BadgeIconView icon={badge.icon} size={14} color={earned ? tierColor : colors.textTertiary} />
                   </View>
-                  <Text style={[styles.badgeName, !earned && styles.badgeNameLocked]} numberOfLines={1}>{badge.name}</Text>
+                  <Text style={[styles.badgeName, !earned && styles.badgeNameLocked]} numberOfLines={1}>{getBadgeName(badge)}</Text>
                   {progress && progress.progress > 0 && (
                     <View style={styles.badgeProgressWrap}>
                       <View style={[styles.badgeProgressFill, { width: `${progress.pct}%` }]} />
@@ -697,8 +700,8 @@ export default function StatsScreen() {
                   <View style={[styles.modalBadgeIcon, { backgroundColor: tierColor + '18' }]}>
                     <BadgeIconView icon={selectedBadge.icon} size={28} color={isEarned ? tierColor : colors.textTertiary} />
                   </View>
-                  <Text style={styles.modalBadgeName}>{selectedBadge.name}</Text>
-                  <Text style={styles.modalBadgeDesc}>{selectedBadge.description}</Text>
+                  <Text style={styles.modalBadgeName}>{getBadgeName(selectedBadge)}</Text>
+                  <Text style={styles.modalBadgeDesc}>{getBadgeDescription(selectedBadge)}</Text>
                   <View style={[styles.modalStatusPill, {
                     backgroundColor: isEarned ? colors.successBg : inProgress ? colors.warningBg : colors.surfaceSecondary,
                   }]}>

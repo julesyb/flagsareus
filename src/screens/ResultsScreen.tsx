@@ -30,7 +30,7 @@ import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { countCorrect } from '../utils/gameHelpers';
 import { RootStackParamList } from '../types/navigation';
-import { getAllEarnedBadges, detectPerGameBadges, buildBadgeContext, BADGES, TIER_COLORS, EarnedBadge } from '../utils/badges';
+import { getAllEarnedBadges, detectPerGameBadges, buildBadgeContext, BADGES, TIER_COLORS, EarnedBadge, getBadgeName, getBadgeDescription } from '../utils/badges';
 import { getTotalFlagCount, getCategoryCount } from '../data';
 import { computeLevelProgress, getTierLabel, getLevelTier } from '../utils/levels';
 import { encodeChallenge, ChallengeData, CHALLENGE_MODES, generateShortCode, generateChallengeShareCard, encodeResponse } from '../utils/challengeCode';
@@ -747,8 +747,8 @@ export default function ResultsScreen({ route, navigation }: Props) {
                     <BadgeIconView icon={badge.icon} color={tierColor} />
                   </View>
                   <View style={styles.badgeContent}>
-                    <Text style={styles.badgeName}>{badge.name}</Text>
-                    <Text style={styles.badgeDesc}>{badge.description}</Text>
+                    <Text style={styles.badgeName}>{getBadgeName(badge)}</Text>
+                    <Text style={styles.badgeDesc}>{getBadgeDescription(badge)}</Text>
                   </View>
                   <View style={[styles.badgeTierPill, { backgroundColor: tierColor + '18' }]}>
                     <Text style={[styles.badgeTierText, { color: tierColor }]}>{badge.tier}</Text>

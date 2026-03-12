@@ -243,6 +243,13 @@ const de: DeepPartial<TranslationStrings> = {
     badgeDetailLocked: 'Weiterspielen zum Freischalten',
     badgeDetailProgress: '{progress}/{target}',
     challengeDetail: 'Challenge-Details',
+    daySat: 'S',
+    daySun: 'S',
+    dayMon: 'M',
+    dayTue: 'D',
+    dayWed: 'M',
+    dayThu: 'D',
+    dayFri: 'F',
     unlockHint: '{count} Mal richtig antworten zum Freischalten',
   },
 
@@ -388,6 +395,11 @@ const de: DeepPartial<TranslationStrings> = {
     daily_legend: { name: 'T\u00e4gliche Legende', description: '30 t\u00e4gliche Herausforderungen' },
     practice_perfect: { name: 'Perfekt ge\u00fcbt', description: 'Keine Flaggen mehr zum \u00dcben' },
     shared_spirit: { name: 'Teilender Geist', description: 'Teile deine Ergebnisse' },
+    marathon: { name: 'Marathon', description: 'Spiele 50 Spiele' },
+    quick_draw: { name: 'Schnellschuss', description: 'Erkenne eine Flagge in unter 1,5 Sekunden' },
+    hard_hitter: { name: 'Harter Schlag', description: 'Beantworte 100 Fragen im schweren Modus' },
+    region_ace: { name: 'Regions-Ass', description: '90%+ in einer Region (20+ Flaggen)' },
+    explorer: { name: 'Entdecker', description: 'Probiere 5 verschiedene Spielmodi' },
   },
 
   onboarding: {

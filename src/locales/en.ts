@@ -259,6 +259,13 @@ const en = {
     badgeDetailLocked: 'Keep playing to unlock',
     badgeDetailProgress: '{progress}/{target}',
     challengeDetail: 'Challenge Detail',
+    daySat: 'S',
+    daySun: 'S',
+    dayMon: 'M',
+    dayTue: 'T',
+    dayWed: 'W',
+    dayThu: 'T',
+    dayFri: 'F',
   },
 
   // ─── Settings Screen ────────────────────────────────────
@@ -489,6 +496,11 @@ const en = {
     daily_legend: { name: 'Daily Legend', description: 'Complete 30 daily challenges' },
     practice_perfect: { name: 'Practice Perfect', description: 'Clear all flags from practice' },
     shared_spirit: { name: 'Shared Spirit', description: 'Share your results' },
+    marathon: { name: 'Marathon', description: 'Play 50 games' },
+    quick_draw: { name: 'Quick Draw', description: 'Nail a flag in under 1.5 seconds' },
+    hard_hitter: { name: 'Hard Hitter', description: 'Answer 100 hard mode questions' },
+    region_ace: { name: 'Region Ace', description: 'Score 90%+ in any region (20+ flags)' },
+    explorer: { name: 'Explorer', description: 'Try 5 different game modes' },
   },
 
   // ─── Onboarding ───────────────────────────────────────────

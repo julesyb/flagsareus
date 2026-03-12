@@ -243,6 +243,13 @@ const zh: DeepPartial<TranslationStrings> = {
     badgeDetailLocked: '继续游戏解锁',
     badgeDetailProgress: '{progress}/{target}',
     challengeDetail: '挑战详情',
+    daySat: '六',
+    daySun: '日',
+    dayMon: '一',
+    dayTue: '二',
+    dayWed: '三',
+    dayThu: '四',
+    dayFri: '五',
     unlockHint: '正确回答{count}次解锁',
   },
 
@@ -388,6 +395,11 @@ const zh: DeepPartial<TranslationStrings> = {
     daily_legend: { name: '\u6bcf\u65e5\u4f20\u5947', description: '\u5b8c\u621030\u6b21\u6bcf\u65e5\u6311\u6218' },
     practice_perfect: { name: '\u7ec3\u4e60\u5b8c\u7f8e', description: '\u6ca1\u6709\u9700\u8981\u7ec3\u4e60\u7684\u56fd\u65d7' },
     shared_spirit: { name: '\u5206\u4eab\u7cbe\u795e', description: '\u5206\u4eab\u4f60\u7684\u7ed3\u679c' },
+    marathon: { name: '\u9a6c\u62c9\u677e', description: '\u73a9\u4e8650\u573a\u6e38\u620f' },
+    quick_draw: { name: '\u5feb\u901f\u62bd\u7b54', description: '\u57281.5\u79d2\u5185\u8bc6\u522b\u4e00\u9762\u56fd\u65d7' },
+    hard_hitter: { name: '\u786c\u6838\u73a9\u5bb6', description: '\u56de\u7b54100\u9053\u56f0\u96be\u6a21\u5f0f\u95ee\u9898' },
+    region_ace: { name: '\u533a\u57df\u738b\u724c', description: '\u4efb\u4e00\u533a\u57df\u5f9790%+\uff0820+\u56fd\u65d7\uff09' },
+    explorer: { name: '\u63a2\u7d22\u8005', description: '\u5c1d\u8bd55\u79cd\u4e0d\u540c\u6e38\u620f\u6a21\u5f0f' },
   },
 
   onboarding: {
