@@ -178,6 +178,15 @@ export default function BrowseScreen({ route, navigation }: Props) {
                 style={[styles.chip, active && styles.chipActive]}
                 onPress={() => setSelectedFilter(filter)}
                 activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  filter === PRACTICE_MORE
+                    ? t('browse.practiceMore')
+                    : REGION_KEYS[filter]
+                      ? t(REGION_KEYS[filter])
+                      : filter
+                }
+                accessibilityState={{ selected: active }}
               >
                 <Text style={[styles.chipLabel, active && styles.chipLabelActive]}>
                   {filter === PRACTICE_MORE
@@ -234,7 +243,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   pageSub: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.caption,
+    fontSize: fontSize.sm,
     color: colors.textTertiary,
   },
   searchRow: {
@@ -282,7 +291,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   chipLabel: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textSecondary,
   },
   chipLabelActive: {
@@ -315,7 +324,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   countryName: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.text,
     textAlign: 'center',
     marginTop: spacing.xs,
