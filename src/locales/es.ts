@@ -29,6 +29,7 @@ const es: typeof en = {
     modes: 'Modos',
     stats: 'Stats',
     browse: 'Explorar',
+    settings: 'Ajustes',
   },
 
   app: {
@@ -223,6 +224,8 @@ const es: typeof en = {
   },
 
   browse: {
+    title: 'Explorar',
+    countriesLabel: 'pa\u00edses',
     searchPlaceholder: 'Buscar banderas...',
     all: 'Todas',
     africa: '\u00c1frica',

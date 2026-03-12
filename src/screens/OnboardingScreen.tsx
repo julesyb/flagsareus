@@ -127,7 +127,7 @@ export default function OnboardingScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+      <StatusBar barStyle="light-content" backgroundColor={colors.background} />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -178,13 +178,13 @@ export default function OnboardingScreen({ navigation }: Props) {
                 activeOpacity={0.85}
               >
                 <View style={styles.primaryBtnIcon}>
-                  <PlayIcon size={16} color={colors.white} />
+                  <PlayIcon size={16} color={colors.playText} />
                 </View>
                 <View style={styles.btnTextWrap}>
                   <Text style={styles.primaryBtnText}>{t('onboarding.startPlayingNow')}</Text>
                   <Text style={styles.primaryBtnSub}>{t('onboarding.startPlayingDesc')}</Text>
                 </View>
-                <ChevronRightIcon size={18} color={colors.white} />
+                <ChevronRightIcon size={18} color={colors.playText} />
               </TouchableOpacity>
 
               {/* Test Your Knowledge - secondary CTA */}
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
 
   // ── Hero section
   hero: {
-    backgroundColor: colors.ink,
+    backgroundColor: colors.surface,
     marginHorizontal: spacing.md,
     marginTop: spacing.xl,
     borderRadius: borderRadius.xl,
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
   primaryBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.ink,
+    backgroundColor: colors.goldBright,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     gap: spacing.md,
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
   primaryBtnIcon: {
     width: 44,
     height: 44,
-    backgroundColor: colors.accent,
+    backgroundColor: 'rgba(19,15,0,0.2)',
     borderRadius: borderRadius.md,
     justifyContent: 'center',
     alignItems: 'center',
@@ -402,20 +402,20 @@ const styles = StyleSheet.create({
     fontSize: fontSize.lg,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
-    color: colors.white,
+    color: colors.playText,
     marginBottom: 2,
   },
   primaryBtnSub: {
     fontFamily: fontFamily.body,
     fontSize: fontSize.caption,
-    color: colors.whiteAlpha60,
+    color: colors.playText,
   },
   secondaryBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderWidth: 2,
-    borderColor: colors.ink,
+    borderColor: colors.border,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     gap: spacing.md,
@@ -495,9 +495,9 @@ const styles = StyleSheet.create({
   regionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderWidth: 2,
-    borderColor: colors.rule,
+    borderColor: colors.border,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     paddingHorizontal: spacing.md,
@@ -521,14 +521,14 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: colors.ink,
+    backgroundColor: colors.goldBright,
     justifyContent: 'center',
     alignItems: 'center',
   },
   regionNumberTextActive: {
     fontFamily: fontFamily.uiLabel,
     fontSize: fontSize.caption,
-    color: colors.white,
+    color: colors.playText,
   },
   checkCircle: {
     width: 32,
@@ -576,7 +576,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   startBtn: {
-    backgroundColor: colors.ink,
+    backgroundColor: colors.goldBright,
     borderRadius: borderRadius.lg,
     paddingVertical: spacing.md + spacing.xxs,
     paddingHorizontal: spacing.xl,
@@ -589,6 +589,6 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xl,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
-    color: colors.white,
+    color: colors.playText,
   },
 });

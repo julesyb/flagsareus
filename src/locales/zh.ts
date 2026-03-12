@@ -29,6 +29,7 @@ const zh: typeof en = {
     modes: '\u6a21\u5f0f',
     stats: '\u7edf\u8ba1',
     browse: '\u6d4f\u89c8',
+    settings: '设置',
   },
 
   app: {
@@ -223,6 +224,8 @@ const zh: typeof en = {
   },
 
   browse: {
+    title: '\u6d4f\u89c8',
+    countriesLabel: '\u4e2a\u56fd\u5bb6',
     searchPlaceholder: '\u641c\u7d22\u56fd\u65d7...',
     all: '\u5168\u90e8',
     africa: '\u975e\u6d32',

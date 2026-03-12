@@ -419,7 +419,7 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
               accessibilityLabel={t('common.next')}
             >
               <Text style={styles.nextButtonText}>{t('common.next')}</Text>
-              <ChevronRightIcon size={16} color={colors.white} />
+              <ChevronRightIcon size={16} color={colors.playText} />
             </TouchableOpacity>
           </View>
         )}
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
   },
   tile: {
     position: 'absolute',
-    backgroundColor: colors.ink,
+    backgroundColor: colors.surface,
   },
   revealLabel: {
     ...typography.caption,
@@ -567,7 +567,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: colors.ink,
+    backgroundColor: colors.goldBright,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: borderRadius.md,
@@ -575,7 +575,7 @@ const styles = StyleSheet.create({
   },
   nextButtonText: {
     ...typography.captionBold,
-    color: colors.white,
+    color: colors.playText,
     textTransform: 'uppercase',
   },
 });

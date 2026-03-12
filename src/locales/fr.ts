@@ -29,6 +29,7 @@ const fr: typeof en = {
     modes: 'Modes',
     stats: 'Stats',
     browse: 'Explorer',
+    settings: 'Paramètres',
   },
 
   app: {
@@ -223,6 +224,8 @@ const fr: typeof en = {
   },
 
   browse: {
+    title: 'Parcourir',
+    countriesLabel: 'pays',
     searchPlaceholder: 'Rechercher des drapeaux...',
     all: 'Tous',
     africa: 'Afrique',
