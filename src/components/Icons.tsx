@@ -26,11 +26,11 @@ export function HomeIcon({ size = 16, color, strokeWidth = 1.5, filled = false }
   );
 }
 
-// Flame — streak indicator
-export function FlameIcon({ size = 16, color, filled = true }: IconProps) {
+// Flame — streak indicator (based on Material "whatshot" silhouette)
+export function FlameIcon({ size = 16, color }: IconProps) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? color : 'none'} stroke={filled ? 'none' : color} strokeWidth={filled ? 0 : 1.5} strokeLinecap="round" strokeLinejoin="round">
-      <Path d="M12 2C8 7 5 11 5 15C5 18.87 8.13 22 12 22C15.87 22 19 18.87 19 15C19 11 16 7 12 2Z" />
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+      <Path d="M13.5 0.67C13.5 0.67 14.24 3.32 14.24 5.47C14.24 7.53 12.89 9.2 10.83 9.2C8.76 9.2 7.2 7.53 7.2 5.47L7.23 5.11C5.21 7.51 4 10.62 4 14C4 18.42 7.58 22 12 22C16.42 22 20 18.42 20 14C20 8.61 17.41 3.8 13.5 0.67Z" />
     </Svg>
   );
 }

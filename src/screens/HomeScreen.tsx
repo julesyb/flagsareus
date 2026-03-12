@@ -218,7 +218,7 @@ export default function HomeScreen({ navigation }: Props) {
             accessibilityLabel={`${dayStreak} ${t('home.dayStreak')}`}
             accessibilityHint="Opens your stats"
           >
-            <FlameIcon size={16} color={dayStreak > 0 ? colors.goldBright : colors.textTertiary} filled={dayStreak > 0} />
+            <FlameIcon size={16} color={dayStreak > 0 ? colors.goldBright : colors.textTertiary} />
             <Text style={[styles.streakNum, dayStreak === 0 && styles.streakNumInactive]}>{dayStreak}</Text>
             <View style={styles.streakPips}>
               {Array.from({ length: 7 }).map((_, i) => (
