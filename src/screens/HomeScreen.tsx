@@ -40,7 +40,7 @@ const QUESTION_COUNTS = [5, 10, 15, 20];
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 // ─── Flag Teaser (inline mini-quiz) ─────────────────────────
-function FlagTeaser() {
+function FlagTeaser({ onAnswer }: { onAnswer?: () => void }) {
   const question = useMemo<GameQuestion | null>(() => {
     const qs = generateQuestions({ mode: 'medium', category: 'all', questionCount: 1, displayMode: 'flag' });
     return qs[0] ?? null;
@@ -73,6 +73,7 @@ function FlagTeaser() {
       hapticWrong();
       playWrongSound();
     }
+    onAnswer?.();
   };
 
   const renderOption = (opt: string, idx: number) => {
@@ -144,6 +145,14 @@ export default function HomeScreen({ navigation }: Props) {
   const [weakFlagCount, setWeakFlagCount] = useState(0);
   const [autocomplete, setAutocomplete] = useState(false);
   const [baseline, setBaseline] = useState<BaselineData | null>(null);
+  const playBtnScale = useRef(new Animated.Value(1)).current;
+
+  const pulsePlayBtn = useCallback(() => {
+    Animated.sequence([
+      Animated.timing(playBtnScale, { toValue: 1.05, duration: 200, useNativeDriver: true }),
+      Animated.spring(playBtnScale, { toValue: 1, useNativeDriver: true, tension: 200, friction: 10 }),
+    ]).start();
+  }, [playBtnScale]);
 
   useEffect(() => {
     initAudio();
@@ -217,15 +226,15 @@ export default function HomeScreen({ navigation }: Props) {
         </View>
 
         {/* ── FLAG TEASER ── */}
-        <FlagTeaser key={teaserKey} />
+        <FlagTeaser key={teaserKey} onAnswer={pulsePlayBtn} />
 
         {/* ── PLAY NOW ── */}
-        <View style={styles.playWrap}>
+        <Animated.View style={[styles.playWrap, { transform: [{ scale: playBtnScale }] }]}>
           <TouchableOpacity style={styles.playBtn} onPress={play} activeOpacity={0.85}>
             <Text style={styles.playBtnText}>{t('home.playNow')}</Text>
             <PlayIcon size={14} color={colors.playText} />
           </TouchableOpacity>
-        </View>
+        </Animated.View>
 
         {/* ── CONFIG ── */}
         <View style={{ marginHorizontal: spacing.md, marginTop: spacing.sm }}>
