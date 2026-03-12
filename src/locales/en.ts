@@ -292,7 +292,7 @@ const en = {
     tiltUp: 'TILT UP',
     skipPass: 'Skip / Pass',
     motionFallback: 'If motion is unavailable, tap buttons instead',
-    flagAppears: 'A flag name appears on screen',
+    flagAppears: 'A flag appears on screen',
     correctLabel: 'CORRECT',
     clickLeft: 'Click or press Left arrow',
     skipLabel: 'SKIP',

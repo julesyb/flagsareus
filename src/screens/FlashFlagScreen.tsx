@@ -243,6 +243,9 @@ export default function FlashFlagScreen({ route, navigation }: Props) {
       setTiltState(action);
       setResults((prev) => [...prev, result]);
 
+      // Keep feedback brief so the game stays fast-paced.
+      // 500ms flash (enough to register green/red), then 200ms cooldown
+      // before the next flag to prevent accidental double-tilts.
       setTimeout(() => {
         setTiltState('neutral');
         isProcessing.current = false;
@@ -260,8 +263,8 @@ export default function FlashFlagScreen({ route, navigation }: Props) {
 
         setTimeout(() => {
           tiltCooldown.current = false;
-        }, 300);
-      }, 800);
+        }, 200);
+      }, 500);
     },
     [currentIndex, questions, navigation, config],
   );
@@ -457,7 +460,13 @@ export default function FlashFlagScreen({ route, navigation }: Props) {
                 size="hero"
               />
             )}
-            <Text style={styles.flagName}>{flagName(currentQuestion.flag)}</Text>
+            {/* On native/mobile, teammates see the screen from across the room
+                during Heads Up play. Hide the country name so they must describe
+                the flag visually instead of reading the answer. Desktop web shows
+                it as a self-grading flash card. */}
+            {isWeb && !isMobileWeb && (
+              <Text style={styles.flagName}>{flagName(currentQuestion.flag)}</Text>
+            )}
           </>
         )}
       </View>
@@ -611,7 +620,6 @@ const createStyles = (colors: ThemeColors) => {
   timerBar: {
     height: 6,
     backgroundColor: colors.whiteAlpha20,
-    marginTop: spacing.md + spacing.xs,
   },
   timerFill: {
     height: '100%',
@@ -621,8 +629,9 @@ const createStyles = (colors: ThemeColors) => {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: spacing.xl,
-    gap: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    gap: spacing.sm,
   },
   flagName: {
     fontSize: fontSize.gameTitle,
@@ -667,8 +676,8 @@ const createStyles = (colors: ThemeColors) => {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xl,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.sm,
   },
   timerText: {
     fontSize: fontSize.title,
