@@ -28,6 +28,7 @@ import { getAllEarnedBadges, buildBadgeContext, deriveFromContext, BADGES, TIER_
 import { ChevronRightIcon, CrosshairIcon, BadgeIconView, UsersIcon } from '../components/Icons';
 
 const REGIONS: CategoryId[] = ['africa', 'asia', 'europe', 'americas', 'oceania'];
+const EMPTY_FLAG_STATS: FlagStats = {};
 
 // All async data the stats screen needs, loaded atomically.
 interface StatsData {
@@ -133,7 +134,8 @@ export default function StatsScreen() {
       regionFade.setValue(1);
       restFade.setValue(1);
     }
-  }, [heroFade, heroSlide, countAnim, progressFade, progressBarAnim, regionFade, restFade]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- all animation refs are stable (useRef().current)
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -153,8 +155,18 @@ export default function StatsScreen() {
         runAnimations(acc, pct, shouldAnimate);
       });
 
-      return () => { cancelled = true; };
-    }, [runAnimations]),
+      return () => {
+        cancelled = true;
+        heroFade.stopAnimation();
+        heroSlide.stopAnimation();
+        countAnim.stopAnimation();
+        progressFade.stopAnimation();
+        progressBarAnim.stopAnimation();
+        regionFade.stopAnimation();
+        restFade.stopAnimation();
+      };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runAnimations is stable (empty deps)
+    }, []),
   );
 
   // ── All computed values derived from `data` ──
@@ -163,7 +175,7 @@ export default function StatsScreen() {
   // every hook runs on every render (no conditional-hook risk) and there
   // is exactly one loading gate (`!data`) before the JSX.
 
-  const flagStats = data?.flagStats ?? {};
+  const flagStats = data?.flagStats ?? EMPTY_FLAG_STATS;
 
   const top10 = React.useMemo(() => {
     return Object.entries(flagStats)
@@ -304,18 +316,18 @@ export default function StatsScreen() {
   }
 
   // ── Destructure for render (data is guaranteed non-null below) ──
-  const { dayStreakInfo, weakFlagCount, baseline, challengeHistory } = data;
+  const { stats, dayStreakInfo, weakFlagCount, baseline, challengeHistory } = data;
 
   const totalFlags = getTotalFlagCount();
-  const countriesSeen = Object.values(data.flagStats).filter((fs) => fs.right > 0).length;
-  const overallAccuracy = data.stats.totalAnswered > 0
-    ? Math.round((data.stats.totalCorrect / data.stats.totalAnswered) * 100) : 0;
+  const countriesSeen = Object.values(flagStats).filter((fs) => fs.right > 0).length;
+  const overallAccuracy = stats.totalAnswered > 0
+    ? Math.round((stats.totalCorrect / stats.totalAnswered) * 100) : 0;
   const progressPct = totalFlags > 0 ? Math.round((countriesSeen / totalFlags) * 100) : 0;
 
   // Region accuracy data (only regions with games played)
   const regionData = REGIONS
     .map((regionId) => {
-      const cs = data.stats.categoryStats[regionId];
+      const cs = stats.categoryStats[regionId];
       if (!cs || cs.total === 0) return null;
       const pct = Math.round((cs.correct / cs.total) * 100);
       return { id: regionId, pct, correct: cs.correct, total: cs.total };
@@ -347,7 +359,7 @@ export default function StatsScreen() {
           <View style={styles.pageHeader}>
             <Text style={styles.pageTitle}>{t('stats.yourStats')}</Text>
             <Text style={styles.pageSub}>
-              {t('stats.allTime')} - {data.stats.totalGamesPlayed} {t('stats.roundsPlayed')}
+              {t('stats.allTime')} - {stats.totalGamesPlayed} {t('stats.roundsPlayed')}
             </Text>
           </View>
           <View style={styles.heroCard}>
@@ -417,10 +429,10 @@ export default function StatsScreen() {
           </Animated.View>
         )}
 
-        {(data.stats.bestTimeAttackScore || 0) > 0 && (
+        {(stats.bestTimeAttackScore || 0) > 0 && (
           <Animated.View style={[styles.tile, { marginTop: 8, opacity: progressFade }]}>
             <Text style={styles.tileLabel}>{t('stats.bestTimedQuiz')}</Text>
-            <Text style={styles.tileVal}>{data.stats.bestTimeAttackScore}<Text style={styles.tileUnit}> {t('stats.in60s')}</Text></Text>
+            <Text style={styles.tileVal}>{stats.bestTimeAttackScore}<Text style={styles.tileUnit}> {t('stats.in60s')}</Text></Text>
           </Animated.View>
         )}
 
