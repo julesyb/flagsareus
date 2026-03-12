@@ -515,9 +515,10 @@ const en = {
 
   // ─── Game Modes (for labels) ────────────────────────────
   modes: {
-    easy: 'Quiz',
-    medium: 'Quiz',
-    hard: 'Quiz',
+    quiz: 'Quiz',
+    easy: 'Easy',
+    medium: 'Medium',
+    hard: 'Hard',
     flashflag: 'Flash Flag',
     flagpuzzle: 'Flag Puzzle',
     timeattack: 'Timed Quiz',

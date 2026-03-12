@@ -347,9 +347,10 @@ const zh: DeepPartial<TranslationStrings> = {
   },
 
   modes: {
-    easy: '\u7b54\u9898',
-    medium: '\u7b54\u9898',
-    hard: '\u7b54\u9898',
+    quiz: '\u7b54\u9898',
+    easy: '\u7b80\u5355',
+    medium: '\u4e2d\u7b49',
+    hard: '\u56f0\u96be',
     flashflag: 'Flash Flag',
     flagpuzzle: '\u56fd\u65d7\u62fc\u56fe',
     timeattack: '\u9650\u65f6\u7b54\u9898',

@@ -347,9 +347,10 @@ const fr: DeepPartial<TranslationStrings> = {
   },
 
   modes: {
-    easy: 'Quiz',
-    medium: 'Quiz',
-    hard: 'Quiz',
+    quiz: 'Quiz',
+    easy: 'Facile',
+    medium: 'Moyen',
+    hard: 'Difficile',
     flashflag: 'Flash Flag',
     flagpuzzle: 'Puzzle drapeau',
     timeattack: 'Quiz chrono',

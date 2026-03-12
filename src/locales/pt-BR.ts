@@ -347,9 +347,10 @@ const ptBR: DeepPartial<TranslationStrings> = {
   },
 
   modes: {
-    easy: 'Quiz',
-    medium: 'Quiz',
-    hard: 'Quiz',
+    quiz: 'Quiz',
+    easy: 'Fácil',
+    medium: 'Médio',
+    hard: 'Difícil',
     flashflag: 'Flash Flag',
     flagpuzzle: 'Puzzle bandeira',
     timeattack: 'Quiz cronometrado',
