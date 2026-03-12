@@ -60,8 +60,8 @@ export default function StatsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const onNavigate = useNavTabs();
   const { colors } = useTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
-  const RANK_COLORS = useMemo(() => [colors.rankGold, colors.textTertiary, colors.warning], [colors]);
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
+  const RANK_COLORS = React.useMemo(() => [colors.rankGold, colors.textTertiary, colors.warning], [colors]);
 
   const [data, setData] = useState<StatsData | null>(null);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
