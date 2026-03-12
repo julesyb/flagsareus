@@ -24,7 +24,7 @@ import { BaselineRegionId, UserStats, GameMode, CategoryId, BASELINE_REGIONS } f
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
 import { FlagImageSmall } from '../components/FlagImage';
-import { CheckIcon, CrossIcon, ChevronRightIcon, BarChartIcon, CalendarIcon, UsersIcon, CrosshairIcon, BadgeIconView } from '../components/Icons';
+import { CheckIcon, CrossIcon, ChevronRightIcon, GlobeIcon, CalendarIcon, UsersIcon, BadgeIconView } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
@@ -85,7 +85,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const [totalBadgesEarned, setTotalBadgesEarned] = useState(0);
   const [isNewBestStreak, setIsNewBestStreak] = useState(false);
   const [prevAccuracy, setPrevAccuracy] = useState<number | null>(null);
-  const [weakFlagCount, setWeakFlagCount] = useState(0);
   const [levelUpTo, setLevelUpTo] = useState<number | null>(null);
 
   // Challenge modal state
@@ -296,8 +295,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
       setTotalBadgesEarned(postBadges.length);
       setIsNewBestStreak(wasNewBestStreak && !reviewOnly);
       setPrevAccuracy(prevAcc);
-      setWeakFlagCount(postMissed.length);
-
       // ── Level-up detection ──
       if (!reviewOnly) {
         const prePersisted = await getPersistedLevel();
@@ -759,36 +756,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
           </Animated.View>
         )}
 
-        {/* ── YOUR PROGRESS (animated bar) — hidden for challenges ── */}
-        {overallStats && !reviewOnly && !isChallenge && (
-          <Animated.View style={[styles.progressSection, { opacity: restFade }]}>
-
-            {weakFlagCount > 0 && (
-              <TouchableOpacity
-                style={styles.practiceButton}
-                onPress={() => navigation.replace('Game', {
-                  config: { mode: 'practice', category: 'all', questionCount: weakFlagCount, displayMode: 'flag' },
-                })}
-                activeOpacity={0.7}
-                accessibilityRole="button"
-                accessibilityLabel={t('results.practiceWeak')}
-                accessibilityHint={t('results.flagsToReview', { count: weakFlagCount })}
-              >
-                <CrosshairIcon size={16} color={colors.accent} />
-                <Text style={styles.practiceButtonText}>{t('results.practiceWeak')}</Text>
-                <Text style={styles.practiceButtonMeta}>{t('results.flagsToReview', { count: weakFlagCount })}</Text>
-                <ChevronRightIcon size={14} color={colors.accent} />
-              </TouchableOpacity>
-            )}
-
-            <TouchableOpacity style={styles.viewStatsButton} onPress={() => navigation.navigate('Stats')} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={t('results.viewAllStats')}>
-              <BarChartIcon size={16} color={colors.ink} />
-              <Text style={styles.viewStatsText}>{t('results.viewAllStats')}</Text>
-              <ChevronRightIcon size={14} color={colors.textTertiary} />
-            </TouchableOpacity>
-          </Animated.View>
-        )}
-
         {/* ── REVIEW ── */}
         <Animated.View style={{ opacity: restFade }}>
           <View style={styles.sectionHeader}>
@@ -1048,30 +1015,6 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   badgeDesc: { ...typography.micro, color: colors.textSecondary },
   badgeTierPill: { borderRadius: borderRadius.full, paddingVertical: 3, paddingHorizontal: 10 },
   badgeTierText: { ...typography.eyebrow },
-
-  // ── Actions
-  progressSection: { marginBottom: spacing.md },
-  practiceButton: {
-    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
-    backgroundColor: colors.accentBg, borderRadius: borderRadius.lg,
-    borderWidth: 1.5, borderColor: colors.accent, padding: 14, marginBottom: 8,
-  },
-  practiceButtonText: {
-    ...typography.actionLabel, letterSpacing: 0.8, color: colors.accent,
-  },
-  practiceButtonMeta: {
-    ...typography.micro,
-    color: colors.textTertiary, flex: 1, textAlign: 'right',
-  },
-  viewStatsButton: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: spacing.sm, backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg, borderWidth: 1, borderColor: colors.border,
-    padding: 14,
-  },
-  viewStatsText: {
-    ...typography.actionLabel, letterSpacing: 0.8, color: colors.ink, flex: 1,
-  },
 
   // ── Sections
   sectionHeader: {
