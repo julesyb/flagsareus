@@ -1,6 +1,6 @@
-import type en from './en';
+import { DeepPartial, TranslationStrings } from './types';
 
-const zh: typeof en = {
+const zh: DeepPartial<TranslationStrings> = {
   common: {
     loading: '\u52a0\u8f7d\u4e2d...',
     correct: '\u6b63\u786e\uff01',

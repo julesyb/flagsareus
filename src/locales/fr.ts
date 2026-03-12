@@ -1,6 +1,6 @@
-import type en from './en';
+import { DeepPartial, TranslationStrings } from './types';
 
-const fr: typeof en = {
+const fr: DeepPartial<TranslationStrings> = {
   common: {
     loading: 'Chargement...',
     correct: 'Correct !',
