@@ -30,7 +30,7 @@ import MapImage from '../components/MapImage';
 import { RootStackParamList } from '../types/navigation';
 import ScreenContainer from '../components/ScreenContainer';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'FlagFlash'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'FlashFlag'>;
 
 type TiltState = 'neutral' | 'correct' | 'skip';
 type Phase = 'tutorial' | 'countdown' | 'playing';
@@ -64,7 +64,7 @@ async function requestMotionPermission(): Promise<boolean> {
   return true;
 }
 
-export default function FlagFlashScreen({ route, navigation }: Props) {
+export default function FlashFlagScreen({ route, navigation }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { config } = route.params;
@@ -244,6 +244,9 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
       setTiltState(action);
       setResults((prev) => [...prev, result]);
 
+      // Keep feedback brief so the game stays fast-paced.
+      // 500ms flash (enough to register green/red), then 200ms cooldown
+      // before the next flag to prevent accidental double-tilts.
       setTimeout(() => {
         setTiltState('neutral');
         isProcessing.current = false;
@@ -261,8 +264,8 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
 
         setTimeout(() => {
           tiltCooldown.current = false;
-        }, 300);
-      }, 800);
+        }, 200);
+      }, 500);
     },
     [currentIndex, questions, navigation, config],
   );
@@ -311,8 +314,8 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
         <StatusBar hidden />
         <ScreenContainer>
         <View style={styles.tutorialInner}>
-        <Text style={styles.tutorialTitle}>{t('flagFlash.title')}</Text>
-        <Text style={styles.tutorialSubtitle}>{t('flagFlash.howToPlay')}</Text>
+        <Text style={styles.tutorialTitle}>{t('flashFlag.title')}</Text>
+        <Text style={styles.tutorialSubtitle}>{t('flashFlag.howToPlay')}</Text>
 
         <View style={styles.tutorialSteps}>
           {showTiltTutorial ? (
@@ -321,29 +324,29 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
                 <View style={styles.stepIconBox}>
                   <Text style={styles.stepIconText}>1</Text>
                 </View>
-                <Text style={styles.stepText}>{t('flagFlash.holdPhone')}</Text>
+                <Text style={styles.stepText}>{t('flashFlag.holdPhone')}</Text>
               </View>
               <View style={styles.tutorialStep}>
                 <View style={styles.stepIconBox}>
                   <Text style={styles.stepIconText}>2</Text>
                 </View>
-                <Text style={styles.stepText}>{t('flagFlash.friendsDescribe')}</Text>
+                <Text style={styles.stepText}>{t('flashFlag.friendsDescribe')}</Text>
               </View>
               <View style={styles.tutorialStep}>
                 <View style={[styles.tiltDemo, { backgroundColor: colors.success }]}>
-                  <Text style={styles.tiltDemoText}>{t('flagFlash.tiltDown')}</Text>
+                  <Text style={styles.tiltDemoText}>{t('flashFlag.tiltDown')}</Text>
                 </View>
-                <Text style={styles.stepText}>{t('flagFlash.gotItRight')}</Text>
+                <Text style={styles.stepText}>{t('flashFlag.gotItRight')}</Text>
               </View>
               <View style={styles.tutorialStep}>
                 <View style={[styles.tiltDemo, { backgroundColor: colors.error }]}>
-                  <Text style={styles.tiltDemoText}>{t('flagFlash.tiltUp')}</Text>
+                  <Text style={styles.tiltDemoText}>{t('flashFlag.tiltUp')}</Text>
                 </View>
-                <Text style={styles.stepText}>{t('flagFlash.skipPass')}</Text>
+                <Text style={styles.stepText}>{t('flashFlag.skipPass')}</Text>
               </View>
               {isMobileWeb && (
                 <Text style={styles.tiltFallbackNote}>
-                  {t('flagFlash.motionFallback')}
+                  {t('flashFlag.motionFallback')}
                 </Text>
               )}
             </>
@@ -353,19 +356,19 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
                 <View style={styles.stepIconBox}>
                   <Text style={styles.stepIconText}>?</Text>
                 </View>
-                <Text style={styles.stepText}>{t('flagFlash.flagAppears')}</Text>
+                <Text style={styles.stepText}>{t('flashFlag.flagAppears')}</Text>
               </View>
               <View style={styles.tutorialStep}>
                 <View style={[styles.tiltDemo, { backgroundColor: colors.success }]}>
-                  <Text style={styles.tiltDemoText}>{t('flagFlash.correctLabel')}</Text>
+                  <Text style={styles.tiltDemoText}>{t('flashFlag.correctLabel')}</Text>
                 </View>
-                <Text style={styles.stepText}>{t('flagFlash.clickLeft')}</Text>
+                <Text style={styles.stepText}>{t('flashFlag.clickLeft')}</Text>
               </View>
               <View style={styles.tutorialStep}>
                 <View style={[styles.tiltDemo, { backgroundColor: colors.error }]}>
-                  <Text style={styles.tiltDemoText}>{t('flagFlash.skipLabel')}</Text>
+                  <Text style={styles.tiltDemoText}>{t('flashFlag.skipLabel')}</Text>
                 </View>
-                <Text style={styles.stepText}>{t('flagFlash.clickRight')}</Text>
+                <Text style={styles.stepText}>{t('flashFlag.clickRight')}</Text>
               </View>
             </>
           )}
@@ -376,10 +379,10 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
           onPress={handleReady}
           activeOpacity={0.8}
           accessibilityRole="button"
-          accessibilityLabel={t('flagFlash.ready')}
-          accessibilityHint="Starts the Flag Flash game"
+          accessibilityLabel={t('flashFlag.ready')}
+          accessibilityHint="Starts the Flash Flag game"
         >
-          <Text style={styles.readyButtonText}>{t('flagFlash.ready')}</Text>
+          <Text style={styles.readyButtonText}>{t('flashFlag.ready')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -404,7 +407,7 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
       <View style={styles.countdownContainer}>
         <StatusBar hidden />
         <Text style={styles.countdownHint}>
-          {isWeb && !isMobileWeb ? t('flagFlash.getReady') : t('flagFlash.holdForehead')}
+          {isWeb && !isMobileWeb ? t('flashFlag.getReady') : t('flashFlag.holdForehead')}
         </Text>
         <Text style={styles.countdownNumber}>{countdown}</Text>
       </View>
@@ -415,17 +418,18 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <StatusBar hidden />
-        <ActivityIndicator size="large" color={colors.white} />
+        <ActivityIndicator size="large" color={colors.text} />
       </View>
     );
   }
 
+  const isNeutral = tiltState === 'neutral';
   const bgColor =
     tiltState === 'correct'
       ? colors.success
       : tiltState === 'skip'
         ? colors.error
-        : colors.primary;
+        : colors.background;
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor }]}>
@@ -438,7 +442,7 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
             styles.timerFill,
             {
               width: `${(timeLeft / (config.timeLimit || 60)) * 100}%`,
-              backgroundColor: timeLeft <= 10 ? colors.error : colors.white,
+              backgroundColor: timeLeft <= 10 ? colors.error : colors.goldBright,
             },
           ]}
         />
@@ -447,9 +451,9 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
       <ScreenContainer flex game>
       <View style={styles.gameContent}>
         {tiltState === 'correct' ? (
-          <Text style={styles.feedbackText} accessibilityLiveRegion="polite">{t('flagFlash.correctFeedback')}</Text>
+          <Text style={styles.feedbackText} accessibilityLiveRegion="polite">{t('flashFlag.correctFeedback')}</Text>
         ) : tiltState === 'skip' ? (
-          <Text style={styles.feedbackText} accessibilityLiveRegion="polite">{t('flagFlash.passFeedback')}</Text>
+          <Text style={styles.feedbackText} accessibilityLiveRegion="polite">{t('flashFlag.passFeedback')}</Text>
         ) : (
           <>
             {config.displayMode === 'map' ? (
@@ -463,7 +467,13 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
                 size="hero"
               />
             )}
-            <Text style={styles.flagName}>{flagName(currentQuestion.flag)}</Text>
+            {/* On native/mobile, teammates see the screen from across the room
+                during Heads Up play. Hide the country name so they must describe
+                the flag visually instead of reading the answer. Desktop web shows
+                it as a self-grading flash card. */}
+            {isWeb && !isMobileWeb && (
+              <Text style={styles.flagName}>{flagName(currentQuestion.flag)}</Text>
+            )}
           </>
         )}
       </View>
@@ -476,20 +486,20 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
             onPress={() => handleTilt('correct')}
             activeOpacity={0.7}
             accessibilityRole="button"
-            accessibilityLabel={t('flagFlash.correctButton')}
+            accessibilityLabel={t('flashFlag.correctButton')}
             accessibilityHint="Mark the current flag as correctly guessed"
           >
-            <Text style={styles.webButtonText}>{t('flagFlash.correctButton')}</Text>
+            <Text style={styles.webButtonText}>{t('flashFlag.correctButton')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.webButton, styles.webButtonSkip]}
             onPress={() => handleTilt('skip')}
             activeOpacity={0.7}
             accessibilityRole="button"
-            accessibilityLabel={t('flagFlash.skipButton')}
+            accessibilityLabel={t('flashFlag.skipButton')}
             accessibilityHint="Skip the current flag"
           >
-            <Text style={styles.webButtonText}>{t('flagFlash.skipButton')}</Text>
+            <Text style={styles.webButtonText}>{t('flashFlag.skipButton')}</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -497,7 +507,7 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
       </ScreenContainer>
 
       <View style={styles.bottomBar}>
-        <Text style={[styles.timerText, timeLeft <= 10 && { color: colors.warning }]}>
+        <Text style={[styles.timerText, timeLeft <= 10 && { color: colors.warning }, !isNeutral && { color: colors.white }]}>
           {timeLeft}s
         </Text>
         <TouchableOpacity
@@ -509,9 +519,9 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
           accessibilityLabel={t('common.exit')}
           accessibilityHint="Ends the game and shows results"
         >
-          <CrossIcon size={18} color={colors.whiteAlpha70} />
+          <CrossIcon size={18} color={isNeutral ? colors.whiteAlpha70 : colors.white} />
         </TouchableOpacity>
-        <Text style={styles.scoreText}>{t('flagFlash.correctCount', { count: correctCount })}</Text>
+        <Text style={[styles.scoreText, !isNeutral && { color: colors.white }]}>{t('flashFlag.correctCount', { count: correctCount })}</Text>
       </View>
     </View>
   );
@@ -522,12 +532,12 @@ const createStyles = (colors: ThemeColors) => {
   return StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.background,
   },
   // Tutorial
   tutorialContainer: {
     flex: 1,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing.xl,
@@ -538,12 +548,12 @@ const createStyles = (colors: ThemeColors) => {
   tutorialTitle: {
     fontSize: fontSize.display,
     fontFamily: fontFamily.display,
-    color: colors.white,
+    color: colors.text,
     marginBottom: spacing.xs,
   },
   tutorialSubtitle: {
     ...typography.body,
-    color: colors.whiteAlpha50,
+    color: colors.textSecondary,
     marginBottom: spacing.xl,
   },
   tutorialSteps: {
@@ -567,11 +577,11 @@ const createStyles = (colors: ThemeColors) => {
   },
   stepIconText: {
     ...typography.bodyBold,
-    color: colors.white,
+    color: colors.text,
   },
   stepText: {
     ...typography.body,
-    color: colors.white,
+    color: colors.text,
     flex: 1,
   },
   tiltDemo: {
@@ -587,7 +597,7 @@ const createStyles = (colors: ThemeColors) => {
   },
   tiltFallbackNote: {
     ...typography.caption,
-    color: colors.whiteAlpha45,
+    color: colors.textTertiary,
     textAlign: 'center',
     marginTop: spacing.xs,
   },
@@ -602,47 +612,47 @@ const createStyles = (colors: ThemeColors) => {
   // Countdown
   countdownContainer: {
     flex: 1,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
   countdownHint: {
     ...typography.heading,
-    color: colors.whiteAlpha60,
+    color: colors.textSecondary,
     marginBottom: spacing.xl,
   },
   countdownNumber: {
     fontSize: fontSize.countdown,
     fontFamily: fontFamily.display,
-    color: colors.white,
+    color: colors.text,
   },
   // Playing
   loadingText: {
     ...typography.body,
-    color: colors.white,
+    color: colors.text,
     textAlign: 'center',
     marginTop: '45%',
   },
   timerBar: {
     height: 6,
     backgroundColor: colors.whiteAlpha20,
-    marginTop: spacing.md + spacing.xs,
   },
   timerFill: {
     height: '100%',
-    backgroundColor: colors.white,
+    backgroundColor: colors.goldBright,
   },
   gameContent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: spacing.xl,
-    gap: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    gap: spacing.sm,
   },
   flagName: {
     fontSize: fontSize.display,
     fontFamily: fontFamily.display,
-    color: colors.white,
+    color: colors.text,
     textAlign: 'center',
     letterSpacing: -0.5,
     marginTop: spacing.md,
@@ -682,17 +692,17 @@ const createStyles = (colors: ThemeColors) => {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xl,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.sm,
   },
   timerText: {
     fontSize: fontSize.title,
     fontFamily: fontFamily.display,
-    color: colors.white,
+    color: colors.text,
   },
   scoreText: {
     ...typography.heading,
-    color: colors.whiteAlpha70,
+    color: colors.textSecondary,
   },
   exitButton: {
     marginTop: spacing.lg,

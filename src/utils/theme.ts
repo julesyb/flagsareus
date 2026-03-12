@@ -249,7 +249,7 @@ export const fontSize = {
   body: 16,       // body text, labels, options, card titles
   lg: 20,         // buttons, section titles, headings, stat values
   title: 28,      // page titles, wordmark, large headings
-  display: 42,    // gameplay titles, grade letters, large stat numbers
+  display: 42,    // gameplay titles (Flash Flag), grade letters, large stat numbers
   hero: 72,       // hero display numbers, countdown feedback
   countdown: 120, // full-screen countdown numbers
 };
