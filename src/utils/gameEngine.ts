@@ -2,7 +2,7 @@ import { GameMode, FlagItem, GameQuestion, GameResult, GameConfig } from '../typ
 import { getFlagsForCategory, getAllFlags } from '../data';
 import { countryAliases, twinPairs } from '../data/countryAliases';
 import { translateName } from '../data/countryNames';
-import { APP_DOMAIN, MS_PER_DAY, DAILY_QUESTION_COUNT, SHARE_GRID_ROW_SIZE, EASY_CHOICE_COUNT, STANDARD_CHOICE_COUNT } from './config';
+import { APP_DOMAIN, MS_PER_DAY, DAILY_QUESTION_COUNT, DAILY_CHALLENGE_EPOCH, SHARE_GRID_ROW_SIZE, EASY_CHOICE_COUNT, STANDARD_CHOICE_COUNT } from './config';
 import { t } from './i18n';
 
 export function shuffleArray<T>(array: T[]): T[] {
@@ -49,7 +49,7 @@ export function getTodayDateString(): string {
 }
 
 export function getDailyNumber(): number {
-  const start = new Date('2026-03-11T00:00:00Z').getTime();
+  const start = new Date(DAILY_CHALLENGE_EPOCH).getTime();
   const now = new Date(getTodayDateString() + 'T00:00:00Z').getTime();
   return Math.floor((now - start) / MS_PER_DAY) + 1;
 }

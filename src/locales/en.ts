@@ -504,6 +504,9 @@ const en = {
     deletesProgress: 'Permanently deletes all your progress and statistics',
     opensSettings: 'Opens settings',
     acceptChallenge: 'Accept challenge from {name}',
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
+    timeLimitSeconds: '{label}: {seconds} seconds',
   },
 };
 

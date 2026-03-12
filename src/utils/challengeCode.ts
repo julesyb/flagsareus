@@ -2,7 +2,7 @@ import { getAllFlags } from '../data';
 import { FlagItem, GameQuestion, GameMode } from '../types';
 import { shuffleArray } from './gameEngine';
 import { twinPairs } from '../data/countryAliases';
-import { APP_DOMAIN, MAX_CHALLENGE_FLAGS, MAX_CHALLENGE_NAME_LENGTH, SHORT_CODE_LENGTH, SPEED_FAST_MS, SPEED_MEDIUM_MS, SHARE_GRID_ROW_SIZE, EASY_CHOICE_COUNT, STANDARD_CHOICE_COUNT } from './config';
+import { APP_DOMAIN, MAX_CHALLENGE_FLAGS, MAX_CHALLENGE_NAME_LENGTH, MAX_HOSTNAME_LENGTH, SHORT_CODE_LENGTH, SPEED_FAST_MS, SPEED_MEDIUM_MS, SHARE_GRID_ROW_SIZE, EASY_CHOICE_COUNT, STANDARD_CHOICE_COUNT } from './config';
 import { t } from './i18n';
 
 /** Modes that support the challenge feature */
@@ -115,7 +115,7 @@ function decodeV3Raw(raw: string): ChallengeData | null {
   if (parts.length < 6 || parts.length > 7) return null;
 
   const [hostName, modeIdxStr, timeLimitStr, flags, correctHex, totalDeciStr, diffIdxStr] = parts;
-  if (!hostName || hostName.length > 50 || flags.length === 0 || flags.length % 2 !== 0 || flags.length > 60) return null;
+  if (!hostName || hostName.length > MAX_HOSTNAME_LENGTH || flags.length === 0 || flags.length % 2 !== 0 || flags.length > MAX_CHALLENGE_FLAGS * 2) return null;
 
   const modeIdx = parseInt(modeIdxStr, 10);
   const mode = INDEX_MODE.get(modeIdx);
@@ -157,7 +157,7 @@ function decodeV3Base64(encoded: string): ChallengeData | null {
   if (parts.length !== 5) return null;
 
   const [hostName, modeIdxStr, timeLimitStr, flags, packed] = parts;
-  if (!hostName || hostName.length > 50 || flags.length === 0 || flags.length % 2 !== 0) return null;
+  if (!hostName || hostName.length > MAX_HOSTNAME_LENGTH || flags.length === 0 || flags.length % 2 !== 0) return null;
 
   const modeIdx = parseInt(modeIdxStr, 10);
   const mode = INDEX_MODE.get(modeIdx);
@@ -188,7 +188,7 @@ function decodeV2(encoded: string): ChallengeData | null {
   if (parts.length !== 6) return null;
 
   const [hostName, modeIdxStr, timeLimitStr, flags, bits, timesStr] = parts;
-  if (!hostName || hostName.length > 50 || flags.length === 0 || flags.length % 2 !== 0) return null;
+  if (!hostName || hostName.length > MAX_HOSTNAME_LENGTH || flags.length === 0 || flags.length % 2 !== 0) return null;
 
   const modeIdx = parseInt(modeIdxStr, 10);
   const mode = INDEX_MODE.get(modeIdx);
