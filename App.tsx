@@ -12,7 +12,7 @@ import {
   Barlow_500Medium,
   Barlow_600SemiBold,
 } from '@expo-google-fonts/barlow';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, getStateFromPath as defaultGetStateFromPath } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './src/screens/HomeScreen';
 import GameSetupScreen from './src/screens/GameSetupScreen';
@@ -48,6 +48,20 @@ const linking = {
         parse: { code: (code: string) => decodeURIComponent(code) },
       },
     },
+  },
+  getStateFromPath: (path: string, options: Parameters<typeof defaultGetStateFromPath>[1]) => {
+    // Handle response links: /r/<responseCode>
+    const responseMatch = path.match(/^\/r\/(.+)$/);
+    if (responseMatch) {
+      return {
+        routes: [{
+          name: 'JoinChallenge' as const,
+          params: { responseCode: decodeURIComponent(responseMatch[1]) },
+        }],
+      };
+    }
+    // Fall through to default path handling for /c/ links
+    return defaultGetStateFromPath(path, options);
   },
 };
 

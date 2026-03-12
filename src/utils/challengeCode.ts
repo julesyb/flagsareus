@@ -358,6 +358,50 @@ export function generateChallengeShareCard(
   return `${header}\n${avg}\n\n${gridStr}\n\n${cta}\n${challengeUrl}`;
 }
 
+// ── Response code: recipient sends results back to challenger ──
+
+export interface ChallengeResponseData {
+  recipientName: string;
+  shortCode: string;
+  recipientScore: number;
+  totalFlags: number;
+}
+
+/**
+ * Encode a challenge response into a URL-safe string.
+ * Format: recipientName~shortCode~score~totalFlags
+ */
+export function encodeResponse(data: ChallengeResponseData): string {
+  const name = sanitizeName(data.recipientName);
+  return `${name}~${data.shortCode}~${data.recipientScore}~${data.totalFlags}`;
+}
+
+export type DecodeResponseResult =
+  | { status: 'ok'; data: ChallengeResponseData }
+  | { status: 'invalid' };
+
+/**
+ * Decode a challenge response code string.
+ */
+export function decodeResponse(code: string): DecodeResponseResult {
+  try {
+    const trimmed = code.trim();
+    const parts = trimmed.split('~');
+    if (parts.length !== 4) return { status: 'invalid' };
+
+    const [recipientName, shortCode, scoreStr, totalStr] = parts;
+    if (!recipientName || !shortCode || shortCode.length !== SHORT_CODE_LENGTH) return { status: 'invalid' };
+
+    const recipientScore = parseInt(scoreStr, 10);
+    const totalFlags = parseInt(totalStr, 10);
+    if (isNaN(recipientScore) || isNaN(totalFlags) || recipientScore < 0 || totalFlags <= 0) return { status: 'invalid' };
+
+    return { status: 'ok', data: { recipientName, shortCode, recipientScore, totalFlags } };
+  } catch {
+    return { status: 'invalid' };
+  }
+}
+
 // ── Base64 helpers (for legacy V1/V2 decoding only) ──
 
 function fromBase64(encoded: string): string {

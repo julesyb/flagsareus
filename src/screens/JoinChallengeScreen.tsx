@@ -16,14 +16,14 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { spacing, fontFamily, fontSize, buildButtons, borderRadius, typography, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types/navigation';
-import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName } from '../utils/challengeCode';
+import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName, decodeResponse } from '../utils/challengeCode';
 import { hapticTap, hapticWrong, hapticCorrect } from '../utils/feedback';
 import ScreenContainer from '../components/ScreenContainer';
 import BottomNav from '../components/BottomNav';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { t } from '../utils/i18n';
-import { getChallengeName, saveChallengeName } from '../utils/storage';
-import { LinkIcon, PlayIcon } from '../components/Icons';
+import { getChallengeName, saveChallengeName, updateSentChallengeWithOpponent } from '../utils/storage';
+import { LinkIcon, PlayIcon, CheckIcon } from '../components/Icons';
 import { GameMode } from '../types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'JoinChallenge'>;
@@ -46,13 +46,32 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
   const styles = useMemo(() => createStyles(colors), [colors]);
   const onNavigate = useNavTabs();
   const initialCode = route.params?.code ?? '';
+  const initialResponseCode = route.params?.responseCode ?? '';
   const [code, setCode] = useState(initialCode);
   const [name, setName] = useState('');
+
+  // Response state
+  const [responseResult, setResponseResult] = useState<{ name: string; score: number; total: number; found: boolean } | null>(null);
 
   // Animations
   const cardSlide = useRef(new Animated.Value(0)).current;
   const cardOpacity = useRef(new Animated.Value(0)).current;
   const ctaScale = useRef(new Animated.Value(0.95)).current;
+
+  // Handle incoming response code
+  useEffect(() => {
+    if (!initialResponseCode) return;
+    const result = decodeResponse(initialResponseCode);
+    if (result.status !== 'ok') {
+      setResponseResult({ name: '', score: 0, total: 0, found: false });
+      return;
+    }
+    const { recipientName, shortCode, recipientScore, totalFlags } = result.data;
+    updateSentChallengeWithOpponent(shortCode, recipientName, recipientScore).then((found) => {
+      hapticCorrect();
+      setResponseResult({ name: recipientName, score: recipientScore, total: totalFlags, found });
+    });
+  }, [initialResponseCode]);
 
   useEffect(() => {
     getChallengeName().then((saved) => {
@@ -147,8 +166,36 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         <ScreenContainer>
+          {/* ── RESPONSE RECEIVED VIEW ── */}
+          {responseResult && (
+            <View style={styles.emptyState}>
+              <View style={[styles.iconCircle, { backgroundColor: responseResult.found ? colors.success + '18' : colors.error + '18' }]}>
+                <CheckIcon size={28} color={responseResult.found ? colors.success : colors.error} />
+              </View>
+              <Text style={styles.title}>
+                {responseResult.found ? t('challenge.responseReceived') : t('challenge.responseNotFound')}
+              </Text>
+              {responseResult.found && (
+                <Text style={styles.subtitle}>
+                  {t('challenge.responseReceivedDesc', {
+                    name: responseResult.name,
+                    score: String(responseResult.score),
+                    total: String(responseResult.total),
+                  })}
+                </Text>
+              )}
+              <TouchableOpacity
+                style={styles.playButton}
+                onPress={() => navigation.navigate('Stats')}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.playButtonText}>{t('stats.challengeDetail')}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           {/* ── EMPTY STATE: No code entered ── */}
-          {!preview && (
+          {!preview && !responseResult && (
             <View style={styles.emptyState}>
               <View style={styles.iconCircle}>
                 <LinkIcon size={28} color={colors.goldBright} />
@@ -181,7 +228,7 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
           )}
 
           {/* ── CHALLENGE CARD: Code is valid ── */}
-          {preview && (
+          {preview && !responseResult && (
             <Animated.View style={[
               styles.challengeCard,
               { opacity: cardOpacity, transform: [{ translateY: cardSlide }] },
