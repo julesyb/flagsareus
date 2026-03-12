@@ -42,7 +42,6 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 // ─── Flag Teaser (inline mini-quiz) ─────────────────────────
 function FlagTeaser() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const question = useMemo<GameQuestion | null>(() => {
     const qs = generateQuestions({ mode: 'medium', category: 'all', questionCount: 1, displayMode: 'flag' });
     return qs[0] ?? null;
@@ -128,19 +127,6 @@ function FlagTeaser() {
           <Text style={[styles.teaserResultText, picked === question.flag.name ? styles.teaserResultCorrect : styles.teaserResultWrong]}>
             {picked === question.flag.name ? t('common.correct') : flagName(question.flag)}
           </Text>
-          <TouchableOpacity
-            style={[styles.teaserPlayBtn, picked === question.flag.name ? styles.teaserPlayBtnCorrect : styles.teaserPlayBtnWrong]}
-            onPress={() => {
-              hapticTap();
-              navigation.navigate('Game', {
-                config: { mode: 'medium', category: 'all', questionCount: 10, displayMode: 'flag' },
-              });
-            }}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.teaserPlayText}>{t('home.keepPlaying')}</Text>
-            <ChevronRightIcon size={14} color={colors.white} />
-          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -726,30 +712,6 @@ const styles = StyleSheet.create({
     color: colors.ink,
     fontSize: fontSize.xl,
   },
-  teaserPlayBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
-    borderRadius: borderRadius.md,
-    width: '100%',
-  },
-  teaserPlayBtnCorrect: {
-    backgroundColor: colors.success,
-  },
-  teaserPlayBtnWrong: {
-    backgroundColor: colors.error,
-  },
-  teaserPlayText: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.lg,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    color: colors.white,
-  },
-
   // ── Play button
   playWrap: {
     paddingHorizontal: spacing.md,
