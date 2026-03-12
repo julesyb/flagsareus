@@ -207,7 +207,7 @@ export default function GameScreen({ route, navigation }: Props) {
 
       const feedbackDelay = isTimeAttack
         ? (correct ? 300 : 600)
-        : (correct ? 600 : 1200);
+        : (correct && !isMapMode ? 600 : 1200);
 
       if (isEliminated) {
         autoAdvanceRef.current = setTimeout(() => {
@@ -410,10 +410,23 @@ export default function GameScreen({ route, navigation }: Props) {
                   accessibilityLabel={isMapMode && optionFlag ? optionFlag.name : option}
                 >
                   {isMapMode && optionFlag ? (
-                    <FlagImage
-                      countryCode={optionFlag.id}
-                      size="medium"
-                    />
+                    <View style={styles.mapOptionContent}>
+                      <FlagImage
+                        countryCode={optionFlag.id}
+                        size="medium"
+                      />
+                      <Text
+                        style={[
+                          styles.mapOptionLabel,
+                          !showFeedback && styles.mapOptionLabelHidden,
+                          showFeedback && isCorrect && styles.mapOptionLabelCorrect,
+                          showFeedback && isSelected && !isCorrect && styles.mapOptionLabelWrong,
+                        ]}
+                        numberOfLines={1}
+                      >
+                        {translateName(option)}
+                      </Text>
+                    </View>
                   ) : (
                     <Text style={textStyle}>{translateName(option)}</Text>
                   )}
@@ -426,7 +439,12 @@ export default function GameScreen({ route, navigation }: Props) {
         {showFeedback && (
           <View style={styles.feedbackContainer}>
             {lastAnswerCorrect ? (
-              <Text style={styles.feedbackCorrect} accessibilityLiveRegion="polite">{t('common.correct')}</Text>
+              <View style={styles.feedbackCorrectContainer}>
+                <Text style={styles.feedbackCorrect} accessibilityLiveRegion="polite">{t('common.correct')}</Text>
+                {isMapMode && (
+                  <Text style={styles.feedbackCountryName}>{flagName(currentQuestion.flag)}</Text>
+                )}
+              </View>
             ) : (
               <Text style={styles.feedbackWrong} accessibilityLiveRegion="polite">
                 {flagName(currentQuestion.flag)}
@@ -575,10 +593,12 @@ const styles = StyleSheet.create({
   optionCorrectMap: {
     borderColor: colors.success,
     borderWidth: 3,
+    backgroundColor: colors.successBg,
   },
   optionWrongMap: {
     borderColor: colors.error,
     borderWidth: 3,
+    backgroundColor: colors.errorBg,
   },
   optionText: {
     ...typography.bodyBold,
@@ -626,13 +646,39 @@ const styles = StyleSheet.create({
   submitButtonText: {
     ...buttons.primaryText,
   },
+  mapOptionContent: {
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  mapOptionLabel: {
+    ...typography.captionBold,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  mapOptionLabelHidden: {
+    opacity: 0,
+  },
+  mapOptionLabelCorrect: {
+    color: colors.success,
+  },
+  mapOptionLabelWrong: {
+    color: colors.error,
+  },
   feedbackContainer: {
     marginTop: spacing.lg,
     alignItems: 'center',
   },
+  feedbackCorrectContainer: {
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
   feedbackCorrect: {
     ...typography.heading,
     color: colors.success,
+  },
+  feedbackCountryName: {
+    ...typography.bodyBold,
+    color: colors.textSecondary,
   },
   feedbackWrong: {
     ...typography.heading,
