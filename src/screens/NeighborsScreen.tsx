@@ -9,7 +9,7 @@ import {
   Animated,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { spacing, typography, fontFamily, fontSize, buttons, borderRadius, ThemeColors } from '../utils/theme';
+import { spacing, typography, fontFamily, fontSize, buildButtons, borderRadius, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
 import { updateStats, updateFlagResults } from '../utils/storage';
@@ -317,7 +317,7 @@ export default function NeighborsScreen({ navigation, route }: Props) {
   );
 }
 
-const createStyles = (colors: ThemeColors) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors); return StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   topBar: {
     flexDirection: 'row',
@@ -414,12 +414,12 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.rule,
   },
-  actionButton: { ...buttons.primary },
+  actionButton: { ...btn.primary },
   actionButtonDisabled: { opacity: 0.4 },
-  actionButtonText: { ...buttons.primaryText },
+  actionButtonText: { ...btn.primaryText },
   emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.xl },
   emptyTitle: { ...typography.heading, color: colors.text, marginBottom: spacing.sm },
   emptyBody: { ...typography.body, color: colors.textSecondary, textAlign: 'center', marginBottom: spacing.xl },
-  emptyButton: { ...buttons.secondary, backgroundColor: colors.surface, borderColor: colors.border },
-  emptyButtonText: { ...buttons.secondaryText, color: colors.textSecondary },
-});
+  emptyButton: { ...btn.secondary },
+  emptyButtonText: { ...btn.secondaryText },
+}); };

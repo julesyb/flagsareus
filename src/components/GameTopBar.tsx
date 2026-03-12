@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { spacing, nav, ThemeColors } from '../utils/theme';
+import { spacing, buildNav, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { t } from '../utils/i18n';
 
@@ -35,7 +35,9 @@ export default function GameTopBar({ onExit, center, right }: GameTopBarProps) {
   );
 }
 
-const createStyles = (colors: ThemeColors) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => {
+  const n = buildNav(colors);
+  return StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -44,11 +46,10 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   exitButton: {
-    ...nav.backButton,
+    ...n.backButton,
   },
   exitText: {
-    ...nav.backText,
-    color: colors.textTertiary,
+    ...n.backText,
   },
   centerSlot: {
     alignItems: 'center',
@@ -56,5 +57,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   spacer: {
     width: 60,
   },
-});
+  });
+};
 

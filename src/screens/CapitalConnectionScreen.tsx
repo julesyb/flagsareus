@@ -8,7 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { spacing, typography, fontFamily, fontSize, buttons, borderRadius, ThemeColors } from '../utils/theme';
+import { spacing, typography, fontFamily, fontSize, buildButtons, borderRadius, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
 import { shuffleArray } from '../utils/gameEngine';
@@ -286,7 +286,7 @@ export default function CapitalConnectionScreen({ navigation, route }: Props) {
   );
 }
 
-const createStyles = (colors: ThemeColors) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors); return StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   progressBar: {
     height: 3,
@@ -389,6 +389,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.xl },
   emptyTitle: { ...typography.heading, color: colors.text, marginBottom: spacing.sm },
   emptyBody: { ...typography.body, color: colors.textSecondary, textAlign: 'center', marginBottom: spacing.xl },
-  emptyButton: { ...buttons.secondary, backgroundColor: colors.surface, borderColor: colors.border },
-  emptyButtonText: { ...buttons.secondaryText, color: colors.textSecondary },
-});
+  emptyButton: { ...btn.secondary },
+  emptyButtonText: { ...btn.secondaryText },
+}); };

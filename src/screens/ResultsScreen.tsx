@@ -16,7 +16,7 @@ import {
   Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { spacing, typography, fontFamily, fontSize, buttons, borderRadius, APP_URL, ThemeColors } from '../utils/theme';
+import { spacing, typography, fontFamily, fontSize, buildButtons, borderRadius, APP_URL, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { getStreakFromResults, getGrade, generateDailyShareGrid, generateShareGrid, getDailyNumber } from '../utils/gameEngine';
 import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreakInfo, getBadgeData, persistEarnedBadges, getMissedFlagIds, addGameHistoryEntry, getSupportData, getChallengeName, saveChallengeName, addChallengeToHistory } from '../utils/storage';
@@ -889,7 +889,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
 }
 
 // ─── Styles ────────────────────────────────────────────────────
-const createStyles = (colors: ThemeColors) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors); return StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.md, paddingBottom: spacing.xxl },
 
@@ -1001,10 +1001,10 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
 
   // ── Buttons
   buttonRow: { gap: spacing.sm, marginBottom: spacing.md },
-  secondaryButton: { ...buttons.secondary, backgroundColor: colors.surface, borderColor: colors.border, justifyContent: 'center', alignItems: 'center' },
-  secondaryButtonText: { ...buttons.secondaryText, color: colors.textSecondary, textAlign: 'center' },
-  primaryButton: { ...buttons.primary, justifyContent: 'center', alignItems: 'center' },
-  primaryButtonText: { ...buttons.primaryText, textAlign: 'center' },
+  secondaryButton: { ...btn.secondary, justifyContent: 'center', alignItems: 'center' },
+  secondaryButtonText: { ...btn.secondaryText, textAlign: 'center' },
+  primaryButton: { ...btn.primary, justifyContent: 'center', alignItems: 'center' },
+  primaryButtonText: { ...btn.primaryText, textAlign: 'center' },
 
   // ── Badges
   badgesSection: { marginBottom: spacing.md },
@@ -1174,4 +1174,4 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     fontFamily: fontFamily.uiLabel, fontSize: fontSize.caption,
     letterSpacing: 0.5, textTransform: 'uppercase', color: colors.playText,
   },
-});
+}); };

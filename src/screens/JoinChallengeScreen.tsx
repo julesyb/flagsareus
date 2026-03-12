@@ -12,7 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { spacing, fontFamily, fontSize, buttons, borderRadius, ThemeColors } from '../utils/theme';
+import { spacing, fontFamily, fontSize, buildButtons, borderRadius, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types/navigation';
 import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName } from '../utils/challengeCode';
@@ -172,7 +172,9 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
   );
 }
 
-const createStyles = (colors: ThemeColors) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => {
+  const btn = buildButtons(colors);
+  return StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -224,7 +226,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     marginBottom: spacing.sm,
   },
   playButton: {
-    ...buttons.primary,
+    ...btn.primary,
     marginTop: spacing.md,
   },
   playButtonDisabled: {
@@ -232,6 +234,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     shadowColor: colors.textTertiary,
   },
   playButtonText: {
-    ...buttons.primaryText,
+    ...btn.primaryText,
   },
-});
+}); };

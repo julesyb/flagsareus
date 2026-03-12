@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { fontFamily, fontSize, spacing, borderRadius, shadows, buttons } from '../utils/theme';
+import { fontFamily, fontSize, spacing, borderRadius, shadows, buildButtons } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { ThemeColors } from '../utils/theme';
 import { getTotalFlagCount, getCategoryCount } from '../data';
@@ -460,7 +460,7 @@ export default function HomeScreen({ navigation }: Props) {
 }
 
 // ─── Styles ──────────────────────────────────────────────────
-const createStyles = (colors: ThemeColors) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors); return StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -738,14 +738,14 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     paddingBottom: spacing.xs,
   },
   playBtn: {
-    ...buttons.primary,
+    ...btn.primary,
     flexDirection: 'row',
     justifyContent: 'center',
     gap: spacing.sm,
     paddingVertical: 15,
   },
   playBtnText: {
-    ...buttons.primaryText,
+    ...btn.primaryText,
   },
 
   // ── Game modes
@@ -798,4 +798,4 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     color: colors.textTertiary,
   },
 
-});
+}); };

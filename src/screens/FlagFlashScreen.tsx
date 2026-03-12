@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { spacing, typography, fontFamily, fontSize, buttons, borderRadius, nav, ThemeColors } from '../utils/theme';
+import { spacing, typography, fontFamily, fontSize, buildButtons, borderRadius, buildNav, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { countCorrect } from '../utils/gameHelpers';
 import { t } from '../utils/i18n';
@@ -500,7 +500,10 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
   );
 }
 
-const createStyles = (colors: ThemeColors) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => {
+  const btn = buildButtons(colors);
+  const n = buildNav(colors);
+  return StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.primary,
@@ -573,12 +576,12 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     marginTop: spacing.xs,
   },
   readyButton: {
-    ...buttons.primary,
+    ...btn.primary,
     backgroundColor: colors.accent,
     paddingHorizontal: spacing.xxl,
   },
   readyButtonText: {
-    ...buttons.primaryText,
+    ...btn.primaryText,
   },
   // Countdown
   countdownContainer: {
@@ -680,7 +683,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     padding: spacing.sm,
   },
   exitButtonText: {
-    ...nav.backText,
+    ...n.backText,
     color: colors.whiteAlpha50,
   },
   exitButtonPlaying: {
@@ -689,7 +692,8 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   exitButtonPlayingText: {
-    ...nav.backText,
+    ...n.backText,
     color: colors.whiteAlpha70,
   },
-});
+  });
+};

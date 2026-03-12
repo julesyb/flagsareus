@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ThemeColors, spacing, typography, fontFamily, nav, buttons, borderRadius } from '../utils/theme';
+import { ThemeColors, spacing, typography, fontFamily, buildNav, buildButtons, borderRadius } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { GameQuestion, GameResult } from '../types';
 import { generateQuestions, generateDailyQuestions, generatePracticeQuestions, checkAnswer } from '../utils/gameEngine';
@@ -461,7 +461,10 @@ export default function GameScreen({ route, navigation }: Props) {
   );
 }
 
-const createStyles = (colors: ThemeColors) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => {
+  const btn = buildButtons(colors);
+  const n = buildNav(colors);
+  return StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -515,11 +518,10 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   quitButton: {
-    ...nav.backButton,
+    ...n.backButton,
   },
   quitText: {
-    ...nav.backText,
-    color: colors.textTertiary,
+    ...n.backText,
   },
   centerInfo: {
     alignItems: 'center',
@@ -645,13 +647,13 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     textAlign: 'center',
   },
   submitButton: {
-    ...buttons.primary,
+    ...btn.primary,
   },
   submitButtonDisabled: {
     backgroundColor: colors.textTertiary,
   },
   submitButtonText: {
-    ...buttons.primaryText,
+    ...btn.primaryText,
   },
   mapOptionContent: {
     alignItems: 'center',
@@ -691,4 +693,5 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     ...typography.heading,
     color: colors.error,
   },
-});
+  });
+};

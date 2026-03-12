@@ -8,7 +8,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { spacing, typography, fontFamily, fontSize, buttons, borderRadius, shadows, ThemeColors } from '../utils/theme';
+import { spacing, typography, fontFamily, fontSize, buildButtons, borderRadius, shadows, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import {
   GameMode,
@@ -449,7 +449,9 @@ export default function GameSetupScreen({ route, navigation }: Props) {
   );
 }
 
-const createStyles = (colors: ThemeColors) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => {
+  const btn = buildButtons(colors);
+  return StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -655,9 +657,9 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     backgroundColor: colors.background,
   },
   startButton: {
-    ...buttons.primary,
+    ...btn.primary,
   },
   startButtonText: {
-    ...buttons.primaryText,
+    ...btn.primaryText,
   },
-});
+}); };

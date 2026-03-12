@@ -310,57 +310,61 @@ export const typography = {
   },
 };
 
-export const buttons = {
-  primary: {
-    backgroundColor: raw.goldBright,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    alignItems: 'center' as const,
-    borderRadius: borderRadius.lg,
-    shadowColor: raw.goldShadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 3,
-  },
-  primaryText: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xl,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase' as const,
-    color: darkPalette.playText,
-  },
-  secondary: {
-    backgroundColor: darkPalette.paperDark,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    alignItems: 'center' as const,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.07)',
-    borderRadius: borderRadius.lg,
-  },
-  secondaryText: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xl,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase' as const,
-    color: darkPalette.inkSecondary,
-  },
-};
+export function buildButtons(c: ThemeColors) {
+  return {
+    primary: {
+      backgroundColor: c.goldBright,
+      paddingVertical: 16,
+      paddingHorizontal: 24,
+      alignItems: 'center' as const,
+      borderRadius: borderRadius.lg,
+      shadowColor: raw.goldShadow,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 1,
+      shadowRadius: 0,
+      elevation: 3,
+    },
+    primaryText: {
+      fontFamily: fontFamily.uiLabel,
+      fontSize: fontSize.xl,
+      letterSpacing: 0.8,
+      textTransform: 'uppercase' as const,
+      color: c.playText,
+    },
+    secondary: {
+      backgroundColor: c.surface,
+      paddingVertical: 16,
+      paddingHorizontal: 24,
+      alignItems: 'center' as const,
+      borderWidth: 1,
+      borderColor: c.border,
+      borderRadius: borderRadius.lg,
+    },
+    secondaryText: {
+      fontFamily: fontFamily.uiLabel,
+      fontSize: fontSize.xl,
+      letterSpacing: 0.8,
+      textTransform: 'uppercase' as const,
+      color: c.textSecondary,
+    },
+  };
+}
 
-export const nav = {
-  backButton: {
-    padding: 8,
-    width: 60,
-  },
-  backText: {
-    fontSize: fontSize.caption,
-    fontFamily: fontFamily.bodyMedium,
-    letterSpacing: 0.3,
-    color: colors.textTertiary,
-    textTransform: 'uppercase' as const,
-  },
-};
+export function buildNav(c: ThemeColors) {
+  return {
+    backButton: {
+      padding: 8,
+      width: 60,
+    },
+    backText: {
+      fontSize: fontSize.caption,
+      fontFamily: fontFamily.bodyMedium,
+      letterSpacing: 0.3,
+      color: c.textTertiary,
+      textTransform: 'uppercase' as const,
+    },
+  };
+}
 
 // ---- Responsive layout ----
 export const layout = {
