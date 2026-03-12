@@ -122,7 +122,7 @@ const es: DeepPartial<TranslationStrings> = {
 
   results: {
     perfectScore: 'PUNTUACI\u00d3N PERFECTA',
-    dailyTitle: 'Desafío Diario',
+    dailyTitle: 'Desaf\u00edo Diario',
     correct: 'Correctas',
     bestStreak: 'Mejor racha',
     avgTime: 'Tiempo med.',
