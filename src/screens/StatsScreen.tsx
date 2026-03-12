@@ -18,7 +18,7 @@ import { ThemeColors, spacing, fontFamily, fontSize, borderRadius, typography } 
 import { useTheme } from '../contexts/ThemeContext';
 import { UserStats, CategoryId, BaselineRegionId } from '../types';
 import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getGameHistory, GameHistoryEntry, getChallengeHistory, ChallengeHistoryEntry, MASTERED_STREAK, UNLOCK_THRESHOLD, getRegionScoreHistory, RegionScoreHistory, getPersistedLevel, persistLevel } from '../utils/storage';
-import { getAllFlags, getTotalFlagCount, getCategoryCount } from '../data';
+import { getAllFlags, getCategoryCount } from '../data';
 
 import { t } from '../utils/i18n';
 import { FlagImageSmall } from '../components/FlagImage';
@@ -318,10 +318,6 @@ export default function StatsScreen() {
   // ── Destructure for render (data is guaranteed non-null below) ──
   const { stats, challengeHistory, regionScoreHistory } = data;
 
-  const totalFlags = getTotalFlagCount();
-  const countriesSeen = Object.values(flagStats).filter((fs) => fs.right >= UNLOCK_THRESHOLD).length;
-  const progressPct = totalFlags > 0 ? Math.round((countriesSeen / totalFlags) * 100) : 0;
-
   // Region data - show all regions regardless of whether played
   const regionData = REGIONS.map((regionId) => {
     const scores = regionScoreHistory[regionId as BaselineRegionId];
@@ -404,26 +400,6 @@ export default function StatsScreen() {
           )}
         </Animated.View>
         )}
-
-        {/* ── COUNTRIES PROGRESS (compact) ── */}
-        <Animated.View style={[styles.tileCompact, { opacity: progressFade }]}>
-          <View style={styles.tileCompactRow}>
-            <View>
-              <Text style={styles.tileLabel}>{t('stats.countriesUnlocked')}</Text>
-              {countriesSeen < totalFlags && (
-                <Text style={styles.unlockHint}>{t('stats.unlockHint', { count: UNLOCK_THRESHOLD })}</Text>
-              )}
-            </View>
-            <Text style={styles.tileCompactVal}>{countriesSeen} / {totalFlags}</Text>
-          </View>
-          <View style={styles.progressWrap}>
-            <View style={[styles.progressFill, { width: `${progressPct}%` }]} />
-          </View>
-          <View style={styles.progressLabels}>
-            <Text style={styles.progressLabelBold}>{t('stats.percentComplete', { pct: progressPct })}</Text>
-            <Text style={styles.progressLabelMuted}>{t('stats.toGo', { count: totalFlags - countriesSeen })}</Text>
-          </View>
-        </Animated.View>
 
         {/* ── ACTIVITY HEATMAP (last 28 days, 7x4 grid) ── */}
         {activityGrid.hasActivity && (
@@ -852,6 +828,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderColor: colors.border,
     padding: 12,
     paddingHorizontal: 14,
+    marginBottom: spacing.sm,
   },
   tileCompactRow: {
     flexDirection: 'row',
@@ -862,15 +839,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   tileCompactVal: {
     ...typography.bodyBold,
     color: colors.ink,
-  },
-  tileLabel: {
-    ...typography.eyebrow,
-    color: colors.textTertiary,
-  },
-  unlockHint: {
-    ...typography.micro,
-    color: colors.textTertiary,
-    marginTop: 2,
   },
   levelNumber: {
     fontFamily: fontFamily.display,

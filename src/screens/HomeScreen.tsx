@@ -179,13 +179,13 @@ export default function HomeScreen({ navigation }: Props) {
 
   useFocusEffect(
     useCallback(() => {
-      getStats().then(setStats);
       getDayStreak().then(setDayStreak);
       getMissedFlagIds().then((ids) => setWeakFlagCount(ids.length));
       getBaselineData().then(setBaseline);
       setTeaserKey((k) => k + 1);
       Promise.all([getStats(), getFlagStats(), getBadgeData(), getDayStreakInfo(), getPersistedLevel()]).then(
         ([s, fs, bd, dsi, pl]) => {
+          setStats(s);
           const lp = computeLevelProgress({ stats: s, flagStats: fs, badgeData: bd, dayStreakInfo: dsi }, pl);
           setLevelProgress(lp);
           persistLevel(lp.currentLevel);

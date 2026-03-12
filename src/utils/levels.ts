@@ -2,6 +2,7 @@ import { UserStats, GameMode, CategoryId } from '../types';
 import { FlagStats, BadgeData, DayStreakInfo } from './storage';
 import { UNLOCK_THRESHOLD } from './config';
 import { getTotalFlagCount, getCategoryCount } from '../data';
+import { t } from './i18n';
 
 // ─── Level requirement types ──────────────────────────────────
 // Each level has a single requirement defined by a discriminated union.
@@ -168,79 +169,46 @@ export function evaluateRequirement(
 export function describeRequirement(req: LevelRequirement): string {
   switch (req.type) {
     case 'flags_correct_once':
-      return `Identify ${req.count} unique flags correctly`;
+      return t('stats.reqFlagsOnce', { count: req.count });
     case 'flags_correct_n':
-      return `Get ${req.count} flags right at least ${req.times} times each`;
+      return t('stats.reqFlagsN', { count: req.count, times: req.times });
     case 'flags_correct_all':
-      return `Get every flag right at least ${req.times === 1 ? 'once' : `${req.times} times`}`;
+      return req.times === 1
+        ? t('stats.reqFlagsAllOnce')
+        : t('stats.reqFlagsAllN', { times: req.times });
     case 'flags_fast':
-      return `Answer ${req.count} flags correctly in under ${req.seconds}s each`;
+      return t('stats.reqFlagsFast', { count: req.count, seconds: req.seconds });
     case 'flags_fast_all':
-      return `Answer every flag correctly in under ${req.seconds}s average`;
+      return t('stats.reqFlagsFastAll', { seconds: req.seconds });
     case 'flags_streak':
-      return `Build a ${req.streak}-answer streak on ${req.count} different flags`;
+      return t('stats.reqFlagsStreak', { streak: req.streak, count: req.count });
     case 'flags_streak_all':
-      return `Build a ${req.streak}-answer streak on every flag`;
+      return t('stats.reqFlagsStreakAll', { streak: req.streak });
     case 'mode_play':
-      return `Answer ${req.count} questions in ${modeLabel(req.mode)}`;
+      return t('stats.reqModePlay', { count: req.count, mode: t(`modes.${req.mode}`) });
     case 'mode_correct':
-      return `Get ${req.count} correct in ${modeLabel(req.mode)}`;
+      return t('stats.reqModeCorrect', { count: req.count, mode: t(`modes.${req.mode}`) });
     case 'modes_played':
-      return `Try ${req.count} different game modes`;
+      return t('stats.reqModesPlayed', { count: req.count });
     case 'games_played':
-      return `Play ${req.count} games`;
+      return t('stats.reqGamesPlayed', { count: req.count });
     case 'total_correct':
-      return `Answer ${req.count} flags correctly total`;
+      return t('stats.reqTotalCorrect', { count: req.count });
     case 'accuracy_overall':
-      return `Reach ${req.pct}% overall accuracy (min ${req.minGames} answers)`;
+      return t('stats.reqAccuracy', { pct: req.pct, min: req.minGames });
     case 'category_correct':
-      return `Get ${req.count} correct in ${categoryLabel(req.category)}`;
+      return t('stats.reqCategoryCorrect', { count: req.count, category: t(`categories.${req.category}`) });
     case 'category_accuracy':
-      return `Score ${req.pct}%+ in ${categoryLabel(req.category)} (min ${req.minTotal} answers)`;
+      return t('stats.reqCategoryAccuracy', { pct: req.pct, category: t(`categories.${req.category}`), min: req.minTotal });
     case 'day_streak':
-      return `Achieve a ${req.days}-day play streak`;
+      return t('stats.reqDayStreak', { days: req.days });
     case 'best_time_attack':
-      return `Score ${req.score}+ in Timed Quiz`;
+      return t('stats.reqTimeAttack', { score: req.score });
     case 'badges_earned':
-      return `Earn ${req.count} badges`;
+      return t('stats.reqBadges', { count: req.count });
     case 'avg_speed':
-      return `Average under ${(req.ms / 1000).toFixed(1)}s per correct answer`;
+      return t('stats.reqAvgSpeed', { seconds: (req.ms / 1000).toFixed(1) });
   }
-}
-
-function modeLabel(mode: GameMode): string {
-  const labels: Record<GameMode, string> = {
-    easy: 'Easy Mode',
-    medium: 'Medium Mode',
-    hard: 'Hard Mode',
-    flashflag: 'Flash Flag',
-    flagpuzzle: 'Flag Puzzle',
-    timeattack: 'Timed Quiz',
-    neighbors: 'Neighbors',
-    impostor: 'Flag Impostor',
-    capitalconnection: 'Capital Connection',
-    daily: 'Daily Challenge',
-    practice: 'Practice',
-    baseline: 'Baseline',
-  };
-  return labels[mode];
-}
-
-function categoryLabel(cat: CategoryId): string {
-  const labels: Record<CategoryId, string> = {
-    all: 'All Countries',
-    africa: 'Africa',
-    asia: 'Asia',
-    europe: 'Europe',
-    americas: 'Americas',
-    oceania: 'Oceania',
-    easy_flags: 'Famous Flags',
-    tricky_twins: 'Tricky Twins',
-    island_nations: 'Island Nations',
-    top_travel: 'Top Destinations',
-    short_names: 'Short Names',
-  };
-  return labels[cat];
 }
 
 // ─── 100 Level definitions ────────────────────────────────────
