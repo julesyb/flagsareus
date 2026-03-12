@@ -203,10 +203,8 @@ export default function GameSetupScreen({ route, navigation }: Props) {
       : colors.diffMedium
     : undefined;
   const startButtonLabel = isQuiz
-    ? t('setup.startQuiz', { difficulty: diffLabel })
-    : showDifficulty
-      ? t('setup.startMode', { mode: `${diffLabel} ${modeLabel}` })
-      : t('setup.startMode', { mode: modeLabel });
+    ? t('setup.startQuiz')
+    : t('setup.startMode', { mode: modeLabel });
 
   return (
     <SafeAreaView style={styles.container}>

@@ -115,7 +115,7 @@ const en = {
     timeLimit: 'Time Limit',
     timeSuffix: '{t}s',
     questions: 'Questions',
-    startQuiz: 'Start {difficulty} Quiz',
+    startQuiz: 'Start Quiz',
     startMode: 'Start {mode}',
   },
 
@@ -414,7 +414,7 @@ const en = {
     enterName: 'Your name',
     enterNameDesc: 'This will be shown to your opponent.',
     shareMessage: '{correct}/{total} on Flag That - beat me?',
-    shareCardHeader: 'Flag That {mode} {correct}/{total}',
+    shareCardHeader: 'Flag That {correct}/{total}',
     shareCardAvg: '{time}s avg',
     shareCardCta: 'Think you can beat {name}?',
     headToHead: 'Head to head',
@@ -515,9 +515,9 @@ const en = {
 
   // ─── Game Modes (for labels) ────────────────────────────
   modes: {
-    easy: 'Easy',
-    medium: 'Medium',
-    hard: 'Hard',
+    easy: 'Quiz',
+    medium: 'Quiz',
+    hard: 'Quiz',
     flashflag: 'Flash Flag',
     flagpuzzle: 'Flag Puzzle',
     timeattack: 'Timed Quiz',

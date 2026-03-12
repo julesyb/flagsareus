@@ -184,10 +184,14 @@ export function describeRequirement(req: LevelRequirement): string {
       return t('stats.reqFlagsStreak', { streak: req.streak, count: req.count });
     case 'flags_streak_all':
       return t('stats.reqFlagsStreakAll', { streak: req.streak });
-    case 'mode_play':
-      return t('stats.reqModePlay', { count: req.count, mode: t(`modes.${req.mode}`) });
-    case 'mode_correct':
-      return t('stats.reqModeCorrect', { count: req.count, mode: t(`modes.${req.mode}`) });
+    case 'mode_play': {
+      const modeKey = ['easy', 'medium', 'hard'].includes(req.mode) ? `common.${req.mode}` : `modes.${req.mode}`;
+      return t('stats.reqModePlay', { count: req.count, mode: t(modeKey) });
+    }
+    case 'mode_correct': {
+      const modeKey = ['easy', 'medium', 'hard'].includes(req.mode) ? `common.${req.mode}` : `modes.${req.mode}`;
+      return t('stats.reqModeCorrect', { count: req.count, mode: t(modeKey) });
+    }
     case 'modes_played':
       return t('stats.reqModesPlayed', { count: req.count });
     case 'games_played':
