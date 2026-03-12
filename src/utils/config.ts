@@ -21,3 +21,20 @@ export const MAX_HOSTNAME_LENGTH = 50;
 export const SHORT_CODE_LENGTH = 6;
 export const SPEED_FAST_MS = 2000;
 export const SPEED_MEDIUM_MS = 5000;
+
+// ---- Home screen quick-play presets ----
+export const HOME_QUESTION_COUNTS = [5, 10, 15, 20] as const;
+
+// ---- GameSetup screen presets ----
+export const SETUP_QUESTION_COUNTS = [10, 20, 50, 100] as const;
+export const FLAGPUZZLE_TIMES = [15, 30, 60] as const;
+export const TIMEATTACK_TIMES = [30, 60, 90, 120] as const;
+export const DEFAULT_GUESS_LIMIT = 3;
+export const GUESS_LIMIT_OPTIONS = [3, 5, 0] as const; // 0 = unlimited
+
+// ---- Default mode configs ----
+export const UNLIMITED_QUESTIONS = 999; // sentinel: generate as many as the pool allows
+export const TIMEATTACK_DEFAULT_TIME = 60;
+
+// ---- UI thresholds ----
+export const GOOD_ACCURACY_PCT = 70;
