@@ -106,13 +106,24 @@ export default function GameSetupScreen({ route, navigation }: Props) {
   const resolvedMode: GameMode = isQuiz ? difficulty : (setupMode as GameMode);
 
   const showGuessLimit = setupMode !== 'timeattack' && setupMode !== 'flagpuzzle' && setupMode !== 'flagflash';
-  const showMapToggle = isQuiz || isFlagPuzzle;
+  const isCapitalConnection = setupMode === 'capitalconnection';
+  const showDifficulty = isQuiz || isTimeAttack || isCapitalConnection;
+  const showMapToggle = isQuiz;
 
-  // Set sensible default time limit when mode changes
+  // Set sensible defaults when mode changes
   useEffect(() => {
-    if (setupMode === 'flagflash') setTimeLimit(60);
-    else if (setupMode === 'flagpuzzle') setTimeLimit(15);
-    else if (setupMode === 'timeattack') setTimeLimit(60);
+    if (setupMode === 'flagflash') {
+      setTimeLimit(60);
+      setDisplayMode('flag');
+    } else if (setupMode === 'flagpuzzle') {
+      setTimeLimit(15);
+      setDisplayMode('flag');
+    } else if (setupMode === 'timeattack') {
+      setTimeLimit(60);
+      setDisplayMode('flag');
+    } else if (setupMode === 'neighbors' || setupMode === 'capitalconnection') {
+      setDisplayMode('flag');
+    }
   }, [setupMode]);
 
   const handleFilterTypeSelect = (type: CategoryType) => {
@@ -148,6 +159,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
       ...(hasTimeLimit && { timeLimit }),
       ...(difficulty === 'hard' && isQuiz && { autocomplete }),
       ...(showGuessLimit && guessLimit > 0 && { guessLimit }),
+      ...((isTimeAttack || isCapitalConnection) && { difficulty }),
     };
 
     if (isTimeAttack) {
@@ -216,8 +228,8 @@ export default function GameSetupScreen({ route, navigation }: Props) {
           })}
         </View>
 
-        {/* Difficulty hero section (only for Quiz mode) */}
-        {isQuiz && (
+        {/* Difficulty hero section */}
+        {showDifficulty && (
           <View style={styles.diffSection}>
             <Text style={styles.diffLabel}>{t('home.difficulty')}</Text>
             <View style={styles.diffGrid}>
@@ -256,6 +268,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
         )}
 
         {/* Options card */}
+        <View style={{ marginTop: showDifficulty ? 0 : spacing.lg }} />
         <ConfigCard>
 
           {/* Autocomplete (only for Hard quiz - first row, no divider above) */}
