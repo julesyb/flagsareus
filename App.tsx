@@ -12,7 +12,7 @@ import {
   Barlow_500Medium,
   Barlow_600SemiBold,
 } from '@expo-google-fonts/barlow';
-import { NavigationContainer, getStateFromPath as defaultGetStateFromPath } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './src/screens/HomeScreen';
 import GameSetupScreen from './src/screens/GameSetupScreen';
@@ -28,6 +28,7 @@ import FlagImpostorScreen from './src/screens/FlagImpostorScreen';
 import CapitalConnectionScreen from './src/screens/CapitalConnectionScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import JoinChallengeScreen from './src/screens/JoinChallengeScreen';
+import ChallengeResponseScreen from './src/screens/ChallengeResponseScreen';
 import ErrorBoundary from './src/components/ErrorBoundary';
 import { ChevronLeftIcon } from './src/components/Icons';
 import { RootStackParamList } from './src/types/navigation';
@@ -47,21 +48,11 @@ const linking = {
         path: 'c/:code',
         parse: { code: (code: string) => decodeURIComponent(code) },
       },
+      ChallengeResponse: {
+        path: 'r/:code',
+        parse: { code: (code: string) => decodeURIComponent(code) },
+      },
     },
-  },
-  getStateFromPath: (path: string, options: Parameters<typeof defaultGetStateFromPath>[1]) => {
-    // Handle response links: /r/<responseCode>
-    const responseMatch = path.match(/^\/r\/(.+)$/);
-    if (responseMatch) {
-      return {
-        routes: [{
-          name: 'JoinChallenge' as const,
-          params: { responseCode: decodeURIComponent(responseMatch[1]) },
-        }],
-      };
-    }
-    // Fall through to default path handling for /c/ links
-    return defaultGetStateFromPath(path, options);
   },
 };
 
@@ -175,6 +166,13 @@ function AppContent() {
         <Stack.Screen
           name="JoinChallenge"
           component={JoinChallengeScreen}
+          options={({ navigation }) => ({
+            headerLeft: () => <BackButton onPress={() => navigation.goBack()} />,
+          })}
+        />
+        <Stack.Screen
+          name="ChallengeResponse"
+          component={ChallengeResponseScreen}
           options={({ navigation }) => ({
             headerLeft: () => <BackButton onPress={() => navigation.goBack()} />,
           })}
