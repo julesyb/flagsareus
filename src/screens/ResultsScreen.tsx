@@ -217,16 +217,18 @@ export default function ResultsScreen({ route, navigation }: Props) {
       const prevAcc = preStats.totalAnswered > 0
         ? Math.round((preStats.totalCorrect / preStats.totalAnswered) * 100) : null;
 
-      let newCountries = 0;
+      const newlyUnlocked = new Set<string>();
       const rightCounts: Record<string, number> = {};
       for (const r of results) {
+        if (!r.correct) continue;
         const id = r.question.flag.id;
-        if (r.correct) {
-          const running = (rightCounts[id] ?? (preFlagStats[id]?.right ?? 0)) + 1;
-          rightCounts[id] = running;
-          if (running === UNLOCK_THRESHOLD) newCountries++;
+        if (!(id in rightCounts)) {
+          rightCounts[id] = preFlagStats[id]?.right ?? 0;
         }
+        rightCounts[id]++;
+        if (rightCounts[id] === UNLOCK_THRESHOLD) newlyUnlocked.add(id);
       }
+      const newCountries = newlyUnlocked.size;
 
       // ── Persist game data ──
       if (!reviewOnly) {
