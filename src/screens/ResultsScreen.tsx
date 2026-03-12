@@ -24,7 +24,7 @@ import { BaselineRegionId, UserStats, GameMode, CategoryId, BASELINE_REGIONS } f
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
 import { FlagImageSmall } from '../components/FlagImage';
-import { CheckIcon, CrossIcon, ChevronRightIcon, GlobeIcon, CalendarIcon, UsersIcon, BadgeIconView } from '../components/Icons';
+import { CheckIcon, CrossIcon, ChevronRightIcon, GlobeIcon, UsersIcon, BadgeIconView } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
@@ -84,7 +84,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const [newBadges, setNewBadges] = useState<EarnedBadge[]>([]);
   const [totalBadgesEarned, setTotalBadgesEarned] = useState(0);
   const [isNewBestStreak, setIsNewBestStreak] = useState(false);
-  const [prevAccuracy, setPrevAccuracy] = useState<number | null>(null);
+  const [newCountriesCount, setNewCountriesCount] = useState(0);
   const [levelUpTo, setLevelUpTo] = useState<number | null>(null);
 
   // Challenge modal state
@@ -232,8 +232,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
       const preBadgeIds = new Set(getAllEarnedBadges(preCtx, preBadgeData.earnedBadgeIds).map((b) => b.id));
 
       const wasNewBestStreak = streak > preStats.bestStreak;
-      const prevAcc = preStats.totalAnswered > 0
-        ? Math.round((preStats.totalCorrect / preStats.totalAnswered) * 100) : null;
 
       // ── Persist game data ──
       if (!reviewOnly) {
@@ -294,7 +292,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
       setNewBadges(postBadges.filter((b) => !preBadgeIds.has(b.id)));
       setTotalBadgesEarned(postBadges.length);
       setIsNewBestStreak(wasNewBestStreak && !reviewOnly);
-      setPrevAccuracy(prevAcc);
+      setNewCountriesCount(reviewOnly ? 0 : seen - preSeen);
       // ── Level-up detection ──
       if (!reviewOnly) {
         const prePersisted = await getPersistedLevel();
@@ -433,14 +431,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
           : t('results.playAgain');
 
   const dataLoaded = overallStats !== null;
-  const accDiff = prevAccuracy !== null ? accuracy - prevAccuracy : null;
-  const accInsight = !dataLoaded
-    ? null
-    : prevAccuracy === null
-    ? t('results.firstGame')
-    : accDiff !== null && accDiff > 0 ? t('results.aboveAverage', { pct: accDiff })
-    : accDiff !== null && accDiff < 0 ? t('results.belowAverage', { pct: Math.abs(accDiff) })
-    : null;
 
   // Hero glow: interpolate to a warm gold border overlay
   const heroGlowColor = heroGlow.interpolate({
@@ -677,19 +667,11 @@ export default function ResultsScreen({ route, navigation }: Props) {
         {/* ── INSIGHT CHIPS (hidden for challenges) ── */}
         {!reviewOnly && !isChallenge && (
           <Animated.View style={[styles.insightRow, { opacity: restFade }]}>
-            {accInsight && (
+            {newCountriesCount > 0 && (
               <View style={styles.insightChip}>
-                <BarChartIcon size={13} color={accDiff !== null && accDiff >= 0 ? colors.success : colors.textTertiary} />
-                <Text style={[styles.insightText, accDiff !== null && accDiff > 0 && { color: colors.success }]}>
-                  {accInsight}
-                </Text>
-              </View>
-            )}
-            {dayStreakCount > 0 && (
-              <View style={styles.insightChip}>
-                <CalendarIcon size={13} color={colors.accent} />
-                <Text style={[styles.insightText, { color: colors.accent }]}>
-                  {dayStreakCount} {t('stats.dayStreak').toLowerCase()}
+                <GlobeIcon size={13} color={colors.success} />
+                <Text style={[styles.insightText, { color: colors.success }]}>
+                  {t('results.newCountries', { count: newCountriesCount })}
                 </Text>
               </View>
             )}
@@ -997,10 +979,10 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   // ── Buttons
   buttonRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
   buttonHalf: { flex: 1 },
-  secondaryButton: { ...btn.secondary, justifyContent: 'center', alignItems: 'center' },
-  secondaryButtonText: { ...btn.secondaryText, textAlign: 'center' },
-  primaryButton: { ...btn.primary, justifyContent: 'center', alignItems: 'center' },
-  primaryButtonText: { ...btn.primaryText, textAlign: 'center' },
+  secondaryButton: { ...btn.secondary, justifyContent: 'center', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 18 },
+  secondaryButtonText: { ...btn.secondaryText, textAlign: 'center', fontSize: 15 },
+  primaryButton: { ...btn.primary, justifyContent: 'center', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 18 },
+  primaryButtonText: { ...btn.primaryText, textAlign: 'center', fontSize: 15 },
 
   // ── Badges
   badgesSection: { marginBottom: spacing.md },
