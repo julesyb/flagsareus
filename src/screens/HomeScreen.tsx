@@ -16,11 +16,11 @@ import { useTheme } from '../contexts/ThemeContext';
 import { ThemeColors } from '../utils/theme';
 import { getTotalFlagCount, getCategoryCount } from '../data';
 import { initAudio, hapticTap, hapticCorrect, hapticWrong, playWrongSound, setSoundsEnabled, setHapticsEnabled } from '../utils/feedback';
-import { getStats, getDayStreak, getSettings, getMissedFlagIds, getBaselineData, BaselineData, getFlagStats, getBadgeData, getDayStreakInfo, getPersistedLevel, persistLevel } from '../utils/storage';
-import { generateQuestions } from '../utils/gameEngine';
+import { getStats, getDayStreak, getSettings, getMissedFlagIds, getBaselineData, isDailyCompleteToday, BaselineData, getFlagStats, getBadgeData, getDayStreakInfo, getPersistedLevel, persistLevel } from '../utils/storage';
+import { generateQuestions, getDailyNumber } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion, CategoryId, BASELINE_REGIONS } from '../types';
-import { PlayIcon, ChevronRightIcon, CheckIcon, FlameIcon, LinkIcon } from '../components/Icons';
+import { PlayIcon, ChevronRightIcon, CheckIcon, FlameIcon, LinkIcon, CalendarIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
@@ -151,6 +151,7 @@ export default function HomeScreen({ navigation }: Props) {
   const [dayStreak, setDayStreak] = useState(0);
   const [teaserKey, setTeaserKey] = useState(0);
   const [weakFlagCount, setWeakFlagCount] = useState(0);
+  const [dailyDone, setDailyDone] = useState(false);
   const [autocomplete, setAutocomplete] = useState(false);
   const [baseline, setBaseline] = useState<BaselineData | null>(null);
   const [levelProgress, setLevelProgress] = useState<LevelProgress | null>(null);
@@ -177,6 +178,7 @@ export default function HomeScreen({ navigation }: Props) {
     useCallback(() => {
       getDayStreak().then(setDayStreak);
       getMissedFlagIds().then((ids) => setWeakFlagCount(ids.length));
+      isDailyCompleteToday().then(setDailyDone);
       getBaselineData().then(setBaseline);
       setTeaserKey((k) => k + 1);
       Promise.all([getStats(), getFlagStats(), getBadgeData(), getDayStreakInfo(), getPersistedLevel()]).then(
@@ -323,6 +325,32 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
 
           <View style={styles.modeList}>
+            <TouchableOpacity
+              style={[styles.modeRow, dailyDone && styles.modeRowDisabled]}
+              activeOpacity={dailyDone ? 1 : 0.85}
+              disabled={dailyDone}
+              onPress={() => {
+                hapticTap();
+                navigation.navigate('Game', {
+                  config: { mode: 'daily', category: 'all', questionCount: 10, displayMode: 'flag' },
+                });
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={dailyDone ? t('home.comeBackTomorrow') : t('home.daily', { number: getDailyNumber() })}
+              accessibilityHint={dailyDone ? undefined : t('a11y.opensMode')}
+              accessibilityState={{ disabled: dailyDone }}
+            >
+              <View style={[styles.modeBar, { backgroundColor: dailyDone ? colors.dim : colors.modeGold }]} />
+              <CalendarIcon size={15} color={dailyDone ? colors.textTertiary : colors.goldBright} />
+              <Text style={[styles.modeTitle, dailyDone ? styles.modeTitleDisabled : { color: colors.goldBright }]}>
+                {t('home.daily', { number: getDailyNumber() })}
+              </Text>
+              <Text style={styles.modeTag}>
+                {dailyDone ? t('home.comeBackTomorrow') : t('home.tenFlags')}
+              </Text>
+              {dailyDone ? <CheckIcon size={14} color={colors.success} /> : <ChevronRightIcon size={14} color={colors.dim} />}
+            </TouchableOpacity>
+
             <TouchableOpacity
               style={styles.modeRow}
               activeOpacity={0.85}
@@ -851,6 +879,12 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     fontSize: fontSize.sm,
     color: colors.ink,
     letterSpacing: -0.1,
+  },
+  modeRowDisabled: {
+    opacity: 0.6,
+  },
+  modeTitleDisabled: {
+    color: colors.textTertiary,
   },
   modeTag: {
     ...typography.micro,
