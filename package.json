@@ -19,6 +19,7 @@
     "@vercel/analytics": "^2.0.0",
     "expo": "~55.0.5",
     "expo-av": "^16.0.8",
+    "expo-clipboard": "^55.0.8",
     "expo-constants": "~17.0.8",
     "expo-font": "^55.0.4",
     "expo-haptics": "^55.0.8",
@@ -27,11 +28,9 @@
     "expo-screen-orientation": "^55.0.8",
     "expo-sensors": "^55.0.8",
     "expo-status-bar": "~55.0.4",
-
     "react": "19.2.0",
     "react-dom": "^19.2.0",
     "react-native": "0.83.2",
-
     "react-native-safe-area-context": "^5.7.0",
     "react-native-screens": "^4.24.0",
     "react-native-svg": "^15.15.3",
