@@ -301,7 +301,6 @@ const styles = StyleSheet.create({
   },
   flagWrap: {
     width: '100%',
-    borderRadius: 0,
     overflow: 'hidden',
     backgroundColor: colors.surface,
     borderWidth: 1,
