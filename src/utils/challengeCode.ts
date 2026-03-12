@@ -371,8 +371,9 @@ export interface ChallengeResponseData {
 
 /**
  * Encode a challenge response into a URL-safe string.
- * Format: R~recipientName~shortCode~score~totalFlags
+ * Format: R~recipientName~shortCode~score~totalFlags[~correctHex]
  * The R~ prefix distinguishes response codes from challenge codes.
+ * correctHex (optional): per-question correct/wrong bits packed as hex.
  */
 export function encodeResponse(data: ChallengeResponseData): string {
   const name = sanitizeName(data.recipientName);

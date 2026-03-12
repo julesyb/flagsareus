@@ -720,7 +720,8 @@ export default function StatsScreen() {
           activeOpacity={1}
           onPress={() => setSelectedChallenge(null)}
         >
-          <View style={styles.modalCard} onStartShouldSetResponder={() => true}>
+          <View style={[styles.modalCard, { maxHeight: '80%' }]} onStartShouldSetResponder={() => true}>
+            <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
             {selectedChallenge && (() => {
               const ch = selectedChallenge;
               const hasOpponent = ch.opponentName !== null && ch.opponentScore !== null;
@@ -772,7 +773,7 @@ export default function StatsScreen() {
                   {(ch.myResults || ch.opponentResults) && (
                     <View style={styles.h2hDetailsWrap}>
                       <View style={styles.h2hDetailsHeader}>
-                        <Text style={[styles.h2hDetailsLabel, { flex: 1 }]}>{ch.myName || t('challenge.you')}</Text>
+                        <Text style={[styles.h2hDetailsLabel, { flex: hasOpponent ? 1 : 0 }]}>{ch.myName || t('challenge.you')}</Text>
                         <Text style={[styles.h2hDetailsLabel, { width: 28, textAlign: 'center' }]}>#</Text>
                         {hasOpponent && <Text style={[styles.h2hDetailsLabel, { flex: 1, textAlign: 'right' }]}>{ch.opponentName}</Text>}
                       </View>
@@ -784,7 +785,7 @@ export default function StatsScreen() {
                         const oppWon = oppOk === true && myOk === false;
                         return (
                           <View key={qi} style={[styles.h2hDetailsRow, qi % 2 === 0 && { backgroundColor: colors.surfaceSecondary + '40' }]}>
-                            <View style={styles.h2hDetailsSide}>
+                            <View style={hasOpponent ? styles.h2hDetailsSide : undefined}>
                               {myOk === undefined ? (
                                 <View style={[styles.h2hDot, { backgroundColor: colors.surfaceSecondary }]} />
                               ) : myOk ? (
@@ -813,6 +814,7 @@ export default function StatsScreen() {
                 </>
               );
             })()}
+            </ScrollView>
           </View>
         </TouchableOpacity>
       </Modal>
