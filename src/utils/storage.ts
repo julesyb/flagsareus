@@ -116,6 +116,8 @@ export async function persistEarnedBadges(badgeIds: string[]): Promise<void> {
 }
 
 // ─── App Settings ──────────────────────────────────────────
+export type ThemeMode = 'light' | 'dark' | 'system';
+
 export interface AppSettings {
   soundEnabled: boolean;
   hapticsEnabled: boolean;
@@ -123,6 +125,7 @@ export interface AppSettings {
   reminderHour: number; // 0-23
   reminderMinute: number; // 0-59
   locale: string | null; // null = auto-detect from device
+  themeMode: ThemeMode;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -132,6 +135,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   reminderHour: 9,
   reminderMinute: 0,
   locale: null,
+  themeMode: 'dark',
 };
 
 export async function getSettings(): Promise<AppSettings> {

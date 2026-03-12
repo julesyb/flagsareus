@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -16,7 +16,8 @@ import {
   Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius, screenContainer, APP_URL } from '../utils/theme';
+import { spacing, typography, fontFamily, fontSize, buildButtons, borderRadius, APP_URL, ThemeColors } from '../utils/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import { getStreakFromResults, getGrade, generateDailyShareGrid, generateShareGrid, getDailyNumber } from '../utils/gameEngine';
 import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreakInfo, getBadgeData, persistEarnedBadges, getMissedFlagIds, addGameHistoryEntry, getSupportData, getChallengeName, saveChallengeName, addChallengeToHistory } from '../utils/storage';
 import { BaselineRegionId, UserStats, GameMode, CategoryId } from '../types';
@@ -37,6 +38,8 @@ import { encodeChallenge, ChallengeData, CHALLENGE_MODES, generateShortCode } fr
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
 
 export default function ResultsScreen({ route, navigation }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const onNavigate = useNavTabs();
   const { results, config, reviewOnly, challenge, playerName } = route.params;
   const isChallenge = !!challenge;
@@ -520,7 +523,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
             styles.heroGradeWrap,
             { opacity: gradeOpacity, transform: [{ scale: gradeScale }] },
           ]}>
-            <Text style={[styles.heroGrade, { color: grade.color }]}>{grade.label}</Text>
+            <Text style={[styles.heroGrade, { color: colors[grade.colorKey] }]}>{grade.label}</Text>
           </Animated.View>
 
           {/* Score line */}
@@ -886,8 +889,8 @@ export default function ResultsScreen({ route, navigation }: Props) {
 }
 
 // ─── Styles ────────────────────────────────────────────────────
-const styles = StyleSheet.create({
-  container: screenContainer,
+const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors); return StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.md, paddingBottom: spacing.xxl },
 
   // ── Celebration
@@ -998,10 +1001,10 @@ const styles = StyleSheet.create({
 
   // ── Buttons
   buttonRow: { gap: spacing.sm, marginBottom: spacing.md },
-  secondaryButton: { ...buttons.secondary, justifyContent: 'center', alignItems: 'center' },
-  secondaryButtonText: { ...buttons.secondaryText, textAlign: 'center' },
-  primaryButton: { ...buttons.primary, justifyContent: 'center', alignItems: 'center' },
-  primaryButtonText: { ...buttons.primaryText, textAlign: 'center' },
+  secondaryButton: { ...btn.secondary, justifyContent: 'center', alignItems: 'center' },
+  secondaryButtonText: { ...btn.secondaryText, textAlign: 'center' },
+  primaryButton: { ...btn.primary, justifyContent: 'center', alignItems: 'center' },
+  primaryButtonText: { ...btn.primaryText, textAlign: 'center' },
 
   // ── Badges
   badgesSection: { marginBottom: spacing.md },
@@ -1171,4 +1174,4 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.uiLabel, fontSize: fontSize.caption,
     letterSpacing: 0.5, textTransform: 'uppercase', color: colors.playText,
   },
-});
+}); };

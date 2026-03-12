@@ -13,7 +13,8 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, typography, fontFamily, buttons, borderRadius, nav, screenContainer } from '../utils/theme';
+import { spacing, typography, fontFamily, buildButtons, borderRadius, buildNav, ThemeColors } from '../utils/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import { GameQuestion, GameResult } from '../types';
 import { generateQuestions, checkAnswer } from '../utils/gameEngine';
 import { hapticCorrect, hapticWrong, hapticTap, playWrongSound } from '../utils/feedback';
@@ -46,6 +47,8 @@ function generateRevealOrder(): number[] {
 }
 
 export default function FlagPuzzleScreen({ route, navigation }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { config, challenge, playerName } = route.params;
   const timeLimit = config.timeLimit || 15;
   const { width: screenWidth } = useWindowDimensions();
@@ -429,8 +432,11 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: screenContainer,
+const createStyles = (colors: ThemeColors) => {
+  const btn = buildButtons(colors);
+  const n = buildNav(colors);
+  return StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.background },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -463,10 +469,10 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   quitButton: {
-    ...nav.backButton,
+    ...n.backButton,
   },
   quitText: {
-    ...nav.backText,
+    ...n.backText,
   },
   centerInfo: {
     alignItems: 'center',
@@ -523,13 +529,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   submitButton: {
-    ...buttons.primary,
+    ...btn.primary,
   },
   submitButtonDisabled: {
     backgroundColor: colors.textTertiary,
   },
   submitButtonText: {
-    ...buttons.primaryText,
+    ...btn.primaryText,
   },
   suggestionsContainer: {
     maxHeight: 200,
@@ -578,4 +584,5 @@ const styles = StyleSheet.create({
     color: colors.playText,
     textTransform: 'uppercase',
   },
-});
+  });
+};

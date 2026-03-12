@@ -1,7 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { colors, fontFamily, fontSize, spacing, borderRadius } from '../utils/theme';
+import { fontFamily, fontSize, spacing, borderRadius, ThemeColors } from '../utils/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import { HeartIcon, PlayIcon } from './Icons';
 import { showRewardedAd, isAdAvailable } from '../utils/ads';
 import { getSupportData, recordAdWatched, SupportData } from '../utils/storage';
@@ -15,6 +16,8 @@ interface SupportCardProps {
 }
 
 export default function SupportCard({ gamesPlayed }: SupportCardProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [support, setSupport] = useState<SupportData | null>(null);
   const [loading, setLoading] = useState(false);
   const [justThanked, setJustThanked] = useState(false);
@@ -123,7 +126,7 @@ export default function SupportCard({ gamesPlayed }: SupportCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   card: {
     backgroundColor: colors.accentBg,
     borderWidth: 1,
@@ -224,3 +227,4 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
 });
+

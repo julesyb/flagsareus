@@ -8,7 +8,8 @@ import {
   Animated,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius, screenContainer } from '../utils/theme';
+import { spacing, typography, fontFamily, fontSize, buildButtons, borderRadius, ThemeColors } from '../utils/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
 import { shuffleArray } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
@@ -92,6 +93,8 @@ function generateQuestions(count: number, challengeFlagIds?: string[], difficult
 }
 
 export default function CapitalConnectionScreen({ navigation, route }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { config, challenge, playerName } = route.params;
   const questions = useMemo(
     () => generateQuestions(config.questionCount, challenge?.flagIds, config.difficulty),
@@ -283,8 +286,8 @@ export default function CapitalConnectionScreen({ navigation, route }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: screenContainer,
+const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors); return StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.background },
   progressBar: {
     height: 3,
     backgroundColor: colors.border,
@@ -386,6 +389,6 @@ const styles = StyleSheet.create({
   emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.xl },
   emptyTitle: { ...typography.heading, color: colors.text, marginBottom: spacing.sm },
   emptyBody: { ...typography.body, color: colors.textSecondary, textAlign: 'center', marginBottom: spacing.xl },
-  emptyButton: { ...buttons.secondary },
-  emptyButtonText: { ...buttons.secondaryText },
-});
+  emptyButton: { ...btn.secondary },
+  emptyButtonText: { ...btn.secondaryText },
+}); };
