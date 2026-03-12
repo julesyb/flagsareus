@@ -217,7 +217,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
       const prevAcc = preStats.totalAnswered > 0
         ? Math.round((preStats.totalCorrect / preStats.totalAnswered) * 100) : null;
 
-      const newlyUnlocked = new Set<string>();
+      let newCountries = 0;
       const rightCounts: Record<string, number> = {};
       for (const r of results) {
         if (!r.correct) continue;
@@ -226,9 +226,8 @@ export default function ResultsScreen({ route, navigation }: Props) {
           rightCounts[id] = preFlagStats[id]?.right ?? 0;
         }
         rightCounts[id]++;
-        if (rightCounts[id] === UNLOCK_THRESHOLD) newlyUnlocked.add(id);
+        if (rightCounts[id] === UNLOCK_THRESHOLD) newCountries++;
       }
-      const newCountries = newlyUnlocked.size;
 
       // ── Persist game data ──
       if (!reviewOnly) {
