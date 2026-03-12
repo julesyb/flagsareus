@@ -368,7 +368,9 @@ export default function StatsScreen() {
           <View style={styles.tileCompactRow}>
             <View>
               <Text style={styles.tileLabel}>{t('stats.countriesUnlocked')}</Text>
-              <Text style={styles.unlockHint}>{t('stats.unlockHint', { count: UNLOCK_THRESHOLD })}</Text>
+              {countriesSeen < totalFlags && (
+                <Text style={styles.unlockHint}>{t('stats.unlockHint', { count: UNLOCK_THRESHOLD })}</Text>
+              )}
             </View>
             <Text style={styles.tileCompactVal}>{countriesSeen} / {totalFlags}</Text>
           </View>
@@ -838,8 +840,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     color: colors.textTertiary,
   },
   unlockHint: {
-    fontFamily: fontFamily.body,
-    fontSize: 11,
+    ...typography.micro,
     color: colors.textTertiary,
     marginTop: 2,
   },
