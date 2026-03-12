@@ -32,19 +32,9 @@ export const TIMEATTACK_TIMES = [30, 60, 90, 120] as const;
 export const DEFAULT_GUESS_LIMIT = 3;
 export const GUESS_LIMIT_OPTIONS = [3, 5, 0] as const; // 0 = unlimited
 
-// ---- Default mode configs (question counts and time limits for quick-launch) ----
+// ---- Default mode configs ----
 export const UNLIMITED_QUESTIONS = 999; // sentinel: generate as many as the pool allows
-export const TEASER_QUESTION_COUNT = 1;
-export const IMPOSTOR_DEFAULT_COUNT = 10;
-export const FLAGPUZZLE_DEFAULT_COUNT = 10;
-export const FLAGPUZZLE_DEFAULT_TIME = 15;
 export const TIMEATTACK_DEFAULT_TIME = 60;
-
-// ---- Animation timing ----
-export const ANIM_PULSE_DURATION_MS = 200;
-export const ANIM_PULSE_DELAY_MS = 600;
-export const ANIM_STAGGER_MS = 100;
-export const ANIM_OPTION_DELAY_MS = 400;
 
 // ---- UI thresholds ----
 export const GOOD_ACCURACY_PCT = 70;

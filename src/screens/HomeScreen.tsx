@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { fontFamily, fontSize, spacing, borderRadius, shadows, buildButtons, typography } from '../utils/theme';
+import { fontFamily, fontSize, spacing, borderRadius, buildButtons, typography } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { ThemeColors } from '../utils/theme';
 import { getTotalFlagCount, getCategoryCount } from '../data';
@@ -30,12 +30,9 @@ import { useNavTabs } from '../hooks/useNavTabs';
 import { computeLevelProgress, LevelProgress } from '../utils/levels';
 import { t } from '../utils/i18n';
 import { translateName, flagName } from '../data/countryNames';
-import { HOME_QUESTION_COUNTS, ANIM_PULSE_DURATION_MS, ANIM_PULSE_DELAY_MS, ANIM_STAGGER_MS, ANIM_OPTION_DELAY_MS, UNLIMITED_QUESTIONS, TEASER_QUESTION_COUNT, IMPOSTOR_DEFAULT_COUNT, FLAGPUZZLE_DEFAULT_COUNT, FLAGPUZZLE_DEFAULT_TIME, TIMEATTACK_DEFAULT_TIME } from '../utils/config';
+import { HOME_QUESTION_COUNTS, UNLIMITED_QUESTIONS, TIMEATTACK_DEFAULT_TIME } from '../utils/config';
 
 const MODE_KEYS: GameMode[] = ['easy', 'medium', 'hard'];
-
-
-
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -44,7 +41,7 @@ function FlagTeaser({ onAnswer }: { onAnswer?: () => void }) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const question = useMemo<GameQuestion | null>(() => {
-    const qs = generateQuestions({ mode: 'medium', category: 'all', questionCount: TEASER_QUESTION_COUNT, displayMode: 'flag' });
+    const qs = generateQuestions({ mode: 'medium', category: 'all', questionCount: 1, displayMode: 'flag' });
     return qs[0] ?? null;
   }, []);
 
@@ -55,12 +52,12 @@ function FlagTeaser({ onAnswer }: { onAnswer?: () => void }) {
     // Pop in options after a short delay
     const timer = setTimeout(() => {
       Animated.stagger(
-        ANIM_STAGGER_MS,
+        100,
         optAnims.map((a) =>
           Animated.spring(a, { toValue: 1, useNativeDriver: true, tension: 120, friction: 10 }),
         ),
       ).start();
-    }, ANIM_OPTION_DELAY_MS);
+    }, 400);
     return () => clearTimeout(timer);
   }, []);
 
@@ -162,10 +159,10 @@ export default function HomeScreen({ navigation }: Props) {
   const pulsePlayBtn = useCallback(() => {
     setTimeout(() => {
       Animated.sequence([
-        Animated.timing(playBtnScale, { toValue: 1.05, duration: ANIM_PULSE_DURATION_MS, useNativeDriver: true }),
+        Animated.timing(playBtnScale, { toValue: 1.05, duration: 200, useNativeDriver: true }),
         Animated.spring(playBtnScale, { toValue: 1, useNativeDriver: true, tension: 200, friction: 10 }),
       ]).start();
-    }, ANIM_PULSE_DELAY_MS);
+    }, 600);
   }, [playBtnScale]);
 
   useEffect(() => {
@@ -351,7 +348,7 @@ export default function HomeScreen({ navigation }: Props) {
               onPress={() => {
                 hapticTap();
                 navigation.navigate('FlagImpostor', {
-                  config: { mode: 'impostor', category: 'all', questionCount: IMPOSTOR_DEFAULT_COUNT, displayMode: 'flag' },
+                  config: { mode: 'impostor', category: 'all', questionCount: 10, displayMode: 'flag' },
                 });
               }}
               accessibilityRole="button"
@@ -370,7 +367,7 @@ export default function HomeScreen({ navigation }: Props) {
               onPress={() => {
                 hapticTap();
                 navigation.navigate('FlagPuzzle', {
-                  config: { mode: 'flagpuzzle', category: 'all', questionCount: FLAGPUZZLE_DEFAULT_COUNT, timeLimit: FLAGPUZZLE_DEFAULT_TIME, displayMode: 'flag' },
+                  config: { mode: 'flagpuzzle', category: 'all', questionCount: 10, timeLimit: 15, displayMode: 'flag' },
                 });
               }}
               accessibilityRole="button"
