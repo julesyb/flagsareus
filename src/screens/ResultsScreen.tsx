@@ -614,8 +614,9 @@ export default function ResultsScreen({ route, navigation }: Props) {
 
         {/* ══════════════════════════════════════════════════════════
             STREAK TIMELINE: Dots appear one-by-one showing the flow
+            Hidden for challenges — h2h card has comparison dots already.
             ══════════════════════════════════════════════════════════ */}
-        <View style={styles.timelineCard}>
+        {!isChallenge && <View style={styles.timelineCard}>
           <View style={styles.timelineDots}>
             {results.map((r, i) => (
               <Animated.View
@@ -662,7 +663,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
               </>
             )}
           </Animated.View>
-        </View>
+        </View>}
 
         {/* ── DAILY GRID ── */}
         {isDaily && (
@@ -949,7 +950,6 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   container: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.md, paddingBottom: spacing.xxl },
 
-  // ── Celebration
   // ── Hero (THE centerpiece)
   heroCard: {
     backgroundColor: colors.surface,
@@ -1124,7 +1124,6 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   reviewRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   reviewTime: { ...typography.microMedium, color: colors.textTertiary },
   reviewTimeFastest: { color: colors.success },
-  reviewOpponent: { ...typography.micro, color: colors.textTertiary, marginTop: spacing.xxs },
   reviewH2hHeader: {
     flexDirection: 'row', justifyContent: 'space-between',
     paddingHorizontal: 14, marginBottom: spacing.xs,
