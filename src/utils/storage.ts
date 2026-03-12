@@ -175,7 +175,6 @@ const DEFAULT_STATS: UserStats = {
   bestTimeAttackScore: 0,
   totalCorrectTimeMs: 0,
   totalCorrectCount: 0,
-  bestAvgTimeMs: 0,
   modeStats: {
     easy: { correct: 0, total: 0 },
     medium: { correct: 0, total: 0 },
@@ -245,11 +244,6 @@ export async function updateStats(
     if (speedData && speedData.correctCount > 0) {
       stats.totalCorrectTimeMs = (stats.totalCorrectTimeMs || 0) + speedData.correctTimeMs;
       stats.totalCorrectCount = (stats.totalCorrectCount || 0) + speedData.correctCount;
-      const gameAvg = speedData.correctTimeMs / speedData.correctCount;
-      const currentBest = stats.bestAvgTimeMs || 0;
-      if (currentBest === 0 || gameAvg < currentBest) {
-        stats.bestAvgTimeMs = Math.round(gameAvg);
-      }
     }
 
     stats.modeStats[mode].correct += correct;

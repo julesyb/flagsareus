@@ -36,6 +36,7 @@ const FLAG_ASPECT = 3 / 2;
 const GRID_COLS = 8;
 const GRID_ROWS = 6;
 const TOTAL_TILES = GRID_COLS * GRID_ROWS;
+const REVEAL_PAUSE_MS = 2000;
 
 function generateRevealOrder(): number[] {
   const indices = Array.from({ length: TOTAL_TILES }, (_, i) => i);
@@ -93,7 +94,6 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
   }, []);
 
   const revealDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const REVEAL_PAUSE_MS = 2000;
 
   useEffect(() => {
     return () => {
