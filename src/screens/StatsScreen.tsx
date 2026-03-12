@@ -1203,34 +1203,34 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
 
   // ── Activity Heatmap
   heatmapCard: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 5,
+    gap: 4,
     paddingVertical: 2,
   },
   heatmapDayRow: {
-    flexDirection: 'column',
-    gap: 3,
+    flexDirection: 'row',
+    gap: 4,
   },
   heatmapDayLabel: {
-    height: 8,
-    textAlign: 'right',
+    width: 14,
+    textAlign: 'center',
     fontFamily: fontFamily.uiLabel,
-    fontSize: 7,
-    lineHeight: 8,
+    fontSize: 9,
+    lineHeight: 14,
     color: colors.textTertiary,
   },
   heatmapGrid: {
-    flexDirection: 'column',
+    flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 3,
-    height: 7 * 8 + 6 * 3,  // 7 rows * dotSize + 6 gaps
+    gap: 4,
+    width: 7 * 14 + 6 * 4,  // 7 cols * dotSize + 6 gaps
   },
   heatmapDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
     backgroundColor: colors.surfaceSecondary,
   },
   heatmapL1: {
