@@ -365,16 +365,27 @@ export interface ChallengeResponseData {
   shortCode: string;
   recipientScore: number;
   totalFlags: number;
+  /** Per-question correct/wrong results (true = correct). Optional for backward compat with old codes. */
+  resultDetails?: boolean[];
 }
 
 /**
  * Encode a challenge response into a URL-safe string.
- * Format: R~recipientName~shortCode~score~totalFlags
+ * Format: R~recipientName~shortCode~score~totalFlags[~correctHex]
  * The R~ prefix distinguishes response codes from challenge codes.
+ * correctHex (optional): per-question correct/wrong bits packed as hex.
  */
 export function encodeResponse(data: ChallengeResponseData): string {
   const name = sanitizeName(data.recipientName);
-  return `R~${name}~${data.shortCode}~${data.recipientScore}~${data.totalFlags}`;
+  const base = `R~${name}~${data.shortCode}~${data.recipientScore}~${data.totalFlags}`;
+  if (data.resultDetails && data.resultDetails.length > 0 && data.resultDetails.length === data.totalFlags) {
+    let bits = 0;
+    for (const correct of data.resultDetails) {
+      bits = (bits << 1) | (correct ? 1 : 0);
+    }
+    return `${base}~${(bits >>> 0).toString(16)}`;
+  }
+  return base;
 }
 
 export type DecodeResponseResult =
@@ -400,16 +411,28 @@ export function decodeResponse(code: string): DecodeResponseResult {
     if (!trimmed.startsWith('R~')) return { status: 'invalid' };
 
     const parts = trimmed.slice(2).split('~'); // strip R~ prefix
-    if (parts.length !== 4) return { status: 'invalid' };
+    if (parts.length !== 4 && parts.length !== 5) return { status: 'invalid' };
 
-    const [recipientName, shortCode, scoreStr, totalStr] = parts;
+    const [recipientName, shortCode, scoreStr, totalStr, bitsHex] = parts;
     if (!recipientName || !shortCode || shortCode.length !== SHORT_CODE_LENGTH) return { status: 'invalid' };
 
     const recipientScore = parseInt(scoreStr, 10);
     const totalFlags = parseInt(totalStr, 10);
     if (isNaN(recipientScore) || isNaN(totalFlags) || recipientScore < 0 || totalFlags <= 0) return { status: 'invalid' };
 
-    return { status: 'ok', data: { recipientName, shortCode, recipientScore, totalFlags } };
+    let resultDetails: boolean[] | undefined;
+    if (bitsHex) {
+      const rawBits = parseInt(bitsHex, 16);
+      if (!isNaN(rawBits)) {
+        const bits = rawBits >>> 0;
+        resultDetails = [];
+        for (let i = totalFlags - 1; i >= 0; i--) {
+          resultDetails.push(!!((bits >>> i) & 1));
+        }
+      }
+    }
+
+    return { status: 'ok', data: { recipientName, shortCode, recipientScore, totalFlags, resultDetails } };
   } catch {
     return { status: 'invalid' };
   }

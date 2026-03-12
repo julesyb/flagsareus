@@ -574,6 +574,8 @@ export interface ChallengeHistoryEntry {
   opponentScore: number | null;
   direction: 'sent' | 'received';
   fullCode: string;         // Full FT2: code for resharing
+  myResults?: boolean[];    // Per-question correct/wrong for me
+  opponentResults?: boolean[]; // Per-question correct/wrong for opponent
 }
 
 export async function getChallengeHistory(): Promise<ChallengeHistoryEntry[]> {
@@ -609,6 +611,7 @@ export async function updateSentChallengeWithOpponent(
   shortCode: string,
   opponentName: string,
   opponentScore: number,
+  opponentResults?: boolean[],
 ): Promise<boolean> {
   try {
     const history = await getChallengeHistory();
@@ -618,6 +621,9 @@ export async function updateSentChallengeWithOpponent(
     if (idx < 0) return false;
     history[idx].opponentName = opponentName;
     history[idx].opponentScore = opponentScore;
+    if (opponentResults) {
+      history[idx].opponentResults = opponentResults;
+    }
     await AsyncStorage.setItem(CHALLENGE_HISTORY_KEY, JSON.stringify(history));
     return true;
   } catch {
