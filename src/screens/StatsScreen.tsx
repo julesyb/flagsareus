@@ -179,7 +179,11 @@ export default function StatsScreen() {
   const bottom10 = React.useMemo(() => {
     return Object.entries(flagStats)
       .filter(([, s]) => s.wrong > 0 && s.rightStreak < 3)
-      .sort(([, a], [, b]) => b.wrong - a.wrong)
+      .sort(([, a], [, b]) => {
+        const accA = a.right / (a.right + a.wrong);
+        const accB = b.right / (b.right + b.wrong);
+        return accA - accB; // worst accuracy first
+      })
       .slice(0, 10);
   }, [flagStats]);
 
@@ -220,6 +224,36 @@ export default function StatsScreen() {
     candidates.sort((a, b) => (a.remaining / a.target) - (b.remaining / b.target));
     return candidates[0];
   }, [badgeCtx, derived, earnedBadges]);
+
+  // Activity heatmap: 7x4 grid of last 28 days
+  const activityGrid = React.useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Build date-keyed count map from history (O(n))
+    const countMap = new Map<string, number>();
+    for (const entry of gameHistory) {
+      countMap.set(entry.date, (countMap.get(entry.date) || 0) + 1);
+    }
+
+    const cells: { date: string; count: number; dayLabel: string }[] = [];
+    const dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    let hasActivity = false;
+    for (let i = 27; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      const dateStr = `${yyyy}-${mm}-${dd}`;
+      const count = countMap.get(dateStr) || 0;
+      if (count > 0) hasActivity = true;
+      cells.push({ date: dateStr, count, dayLabel: dayLabels[d.getDay()] });
+    }
+
+    const maxCount = Math.max(...cells.map((c) => c.count), 1);
+    return { cells, maxCount, hasActivity };
+  }, [gameHistory]);
 
   // Score distribution: bucket accuracies into ranges
   // (must be above the early return to satisfy Rules of Hooks)
@@ -327,6 +361,45 @@ export default function StatsScreen() {
             <Text style={styles.progressLabelMuted}>{t('stats.toGo', { count: totalFlags - countriesSeen })}</Text>
           </View>
         </Animated.View>
+
+        {/* ── ACTIVITY HEATMAP (last 28 days, 7x4 grid) ── */}
+        {activityGrid.hasActivity && (
+          <Animated.View style={{ opacity: progressFade }}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>{t('stats.activityTitle')}</Text>
+              <Text style={styles.sectionMeta}>{t('stats.last28Days')}</Text>
+            </View>
+            <View style={styles.heatmapCard}>
+              {/* Day-of-week labels for the top row */}
+              <View style={styles.heatmapDayRow}>
+                {activityGrid.cells.slice(0, 7).map((cell) => (
+                  <Text key={`lbl-${cell.date}`} style={styles.heatmapDayLabel}>{cell.dayLabel}</Text>
+                ))}
+              </View>
+              <View style={styles.heatmapGrid}>
+                {activityGrid.cells.map((cell) => {
+                  const level = cell.count === 0 ? 0
+                    : cell.count <= activityGrid.maxCount * 0.25 ? 1
+                    : cell.count <= activityGrid.maxCount * 0.5 ? 2
+                    : cell.count <= activityGrid.maxCount * 0.75 ? 3
+                    : 4;
+                  return (
+                    <View
+                      key={cell.date}
+                      style={[
+                        styles.heatmapCell,
+                        level === 1 && styles.heatmapL1,
+                        level === 2 && styles.heatmapL2,
+                        level === 3 && styles.heatmapL3,
+                        level === 4 && styles.heatmapL4,
+                      ]}
+                    />
+                  );
+                })}
+              </View>
+            </View>
+          </Animated.View>
+        )}
 
         {(stats.bestTimeAttackScore || 0) > 0 && (
           <Animated.View style={[styles.tile, { marginTop: 8, opacity: progressFade }]}>
@@ -597,16 +670,19 @@ export default function StatsScreen() {
               <Text style={styles.sectionTitle}>{t('stats.weakFlags')}</Text>
               <Text style={styles.sectionMeta}>{t('stats.practiceThese')}</Text>
             </View>
-            {bottom10.map(([id, fs], i) => (
-              <View key={id} style={styles.rankRow}>
-                <Text style={styles.rank}>{i + 1}</Text>
-                <FlagImageSmall countryCode={id} />
-                <Text style={styles.rankName}>{flagNameMap[id] || id}</Text>
-                <View style={[styles.scoreBadge, styles.scoreBadgeWrong]}>
-                  <Text style={[styles.scoreBadgeText, styles.scoreBadgeTextWrong]}>{fs.wrong}x</Text>
+            {bottom10.map(([id, fs], i) => {
+              const totalSeen = fs.right + fs.wrong;
+              return (
+                <View key={id} style={styles.rankRow}>
+                  <Text style={styles.rank}>{i + 1}</Text>
+                  <FlagImageSmall countryCode={id} />
+                  <Text style={styles.rankName}>{flagNameMap[id] || id}</Text>
+                  <View style={[styles.scoreBadge, styles.scoreBadgeWrong]}>
+                    <Text style={[styles.scoreBadgeText, styles.scoreBadgeTextWrong]}>{fs.right}/{totalSeen}</Text>
+                  </View>
                 </View>
-              </View>
-            ))}
+              );
+            })}
           </Animated.View>
         )}
 
@@ -1172,6 +1248,59 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     fontSize: fontSize.xs,
     color: colors.textTertiary,
     marginTop: 3,
+  },
+
+  // ── Activity Heatmap
+  heatmapCard: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 14,
+  },
+  heatmapDayRow: {
+    flexDirection: 'row',
+    gap: 5,
+    marginBottom: 4,
+  },
+  heatmapDayLabel: {
+    flexGrow: 1,
+    flexBasis: '12%',
+    textAlign: 'center',
+    fontFamily: fontFamily.uiLabel,
+    fontSize: 9,
+    color: colors.textTertiary,
+    letterSpacing: 0.3,
+  },
+  heatmapGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 5,
+  },
+  heatmapCell: {
+    flexGrow: 1,
+    flexBasis: '12%',
+    aspectRatio: 1,
+    borderRadius: 4,
+    backgroundColor: colors.surfaceSecondary,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  heatmapL1: {
+    backgroundColor: colors.goldBright + '33',
+    borderColor: colors.goldBright + '26',
+  },
+  heatmapL2: {
+    backgroundColor: colors.goldBright + '66',
+    borderColor: colors.goldBright + '4D',
+  },
+  heatmapL3: {
+    backgroundColor: colors.goldBright + 'A6',
+    borderColor: colors.goldBright + '80',
+  },
+  heatmapL4: {
+    backgroundColor: colors.goldBright,
+    borderColor: colors.goldBright,
   },
 
   // ── Footer
