@@ -482,7 +482,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
   // Hero glow: interpolate to a warm gold border overlay
   const heroGlowColor = heroGlow.interpolate({
     inputRange: [0, 1],
-    outputRange: ['rgba(201, 150, 12, 0)', 'rgba(201, 150, 12, 0.35)'],
+    outputRange: [colors.goldGlow0, colors.goldGlow35],
   });
 
   return (

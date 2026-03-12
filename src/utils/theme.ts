@@ -86,6 +86,7 @@ export const colors = {
   borderLight: palette.paperDark,
   shadow: 'rgba(26, 24, 32, 0.06)',
   overlay: 'rgba(26, 24, 32, 0.5)',
+  inkAlpha10: 'rgba(26, 24, 32, 0.10)',
 
   // Grade colors
   gradeS: palette.gold,
@@ -152,6 +153,8 @@ export const colors = {
   goldAlpha10: 'rgba(233, 186, 76, 0.10)',
   goldAlpha15: 'rgba(233, 186, 76, 0.15)',
   goldAlpha50: 'rgba(233, 186, 76, 0.50)',
+  goldGlow0: 'rgba(201, 150, 12, 0)',
+  goldGlow35: 'rgba(201, 150, 12, 0.35)',
 
   // Mode bar colors (for game mode list)
   modeRed: '#E05555',
@@ -197,8 +200,9 @@ export const fontFamily = {
 };
 
 // ---- Type scale — single source of truth for every font size ----
-// 13-step ramp. Every fontSize in the app must reference this scale.
+// 14-step ramp. Every fontSize in the app must reference this scale.
 export const fontSize = {
+  micro: 9,       // streak badge label, ultra-compact text
   xxs: 10,        // micro labels, bottom nav tabs, eyebrow, small caps
   sm: 12,         // chips, badge text, progress labels
   caption: 14,    // captions, subtitles, segment buttons

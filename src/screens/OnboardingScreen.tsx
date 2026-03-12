@@ -356,14 +356,14 @@ const s = StyleSheet.create({
   },
   wmLine1: {
     fontFamily: fontFamily.display,
-    fontSize: 42,
+    fontSize: fontSize.gameTitle,
     lineHeight: 44,
     color: colors.white,
     letterSpacing: -0.5,
   },
   wmLine2: {
     fontFamily: fontFamily.displayItalic,
-    fontSize: 42,
+    fontSize: fontSize.gameTitle,
     lineHeight: 44,
     color: colors.accentLight,
   },
@@ -561,7 +561,7 @@ const s = StyleSheet.create({
   },
   doneLabel: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 11,
+    fontSize: fontSize.xxs,
     letterSpacing: 1,
     textTransform: 'uppercase',
     color: colors.success,

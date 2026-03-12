@@ -554,7 +554,7 @@ const s = StyleSheet.create({
   },
   streakLabel: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 9,
+    fontSize: fontSize.micro,
     letterSpacing: 0.9,
     textTransform: 'uppercase',
     color: colors.textTertiary,
