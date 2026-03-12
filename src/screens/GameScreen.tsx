@@ -12,7 +12,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, typography, fontFamily, nav, buttons, borderRadius, screenContainer } from '../utils/theme';
+import { ThemeColors, spacing, typography, fontFamily, nav, buttons, borderRadius } from '../utils/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import { GameQuestion, GameResult } from '../types';
 import { generateQuestions, generateDailyQuestions, generatePracticeQuestions, checkAnswer } from '../utils/gameEngine';
 import { getMissedFlagIds } from '../utils/storage';
@@ -32,6 +33,8 @@ import { countCorrect, calculateProgress } from '../utils/gameHelpers';
 type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
 
 export default function GameScreen({ route, navigation }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { config, challenge, playerName } = route.params;
   const isTimeAttack = config.mode === 'timeattack';
   const [questions, setQuestions] = useState<GameQuestion[]>([]);
@@ -458,8 +461,11 @@ export default function GameScreen({ route, navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: screenContainer,
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',

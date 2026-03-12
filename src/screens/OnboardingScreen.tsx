@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { colors, fontFamily, fontSize, spacing, borderRadius, shadows, screenContainer } from '../utils/theme';
+import { fontFamily, fontSize, spacing, borderRadius, shadows, ThemeColors } from '../utils/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import { getBaselineData, BaselineData, skipOnboarding } from '../utils/storage';
 import { getCategoryCount, getAllFlags } from '../data';
 import { hapticTap } from '../utils/feedback';
@@ -36,6 +37,8 @@ const REGIONS: { id: BaselineRegionId; categoryId: CategoryId }[] = [
 const HERO_FLAGS = ['jp', 'br', 'gb', 'za'];
 
 export default function OnboardingScreen({ navigation }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [baseline, setBaseline] = useState<BaselineData | null>(null);
   const [showTests, setShowTests] = useState(false);
 
@@ -303,8 +306,11 @@ export default function OnboardingScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: screenContainer,
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   scroll: {
     flex: 1,
   },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,8 @@ import {
   Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius, nav } from '../utils/theme';
+import { spacing, typography, fontFamily, fontSize, buttons, borderRadius, nav, ThemeColors } from '../utils/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import { countCorrect } from '../utils/gameHelpers';
 import { t } from '../utils/i18n';
 import { GameQuestion, GameResult } from '../types';
@@ -63,6 +64,8 @@ async function requestMotionPermission(): Promise<boolean> {
 }
 
 export default function FlagFlashScreen({ route, navigation }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { config } = route.params;
   const [questions, setQuestions] = useState<GameQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -497,7 +500,7 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.primary,

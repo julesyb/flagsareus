@@ -38,7 +38,7 @@ const raw = {
 };
 
 // ---- Dark palette (DEFAULT) — aligned with HTML prototype vars ----
-const palette = {
+const darkPalette = {
   ink: '#EEE9E2',           // --ink: light text on dark background
   inkSecondary: '#B8B2A8',  // --ink-2: secondary text
   gold: raw.goldBright,     // Bright gold as CTA on dark
@@ -60,114 +60,154 @@ const palette = {
   playText: '#130F00',      // --play-text: dark text on gold CTA
 };
 
-export const colors = {
-  // Brand palette (direct access for commonly needed raw colors)
-  ink: palette.ink,
-  red: palette.red,
-  rule: 'rgba(255,255,255,0.07)',
-  ruleDark: 'rgba(255,255,255,0.13)',
-  white: palette.white,
-  black: palette.black,
-  gold: palette.gold,
-  goldBright: palette.goldBright,
-  purple: palette.purple,
-  dim: palette.dim,
-
-  // Semantic roles
-  primary: palette.ink,
-  primaryLight: palette.paperDark,
-  accent: palette.gold,
-  accentLight: palette.goldBright,
-  success: palette.green,
-  error: palette.red,
-  warning: palette.gold,
-  background: palette.paper,
-  surface: palette.paperDark,
-  surfaceSecondary: palette.raise,
-  text: palette.ink,
-  textSecondary: palette.inkSecondary,
-  textTertiary: palette.muted,
-  border: 'rgba(255,255,255,0.07)',
-  borderLight: 'rgba(255,255,255,0.13)',
-  shadow: 'rgba(0, 0, 0, 0.22)',
-  overlay: 'rgba(0, 0, 0, 0.6)',
-  inkAlpha10: 'rgba(238, 233, 226, 0.10)',
-  playText: palette.playText,
-
-  // Grade colors
-  gradeS: raw.goldBright,
-  gradeA: raw.greenBright,
-  gradeB: raw.blue,
-  gradeC: palette.muted,
-  gradeD: raw.redLight,
-  gradeF: palette.ink,
-
-  // Difficulty colors
-  diffEasy: raw.greenBright,
-  diffMedium: raw.goldBright,
-  diffHard: raw.redLight,
-  diffEasyBg: 'rgba(61, 191, 128, 0.12)',
-  diffEasyBorder: 'rgba(61, 191, 128, 0.30)',
-  diffMediumBg: 'rgba(233, 186, 76, 0.12)',
-  diffMediumBorder: 'rgba(233, 186, 76, 0.40)',
-  diffHardBg: 'rgba(236, 102, 102, 0.12)',
-  diffHardBorder: 'rgba(236, 102, 102, 0.30)',
-
-  // Translucent helpers (for dark backgrounds)
-  whiteAlpha15: 'rgba(255,255,255,0.15)',
-  whiteAlpha20: 'rgba(255,255,255,0.20)',
-  whiteAlpha45: 'rgba(255,255,255,0.45)',
-  whiteAlpha50: 'rgba(255,255,255,0.50)',
-  whiteAlpha60: 'rgba(255,255,255,0.60)',
-  whiteAlpha70: 'rgba(255,255,255,0.70)',
-
-  // Dark surface feedback
-  darkSurface: 'rgba(255,255,255,0.07)',
-  darkBorder: 'rgba(255,255,255,0.12)',
-  successOnDark: 'rgba(61,191,128,0.15)',
-  successBorderOnDark: 'rgba(61,191,128,0.35)',
-  successTextOnDark: raw.greenBright,
-  errorOnDark: 'rgba(236,102,102,0.15)',
-  errorBorderOnDark: 'rgba(236,102,102,0.35)',
-  errorTextOnDark: raw.redLight,
-
-  // Feedback backgrounds (on dark surfaces)
-  successBg: 'rgba(61, 191, 128, 0.12)',
-  errorBg: 'rgba(236, 102, 102, 0.12)',
-  warningBg: 'rgba(233, 186, 76, 0.12)',
-  accentBg: 'rgba(233, 186, 76, 0.08)',
-
-  // Badge tier colors (AA on dark)
-  tierBronze: '#C4884A',
-  tierSilver: '#A0A0A0',
-  tierGold: raw.goldBright,
-  tierPlatinum: '#8B8DFF',
-
-  // Nav
-  navBg: 'rgba(21,20,26,0.97)',
-
-  // Map
-  mapBackground: palette.paperDark,
-  mapZoomSurface: 'rgba(29, 28, 35, 0.92)',
-
-  // Streak / progress
-  pipActive: raw.goldBright,
-  pipInactive: palette.dim,
-
-  // Gold alpha (for active cards on dark bg)
-  goldAlpha10: 'rgba(233, 186, 76, 0.10)',
-  goldAlpha15: 'rgba(233, 186, 76, 0.15)',
-  goldAlpha50: 'rgba(233, 186, 76, 0.50)',
-  goldGlow0: 'rgba(201, 150, 12, 0)',
-  goldGlow35: 'rgba(201, 150, 12, 0.35)',
-
-  // Mode bar colors (for game mode list)
-  modeRed: '#E05555',
-  modeGold: raw.goldBright,
-  modeBlue: raw.blue,
-  modeGreen: raw.greenBright,
-  modePurple: raw.purple,
+// ---- Light palette — warm parchment, classic Flag That ----
+const lightPalette = {
+  ink: '#1A1820',           // dark ink text
+  inkSecondary: '#5C5764',  // secondary text
+  gold: raw.gold,           // deeper gold for light bg
+  goldBright: raw.goldBright,
+  goldShadow: raw.goldShadow,
+  red: raw.red,             // standard red on light bg
+  redLight: raw.redLight,
+  muted: '#8A8494',         // tertiary text
+  dim: '#D5CFC6',           // dimmed elements on light bg
+  paper: '#F5EFE6',         // warm parchment background
+  paperDark: '#FFFFFF',     // white surface cards
+  raise: '#EDE7DE',         // secondary raised surface
+  white: raw.white,
+  black: raw.black,
+  green: raw.green,         // standard green on light bg
+  greenBright: raw.greenBright,
+  blue: raw.blue,
+  purple: raw.purple,
+  playText: '#130F00',      // dark text on gold CTA
 };
+
+// Keep backward-compat alias
+const palette = darkPalette;
+
+function buildColors(p: typeof darkPalette) {
+  return {
+    // Brand palette (direct access for commonly needed raw colors)
+    ink: p.ink,
+    red: p.red,
+    rule: p === darkPalette ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)',
+    ruleDark: p === darkPalette ? 'rgba(255,255,255,0.13)' : 'rgba(0,0,0,0.10)',
+    white: p.white,
+    black: p.black,
+    gold: p.gold,
+    goldBright: p.goldBright,
+    purple: p.purple,
+    dim: p.dim,
+
+    // Semantic roles
+    primary: p.ink,
+    primaryLight: p.paperDark,
+    accent: p.gold,
+    accentLight: p.goldBright,
+    success: p.green,
+    error: p.red,
+    warning: p.gold,
+    background: p.paper,
+    surface: p.paperDark,
+    surfaceSecondary: p.raise,
+    text: p.ink,
+    textSecondary: p.inkSecondary,
+    textTertiary: p.muted,
+    border: p === darkPalette ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)',
+    borderLight: p === darkPalette ? 'rgba(255,255,255,0.13)' : 'rgba(0,0,0,0.12)',
+    shadow: p === darkPalette ? 'rgba(0, 0, 0, 0.22)' : 'rgba(0, 0, 0, 0.10)',
+    overlay: 'rgba(0, 0, 0, 0.6)',
+    inkAlpha10: p === darkPalette ? 'rgba(238, 233, 226, 0.10)' : 'rgba(26, 24, 32, 0.08)',
+    playText: p.playText,
+
+    // Grade colors
+    gradeS: raw.goldBright,
+    gradeA: p === darkPalette ? raw.greenBright : raw.green,
+    gradeB: raw.blue,
+    gradeC: p.muted,
+    gradeD: p === darkPalette ? raw.redLight : raw.red,
+    gradeF: p.ink,
+
+    // Difficulty colors
+    diffEasy: p === darkPalette ? raw.greenBright : raw.green,
+    diffMedium: raw.goldBright,
+    diffHard: p === darkPalette ? raw.redLight : raw.red,
+    diffEasyBg: p === darkPalette ? 'rgba(61, 191, 128, 0.12)' : 'rgba(30, 143, 86, 0.10)',
+    diffEasyBorder: p === darkPalette ? 'rgba(61, 191, 128, 0.30)' : 'rgba(30, 143, 86, 0.25)',
+    diffMediumBg: 'rgba(233, 186, 76, 0.12)',
+    diffMediumBorder: p === darkPalette ? 'rgba(233, 186, 76, 0.40)' : 'rgba(154, 92, 10, 0.25)',
+    diffHardBg: p === darkPalette ? 'rgba(236, 102, 102, 0.12)' : 'rgba(196, 48, 48, 0.10)',
+    diffHardBorder: p === darkPalette ? 'rgba(236, 102, 102, 0.30)' : 'rgba(196, 48, 48, 0.25)',
+
+    // Translucent helpers
+    whiteAlpha15: p === darkPalette ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.06)',
+    whiteAlpha20: p === darkPalette ? 'rgba(255,255,255,0.20)' : 'rgba(0,0,0,0.08)',
+    whiteAlpha45: p === darkPalette ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.20)',
+    whiteAlpha50: p === darkPalette ? 'rgba(255,255,255,0.50)' : 'rgba(0,0,0,0.25)',
+    whiteAlpha60: p === darkPalette ? 'rgba(255,255,255,0.60)' : 'rgba(0,0,0,0.35)',
+    whiteAlpha70: p === darkPalette ? 'rgba(255,255,255,0.70)' : 'rgba(0,0,0,0.45)',
+
+    // Surface feedback
+    darkSurface: p === darkPalette ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.04)',
+    darkBorder: p === darkPalette ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
+    successOnDark: p === darkPalette ? 'rgba(61,191,128,0.15)' : 'rgba(30,143,86,0.10)',
+    successBorderOnDark: p === darkPalette ? 'rgba(61,191,128,0.35)' : 'rgba(30,143,86,0.25)',
+    successTextOnDark: p === darkPalette ? raw.greenBright : raw.green,
+    errorOnDark: p === darkPalette ? 'rgba(236,102,102,0.15)' : 'rgba(196,48,48,0.10)',
+    errorBorderOnDark: p === darkPalette ? 'rgba(236,102,102,0.35)' : 'rgba(196,48,48,0.25)',
+    errorTextOnDark: p === darkPalette ? raw.redLight : raw.red,
+
+    // Feedback backgrounds
+    successBg: p === darkPalette ? 'rgba(61, 191, 128, 0.12)' : 'rgba(30, 143, 86, 0.10)',
+    errorBg: p === darkPalette ? 'rgba(236, 102, 102, 0.12)' : 'rgba(196, 48, 48, 0.08)',
+    warningBg: 'rgba(233, 186, 76, 0.12)',
+    accentBg: 'rgba(233, 186, 76, 0.08)',
+
+    // Badge tier colors
+    tierBronze: '#C4884A',
+    tierSilver: '#A0A0A0',
+    tierGold: raw.goldBright,
+    tierPlatinum: '#8B8DFF',
+
+    // Nav
+    navBg: p === darkPalette ? 'rgba(21,20,26,0.97)' : 'rgba(245,239,230,0.97)',
+
+    // Map
+    mapBackground: p.paperDark,
+    mapZoomSurface: p === darkPalette ? 'rgba(29, 28, 35, 0.92)' : 'rgba(255, 255, 255, 0.92)',
+
+    // Streak / progress
+    pipActive: raw.goldBright,
+    pipInactive: p.dim,
+
+    // Gold alpha
+    goldAlpha10: 'rgba(233, 186, 76, 0.10)',
+    goldAlpha15: 'rgba(233, 186, 76, 0.15)',
+    goldAlpha50: 'rgba(233, 186, 76, 0.50)',
+    goldGlow0: 'rgba(201, 150, 12, 0)',
+    goldGlow35: 'rgba(201, 150, 12, 0.35)',
+
+    // Mode bar colors (for game mode list)
+    modeRed: '#E05555',
+    modeGold: raw.goldBright,
+    modeBlue: raw.blue,
+    modeGreen: raw.greenBright,
+    modePurple: raw.purple,
+  };
+}
+
+export const darkColors = buildColors(darkPalette);
+export const lightColors = buildColors(lightPalette);
+
+/** Color values type — use with useTheme() hook */
+export type ThemeColors = typeof darkColors;
+
+/** Theme mode preference */
+export type ThemeMode = 'light' | 'dark' | 'system';
+
+// Default export for backward compat (dark theme)
+export const colors = darkColors;
 
 export const spacing = {
   xxs: 2,
@@ -288,10 +328,10 @@ export const buttons = {
     fontSize: fontSize.xl,
     letterSpacing: 0.8,
     textTransform: 'uppercase' as const,
-    color: palette.playText,
+    color: darkPalette.playText,
   },
   secondary: {
-    backgroundColor: palette.paperDark,
+    backgroundColor: darkPalette.paperDark,
     paddingVertical: 16,
     paddingHorizontal: 24,
     alignItems: 'center' as const,
@@ -304,7 +344,7 @@ export const buttons = {
     fontSize: fontSize.xl,
     letterSpacing: 0.8,
     textTransform: 'uppercase' as const,
-    color: palette.inkSecondary,
+    color: darkPalette.inkSecondary,
   },
 };
 
@@ -335,7 +375,7 @@ export const layout = {
 /** Shared base style for full-screen containers with the app background. */
 export const screenContainer = {
   flex: 1 as const,
-  backgroundColor: palette.paper,
+  backgroundColor: darkPalette.paper,
 };
 
 export const shadows = {

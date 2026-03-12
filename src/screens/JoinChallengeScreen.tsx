@@ -12,7 +12,8 @@ import {
   Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, fontFamily, fontSize, buttons, borderRadius, screenContainer } from '../utils/theme';
+import { spacing, fontFamily, fontSize, buttons, borderRadius, ThemeColors } from '../utils/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types/navigation';
 import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName } from '../utils/challengeCode';
 import { hapticTap, hapticWrong } from '../utils/feedback';
@@ -25,6 +26,8 @@ import { getChallengeName, saveChallengeName } from '../utils/storage';
 type Props = NativeStackScreenProps<RootStackParamList, 'JoinChallenge'>;
 
 export default function JoinChallengeScreen({ route, navigation }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const onNavigate = useNavTabs();
   const initialCode = route.params?.code ?? '';
   const [code, setCode] = useState(initialCode);
@@ -169,8 +172,11 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: screenContainer,
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   content: {
     padding: spacing.lg,
     paddingTop: spacing.xxl,

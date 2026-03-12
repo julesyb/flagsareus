@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,8 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius, shadows, screenContainer } from '../utils/theme';
+import { spacing, typography, fontFamily, fontSize, buttons, borderRadius, shadows, ThemeColors } from '../utils/theme';
+import { useTheme } from '../contexts/ThemeContext';
 import {
   GameMode,
   DisplayMode,
@@ -47,13 +48,13 @@ const GUESS_LIMIT_OPTIONS = [3, 5, 0] as const; // 0 = unlimited
 type SetupMode = 'quiz' | 'flagflash' | 'flagpuzzle' | 'timeattack' | 'neighbors' | 'capitalconnection';
 type QuizDifficulty = 'easy' | 'medium' | 'hard';
 
-const SETUP_MODES: { key: SetupMode; labelKey: string; descKey: string; icon: (active: boolean) => React.ReactNode }[] = [
-  { key: 'quiz', labelKey: 'setup.quiz', descKey: 'setup.quizDesc', icon: (a) => <FlagIcon size={18} color={a ? colors.goldBright : colors.textTertiary} /> },
-  { key: 'flagflash', labelKey: 'setup.flagFlash', descKey: 'setup.flagFlashDesc', icon: (a) => <LightningIcon size={18} color={a ? colors.goldBright : colors.textTertiary} /> },
-  { key: 'flagpuzzle', labelKey: 'setup.flagPuzzle', descKey: 'setup.flagPuzzleDesc', icon: (a) => <PuzzleIcon size={18} color={a ? colors.goldBright : colors.textTertiary} /> },
-  { key: 'timeattack', labelKey: 'setup.timedQuiz', descKey: 'setup.timedQuizDesc', icon: (a) => <ClockIcon size={18} color={a ? colors.goldBright : colors.textTertiary} /> },
-  { key: 'neighbors', labelKey: 'setup.neighbors', descKey: 'setup.neighborsDesc', icon: (a) => <UsersIcon size={18} color={a ? colors.goldBright : colors.textTertiary} /> },
-  { key: 'capitalconnection', labelKey: 'setup.capitalQuiz', descKey: 'setup.capitalQuizDesc', icon: (a) => <LinkIcon size={18} color={a ? colors.goldBright : colors.textTertiary} /> },
+const SETUP_MODES: { key: SetupMode; labelKey: string; descKey: string; icon: (active: boolean, colors: ThemeColors) => React.ReactNode }[] = [
+  { key: 'quiz', labelKey: 'setup.quiz', descKey: 'setup.quizDesc', icon: (a, c) => <FlagIcon size={18} color={a ? c.goldBright : c.textTertiary} /> },
+  { key: 'flagflash', labelKey: 'setup.flagFlash', descKey: 'setup.flagFlashDesc', icon: (a, c) => <LightningIcon size={18} color={a ? c.goldBright : c.textTertiary} /> },
+  { key: 'flagpuzzle', labelKey: 'setup.flagPuzzle', descKey: 'setup.flagPuzzleDesc', icon: (a, c) => <PuzzleIcon size={18} color={a ? c.goldBright : c.textTertiary} /> },
+  { key: 'timeattack', labelKey: 'setup.timedQuiz', descKey: 'setup.timedQuizDesc', icon: (a, c) => <ClockIcon size={18} color={a ? c.goldBright : c.textTertiary} /> },
+  { key: 'neighbors', labelKey: 'setup.neighbors', descKey: 'setup.neighborsDesc', icon: (a, c) => <UsersIcon size={18} color={a ? c.goldBright : c.textTertiary} /> },
+  { key: 'capitalconnection', labelKey: 'setup.capitalQuiz', descKey: 'setup.capitalQuizDesc', icon: (a, c) => <LinkIcon size={18} color={a ? c.goldBright : c.textTertiary} /> },
 ];
 
 const DIFFICULTIES: { key: QuizDifficulty; labelKey: string }[] = [
@@ -65,6 +66,8 @@ const DIFFICULTIES: { key: QuizDifficulty; labelKey: string }[] = [
 
 
 export default function GameSetupScreen({ route, navigation }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const onNavigate = useNavTabs();
   const initialMode = route.params?.initialMode;
   const initialDifficulty = route.params?.initialDifficulty;
@@ -221,7 +224,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
                 accessibilityLabel={`${t(m.labelKey)}: ${t(m.descKey)}`}
               >
                 <View style={[styles.modeIconBadge, isActive && styles.modeIconBadgeActive]}>
-                  {m.icon(isActive)}
+                  {m.icon(isActive, colors)}
                 </View>
                 <Text style={[styles.modeLabel, isActive && styles.modeLabelActive]}>
                   {t(m.labelKey)}
@@ -446,8 +449,11 @@ export default function GameSetupScreen({ route, navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: screenContainer,
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   scrollView: {
     flex: 1,
   },

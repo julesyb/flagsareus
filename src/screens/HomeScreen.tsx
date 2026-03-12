@@ -11,7 +11,9 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { colors, fontFamily, fontSize, spacing, borderRadius, shadows, buttons, screenContainer } from '../utils/theme';
+import { fontFamily, fontSize, spacing, borderRadius, shadows, buttons } from '../utils/theme';
+import { useTheme } from '../contexts/ThemeContext';
+import { ThemeColors } from '../utils/theme';
 import { getTotalFlagCount, getCategoryCount } from '../data';
 import { initAudio, hapticTap, hapticCorrect, hapticWrong, playWrongSound, setSoundsEnabled, setHapticsEnabled } from '../utils/feedback';
 import { getStats, getDayStreak, getSettings, getMissedFlagIds, getBaselineData, BaselineData } from '../utils/storage';
@@ -41,6 +43,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 // ─── Flag Teaser (inline mini-quiz) ─────────────────────────
 function FlagTeaser({ onAnswer }: { onAnswer?: () => void }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const question = useMemo<GameQuestion | null>(() => {
     const qs = generateQuestions({ mode: 'medium', category: 'all', questionCount: 1, displayMode: 'flag' });
     return qs[0] ?? null;
@@ -135,6 +139,8 @@ function FlagTeaser({ onAnswer }: { onAnswer?: () => void }) {
 }
 
 export default function HomeScreen({ navigation }: Props) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const onNavigate = useNavTabs();
   const totalFlags = getTotalFlagCount();
   const [mode, setMode] = useState<GameMode>('medium');
@@ -454,8 +460,11 @@ export default function HomeScreen({ navigation }: Props) {
 }
 
 // ─── Styles ──────────────────────────────────────────────────
-const styles = StyleSheet.create({
-  container: screenContainer,
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   scroll: {
     flex: 1,
   },
