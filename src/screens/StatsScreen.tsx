@@ -18,7 +18,7 @@ import { ThemeColors, spacing, fontFamily, fontSize, borderRadius, typography } 
 import { useTheme } from '../contexts/ThemeContext';
 import { UserStats, CategoryId, BaselineRegionId } from '../types';
 import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getGameHistory, GameHistoryEntry, getChallengeHistory, ChallengeHistoryEntry, MASTERED_STREAK, getRegionScoreHistory, RegionScoreHistory } from '../utils/storage';
-import { getAllFlags, getTotalFlagCount } from '../data';
+import { getAllFlags, getTotalFlagCount, getCategoryCount } from '../data';
 
 import { t } from '../utils/i18n';
 import { FlagImageSmall } from '../components/FlagImage';
@@ -451,7 +451,7 @@ export default function StatsScreen() {
                   </View>
                   <TouchableOpacity
                     onPress={() => navigation.navigate('Game', {
-                      config: { mode: 'easy', category: id as CategoryId, questionCount: 10, displayMode: 'flag' },
+                      config: { mode: 'medium', category: id as CategoryId, questionCount: getCategoryCount(id as CategoryId), displayMode: 'flag' },
                     })}
                     activeOpacity={0.7}
                     style={styles.regionRetakeLink}
