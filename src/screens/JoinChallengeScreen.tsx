@@ -262,7 +262,7 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
                 disabled={!canPlay}
                 activeOpacity={0.7}
                 accessibilityRole="button"
-                accessibilityLabel={`Accept challenge from ${preview.hostName}`}
+                accessibilityLabel={t('a11y.acceptChallenge', { name: preview.hostName })}
                 accessibilityState={{ disabled: !canPlay }}
               >
                 <PlayIcon size={16} color={colors.playText} />

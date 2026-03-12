@@ -2,7 +2,8 @@ import { getAllFlags } from '../data';
 import { FlagItem, GameQuestion, GameMode } from '../types';
 import { shuffleArray } from './gameEngine';
 import { twinPairs } from '../data/countryAliases';
-import { APP_DOMAIN } from './config';
+import { APP_DOMAIN, MAX_CHALLENGE_FLAGS, MAX_CHALLENGE_NAME_LENGTH, SHORT_CODE_LENGTH, SPEED_FAST_MS, SPEED_MEDIUM_MS, SHARE_GRID_ROW_SIZE, EASY_CHOICE_COUNT, STANDARD_CHOICE_COUNT } from './config';
+import { t } from './i18n';
 
 /** Modes that support the challenge feature */
 export const CHALLENGE_MODES: GameMode[] = [
@@ -33,7 +34,7 @@ const INDEX_MODE = new Map(CHALLENGE_MODES.map((m, i) => [i, m]));
 
 /** Sanitize name for URL: keep alphanumeric + underscore, replace spaces */
 function sanitizeName(name: string): string {
-  return name.replace(/\s+/g, '_').replace(/[^A-Za-z0-9_]/g, '').slice(0, 15) || 'Player';
+  return name.replace(/\s+/g, '_').replace(/[^A-Za-z0-9_]/g, '').slice(0, MAX_CHALLENGE_NAME_LENGTH) || 'Player';
 }
 
 /**
@@ -41,7 +42,7 @@ function sanitizeName(name: string): string {
  * No base64 - the output goes directly into the URL path.
  */
 export function encodeChallenge(data: ChallengeData): string | null {
-  if (data.flagIds.length > 30) return null; // bit-packing limit
+  if (data.flagIds.length > MAX_CHALLENGE_FLAGS) return null; // bit-packing limit
   if (data.hostResults.length !== data.flagIds.length) return null;
   if (data.flagIds.some((id) => id.length !== 2)) return null;
   const modeIdx = MODE_INDEX.get(data.mode);
@@ -263,7 +264,7 @@ export function buildChallengeQuestions(flagIds: string[], mode: GameMode, diffi
     const needsOptions = !isHardMode && (mode === 'easy' || mode === 'medium' || mode === 'timeattack');
     let options: string[] = [];
     if (needsOptions) {
-      const choiceCount = effectiveDifficulty === 'easy' ? 2 : 4;
+      const choiceCount = effectiveDifficulty === 'easy' ? EASY_CHOICE_COUNT : STANDARD_CHOICE_COUNT;
       const otherFlags = allFlags.filter((f) => f.id !== flag.id);
       const twinNames = twinPairs[flag.name] || [];
       const twinFlags = otherFlags.filter((f) => twinNames.includes(f.name));
@@ -308,7 +309,7 @@ export function generateShortCode(data: ChallengeData): string {
   const seed = `${data.hostName}|${data.mode}|${data.flagIds.join('')}|${data.hostResults.map((r) => r.correct ? '1' : '0').join('')}`;
   let hash = simpleHash(seed);
   let code = '';
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < SHORT_CODE_LENGTH; i++) {
     code += CODE_CHARS[hash % CODE_CHARS.length];
     hash = simpleHash(code + seed.slice(i));
   }
@@ -333,15 +334,15 @@ export function generateChallengeShareCard(
   // Fast (<2s) = gold, Medium (<5s) = green, Slow (5s+) = white, Wrong = red
   const grid = results.map((r) => {
     if (!r.correct) return '\uD83D\uDFE5'; // red square
-    if (r.timeMs < 2000) return '\uD83D\uDFE8'; // yellow square (lightning fast)
-    if (r.timeMs < 5000) return '\uD83D\uDFE9'; // green square (solid)
+    if (r.timeMs < SPEED_FAST_MS) return '\uD83D\uDFE8'; // yellow square (lightning fast)
+    if (r.timeMs < SPEED_MEDIUM_MS) return '\uD83D\uDFE9'; // green square (solid)
     return '\u2B1C'; // white square (slow but correct)
   });
 
   // Split into rows of 5
   const rows: string[] = [];
-  for (let i = 0; i < grid.length; i += 5) {
-    rows.push(grid.slice(i, i + 5).join(''));
+  for (let i = 0; i < grid.length; i += SHARE_GRID_ROW_SIZE) {
+    rows.push(grid.slice(i, i + SHARE_GRID_ROW_SIZE).join(''));
   }
   const gridStr = rows.join('\n');
 
@@ -349,16 +350,12 @@ export function generateChallengeShareCard(
     ? Math.round(results.reduce((s, r) => s + r.timeMs, 0) / results.length / 100) / 10
     : 0;
 
-  const modeLabel = mode === 'easy' ? 'Easy'
-    : mode === 'medium' ? 'Medium'
-    : mode === 'hard' ? 'Hard'
-    : mode === 'timeattack' ? 'Time Attack'
-    : mode === 'flagpuzzle' ? 'Flag Puzzle'
-    : mode === 'neighbors' ? 'Neighbors'
-    : mode === 'capitalconnection' ? 'Capitals'
-    : mode;
+  const modeLabel = t(`modes.${mode}`);
+  const header = t('challenge.shareCardHeader', { mode: modeLabel, correct, total });
+  const avg = t('challenge.shareCardAvg', { time: avgTime });
+  const cta = t('challenge.shareCardCta', { name: hostName });
 
-  return `Flag That ${modeLabel} ${correct}/${total}\n${avgTime}s avg\n\n${gridStr}\n\nThink you can beat ${hostName}?\n${challengeUrl}`;
+  return `${header}\n${avg}\n\n${gridStr}\n\n${cta}\n${challengeUrl}`;
 }
 
 // ── Base64 helpers (for legacy V1/V2 decoding only) ──

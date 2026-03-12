@@ -878,7 +878,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
           activeOpacity={1}
           onPress={() => setShowChallengeModal(false)}
           accessibilityRole="button"
-          accessibilityLabel="Close dialog"
+          accessibilityLabel={t('common.closeDialog')}
         >
           <TouchableOpacity activeOpacity={1} style={styles.modalCard} onPress={() => {}}>
             <Text style={styles.modalTitle}>{t('challenge.enterName')}</Text>

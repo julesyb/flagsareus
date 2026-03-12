@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserStats, GameMode, CategoryId, GameResult, BaselineRegionId } from '../types';
+import { MS_PER_DAY } from './config';
 
 const STATS_KEY = '@flagsareus_stats';
 const FLAG_STATS_KEY = '@flagsareus_flag_stats';
@@ -283,7 +284,7 @@ export async function getDayStreakInfo(): Promise<DayStreakInfo> {
     const today = getTodayDate();
     if (lastDate === today) return { current: streak, best: bestStreak };
     const diffDays = Math.round(
-      (new Date(today + 'T00:00:00').getTime() - new Date(lastDate + 'T00:00:00').getTime()) / 86400000,
+      (new Date(today + 'T00:00:00').getTime() - new Date(lastDate + 'T00:00:00').getTime()) / MS_PER_DAY,
     );
     return { current: diffDays === 1 ? streak : 0, best: bestStreak };
   } catch {
@@ -302,7 +303,7 @@ async function recordDayPlayed(): Promise<number> {
       best = data.best || data.streak || 0;
       if (data.lastDate === today) return data.streak;
       const diffDays = Math.round(
-        (new Date(today + 'T00:00:00').getTime() - new Date(data.lastDate + 'T00:00:00').getTime()) / 86400000,
+        (new Date(today + 'T00:00:00').getTime() - new Date(data.lastDate + 'T00:00:00').getTime()) / MS_PER_DAY,
       );
       if (diffDays === 1) streak = data.streak + 1;
     }

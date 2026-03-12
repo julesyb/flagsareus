@@ -216,7 +216,7 @@ export default function HomeScreen({ navigation }: Props) {
             activeOpacity={0.7}
             accessibilityRole="button"
             accessibilityLabel={`${dayStreak} ${t('home.dayStreak')}`}
-            accessibilityHint="Opens your stats"
+            accessibilityHint={t('a11y.opensStats')}
           >
             <FlameIcon size={16} color={dayStreak > 0 ? colors.goldBright : colors.textTertiary} />
             <Text style={[styles.streakNum, dayStreak === 0 && styles.streakNumInactive]}>{dayStreak}</Text>
@@ -250,7 +250,7 @@ export default function HomeScreen({ navigation }: Props) {
                   active={!questionCountAll && questionCount === c}
                   onPress={() => { setQuestionCount(c); setQuestionCountAll(false); }}
                   maxWidth={54}
-                  accessibilityLabel={`${c} cards`}
+                  accessibilityLabel={t('common.nCards', { n: c })}
                 />
               ))}
               <SegBtn
@@ -258,7 +258,7 @@ export default function HomeScreen({ navigation }: Props) {
                 active={questionCountAll}
                 onPress={() => setQuestionCountAll(true)}
                 maxWidth={54}
-                accessibilityLabel="All cards"
+                accessibilityLabel={t('common.allCards')}
               />
             </ConfigRow>
             <ConfigRow label={t('home.difficulty')}>
@@ -298,7 +298,7 @@ export default function HomeScreen({ navigation }: Props) {
         <View style={styles.sectionWrap}>
           <View style={styles.sectionHead}>
             <Text style={styles.sectionLbl}>{t('home.gameModes')}</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('GameSetup')} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="See all game modes">
+            <TouchableOpacity onPress={() => navigation.navigate('GameSetup')} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={t('common.seeAllModes')}>
               <Text style={styles.sectionAll}>{t('common.all')}</Text>
             </TouchableOpacity>
           </View>
@@ -315,7 +315,7 @@ export default function HomeScreen({ navigation }: Props) {
               }}
               accessibilityRole="button"
               accessibilityLabel={`Play ${t('home.timedQuiz')}`}
-              accessibilityHint="Opens this game mode"
+              accessibilityHint={t('a11y.opensMode')}
             >
               <View style={[styles.modeBar, { backgroundColor: colors.modeRed }]} />
               <Text style={styles.modeTitle}>{t('home.timedQuiz')}</Text>
@@ -334,7 +334,7 @@ export default function HomeScreen({ navigation }: Props) {
               }}
               accessibilityRole="button"
               accessibilityLabel={`Play ${t('home.flagImpostor')}`}
-              accessibilityHint="Opens this game mode"
+              accessibilityHint={t('a11y.opensMode')}
             >
               <View style={[styles.modeBar, { backgroundColor: colors.modeGreen }]} />
               <Text style={styles.modeTitle}>{t('home.flagImpostor')}</Text>
@@ -353,7 +353,7 @@ export default function HomeScreen({ navigation }: Props) {
               }}
               accessibilityRole="button"
               accessibilityLabel={`Play ${t('setup.flagPuzzle')}`}
-              accessibilityHint="Opens this game mode"
+              accessibilityHint={t('a11y.opensMode')}
             >
               <View style={[styles.modeBar, { backgroundColor: colors.modePurple }]} />
               <Text style={styles.modeTitle}>{t('setup.flagPuzzle')}</Text>
@@ -373,7 +373,7 @@ export default function HomeScreen({ navigation }: Props) {
                 }}
                 accessibilityRole="button"
                 accessibilityLabel={`Play ${t('home.practiceWeak')}`}
-                accessibilityHint="Opens practice mode for flags you have missed"
+                accessibilityHint={t('a11y.opensPractice')}
               >
                 <View style={[styles.modeBar, { backgroundColor: colors.modeRed }]} />
                 <Text style={[styles.modeTitle, { color: colors.red }]}>{t('home.practiceWeak')}</Text>
@@ -425,7 +425,7 @@ export default function HomeScreen({ navigation }: Props) {
                 }}
                 accessibilityRole="button"
                 accessibilityLabel={`Start ${t(`categories.${nextRegion}`)} knowledge test`}
-                accessibilityHint="Begins the knowledge test for this region"
+                accessibilityHint={t('a11y.beginsBaseline')}
               >
                 <Text style={styles.onboardingCtaText}>{t(`categories.${nextRegion}`)}</Text>
                 <ChevronRightIcon size={14} color={colors.playText} />
