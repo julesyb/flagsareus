@@ -277,6 +277,7 @@ export default function HomeScreen({ navigation }: Props) {
                   active={mode === m}
                   onPress={() => setMode(m)}
                   maxWidth={54}
+                  accessibilityLabel={`${t('home.difficulty')}: ${t(`common.${m}`)}`}
                 />
               ))}
             </ConfigRow>
@@ -287,12 +288,14 @@ export default function HomeScreen({ navigation }: Props) {
                   active={!autocomplete}
                   onPress={() => setAutocomplete(false)}
                   maxWidth={54}
+                  accessibilityLabel={`${t('home.hints')}: ${t('common.off')}`}
                 />
                 <SegBtn
                   label={t('common.on')}
                   active={autocomplete}
                   onPress={() => setAutocomplete(true)}
                   maxWidth={54}
+                  accessibilityLabel={`${t('home.hints')}: ${t('common.on')}`}
                 />
               </ConfigRow>
             )}

@@ -262,16 +262,16 @@ export default function GameSetupScreen({ route, navigation }: Props) {
           {/* Autocomplete (only for Hard quiz - first row, no divider above) */}
           {isQuiz && difficulty === 'hard' && (
             <ConfigRow label={t('home.hints')}>
-              <SegBtn label={t('common.off')} active={!autocomplete} onPress={() => setAutocomplete(false)} />
-              <SegBtn label={t('common.on')} active={autocomplete} onPress={() => setAutocomplete(true)} />
+              <SegBtn label={t('common.off')} active={!autocomplete} onPress={() => setAutocomplete(false)} accessibilityLabel={`${t('home.hints')}: ${t('common.off')}`} />
+              <SegBtn label={t('common.on')} active={autocomplete} onPress={() => setAutocomplete(true)} accessibilityLabel={`${t('home.hints')}: ${t('common.on')}`} />
             </ConfigRow>
           )}
 
           {/* Display Mode (flag or map) */}
           {showMapToggle && (
             <ConfigRow label={t('setup.display')}>
-              <SegBtn label={t('setup.displayFlag')} active={displayMode === 'flag'} onPress={() => setDisplayMode('flag')} />
-              <SegBtn label={t('setup.displayMap')} active={displayMode === 'map'} onPress={() => setDisplayMode('map')} />
+              <SegBtn label={t('setup.displayFlag')} active={displayMode === 'flag'} onPress={() => setDisplayMode('flag')} accessibilityLabel={`${t('setup.display')}: ${t('setup.displayFlag')}`} />
+              <SegBtn label={t('setup.displayMap')} active={displayMode === 'map'} onPress={() => setDisplayMode('map')} accessibilityLabel={`${t('setup.display')}: ${t('setup.displayMap')}`} />
             </ConfigRow>
           )}
 
@@ -284,6 +284,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
                   label={v === 0 ? t('setup.unlimited') : String(v)}
                   active={guessLimit === v}
                   onPress={() => setGuessLimit(v)}
+                  accessibilityLabel={v === 0 ? `${t('setup.lives')}: ${t('setup.unlimited')}` : `${t('setup.lives')}: ${v}`}
                 />
               ))}
             </ConfigRow>
@@ -298,6 +299,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
                   label={t('setup.timeSuffix', { t: seconds })}
                   active={timeLimit === seconds}
                   onPress={() => setTimeLimit(seconds)}
+                  accessibilityLabel={`${t('setup.timeLimit')}: ${seconds} seconds`}
                 />
               ))}
             </ConfigRow>
@@ -312,12 +314,14 @@ export default function GameSetupScreen({ route, navigation }: Props) {
                   label={String(count)}
                   active={!questionCountAll && questionCount === count}
                   onPress={() => { setQuestionCount(count); setQuestionCountAll(false); }}
+                  accessibilityLabel={`${count} questions`}
                 />
               ))}
               <SegBtn
                 label={t('common.all')}
                 active={questionCountAll}
                 onPress={() => setQuestionCountAll(true)}
+                accessibilityLabel="All questions"
               />
             </ConfigRow>
           )}
@@ -331,12 +335,14 @@ export default function GameSetupScreen({ route, navigation }: Props) {
                   label={String(count)}
                   active={!questionCountAll && questionCount === count}
                   onPress={() => { setQuestionCount(count); setQuestionCountAll(false); }}
+                  accessibilityLabel={`${count} questions`}
                 />
               ))}
               <SegBtn
                 label={t('common.all')}
                 active={questionCountAll}
                 onPress={() => setQuestionCountAll(true)}
+                accessibilityLabel="All questions"
               />
             </ConfigRow>
           )}
