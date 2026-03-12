@@ -26,6 +26,15 @@ export function HomeIcon({ size = 16, color, strokeWidth = 1.5, filled = false }
   );
 }
 
+// Flame — streak indicator (based on Material "whatshot" silhouette)
+export function FlameIcon({ size = 16, color }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+      <Path d="M13.5 0.67C13.5 0.67 14.24 3.32 14.24 5.47C14.24 7.53 12.89 9.2 10.83 9.2C8.76 9.2 7.2 7.53 7.2 5.47L7.23 5.11C5.21 7.51 4 10.62 4 14C4 18.42 7.58 22 12 22C16.42 22 20 18.42 20 14C20 8.61 17.41 3.8 13.5 0.67Z" />
+    </Svg>
+  );
+}
+
 // Lightning bolt — Quick Play / action icon
 export function LightningIcon({ size = 18, color, strokeWidth = 1.5, filled = false }: IconProps) {
   return (
@@ -262,6 +271,7 @@ export function BadgeIconView({ icon, size = 18, color }: BadgeIconViewProps) {
     case 'check': return <CheckIcon size={size} color={color} />;
     case 'play': return <PlayIcon size={size} color={color} />;
     case 'lightning': return <LightningIcon size={size} color={color} />;
+    case 'flame': return <FlameIcon size={size} color={color} />;
     case 'calendar': return <CalendarIcon size={size} color={color} />;
     case 'clock': return <ClockIcon size={size} color={color} />;
     case 'crosshair': return <CrosshairIcon size={size} color={color} />;

@@ -20,7 +20,7 @@ import { getStats, getDayStreak, getSettings, getMissedFlagIds, getBaselineData,
 import { generateQuestions } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion, CategoryId } from '../types';
-import { PlayIcon, ChevronRightIcon, ChevronDownIcon, ClockIcon, EyeIcon, CrosshairIcon, GearIcon, PuzzleIcon, CheckIcon } from '../components/Icons';
+import { PlayIcon, ChevronRightIcon, ChevronDownIcon, ClockIcon, EyeIcon, CrosshairIcon, PuzzleIcon, CheckIcon, FlameIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
@@ -210,36 +210,22 @@ export default function HomeScreen({ navigation }: Props) {
             <Text style={styles.wmFlag}>Flag</Text>
             <Text style={styles.wmThat}>That</Text>
           </Text>
-          {dayStreak > 0 ? (
-            <TouchableOpacity
-              style={styles.streakBadge}
-              onPress={() => navigation.navigate('Stats')}
-              activeOpacity={0.7}
-              accessibilityRole="button"
-              accessibilityLabel={`${dayStreak} ${t('home.dayStreak')}`}
-              accessibilityHint="Opens your stats"
-            >
-              <Text style={styles.streakNum}>{dayStreak}</Text>
-              <View style={styles.streakMeta}>
-                <Text style={styles.streakLabel}>{t('home.dayStreak')}</Text>
-                <View style={styles.streakPips}>
-                  {Array.from({ length: 7 }).map((_, i) => (
-                    <View key={i} style={[styles.pip, i < Math.min(dayStreak, 7) && styles.pipLit]} />
-                  ))}
-                </View>
-              </View>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.settingsBtn}
-              onPress={() => navigation.navigate('Settings')}
-              activeOpacity={0.6}
-              accessibilityRole="button"
-              accessibilityLabel="Settings"
-            >
-              <GearIcon size={20} color={colors.textTertiary} />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity
+            style={styles.streakBadge}
+            onPress={() => navigation.navigate('Stats')}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={`${dayStreak} ${t('home.dayStreak')}`}
+            accessibilityHint="Opens your stats"
+          >
+            <FlameIcon size={16} color={dayStreak > 0 ? colors.goldBright : colors.textTertiary} />
+            <Text style={[styles.streakNum, dayStreak === 0 && styles.streakNumInactive]}>{dayStreak}</Text>
+            <View style={styles.streakPips}>
+              {Array.from({ length: 7 }).map((_, i) => (
+                <View key={i} style={[styles.pip, i < Math.min(dayStreak, 7) && styles.pipLit]} />
+              ))}
+            </View>
+          </TouchableOpacity>
         </View>
 
         {/* ── FLAG TEASER ── */}
@@ -526,7 +512,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 9,
+    gap: 6,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     paddingLeft: spacing.sm + 2,
@@ -542,20 +528,13 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     letterSpacing: -0.8,
     lineHeight: 22,
   },
-  streakMeta: {
-    gap: 3,
-  },
-  streakLabel: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
-    letterSpacing: 0.9,
-    textTransform: 'uppercase',
+  streakNumInactive: {
     color: colors.textTertiary,
-    lineHeight: 10,
   },
   streakPips: {
     flexDirection: 'row',
     gap: 3,
+    marginLeft: 2,
   },
   pip: {
     width: 6,
@@ -565,9 +544,6 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   },
   pipLit: {
     backgroundColor: colors.pipActive,
-  },
-  settingsBtn: {
-    padding: spacing.sm,
   },
 
   // ── Onboarding progress
