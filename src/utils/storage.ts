@@ -307,19 +307,6 @@ export interface DailyChallengeData {
   score: number;
 }
 
-export async function getDailyChallenge(): Promise<DailyChallengeData | null> {
-  try {
-    const json = await AsyncStorage.getItem(DAILY_CHALLENGE_KEY);
-    if (!json) return null;
-    const data = JSON.parse(json);
-    const today = getTodayDate();
-    if (data.date !== today) return null;
-    return data;
-  } catch {
-    return null;
-  }
-}
-
 export async function saveDailyChallenge(results: GameResult[]): Promise<void> {
   try {
     const score = results.filter((r) => r.correct).length;
@@ -354,7 +341,7 @@ export interface DailyLogEntry {
 
 export type DailyLog = Record<string, DailyLogEntry>;
 
-export async function getDailyLog(): Promise<DailyLog> {
+async function getDailyLog(): Promise<DailyLog> {
   try {
     const json = await AsyncStorage.getItem(DAILY_LOG_KEY);
     if (json) return JSON.parse(json);

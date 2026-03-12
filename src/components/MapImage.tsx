@@ -1,13 +1,13 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, useWindowDimensions, StyleProp, ViewStyle } from 'react-native';
 import { Image } from 'expo-image';
-import { colors, fontFamily, fontSize, borderRadius } from '../utils/theme';
+import { colors, fontFamily, fontSize, borderRadius, shadows } from '../utils/theme';
 import { countryCoordinates } from '../data/countryCoordinates';
 
 interface MapImageProps {
   countryCode: string;
   size?: 'small' | 'medium' | 'large' | 'hero';
-  style?: object;
+  style?: StyleProp<ViewStyle>;
 }
 
 // CartoDB Positron no-labels — simple country outlines
@@ -236,16 +236,12 @@ export default function MapImage({ countryCode, size = 'hero', style }: MapImage
   );
 }
 
-export function MapImageSmall({ countryCode }: { countryCode: string }) {
-  return <MapImage countryCode={countryCode} size="small" />;
-}
-
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
     backgroundColor: colors.mapBackground,
     borderWidth: 1,
-    borderColor: colors.rule2,
+    borderColor: colors.ruleDark,
     borderRadius: borderRadius.sm,
   },
   fallback: {
@@ -253,7 +249,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.rule2,
+    borderColor: colors.ruleDark,
     borderRadius: borderRadius.sm,
   },
   fallbackText: {
@@ -272,11 +268,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
     borderWidth: 3,
     borderColor: colors.white,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 6,
+    ...shadows.small,
   },
   pinPoint: {
     width: 0,
@@ -302,7 +294,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.rule2,
+    borderColor: colors.ruleDark,
     borderRadius: borderRadius.sm,
   },
   zoomText: {

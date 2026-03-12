@@ -12,7 +12,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fontFamily, fontSize, spacing, borderRadius, shadows } from '../utils/theme';
+import { colors, fontFamily, fontSize, spacing, borderRadius, shadows, buttons, screenContainer } from '../utils/theme';
 import { getTotalFlagCount, getCategoryCount } from '../data';
 import { initAudio, hapticTap, hapticCorrect, hapticWrong, playWrongSound, setSoundsEnabled, setHapticsEnabled } from '../utils/feedback';
 import { getStats, getDayStreak, getSettings, getMissedFlagIds, getBaselineData, BaselineData } from '../utils/storage';
@@ -23,6 +23,7 @@ import { PlayIcon, ChevronRightIcon, ChevronDownIcon, ClockIcon, EyeIcon, Crossh
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
+import SegBtn from '../components/SegBtn';
 import { useNavTabs } from '../hooks/useNavTabs';
 import SupportCard from '../components/SupportCard';
 import { preloadRewardedAd } from '../utils/ads';
@@ -76,12 +77,11 @@ function FlagTeaser() {
   };
 
   return (
-    <View style={s.heroCard}>
-      <Text style={s.heroLabel}>{t('home.nameThisFlag')}</Text>
-      <View style={s.flagWrap}>
+    <View style={styles.heroCard}>
+      <Text style={styles.heroLabel}>{t('home.nameThisFlag')}</Text>
+      <View style={styles.flagWrap}>
         <FlagImage
           countryCode={question.flag.id}
-          emoji={question.flag.emoji}
           size="hero"
           style={{ width: '100%' }}
         />
@@ -89,8 +89,8 @@ function FlagTeaser() {
 
       {/* Options 2x2 */}
       {!picked ? (
-        <View style={s.optsGrid}>
-          <View style={s.optsRow}>
+        <View style={styles.optsGrid}>
+          <View style={styles.optsRow}>
             {question.options.slice(0, 2).map((opt, i) => {
               const isCorrect = opt === question.flag.name;
               const isSelected = picked === opt;
@@ -100,23 +100,23 @@ function FlagTeaser() {
                 <Animated.View
                   key={opt}
                   style={[
-                    s.optWrap,
+                    styles.optWrap,
                     { opacity: optAnims[i], transform: [{ scale: optAnims[i].interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) }] },
                   ]}
                 >
                   <TouchableOpacity
-                    style={[s.optBtn, showCorrect && s.optCorrect, showWrong && s.optWrong]}
+                    style={[styles.optBtn, showCorrect && styles.optCorrect, showWrong && styles.optWrong]}
                     onPress={() => handlePick(opt)}
                     activeOpacity={0.8}
                     disabled={picked !== null}
                   >
-                    <Text style={[s.optText, showCorrect && s.optTextCorrect, showWrong && s.optTextWrong]}>{translateName(opt)}</Text>
+                    <Text style={[styles.optText, showCorrect && styles.optTextCorrect, showWrong && styles.optTextWrong]}>{translateName(opt)}</Text>
                   </TouchableOpacity>
                 </Animated.View>
               );
             })}
           </View>
-          <View style={s.optsRow}>
+          <View style={styles.optsRow}>
             {question.options.slice(2, 4).map((opt, i) => {
               const idx = i + 2;
               const isCorrect = opt === question.flag.name;
@@ -127,17 +127,17 @@ function FlagTeaser() {
                 <Animated.View
                   key={opt}
                   style={[
-                    s.optWrap,
+                    styles.optWrap,
                     { opacity: optAnims[idx], transform: [{ scale: optAnims[idx].interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) }] },
                   ]}
                 >
                   <TouchableOpacity
-                    style={[s.optBtn, showCorrect && s.optCorrect, showWrong && s.optWrong]}
+                    style={[styles.optBtn, showCorrect && styles.optCorrect, showWrong && styles.optWrong]}
                     onPress={() => handlePick(opt)}
                     activeOpacity={0.8}
                     disabled={picked !== null}
                   >
-                    <Text style={[s.optText, showCorrect && s.optTextCorrect, showWrong && s.optTextWrong]}>{translateName(opt)}</Text>
+                    <Text style={[styles.optText, showCorrect && styles.optTextCorrect, showWrong && styles.optTextWrong]}>{translateName(opt)}</Text>
                   </TouchableOpacity>
                 </Animated.View>
               );
@@ -145,12 +145,12 @@ function FlagTeaser() {
           </View>
         </View>
       ) : (
-        <View style={s.teaserResult}>
-          <Text style={[s.teaserResultText, picked === question.flag.name ? s.teaserResultCorrect : s.teaserResultWrong]}>
+        <View style={styles.teaserResult}>
+          <Text style={[styles.teaserResultText, picked === question.flag.name ? styles.teaserResultCorrect : styles.teaserResultWrong]}>
             {picked === question.flag.name ? t('common.correct') : flagName(question.flag)}
           </Text>
           <TouchableOpacity
-            style={[s.teaserPlayBtn, picked === question.flag.name ? s.teaserPlayBtnCorrect : s.teaserPlayBtnWrong]}
+            style={[styles.teaserPlayBtn, picked === question.flag.name ? styles.teaserPlayBtnCorrect : styles.teaserPlayBtnWrong]}
             onPress={() => {
               hapticTap();
               navigation.navigate('Game', {
@@ -159,7 +159,7 @@ function FlagTeaser() {
             }}
             activeOpacity={0.85}
           >
-            <Text style={s.teaserPlayText}>{t('home.keepPlaying')}</Text>
+            <Text style={styles.teaserPlayText}>{t('home.keepPlaying')}</Text>
             <ChevronRightIcon size={14} color={colors.white} />
           </TouchableOpacity>
         </View>
@@ -185,8 +185,8 @@ export default function HomeScreen({ navigation }: Props) {
     initAudio();
     preloadRewardedAd();
     getSettings().then((s) => {
-      setSoundsEnabled(s.soundEnabled);
-      setHapticsEnabled(s.hapticsEnabled);
+      setSoundsEnabled(styles.soundEnabled);
+      setHapticsEnabled(styles.hapticsEnabled);
     });
   }, []);
 
@@ -214,51 +214,56 @@ export default function HomeScreen({ navigation }: Props) {
 
 
   return (
-    <SafeAreaView style={s.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
 
-      <ScrollView style={s.scroll} contentContainerStyle={s.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <ScreenContainer>
         {/* ── HEADER ── */}
-        <View style={s.header}>
-          <View style={s.wordmark}>
-            <Text style={s.wmLine1}>Flag</Text>
-            <Text style={s.wmLine2}>That</Text>
-          </View>
-          <View style={s.headerRight}>
-            {dayStreak > 0 ? (
-              <>
-                <Text style={s.streakVal}>{dayStreak}</Text>
-                <Text style={s.streakLbl}>{t('home.dayStreak')}</Text>
-              </>
-            ) : (
-              <>
-                <Text style={s.streakVal}>{totalFlags}</Text>
-                <Text style={s.streakLblMuted}>{t('home.countries')}</Text>
-              </>
-            )}
-          </View>
-          <TouchableOpacity
-            style={s.settingsBtn}
-            onPress={() => navigation.navigate('Settings')}
-            activeOpacity={0.6}
-          >
-            <GearIcon size={20} color={colors.textTertiary} />
-          </TouchableOpacity>
+        <View style={styles.header}>
+          <Text style={styles.wordmark}>
+            <Text style={styles.wmFlag}>Flag</Text>
+            <Text style={styles.wmThat}>That</Text>
+          </Text>
+          {dayStreak > 0 ? (
+            <TouchableOpacity
+              style={styles.streakBadge}
+              onPress={() => navigation.navigate('Stats')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.streakNum}>{dayStreak}</Text>
+              <View style={styles.streakMeta}>
+                <Text style={styles.streakLabel}>{t('home.dayStreak')}</Text>
+                <View style={styles.streakPips}>
+                  {Array.from({ length: 7 }).map((_, i) => (
+                    <View key={i} style={[styles.pip, i < Math.min(dayStreak, 7) && styles.pipLit]} />
+                  ))}
+                </View>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.settingsBtn}
+              onPress={() => navigation.navigate('Settings')}
+              activeOpacity={0.6}
+            >
+              <GearIcon size={20} color={colors.textTertiary} />
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* ── ONBOARDING PROGRESS ── */}
         {!onboardingComplete && (
-          <View style={s.onboardingWrap}>
-            <View style={s.onboardingTop}>
-              <View style={s.onboardingTopLeft}>
-                <Text style={s.onboardingTitle}>{t('onboarding.baselineProgress')}</Text>
-                <Text style={s.onboardingCount}>
+          <View style={styles.onboardingWrap}>
+            <View style={styles.onboardingTop}>
+              <View style={styles.onboardingTopLeft}>
+                <Text style={styles.onboardingTitle}>{t('onboarding.baselineProgress')}</Text>
+                <Text style={styles.onboardingCount}>
                   {t('onboarding.regionsComplete', { count: onboardingCount, total: ONBOARDING_REGIONS.length })}
                 </Text>
               </View>
               <TouchableOpacity
-                style={s.onboardingCta}
+                style={styles.onboardingCta}
                 activeOpacity={0.85}
                 onPress={() => {
                   hapticTap();
@@ -268,23 +273,23 @@ export default function HomeScreen({ navigation }: Props) {
                   });
                 }}
               >
-                <Text style={s.onboardingCtaText}>{t(`categories.${nextRegion}`)}</Text>
+                <Text style={styles.onboardingCtaText}>{t(`categories.${nextRegion}`)}</Text>
                 <ChevronRightIcon size={14} color={colors.white} />
               </TouchableOpacity>
             </View>
-            <View style={s.onboardingBarRow}>
-              <View style={s.onboardingBar}>
+            <View style={styles.onboardingBarRow}>
+              <View style={styles.onboardingBar}>
                 <Animated.View
                   style={[
-                    s.onboardingBarFill,
+                    styles.onboardingBarFill,
                     { width: `${(onboardingCount / ONBOARDING_REGIONS.length) * 100}%` },
                   ]}
                 />
               </View>
-              <Text style={s.onboardingMotivation}>{t('onboarding.baselineMotivation')}</Text>
+              <Text style={styles.onboardingMotivation}>{t('onboarding.baselineMotivation')}</Text>
             </View>
             {/* Region chips */}
-            <View style={s.onboardingChips}>
+            <View style={styles.onboardingChips}>
               {ONBOARDING_REGIONS.map((r) => {
                 const result = baseline?.regions[r];
                 const isDone = !!result;
@@ -292,8 +297,8 @@ export default function HomeScreen({ navigation }: Props) {
                   <TouchableOpacity
                     key={r}
                     style={[
-                      s.onboardingChip,
-                      isDone ? s.onboardingChipDone : s.onboardingChipPending,
+                      styles.onboardingChip,
+                      isDone ? styles.onboardingChipDone : styles.onboardingChipPending,
                     ]}
                     activeOpacity={isDone ? 1 : 0.7}
                     disabled={isDone}
@@ -307,12 +312,12 @@ export default function HomeScreen({ navigation }: Props) {
                   >
                     {isDone && <CheckIcon size={10} color={colors.success} />}
                     <Text style={[
-                      s.onboardingChipText,
-                      isDone ? s.onboardingChipTextDone : s.onboardingChipTextPending,
+                      styles.onboardingChipText,
+                      isDone ? styles.onboardingChipTextDone : styles.onboardingChipTextPending,
                     ]}>
                       {t(`categories.${r}`)}
                     </Text>
-                    {isDone && <Text style={s.onboardingChipPct}>{result!.accuracy}%</Text>}
+                    {isDone && <Text style={styles.onboardingChipPct}>{result!.accuracy}%</Text>}
                   </TouchableOpacity>
                 );
               })}
@@ -324,75 +329,68 @@ export default function HomeScreen({ navigation }: Props) {
         <FlagTeaser key={teaserKey} />
 
         {/* ── PLAY NOW ── */}
-        <View style={s.playWrap}>
-          <TouchableOpacity style={s.playBtn} onPress={play} activeOpacity={0.85}>
-            <View style={s.playBolt}>
-              <PlayIcon size={14} color={colors.white} />
-            </View>
-            <Text style={s.playBtnText}>{t('home.playNow')}</Text>
+        <View style={styles.playWrap}>
+          <TouchableOpacity style={styles.playBtn} onPress={play} activeOpacity={0.85}>
+            <Text style={styles.playBtnText}>{t('home.playNow')}</Text>
+            <PlayIcon size={14} color={colors.white} />
           </TouchableOpacity>
         </View>
 
         {/* ── CONFIG ── */}
-        <View style={s.configCard}>
-          <View style={s.configRow}>
-            <Text style={s.configLbl}>{t('home.cards')}</Text>
-            <View style={s.segRow}>
+        <View style={styles.configCard}>
+          <View style={styles.configRow}>
+            <Text style={styles.configLbl}>{t('home.cards')}</Text>
+            <View style={styles.segRow}>
               {QUESTION_COUNTS.map((c) => (
-                <TouchableOpacity
+                <SegBtn
                   key={c}
-                  style={[s.segBtn, !questionCountAll && questionCount === c && s.segBtnOn]}
-                  onPress={() => { hapticTap(); setQuestionCount(c); setQuestionCountAll(false); }}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[s.segBtnText, !questionCountAll && questionCount === c && s.segBtnTextOn]}>{c}</Text>
-                </TouchableOpacity>
+                  label={String(c)}
+                  active={!questionCountAll && questionCount === c}
+                  onPress={() => { setQuestionCount(c); setQuestionCountAll(false); }}
+                  maxWidth={54}
+                />
               ))}
-              <TouchableOpacity
-                style={[s.segBtn, questionCountAll && s.segBtnOn]}
-                onPress={() => { hapticTap(); setQuestionCountAll(true); }}
-                activeOpacity={0.7}
-              >
-                <Text style={[s.segBtnText, questionCountAll && s.segBtnTextOn]}>{t('common.all')}</Text>
-              </TouchableOpacity>
+              <SegBtn
+                label={t('common.all')}
+                active={questionCountAll}
+                onPress={() => setQuestionCountAll(true)}
+                maxWidth={54}
+              />
             </View>
           </View>
-          <View style={s.configDivider} />
-          <View style={s.configRow}>
-            <Text style={s.configLbl}>{t('home.difficulty')}</Text>
-            <View style={s.segRow}>
+          <View style={styles.configDivider} />
+          <View style={styles.configRow}>
+            <Text style={styles.configLbl}>{t('home.difficulty')}</Text>
+            <View style={styles.segRow}>
               {MODE_KEYS.map((m) => (
-                <TouchableOpacity
+                <SegBtn
                   key={m}
-                  style={[s.segBtn, mode === m && s.segBtnOn]}
-                  onPress={() => { hapticTap(); setMode(m); }}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[s.segBtnText, mode === m && s.segBtnTextOn]}>{t(`common.${m}`)}</Text>
-                </TouchableOpacity>
+                  label={t(`common.${m}`)}
+                  active={mode === m}
+                  onPress={() => setMode(m)}
+                  maxWidth={54}
+                />
               ))}
             </View>
           </View>
           {mode === 'hard' && (
             <>
-              <View style={s.configDivider} />
-              <View style={s.configRow}>
-                <Text style={s.configLbl}>{t('home.hints')}</Text>
-                <View style={s.segRow}>
-                  <TouchableOpacity
-                    style={[s.segBtn, !autocomplete && s.segBtnOn]}
-                    onPress={() => { hapticTap(); setAutocomplete(false); }}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[s.segBtnText, !autocomplete && s.segBtnTextOn]}>{t('common.off')}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[s.segBtn, autocomplete && s.segBtnOn]}
-                    onPress={() => { hapticTap(); setAutocomplete(true); }}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[s.segBtnText, autocomplete && s.segBtnTextOn]}>{t('common.on')}</Text>
-                  </TouchableOpacity>
+              <View style={styles.configDivider} />
+              <View style={styles.configRow}>
+                <Text style={styles.configLbl}>{t('home.hints')}</Text>
+                <View style={styles.segRow}>
+                  <SegBtn
+                    label={t('common.off')}
+                    active={!autocomplete}
+                    onPress={() => setAutocomplete(false)}
+                    maxWidth={54}
+                  />
+                  <SegBtn
+                    label={t('common.on')}
+                    active={autocomplete}
+                    onPress={() => setAutocomplete(true)}
+                    maxWidth={54}
+                  />
                 </View>
               </View>
             </>
@@ -400,90 +398,81 @@ export default function HomeScreen({ navigation }: Props) {
         </View>
 
         {/* ── GAME MODES ── */}
-        <View style={s.sectionWrap}>
-          <Text style={s.sectionLbl}>{t('home.gameModes')}</Text>
+        <View style={styles.sectionWrap}>
+          <View style={styles.sectionHead}>
+            <Text style={styles.sectionLbl}>{t('home.gameModes')}</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('GameSetup')} activeOpacity={0.7}>
+              <Text style={styles.sectionAll}>{t('common.all')}</Text>
+            </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity
-            style={s.modeCard}
-            activeOpacity={0.85}
-            onPress={() => {
-              hapticTap();
-              navigation.navigate('FlagImpostor', {
-                config: { mode: 'impostor', category: 'all', questionCount: 10, displayMode: 'flag' },
-              });
-            }}
-          >
-            <View style={s.modeIcon}>
-              <EyeIcon size={18} color={colors.white} />
-            </View>
-            <View style={s.modeText}>
-              <Text style={s.modeTitle}>{t('home.flagImpostor')}</Text>
-              <Text style={s.modeSub}>{t('home.flagImpostorDesc')}</Text>
-            </View>
-            <ChevronRightIcon size={18} color={colors.rule} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={s.modeCard}
-            activeOpacity={0.85}
-            onPress={() => {
-              hapticTap();
-              navigation.navigate('Game', {
-                config: { mode: 'timeattack', category: 'all', questionCount: 999, timeLimit: 60, displayMode: 'flag' },
-              });
-            }}
-          >
-            <View style={[s.modeIcon, { backgroundColor: colors.teal }]}>
-              <ClockIcon size={18} color={colors.white} />
-            </View>
-            <View style={s.modeText}>
-              <Text style={s.modeTitle}>{t('home.timedQuiz')}</Text>
-              <Text style={s.modeSub}>{t('home.timedQuizDesc')}</Text>
-            </View>
-            <ChevronRightIcon size={18} color={colors.rule} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={s.modeCard}
-            activeOpacity={0.85}
-            onPress={() => {
-              hapticTap();
-              navigation.navigate('FlagPuzzle', {
-                config: { mode: 'flagpuzzle', category: 'all', questionCount: 10, timeLimit: 15, displayMode: 'flag' },
-              });
-            }}
-          >
-            <View style={[s.modeIcon, { backgroundColor: colors.amber }]}>
-              <PuzzleIcon size={18} color={colors.white} />
-            </View>
-            <View style={s.modeText}>
-              <Text style={s.modeTitle}>{t('setup.flagPuzzle')}</Text>
-              <Text style={s.modeSub}>{t('setup.flagPuzzleDesc')}</Text>
-            </View>
-            <ChevronRightIcon size={18} color={colors.rule} />
-          </TouchableOpacity>
-
-          {weakFlagCount > 0 && (
+          <View style={styles.modeList}>
             <TouchableOpacity
-              style={[s.modeCard, { borderColor: colors.accent, borderWidth: 1.5 }]}
+              style={styles.modeRow}
               activeOpacity={0.85}
               onPress={() => {
                 hapticTap();
                 navigation.navigate('Game', {
-                  config: { mode: 'practice', category: 'all', questionCount: weakFlagCount, displayMode: 'flag' },
+                  config: { mode: 'timeattack', category: 'all', questionCount: 999, timeLimit: 60, displayMode: 'flag' },
                 });
               }}
             >
-              <View style={[s.modeIcon, { backgroundColor: colors.accent }]}>
-                <CrosshairIcon size={18} color={colors.white} />
-              </View>
-              <View style={s.modeText}>
-                <Text style={s.modeTitle}>{t('home.practiceWeak')}</Text>
-                <Text style={s.modeSub}>{weakFlagCount === 1 ? t('home.flagsToReview', { count: weakFlagCount }) : t('home.flagsToReviewPlural', { count: weakFlagCount })}</Text>
-              </View>
-              <ChevronRightIcon size={18} color={colors.accent} />
+              <View style={[styles.modeBar, { backgroundColor: colors.modeRed }]} />
+              <Text style={styles.modeTitle}>{t('home.timedQuiz')}</Text>
+              <Text style={styles.modeTag}>{t('home.timedQuizTag')}</Text>
+              <ChevronRightIcon size={14} color={colors.dim} />
             </TouchableOpacity>
-          )}
+
+            <TouchableOpacity
+              style={styles.modeRow}
+              activeOpacity={0.85}
+              onPress={() => {
+                hapticTap();
+                navigation.navigate('FlagImpostor', {
+                  config: { mode: 'impostor', category: 'all', questionCount: 10, displayMode: 'flag' },
+                });
+              }}
+            >
+              <View style={[styles.modeBar, { backgroundColor: colors.modeGreen }]} />
+              <Text style={styles.modeTitle}>{t('home.flagImpostor')}</Text>
+              <Text style={styles.modeTag}>{t('home.flagImpostorDesc')}</Text>
+              <ChevronRightIcon size={14} color={colors.dim} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.modeRow}
+              activeOpacity={0.85}
+              onPress={() => {
+                hapticTap();
+                navigation.navigate('FlagPuzzle', {
+                  config: { mode: 'flagpuzzle', category: 'all', questionCount: 10, timeLimit: 15, displayMode: 'flag' },
+                });
+              }}
+            >
+              <View style={[styles.modeBar, { backgroundColor: colors.modePurple }]} />
+              <Text style={styles.modeTitle}>{t('setup.flagPuzzle')}</Text>
+              <Text style={styles.modeTag}>{t('setup.flagPuzzleDesc')}</Text>
+              <ChevronRightIcon size={14} color={colors.dim} />
+            </TouchableOpacity>
+
+            {weakFlagCount > 0 && (
+              <TouchableOpacity
+                style={styles.modeRow}
+                activeOpacity={0.85}
+                onPress={() => {
+                  hapticTap();
+                  navigation.navigate('Game', {
+                    config: { mode: 'practice', category: 'all', questionCount: weakFlagCount, displayMode: 'flag' },
+                  });
+                }}
+              >
+                <View style={[styles.modeBar, { backgroundColor: colors.modeRed }]} />
+                <Text style={[styles.modeTitle, { color: colors.red }]}>{t('home.practiceWeak')}</Text>
+                <Text style={styles.modeTag}>{weakFlagCount === 1 ? t('home.flagsToReview', { count: weakFlagCount }) : t('home.flagsToReviewPlural', { count: weakFlagCount })}</Text>
+                <ChevronRightIcon size={14} color={colors.dim} />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
 
         {/* ── SUPPORT ── */}
@@ -501,11 +490,8 @@ export default function HomeScreen({ navigation }: Props) {
 }
 
 // ─── Styles ──────────────────────────────────────────────────
-const s = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
+const styles = StyleSheet.create({
+  container: screenContainer,
   scroll: {
     flex: 1,
   },
@@ -516,58 +502,71 @@ const s = StyleSheet.create({
   // ── Header
   header: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
     paddingBottom: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.rule,
   },
-  wordmark: {},
-  wmLine1: {
+  wordmark: {
+    lineHeight: 28,
+  },
+  wmFlag: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.wordmark,
-    lineHeight: 36,
+    fontSize: fontSize.heading + 1,
     color: colors.ink,
-    letterSpacing: -0.5,
+    letterSpacing: -0.4,
   },
-  wmLine2: {
+  wmThat: {
     fontFamily: fontFamily.displayItalic,
-    fontSize: fontSize.wordmark,
-    lineHeight: 36,
-    color: colors.accent,
+    fontSize: fontSize.heading + 1,
+    color: colors.goldBright,
   },
-  headerRight: {
-    alignItems: 'flex-end',
-    flex: 1,
+  streakBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingLeft: spacing.sm + 2,
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  streakNum: {
+    fontFamily: fontFamily.display,
+    fontSize: fontSize.xl,
+    color: colors.goldBright,
+    letterSpacing: -0.8,
+    lineHeight: 22,
+  },
+  streakMeta: {
+    gap: 3,
+  },
+  streakLabel: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.micro,
+    letterSpacing: 0.9,
+    textTransform: 'uppercase',
+    color: colors.textTertiary,
+    lineHeight: 10,
+  },
+  streakPips: {
+    flexDirection: 'row',
+    gap: 3,
+  },
+  pip: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.pipInactive,
+  },
+  pipLit: {
+    backgroundColor: colors.pipActive,
   },
   settingsBtn: {
     padding: spacing.sm,
-    marginLeft: spacing.sm,
-  },
-  streakVal: {
-    fontFamily: fontFamily.display,
-    fontSize: fontSize.title,
-    lineHeight: 30,
-    color: colors.ink,
-    letterSpacing: -0.5,
-  },
-  streakLbl: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    color: colors.accent,
-    marginTop: spacing.xxs,
-  },
-  streakLblMuted: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    color: colors.textTertiary,
-    marginTop: spacing.xxs,
   },
 
   // ── Onboarding progress
@@ -795,29 +794,14 @@ const s = StyleSheet.create({
     paddingBottom: spacing.xs,
   },
   playBtn: {
+    ...buttons.primary,
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.sm,
-    backgroundColor: colors.ink,
-    borderRadius: borderRadius.lg,
-    paddingVertical: spacing.md + spacing.xs,
-    ...shadows.accentShadow,
-  },
-  playBolt: {
-    width: 24,
-    height: 24,
-    backgroundColor: colors.accent,
-    borderRadius: borderRadius.sm,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingVertical: 15,
   },
   playBtnText: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xl,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    color: colors.white,
+    ...buttons.primaryText,
   },
 
   // ── Config card
@@ -854,77 +838,55 @@ const s = StyleSheet.create({
     gap: spacing.xs,
     justifyContent: 'flex-end',
   },
-  segBtn: {
-    flex: 1,
-    maxWidth: 54,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.surfaceSecondary,
-    borderWidth: 1.5,
-    borderColor: colors.rule,
-    borderRadius: borderRadius.sm,
-    alignItems: 'center',
-  },
-  segBtnOn: {
-    backgroundColor: colors.ink,
-    borderColor: colors.ink,
-  },
-  segBtnText: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.caption,
-    textTransform: 'uppercase',
-    color: colors.textTertiary,
-  },
-  segBtnTextOn: {
-    color: colors.white,
-  },
 
   // ── Game modes
   sectionWrap: {
     paddingHorizontal: spacing.md,
     marginTop: spacing.lg,
   },
-  sectionLbl: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    color: colors.textTertiary,
-    marginBottom: spacing.sm,
+  sectionHead: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
   },
-  modeCard: {
+  sectionLbl: {
+    fontFamily: fontFamily.display,
+    fontSize: fontSize.lg + 1,
+    letterSpacing: -0.3,
+    color: colors.ink,
+  },
+  sectionAll: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: fontSize.sm,
+    color: colors.textTertiary,
+  },
+  modeList: {},
+  modeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
-    borderWidth: 2,
-    borderColor: colors.rule,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    paddingHorizontal: spacing.md,
-    marginBottom: spacing.sm,
-    gap: spacing.md,
+    gap: spacing.sm + 4,
+    paddingVertical: 11,
+    paddingHorizontal: 2,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
-  modeIcon: {
-    width: 40,
-    height: 40,
-    backgroundColor: colors.ink,
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modeText: {
-    flex: 1,
+  modeBar: {
+    width: 3,
+    height: 18,
+    borderRadius: 2,
   },
   modeTitle: {
+    flex: 1,
     fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.lg,
-    color: colors.ink,
-    marginBottom: 2,
-  },
-  modeSub: {
-    fontFamily: fontFamily.body,
     fontSize: fontSize.caption,
+    color: colors.ink,
+    letterSpacing: -0.1,
+  },
+  modeTag: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.sm - 1,
     color: colors.textTertiary,
-    lineHeight: 18,
   },
 
 });

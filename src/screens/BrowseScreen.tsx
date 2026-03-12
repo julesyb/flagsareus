@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { colors, spacing, typography, borderRadius } from '../utils/theme';
+import { colors, spacing, typography, borderRadius, screenContainer } from '../utils/theme';
 import { FlagItem } from '../types';
 import { RootStackParamList } from '../types/navigation';
 import { getAllFlags } from '../data';
@@ -90,7 +90,7 @@ export default function BrowseScreen({ route, navigation }: Props) {
 
     return (
       <View style={styles.flagItem}>
-        <FlagImage countryCode={item.id} emoji={item.emoji} size="medium" />
+        <FlagImage countryCode={item.id} size="medium" />
         <View style={styles.flagInfo}>
           <Text style={styles.flagName}>{flagName(item)}</Text>
           <Text style={styles.flagRegion}>
@@ -163,10 +163,7 @@ export default function BrowseScreen({ route, navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
+  container: screenContainer,
   searchContainer: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
@@ -194,12 +191,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderWidth: 2,
-    borderColor: colors.rule2,
+    borderColor: colors.ruleDark,
     borderRadius: borderRadius.sm,
   },
   regionChipActive: {
-    borderColor: colors.ink,
-    backgroundColor: colors.ink,
+    borderColor: colors.goldBright,
+    backgroundColor: colors.goldBright,
   },
   regionLabel: {
     ...typography.captionBold,

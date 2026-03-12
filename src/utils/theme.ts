@@ -10,80 +10,93 @@
 // - Rounded corners on cards and interactive elements (sm-xl scale).
 // - No gradients. Flat color planes.
 // - No drop shadows except offset hard shadows on hover.
-// - Accent red appears maximum twice per screen.
+// - Gold is the primary CTA accent. Red reserved for errors and difficulty.
 // - No emoji anywhere in the UI. Use SVG icons from Icons.tsx.
 // - No em dashes in user-facing text. Use hyphens or commas.
 //
-// Palette: Retro-warm (90s nostalgia meets 2026 polish).
-//   Deep midnight navy, warm cream surfaces, coral-red accent,
-//   teal/gold/electric-blue pops for variety.
+// Palette: Warm-neutral (modern warmth meets clean polish).
+//   Warm parchment backgrounds, midnight ink text,
+//   gold CTA accent, green/red/blue/purple pops for variety.
 // =====================
 
-// ---- App domain (single source of truth) ----
-export const APP_DOMAIN = 'flagthat.app';
-export const APP_URL = `https://${APP_DOMAIN}`;
+// Re-export config constants for backward compat
+export { APP_DOMAIN, APP_URL } from './config';
 
 // ---- Single source of truth for every color value ----
 const palette = {
-  ink: '#1A1A2E',         // Deep midnight navy (retro cartridge vibes)
-  inkLight: '#2A2A45',    // Lighter midnight
-  red: '#CC3344',         // Bold 90s red (AA 4.8:1 on cream)
-  redLight: '#FF6B6B',    // Light coral (dark-surface variant)
-  slate: '#4E5172',       // Indigo-slate (warm secondary text)
-  muted: '#5E6085',       // Muted indigo (AA 5.7:1 on cream)
+  ink: '#1A1820',         // Near-black warm ink (primary text)
+  inkLight: '#2A2A45',    // Lighter midnight (secondary surfaces)
+  inkSecondary: '#4A4558', // Warm slate (secondary text)
+  gold: '#9A5C0A',        // Dark gold (CTA button on light bg, AA 5.0:1 on cream)
+  goldBright: '#E9BA4C',  // Bright gold (accents, active indicators, streaks)
+  goldShadow: '#5C3506',  // Deep gold (hard shadow on gold CTA)
+  red: '#C43030',         // Warm red (errors, hard difficulty, AA 5.2:1 on cream)
+  redLight: '#EC6666',    // Soft coral (dark-surface error text)
+  muted: '#6E6878',       // Warm purple-grey (tertiary text, AA 4.5:1 on cream)
+  dim: '#C8C2D4',         // Light lavender-grey (inactive elements, dividers)
   rule: '#E6DDD5',        // Warm rule line
-  rule2: '#D6CCC3',       // Warmer rule
-  paper: '#FFF7EE',       // Warm cream background
-  paperDark: '#EFE6DC',   // Darker cream
+  ruleDark: '#D6CCC3',    // Warmer rule (stronger emphasis)
+  paper: '#F5EFE6',       // Warm parchment background
+  paperDark: '#EDE6DC',   // Darker parchment (raised surfaces)
   white: '#FFFFFF',
   black: '#000000',
-  green: '#0D8040',       // Deep emerald (AA 4.7:1 on cream)
-  crimson: '#DC2626',     // Error red (functional, unchanged)
-  amber: '#8E6C08',       // Burnt retro gold (AA 4.6:1 on cream, was 2.0 FAIL)
-  blue: '#3A52D4',        // Electric retro blue (AA 5.9:1 on cream)
-  teal: '#007A6E',        // Deep 90s teal (AA 4.9:1 on cream, was 2.5 FAIL)
+  green: '#1E8F56',       // Emerald green (success, easy difficulty, AA 4.6:1 on cream)
+  greenBright: '#3DBF80', // Bright emerald (dark-surface success text)
+  blue: '#4DA8E8',        // Sky blue (info accents)
+  purple: '#A47FD4',      // Soft purple (mode accents, variety)
 };
 
 export const colors = {
-  // Brand palette (direct access)
+  // Brand palette (direct access for commonly needed raw colors)
   ink: palette.ink,
   red: palette.red,
-  slate: palette.slate,
   rule: palette.rule,
-  rule2: palette.rule2,
-  paper: palette.paper,
+  ruleDark: palette.ruleDark,
   white: palette.white,
   black: palette.black,
-  teal: palette.teal,
-  blue: palette.blue,
-  amber: palette.amber,
+  gold: palette.gold,
+  goldBright: palette.goldBright,
+  purple: palette.purple,
+  dim: palette.dim,
 
   // Semantic roles (all reference palette)
   primary: palette.ink,
   primaryLight: palette.inkLight,
-  accent: palette.red,
-  accentLight: palette.redLight,
+  accent: palette.gold,
+  accentLight: palette.goldBright,
   success: palette.green,
-  error: palette.crimson,
-  warning: palette.amber,
+  error: palette.red,
+  warning: palette.gold,
   background: palette.paper,
   surface: palette.white,
   surfaceSecondary: palette.paperDark,
   text: palette.ink,
-  textSecondary: palette.slate,
+  textSecondary: palette.inkSecondary,
   textTertiary: palette.muted,
   border: palette.rule,
   borderLight: palette.paperDark,
-  shadow: 'rgba(26, 26, 46, 0.06)',
-  overlay: 'rgba(26, 26, 46, 0.5)',
+  shadow: 'rgba(26, 24, 32, 0.06)',
+  overlay: 'rgba(26, 24, 32, 0.5)',
+  inkAlpha10: 'rgba(26, 24, 32, 0.10)',
 
-  // Grade colors
-  gradeS: palette.amber,
+  // Grade colors (distinct per tier for visual differentiation)
+  gradeS: palette.gold,
   gradeA: palette.green,
   gradeB: palette.blue,
-  gradeC: palette.amber,
-  gradeD: palette.crimson,
-  gradeF: palette.crimson,
+  gradeC: palette.muted,
+  gradeD: palette.red,
+  gradeF: palette.ink,
+
+  // Difficulty colors
+  diffEasy: palette.green,
+  diffMedium: palette.goldBright,
+  diffHard: palette.red,
+  diffEasyBg: 'rgba(30, 143, 86, 0.08)',
+  diffEasyBorder: 'rgba(30, 143, 86, 0.25)',
+  diffMediumBg: 'rgba(233, 186, 76, 0.12)',
+  diffMediumBorder: 'rgba(233, 186, 76, 0.40)',
+  diffHardBg: 'rgba(196, 48, 48, 0.08)',
+  diffHardBorder: 'rgba(196, 48, 48, 0.25)',
 
   // Translucent helpers (for dark backgrounds)
   whiteAlpha15: 'rgba(255,255,255,0.15)',
@@ -96,28 +109,46 @@ export const colors = {
   // Dark surface feedback (on dark/navy backgrounds)
   darkSurface: 'rgba(255,255,255,0.07)',
   darkBorder: 'rgba(255,255,255,0.1)',
-  successOnDark: 'rgba(56,195,100,0.2)',
-  successBorderOnDark: 'rgba(56,195,100,0.5)',
-  successTextOnDark: '#7ee8a2',
-  errorOnDark: 'rgba(207,35,24,0.2)',
-  errorBorderOnDark: 'rgba(207,35,24,0.45)',
-  errorTextOnDark: '#f8a09a',
+  successOnDark: 'rgba(61,191,128,0.10)',
+  successBorderOnDark: 'rgba(61,191,128,0.30)',
+  successTextOnDark: '#3DBF80',
+  errorOnDark: 'rgba(236,102,102,0.10)',
+  errorBorderOnDark: 'rgba(236,102,102,0.30)',
+  errorTextOnDark: '#EC6666',
 
   // Light feedback backgrounds (on white/paper)
-  successBg: 'rgba(13, 128, 64, 0.08)',
-  errorBg: 'rgba(220, 38, 38, 0.08)',
-  warningBg: 'rgba(142, 108, 8, 0.08)',
-  accentBg: 'rgba(204, 51, 68, 0.06)',
+  successBg: 'rgba(30, 143, 86, 0.08)',
+  errorBg: 'rgba(196, 48, 48, 0.08)',
+  warningBg: 'rgba(154, 92, 10, 0.08)',
+  accentBg: 'rgba(154, 92, 10, 0.06)',
 
   // Badge tier colors (AA on cream)
   tierBronze: '#8B5523',   // 5.4:1 on cream
   tierSilver: '#6B6B6B',   // 5.0:1 on cream
-  tierGold: '#8E6C08',     // 4.6:1 on cream
+  tierGold: '#9A5C0A',     // 5.0:1 on cream
   tierPlatinum: '#5254CC',  // 5.7:1 on cream
 
   // Map
-  mapBackground: '#f5f0e8',
+  mapBackground: '#F5F0E8',
   mapZoomSurface: 'rgba(255,255,255,0.92)',
+
+  // Streak / progress
+  pipActive: palette.goldBright,
+  pipInactive: palette.dim,
+
+  // Gold alpha (for active cards on light bg)
+  goldAlpha10: 'rgba(233, 186, 76, 0.10)',
+  goldAlpha15: 'rgba(233, 186, 76, 0.15)',
+  goldAlpha50: 'rgba(233, 186, 76, 0.50)',
+  goldGlow0: 'rgba(201, 150, 12, 0)',
+  goldGlow35: 'rgba(201, 150, 12, 0.35)',
+
+  // Mode bar colors (for game mode list)
+  modeRed: '#E05555',
+  modeGold: palette.goldBright,
+  modeBlue: palette.blue,
+  modeGreen: palette.greenBright,
+  modePurple: palette.purple,
 };
 
 export const spacing = {
@@ -148,17 +179,17 @@ export const fontFamily = {
   displayItalic: 'LibreBaskerville_400Regular_Italic',
   uiLabel: 'Barlow_600SemiBold',
   uiLabelMedium: 'Barlow_500Medium',
-  uiLabelLight: 'Barlow_400Regular',
   body: 'Barlow_400Regular',
-  bodyLight: 'Barlow_300Light',
   bodyMedium: 'Barlow_500Medium',
   bodyBold: 'Barlow_600SemiBold',
 };
 
 // ---- Type scale — single source of truth for every font size ----
-// 13-step ramp. Every fontSize in the app must reference this scale.
+// 14-step ramp. Every fontSize in the app must reference this scale.
 export const fontSize = {
+  micro: 9,       // streak badge label, ultra-compact text
   xxs: 10,        // micro labels, bottom nav tabs, eyebrow, small caps
+  xs: 11,         // compact labels (uppercase done-labels)
   sm: 12,         // chips, badge text, progress labels
   caption: 14,    // captions, subtitles, segment buttons
   body: 16,       // body text, labels, options
@@ -171,16 +202,11 @@ export const fontSize = {
   gameTitle: 42,  // gameplay large titles (FlagFlash)
   hero: 52,       // hero display numbers
   gameFeedback: 56, // gameplay feedback text (FlagFlash)
-  grade: 72,      // grade letter
+  grade: 72,      // grade letter / big score display
   countdown: 120, // full-screen countdown numbers
 };
 
 export const typography = {
-  hero: {
-    fontSize: fontSize.hero,
-    fontFamily: fontFamily.display,
-    letterSpacing: -1,
-  },
   title: {
     fontSize: fontSize.title,
     fontFamily: fontFamily.display,
@@ -224,47 +250,18 @@ export const typography = {
     letterSpacing: 2,
     textTransform: 'uppercase' as const,
   },
-  sectionLabel: {
-    fontSize: fontSize.xxs,
-    fontFamily: fontFamily.uiLabel,
-    letterSpacing: 2,
-    textTransform: 'uppercase' as const,
-  },
-  cardTitle: {
-    fontSize: fontSize.heading,
-    fontFamily: fontFamily.uiLabel,
-    letterSpacing: 1,
-    textTransform: 'uppercase' as const,
-  },
-  heroCardTitle: {
-    fontSize: fontSize.title,
-    fontFamily: fontFamily.uiLabel,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase' as const,
-  },
-  countNumber: {
-    fontSize: fontSize.hero,
-    fontFamily: fontFamily.display,
-    letterSpacing: -1,
-  },
-};
-
-export const borders = {
-  thin: 1,
-  medium: 1.5,
-  thick: 2,
 };
 
 export const buttons = {
   primary: {
-    backgroundColor: palette.ink,
+    backgroundColor: palette.gold,
     paddingVertical: 16,
     paddingHorizontal: 24,
     alignItems: 'center' as const,
     borderRadius: borderRadius.lg,
-    // Hard offset accent shadow (retro 90s)
-    shadowColor: palette.red,
-    shadowOffset: { width: 4, height: 4 },
+    // Hard offset gold shadow
+    shadowColor: palette.goldShadow,
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 0,
     elevation: 3,
@@ -281,44 +278,16 @@ export const buttons = {
     paddingVertical: 16,
     paddingHorizontal: 24,
     alignItems: 'center' as const,
-    borderWidth: 2,
-    borderColor: palette.ink,
+    borderWidth: 1,
+    borderColor: palette.rule,
     borderRadius: borderRadius.lg,
-    // Hard offset ink shadow (retro 90s)
-    shadowColor: palette.ink,
-    shadowOffset: { width: 3, height: 3 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 2,
   },
   secondaryText: {
     fontFamily: fontFamily.uiLabel,
     fontSize: fontSize.xl,
     letterSpacing: 0.8,
     textTransform: 'uppercase' as const,
-    color: palette.ink,
-  },
-  chip: {
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderWidth: 1,
-    borderColor: palette.rule,
-    backgroundColor: palette.white,
-    borderRadius: borderRadius.sm,
-  },
-  chipActive: {
-    backgroundColor: palette.ink,
-    borderColor: palette.ink,
-  },
-  chipText: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.sm,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase' as const,
-    color: palette.slate,
-  },
-  chipTextActive: {
-    color: palette.white,
+    color: palette.inkSecondary,
   },
 };
 
@@ -344,8 +313,12 @@ export const layout = {
     tablet: 768,
     desktop: 1024,
   },
-  headerHeight: 56,
-  gameTopBarHeight: 48,
+};
+
+/** Shared base style for full-screen containers with the app background. */
+export const screenContainer = {
+  flex: 1 as const,
+  backgroundColor: palette.paper,
 };
 
 export const shadows = {
@@ -370,9 +343,16 @@ export const shadows = {
     shadowRadius: 0,
     elevation: 4,
   },
-  accentShadow: {
+  gold: {
+    shadowColor: palette.goldShadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 3,
+  },
+  accent: {
     shadowColor: colors.accent,
-    shadowOffset: { width: 5, height: 5 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 0,
     elevation: 3,

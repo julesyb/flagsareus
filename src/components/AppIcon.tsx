@@ -59,7 +59,7 @@ export default function AppIcon({ size = 120, variant = 'dark' }: AppIconProps) 
           style={[
             styles.rule,
             {
-              backgroundColor: isDark ? colors.whiteAlpha15 : 'rgba(17,24,39,0.1)',
+              backgroundColor: isDark ? colors.whiteAlpha15 : colors.inkAlpha10,
               height: Math.max(1, 2 * scale),
               marginTop: spacing.xxs * scale,
               marginBottom: spacing.xxs * scale,

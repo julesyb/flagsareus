@@ -21,6 +21,8 @@ const en = {
     new: 'New',
     review: 'Review',
     seeResults: 'See Results',
+    flagOf: 'Flag of {country}',
+    vs: 'vs',
   },
 
   // ─── Bottom Nav ──────────────────────────────────────────
@@ -57,6 +59,7 @@ const en = {
     gameModes: 'Game modes',
     timedQuiz: 'Timed Quiz',
     timedQuizDesc: '60 seconds - how many can you get?',
+    timedQuizTag: '60 sec',
     neighbors: 'Neighbors',
     neighborsDesc: 'Find all bordering countries',
     flagImpostor: 'Flag Impostor',
@@ -188,6 +191,11 @@ const en = {
     improvementUp: 'Up {pct}%, way to go!',
     improvementSame: 'Holding steady',
     improvementDown: '{pct}% to recover, you got this',
+    yourStats: 'Your Stats',
+    allTime: 'All time',
+    roundsPlayed: 'rounds played',
+    streak: 'Streak',
+    mastered: 'Mastered',
   },
 
   // ─── Settings Screen ────────────────────────────────────
@@ -217,6 +225,10 @@ const en = {
     resetConfirmMsg: 'This will clear all stats, streaks, and progress. This cannot be undone.',
     resetConfirmWeb: 'Reset all data?\n\nThis will clear all stats, streaks, and progress. This cannot be undone.',
     reset: 'Reset',
+    termsOfService: 'Terms of Service',
+    am: 'AM',
+    pm: 'PM',
+    support: 'Support',
   },
 
   // ─── Support ───────────────────────────────────────────
@@ -260,12 +272,39 @@ const en = {
     notANeighbor: 'Not a neighbor',
   },
 
+  // ─── FlagFlash Screen ──────────────────────────────────
+  flagFlash: {
+    title: 'FlagFlash',
+    howToPlay: 'How to play',
+    holdPhone: 'Hold phone on your forehead',
+    friendsDescribe: 'Friends describe the flag to you',
+    tiltDown: 'TILT DOWN',
+    gotItRight: 'Got it right!',
+    tiltUp: 'TILT UP',
+    skipPass: 'Skip / Pass',
+    motionFallback: 'If motion is unavailable, tap buttons instead',
+    flagAppears: 'A flag name appears on screen',
+    correctLabel: 'CORRECT',
+    clickLeft: 'Click or press Left arrow',
+    skipLabel: 'SKIP',
+    clickRight: 'Click or press Right arrow',
+    ready: 'Ready!',
+    getReady: 'Get ready...',
+    holdForehead: 'Hold phone on forehead',
+    correctFeedback: 'CORRECT!',
+    passFeedback: 'PASS',
+    correctButton: 'Correct',
+    skipButton: 'Skip',
+    correctCount: '{count} correct',
+  },
+
   // ─── Flag Impostor Screen ───────────────────────────────
   impostor: {
     spotImpostor: 'Spot the impostor',
     spotImpostorDesc: 'One of these flags is fake. Tap it.',
     fake: 'FAKE',
     fakeExplanation: 'Procedurally generated, no real country uses this combination',
+    fakeFlag: 'Fake flag',
   },
 
   // ─── Flag Puzzle Screen ─────────────────────────────────
