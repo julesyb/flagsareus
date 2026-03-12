@@ -20,7 +20,7 @@ import { getStats, getDayStreak, getSettings, getMissedFlagIds, getBaselineData,
 import { generateQuestions } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion, CategoryId } from '../types';
-import { PlayIcon, ChevronRightIcon, ChevronDownIcon, ClockIcon, EyeIcon, CrosshairIcon, PuzzleIcon, CheckIcon, FlameIcon } from '../components/Icons';
+import { PlayIcon, ChevronRightIcon, ChevronDownIcon, ClockIcon, EyeIcon, CrosshairIcon, PuzzleIcon, CheckIcon, FlameIcon, UsersIcon, LinkIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
@@ -381,6 +381,25 @@ export default function HomeScreen({ navigation }: Props) {
                 <ChevronRightIcon size={14} color={colors.dim} />
               </TouchableOpacity>
             )}
+
+            {/* ── CHALLENGE A FRIEND ── */}
+            <TouchableOpacity
+              style={styles.modeRow}
+              activeOpacity={0.85}
+              onPress={() => {
+                hapticTap();
+                navigation.navigate('JoinChallenge');
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={t('challenge.challengeFriend')}
+              accessibilityHint={t('challenge.homeDesc')}
+            >
+              <View style={[styles.modeBar, { backgroundColor: colors.modeGold }]} />
+              <UsersIcon size={15} color={colors.goldBright} />
+              <Text style={[styles.modeTitle, { color: colors.goldBright }]}>{t('challenge.challengeFriend')}</Text>
+              <Text style={styles.modeTag}>{t('challenge.homeDesc')}</Text>
+              <ChevronRightIcon size={14} color={colors.dim} />
+            </TouchableOpacity>
           </View>
         </View>
 

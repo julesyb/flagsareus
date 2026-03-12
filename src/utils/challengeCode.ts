@@ -315,6 +315,52 @@ export function generateShortCode(data: ChallengeData): string {
   return code;
 }
 
+/**
+ * Generate a Wordle-style challenge share card.
+ * Shows a visual grid of results with speed indicators,
+ * the host's score, and a deep link to play.
+ */
+export function generateChallengeShareCard(
+  results: { correct: boolean; timeMs: number }[],
+  hostName: string,
+  mode: GameMode,
+  challengeUrl: string,
+): string {
+  const correct = results.filter((r) => r.correct).length;
+  const total = results.length;
+
+  // Build visual grid: correct with speed tiers, wrong = red
+  // Fast (<2s) = gold, Medium (<5s) = green, Slow (5s+) = white, Wrong = red
+  const grid = results.map((r) => {
+    if (!r.correct) return '\uD83D\uDFE5'; // red square
+    if (r.timeMs < 2000) return '\uD83D\uDFE8'; // yellow square (lightning fast)
+    if (r.timeMs < 5000) return '\uD83D\uDFE9'; // green square (solid)
+    return '\u2B1C'; // white square (slow but correct)
+  });
+
+  // Split into rows of 5
+  const rows: string[] = [];
+  for (let i = 0; i < grid.length; i += 5) {
+    rows.push(grid.slice(i, i + 5).join(''));
+  }
+  const gridStr = rows.join('\n');
+
+  const avgTime = results.length > 0
+    ? Math.round(results.reduce((s, r) => s + r.timeMs, 0) / results.length / 100) / 10
+    : 0;
+
+  const modeLabel = mode === 'easy' ? 'Easy'
+    : mode === 'medium' ? 'Medium'
+    : mode === 'hard' ? 'Hard'
+    : mode === 'timeattack' ? 'Time Attack'
+    : mode === 'flagpuzzle' ? 'Flag Puzzle'
+    : mode === 'neighbors' ? 'Neighbors'
+    : mode === 'capitalconnection' ? 'Capitals'
+    : mode;
+
+  return `${hostName} scored ${correct}/${total} on Flag That\n${modeLabel} | ${avgTime}s avg\n\n${gridStr}\n\nCan you beat me?\n${challengeUrl}`;
+}
+
 // ── Base64 helpers (for legacy V1/V2 decoding only) ──
 
 function fromBase64(encoded: string): string {
