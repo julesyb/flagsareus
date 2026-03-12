@@ -25,8 +25,6 @@ import ScreenContainer from '../components/ScreenContainer';
 import SegBtn from '../components/SegBtn';
 import ConfigRow, { ConfigCard } from '../components/ConfigRow';
 import { useNavTabs } from '../hooks/useNavTabs';
-import SupportCard from '../components/SupportCard';
-import { preloadRewardedAd } from '../utils/ads';
 import { t } from '../utils/i18n';
 import { translateName, flagName } from '../data/countryNames';
 
@@ -94,6 +92,9 @@ function FlagTeaser({ onAnswer }: { onAnswer?: () => void }) {
           onPress={() => handlePick(opt)}
           activeOpacity={0.8}
           disabled={picked !== null}
+          accessibilityRole="button"
+          accessibilityLabel={translateName(opt)}
+          accessibilityState={{ disabled: picked !== null }}
         >
           <Text style={[styles.optText, showCorrect && styles.optTextCorrect, showWrong && styles.optTextWrong]}>{translateName(opt)}</Text>
         </TouchableOpacity>
@@ -125,7 +126,10 @@ function FlagTeaser({ onAnswer }: { onAnswer?: () => void }) {
       {/* Result label appears after pick */}
       {picked && (
         <View style={styles.teaserResult}>
-          <Text style={[styles.teaserResultText, picked === question.flag.name ? styles.teaserResultCorrect : styles.teaserResultWrong]}>
+          <Text
+            style={[styles.teaserResultText, picked === question.flag.name ? styles.teaserResultCorrect : styles.teaserResultWrong]}
+            accessibilityLiveRegion="polite"
+          >
             {picked === question.flag.name ? t('common.correct') : flagName(question.flag)}
           </Text>
         </View>
@@ -159,7 +163,6 @@ export default function HomeScreen({ navigation }: Props) {
 
   useEffect(() => {
     initAudio();
-    preloadRewardedAd();
     getSettings().then((s) => {
       setSoundsEnabled(s.soundEnabled);
       setHapticsEnabled(s.hapticsEnabled);
@@ -206,6 +209,9 @@ export default function HomeScreen({ navigation }: Props) {
               style={styles.streakBadge}
               onPress={() => navigation.navigate('Stats')}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={`${dayStreak} ${t('home.dayStreak')}`}
+              accessibilityHint="Opens your stats"
             >
               <Text style={styles.streakNum}>{dayStreak}</Text>
               <View style={styles.streakMeta}>
@@ -222,6 +228,8 @@ export default function HomeScreen({ navigation }: Props) {
               style={styles.settingsBtn}
               onPress={() => navigation.navigate('Settings')}
               activeOpacity={0.6}
+              accessibilityRole="button"
+              accessibilityLabel="Settings"
             >
               <GearIcon size={20} color={colors.textTertiary} />
             </TouchableOpacity>
@@ -233,7 +241,7 @@ export default function HomeScreen({ navigation }: Props) {
 
         {/* ── PLAY NOW ── */}
         <Animated.View style={[styles.playWrap, { transform: [{ scale: playBtnScale }] }]}>
-          <TouchableOpacity style={styles.playBtn} onPress={play} activeOpacity={0.85}>
+          <TouchableOpacity style={styles.playBtn} onPress={play} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={t('home.playNow')}>
             <Text style={styles.playBtnText}>{t('home.playNow')}</Text>
             <PlayIcon size={14} color={colors.playText} />
           </TouchableOpacity>
@@ -293,7 +301,7 @@ export default function HomeScreen({ navigation }: Props) {
         <View style={styles.sectionWrap}>
           <View style={styles.sectionHead}>
             <Text style={styles.sectionLbl}>{t('home.gameModes')}</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('GameSetup')} activeOpacity={0.7}>
+            <TouchableOpacity onPress={() => navigation.navigate('GameSetup')} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel="See all game modes">
               <Text style={styles.sectionAll}>{t('common.all')}</Text>
             </TouchableOpacity>
           </View>
@@ -308,6 +316,9 @@ export default function HomeScreen({ navigation }: Props) {
                   config: { mode: 'timeattack', category: 'all', questionCount: 999, timeLimit: 60, displayMode: 'flag' },
                 });
               }}
+              accessibilityRole="button"
+              accessibilityLabel={`Play ${t('home.timedQuiz')}`}
+              accessibilityHint="Opens this game mode"
             >
               <View style={[styles.modeBar, { backgroundColor: colors.modeRed }]} />
               <Text style={styles.modeTitle}>{t('home.timedQuiz')}</Text>
@@ -324,6 +335,9 @@ export default function HomeScreen({ navigation }: Props) {
                   config: { mode: 'impostor', category: 'all', questionCount: 10, displayMode: 'flag' },
                 });
               }}
+              accessibilityRole="button"
+              accessibilityLabel={`Play ${t('home.flagImpostor')}`}
+              accessibilityHint="Opens this game mode"
             >
               <View style={[styles.modeBar, { backgroundColor: colors.modeGreen }]} />
               <Text style={styles.modeTitle}>{t('home.flagImpostor')}</Text>
@@ -340,6 +354,9 @@ export default function HomeScreen({ navigation }: Props) {
                   config: { mode: 'flagpuzzle', category: 'all', questionCount: 10, timeLimit: 15, displayMode: 'flag' },
                 });
               }}
+              accessibilityRole="button"
+              accessibilityLabel={`Play ${t('setup.flagPuzzle')}`}
+              accessibilityHint="Opens this game mode"
             >
               <View style={[styles.modeBar, { backgroundColor: colors.modePurple }]} />
               <Text style={styles.modeTitle}>{t('setup.flagPuzzle')}</Text>
@@ -357,6 +374,9 @@ export default function HomeScreen({ navigation }: Props) {
                     config: { mode: 'practice', category: 'all', questionCount: weakFlagCount, displayMode: 'flag' },
                   });
                 }}
+                accessibilityRole="button"
+                accessibilityLabel={`Play ${t('home.practiceWeak')}`}
+                accessibilityHint="Opens practice mode for flags you have missed"
               >
                 <View style={[styles.modeBar, { backgroundColor: colors.modeRed }]} />
                 <Text style={[styles.modeTitle, { color: colors.red }]}>{t('home.practiceWeak')}</Text>
@@ -366,9 +386,6 @@ export default function HomeScreen({ navigation }: Props) {
             )}
           </View>
         </View>
-
-        {/* ── SUPPORT ── */}
-        <SupportCard gamesPlayed={stats?.totalGamesPlayed ?? 0} />
 
         {/* ── ONBOARDING PROGRESS (at bottom until complete) ── */}
         {!onboardingComplete && (
@@ -390,6 +407,9 @@ export default function HomeScreen({ navigation }: Props) {
                     config: { mode: 'baseline', category: nextRegion as CategoryId, questionCount: count, displayMode: 'flag' },
                   });
                 }}
+                accessibilityRole="button"
+                accessibilityLabel={`Start ${t(`categories.${nextRegion}`)} baseline test`}
+                accessibilityHint="Begins the knowledge test for this region"
               >
                 <Text style={styles.onboardingCtaText}>{t(`categories.${nextRegion}`)}</Text>
                 <ChevronRightIcon size={14} color={colors.playText} />
@@ -427,6 +447,9 @@ export default function HomeScreen({ navigation }: Props) {
                         config: { mode: 'baseline', category: r as CategoryId, questionCount: count, displayMode: 'flag' },
                       });
                     }}
+                    accessibilityRole="button"
+                    accessibilityLabel={isDone ? `${t(`categories.${r}`)} completed, ${result!.accuracy}% accuracy` : `Start ${t(`categories.${r}`)} baseline test`}
+                    accessibilityState={{ disabled: isDone }}
                   >
                     {isDone && <CheckIcon size={10} color={colors.success} />}
                     <Text style={[
@@ -477,13 +500,13 @@ const styles = StyleSheet.create({
   },
   wmFlag: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.heading + 1,
+    fontSize: fontSize.title,
     color: colors.ink,
     letterSpacing: -0.4,
   },
   wmThat: {
     fontFamily: fontFamily.displayItalic,
-    fontSize: fontSize.heading + 1,
+    fontSize: fontSize.title,
     color: colors.goldBright,
   },
   streakBadge: {
@@ -500,7 +523,7 @@ const styles = StyleSheet.create({
   },
   streakNum: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.xl,
+    fontSize: fontSize.lg,
     color: colors.goldBright,
     letterSpacing: -0.8,
     lineHeight: 22,
@@ -510,7 +533,7 @@ const styles = StyleSheet.create({
   },
   streakLabel: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.micro,
+    fontSize: fontSize.xs,
     letterSpacing: 0.9,
     textTransform: 'uppercase',
     color: colors.textTertiary,
@@ -560,7 +583,7 @@ const styles = StyleSheet.create({
   },
   onboardingCount: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
   },
   onboardingCta: {
@@ -574,7 +597,7 @@ const styles = StyleSheet.create({
   },
   onboardingCtaText: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
     color: colors.playText,
@@ -595,7 +618,7 @@ const styles = StyleSheet.create({
   },
   onboardingMotivation: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.xxs,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
     fontStyle: 'italic',
   },
@@ -625,7 +648,7 @@ const styles = StyleSheet.create({
   },
   onboardingChipText: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
   },
   onboardingChipTextDone: {
@@ -636,7 +659,7 @@ const styles = StyleSheet.create({
   },
   onboardingChipPct: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.success,
   },
 
@@ -647,7 +670,7 @@ const styles = StyleSheet.create({
   },
   heroLabel: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
+    fontSize: fontSize.xs,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
     color: colors.textTertiary,
@@ -720,7 +743,7 @@ const styles = StyleSheet.create({
   },
   teaserResultWrong: {
     color: colors.ink,
-    fontSize: fontSize.xl,
+    fontSize: fontSize.lg,
   },
   // ── Play button
   playWrap: {
@@ -752,13 +775,13 @@ const styles = StyleSheet.create({
   },
   sectionLbl: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.lg + 1,
+    fontSize: fontSize.lg,
     letterSpacing: -0.3,
     color: colors.ink,
   },
   sectionAll: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
   },
   modeList: {},
@@ -779,13 +802,13 @@ const styles = StyleSheet.create({
   modeTitle: {
     flex: 1,
     fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.caption,
+    fontSize: fontSize.sm,
     color: colors.ink,
     letterSpacing: -0.1,
   },
   modeTag: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.sm - 1,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
   },
 

@@ -314,7 +314,6 @@ const ptBR: typeof en = {
     daily_legend: { name: 'Lenda di\u00e1ria', description: '30 desafios di\u00e1rios completos' },
     practice_perfect: { name: 'Pr\u00e1tica perfeita', description: 'Sem bandeiras para praticar' },
     shared_spirit: { name: 'Esp\u00edrito compartilhador', description: 'Compartilhe seus resultados' },
-    supporter: { name: 'Apoiador', description: 'Apoie assistindo um v\u00eddeo' },
   },
 
   onboarding: {

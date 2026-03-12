@@ -242,6 +242,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
                     onPress={() => { hapticTap(); setDifficulty(d.key); }}
                     activeOpacity={0.7}
                     accessibilityRole="button"
+                    accessibilityLabel={t(d.labelKey)}
                     accessibilityState={{ selected: isActive }}
                   >
                     <Text style={[
@@ -355,6 +356,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
                 onPress={() => handleFilterTypeSelect(type)}
                 activeOpacity={0.7}
                 accessibilityRole="button"
+                accessibilityLabel={type === 'region' ? t('setup.byRegion') : t('setup.byTheme')}
                 accessibilityState={{ selected: isActive }}
               >
                 <Text style={[styles.filterTypeText, isActive && styles.filterTypeTextActive]}>
@@ -452,7 +454,7 @@ const styles = StyleSheet.create({
   },
   diffLabel: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
+    fontSize: fontSize.xs,
     letterSpacing: 1,
     textTransform: 'uppercase',
     color: colors.textTertiary,
@@ -474,7 +476,7 @@ const styles = StyleSheet.create({
   },
   diffBtnText: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.caption - 0.5,
+    fontSize: fontSize.sm,
     color: colors.textTertiary,
     letterSpacing: -0.1,
   },
@@ -609,7 +611,7 @@ const styles = StyleSheet.create({
   categoryCount: {
     ...typography.caption,
     color: colors.textTertiary,
-    fontSize: fontSize.xxs,
+    fontSize: fontSize.xs,
   },
   categoryCountActive: {
     color: colors.whiteAlpha60,

@@ -173,6 +173,9 @@ export default function SettingsScreen() {
               onValueChange={(v) => updateSetting('soundEnabled', v)}
               trackColor={{ false: colors.rule, true: colors.ink }}
               thumbColor={colors.white}
+              accessibilityRole="switch"
+              accessibilityLabel={t('settings.soundEffects')}
+              accessibilityState={{ checked: settings.soundEnabled }}
             />
           </View>
           <View style={styles.settingDivider} />
@@ -186,6 +189,9 @@ export default function SettingsScreen() {
               onValueChange={(v) => updateSetting('hapticsEnabled', v)}
               trackColor={{ false: colors.rule, true: colors.ink }}
               thumbColor={colors.white}
+              accessibilityRole="switch"
+              accessibilityLabel={t('settings.haptics')}
+              accessibilityState={{ checked: settings.hapticsEnabled }}
             />
           </View>
         </View>
@@ -209,6 +215,9 @@ export default function SettingsScreen() {
               trackColor={{ false: colors.rule, true: colors.ink }}
               thumbColor={colors.white}
               disabled={Platform.OS === 'web'}
+              accessibilityRole="switch"
+              accessibilityLabel={t('settings.dailyReminder')}
+              accessibilityState={{ checked: settings.dailyReminderEnabled, disabled: Platform.OS === 'web' }}
             />
           </View>
           {Platform.OS !== 'web' && (
@@ -219,6 +228,10 @@ export default function SettingsScreen() {
                 onPress={cycleReminderTime}
                 activeOpacity={0.7}
                 disabled={!settings.dailyReminderEnabled}
+                accessibilityRole="button"
+                accessibilityLabel={`${t('settings.reminderTime')}: ${formatTime(settings.reminderHour, settings.reminderMinute)}`}
+                accessibilityHint={t('settings.tapToChange')}
+                accessibilityState={{ disabled: !settings.dailyReminderEnabled }}
               >
                 <View style={styles.settingInfo}>
                   <Text style={[styles.settingLabel, !settings.dailyReminderEnabled && styles.settingDisabled]}>
@@ -242,6 +255,10 @@ export default function SettingsScreen() {
             style={styles.settingRow}
             onPress={() => setLangOpen(!langOpen)}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={`${t('settings.language')}: ${currentLocaleName}`}
+            accessibilityHint="Opens language selection"
+            accessibilityState={{ expanded: langOpen }}
           >
             <View style={styles.settingInfo}>
               <Text style={styles.settingLabel}>{currentLocaleName}</Text>
@@ -263,6 +280,9 @@ export default function SettingsScreen() {
                       style={[styles.settingRow, isActive && styles.langRowActive]}
                       onPress={() => selectLanguage(locale.code)}
                       activeOpacity={0.7}
+                      accessibilityRole="button"
+                      accessibilityLabel={locale.name}
+                      accessibilityState={{ selected: isActive }}
                     >
                       <Text style={[styles.langOptionText, isActive && styles.langOptionActive]}>
                         {locale.name}
@@ -289,6 +309,8 @@ export default function SettingsScreen() {
             style={styles.settingRow}
             onPress={() => Linking.openURL(`${APP_URL}/privacy`).catch(() => {})}
             activeOpacity={0.7}
+            accessibilityRole="link"
+            accessibilityLabel={t('settings.privacyPolicy')}
           >
             <Text style={styles.settingLabel}>{t('settings.privacyPolicy')}</Text>
             <ChevronRightIcon size={18} color={colors.textTertiary} />
@@ -298,6 +320,8 @@ export default function SettingsScreen() {
             style={styles.settingRow}
             onPress={() => Linking.openURL(`${APP_URL}/terms`).catch(() => {})}
             activeOpacity={0.7}
+            accessibilityRole="link"
+            accessibilityLabel={t('settings.termsOfService')}
           >
             <Text style={styles.settingLabel}>{t('settings.termsOfService')}</Text>
             <ChevronRightIcon size={18} color={colors.textTertiary} />
@@ -307,6 +331,8 @@ export default function SettingsScreen() {
             style={styles.settingRow}
             onPress={() => Linking.openURL(`mailto:support@${APP_DOMAIN}`).catch(() => {})}
             activeOpacity={0.7}
+            accessibilityRole="link"
+            accessibilityLabel={t('settings.support')}
           >
             <Text style={styles.settingLabel}>{t('settings.support')}</Text>
             <ChevronRightIcon size={18} color={colors.textTertiary} />
@@ -320,6 +346,9 @@ export default function SettingsScreen() {
           style={styles.resetButton}
           onPress={handleReset}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel={t('settings.resetAllData')}
+          accessibilityHint="Permanently deletes all your progress and statistics"
         >
           <Text style={styles.resetButtonText}>{t('settings.resetAllData')}</Text>
         </TouchableOpacity>
@@ -338,7 +367,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
+    fontSize: fontSize.xs,
     letterSpacing: 1.2,
     textTransform: 'uppercase',
     color: colors.textTertiary,

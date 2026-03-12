@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   },
   segBtnText: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.caption,
+    fontSize: fontSize.sm,
     textTransform: 'uppercase',
     color: colors.textTertiary,
   },

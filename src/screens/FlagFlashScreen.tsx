@@ -371,6 +371,9 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
           style={styles.readyButton}
           onPress={handleReady}
           activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel={t('flagFlash.ready')}
+          accessibilityHint="Starts the Flag Flash game"
         >
           <Text style={styles.readyButtonText}>{t('flagFlash.ready')}</Text>
         </TouchableOpacity>
@@ -379,6 +382,8 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
           style={styles.exitButton}
           onPress={goHome}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.exit')}
         >
           <Text style={styles.exitButtonText}>{t('common.exit')}</Text>
         </TouchableOpacity>
@@ -437,9 +442,9 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
       <ScreenContainer flex game>
       <View style={styles.gameContent}>
         {tiltState === 'correct' ? (
-          <Text style={styles.feedbackText}>{t('flagFlash.correctFeedback')}</Text>
+          <Text style={styles.feedbackText} accessibilityLiveRegion="polite">{t('flagFlash.correctFeedback')}</Text>
         ) : tiltState === 'skip' ? (
-          <Text style={styles.feedbackText}>{t('flagFlash.passFeedback')}</Text>
+          <Text style={styles.feedbackText} accessibilityLiveRegion="polite">{t('flagFlash.passFeedback')}</Text>
         ) : (
           <>
             {config.displayMode === 'map' ? (
@@ -465,6 +470,9 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
             style={[styles.webButton, styles.webButtonCorrect]}
             onPress={() => handleTilt('correct')}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={t('flagFlash.correctButton')}
+            accessibilityHint="Mark the current flag as correctly guessed"
           >
             <Text style={styles.webButtonText}>{t('flagFlash.correctButton')}</Text>
           </TouchableOpacity>
@@ -472,6 +480,9 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
             style={[styles.webButton, styles.webButtonSkip]}
             onPress={() => handleTilt('skip')}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={t('flagFlash.skipButton')}
+            accessibilityHint="Skip the current flag"
           >
             <Text style={styles.webButtonText}>{t('flagFlash.skipButton')}</Text>
           </TouchableOpacity>
@@ -488,6 +499,9 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
           style={styles.exitButtonPlaying}
           onPress={exitGame}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.exit')}
+          accessibilityHint="Ends the game and shows results"
         >
           <Text style={styles.exitButtonPlayingText}>{t('common.exit')}</Text>
         </TouchableOpacity>
@@ -514,7 +528,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tutorialTitle: {
-    fontSize: fontSize.gameTitle,
+    fontSize: fontSize.display,
     fontFamily: fontFamily.display,
     color: colors.white,
     marginBottom: spacing.xs,
@@ -618,7 +632,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   flagName: {
-    fontSize: fontSize.gameTitle,
+    fontSize: fontSize.display,
     fontFamily: fontFamily.display,
     color: colors.white,
     textAlign: 'center',
@@ -626,7 +640,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   feedbackText: {
-    fontSize: fontSize.gameFeedback,
+    fontSize: fontSize.hero,
     fontFamily: fontFamily.display,
     color: colors.white,
     textAlign: 'center',

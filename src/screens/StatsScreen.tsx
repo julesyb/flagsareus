@@ -15,7 +15,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { colors, spacing, fontFamily, fontSize, borderRadius, screenContainer } from '../utils/theme';
 import { UserStats, GameMode, CategoryId } from '../types';
-import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getSupportData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData, getChallengeHistory, ChallengeHistoryEntry } from '../utils/storage';
+import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData, getChallengeHistory, ChallengeHistoryEntry } from '../utils/storage';
 import { getAllFlags, getTotalFlagCount } from '../data';
 
 import { t } from '../utils/i18n';
@@ -38,7 +38,6 @@ export default function StatsScreen() {
   const [dayStreakInfo, setDayStreakInfo] = useState<DayStreakInfo>({ current: 0, best: 0 });
   const [badgeData, setBadgeData] = useState<BadgeData | null>(null);
   const [weakFlagCount, setWeakFlagCount] = useState(0);
-  const [adsWatched, setAdsWatched] = useState(0);
   const [gameHistory, setGameHistory] = useState<GameHistoryEntry[]>([]);
   const [baseline, setBaseline] = useState<BaselineData | null>(null);
   const [challengeHistory, setChallengeHistory] = useState<ChallengeHistoryEntry[]>([]);
@@ -75,8 +74,8 @@ export default function StatsScreen() {
 
       async function loadData() {
         try {
-          const [s, fs, dsInfo, bd, missed, gh, support, bl, ch] = await Promise.all([
-            getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(), getMissedFlagIds(), getGameHistory(), getSupportData(), getBaselineData(), getChallengeHistory(),
+          const [s, fs, dsInfo, bd, missed, gh, bl, ch] = await Promise.all([
+            getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(), getMissedFlagIds(), getGameHistory(), getBaselineData(), getChallengeHistory(),
           ]);
           if (!cancelled) {
             setStats(s);
@@ -85,7 +84,6 @@ export default function StatsScreen() {
             setBadgeData(bd);
             setWeakFlagCount(missed.length);
             setGameHistory(gh);
-            setAdsWatched(support.totalAdsWatched);
             setBaseline(bl);
             setChallengeHistory(ch);
 
@@ -186,8 +184,8 @@ export default function StatsScreen() {
   // Single badge context memo — consumed by earnedBadges, nextMilestone, and badge grid
   const badgeCtx = React.useMemo(() => {
     if (!badgeData || !stats) return null;
-    return buildBadgeContext(stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched);
-  }, [stats, flagStats, dayStreakInfo, badgeData, weakFlagCount, adsWatched]);
+    return buildBadgeContext(stats, flagStats, dayStreakInfo, badgeData, weakFlagCount);
+  }, [stats, flagStats, dayStreakInfo, badgeData, weakFlagCount]);
 
   // Pre-compute derived values once (countriesSeen, totalFlags, modesPlayed)
   // so getBadgeProgress doesn't recompute them per badge in loops
@@ -362,6 +360,9 @@ export default function StatsScreen() {
                 config: { mode: 'practice', category: 'all', questionCount: weakFlagCount, displayMode: 'flag' },
               } as never)}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={t('stats.practiceNow')}
+              accessibilityHint={t('results.flagsToReview', { count: weakFlagCount })}
             >
               <View style={styles.practiceCtaLeft}>
                 <CrosshairIcon size={16} color={colors.accent} />
@@ -612,6 +613,9 @@ export default function StatsScreen() {
             style={styles.settingsLink}
             onPress={() => navigation.navigate('Settings')}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={t('app.settings')}
+            accessibilityHint="Opens settings"
           >
             <Text style={styles.settingsLinkText}>{t('app.settings')}</Text>
             <ChevronRightIcon size={14} color={colors.textTertiary} />
@@ -627,7 +631,7 @@ export default function StatsScreen() {
 const styles = StyleSheet.create({
   container: screenContainer,
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  loadingText: { fontFamily: fontFamily.body, fontSize: fontSize.lg, color: colors.textSecondary },
+  loadingText: { fontFamily: fontFamily.body, fontSize: fontSize.body, color: colors.textSecondary },
   content: { padding: spacing.md, paddingBottom: spacing.xxl },
 
   // ── Page Header
@@ -636,14 +640,14 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.title - 2,
+    fontSize: fontSize.title,
     letterSpacing: -0.5,
     color: colors.ink,
     marginBottom: spacing.xxs,
   },
   pageSub: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.caption - 1,
+    fontSize: fontSize.sm,
     color: colors.textTertiary,
   },
 
@@ -667,7 +671,7 @@ const styles = StyleSheet.create({
   },
   heroStatValue: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.stat - 6,
+    fontSize: fontSize.display,
     color: colors.ink,
     letterSpacing: -1,
     lineHeight: 36,
@@ -675,7 +679,7 @@ const styles = StyleSheet.create({
   },
   heroStatLabel: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
+    fontSize: fontSize.xs,
     letterSpacing: 0.9,
     textTransform: 'uppercase',
     color: colors.textTertiary,
@@ -691,7 +695,7 @@ const styles = StyleSheet.create({
   },
   tileLabel: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
+    fontSize: fontSize.xs,
     letterSpacing: 1,
     textTransform: 'uppercase',
     color: colors.textTertiary,
@@ -699,7 +703,7 @@ const styles = StyleSheet.create({
   },
   tileVal: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.stat,
+    fontSize: fontSize.display,
     lineHeight: 40,
     color: colors.ink,
     letterSpacing: -0.5,
@@ -730,12 +734,12 @@ const styles = StyleSheet.create({
   },
   progressLabelBold: {
     fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.ink,
   },
   progressLabelMuted: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
   },
 
@@ -758,7 +762,7 @@ const styles = StyleSheet.create({
   milestoneContent: { flex: 1 },
   milestoneTitle: {
     fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.caption,
+    fontSize: fontSize.sm,
     color: colors.ink,
     marginBottom: 6,
   },
@@ -773,7 +777,7 @@ const styles = StyleSheet.create({
   },
   milestoneSub: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
     marginTop: 4,
   },
@@ -807,7 +811,7 @@ const styles = StyleSheet.create({
   },
   practiceCtaSub: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textSecondary,
   },
 
@@ -827,7 +831,7 @@ const styles = StyleSheet.create({
   },
   modeLabel: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.ink,
     width: 80,
   },
@@ -848,7 +852,7 @@ const styles = StyleSheet.create({
   },
   modePct: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
     width: 36,
     textAlign: 'right',
@@ -870,7 +874,7 @@ const styles = StyleSheet.create({
   },
   regionImprovName: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
+    fontSize: fontSize.xs,
     letterSpacing: 1,
     textTransform: 'uppercase',
     color: colors.textTertiary,
@@ -887,7 +891,7 @@ const styles = StyleSheet.create({
   },
   regionImprovLabel: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.caption,
+    fontSize: fontSize.sm,
     color: colors.textTertiary,
   },
   regionImprovArrow: {
@@ -900,7 +904,7 @@ const styles = StyleSheet.create({
   },
   regionImprovNow: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.heading,
+    fontSize: fontSize.lg,
     color: colors.ink,
     letterSpacing: -0.5,
     textAlign: 'right',
@@ -910,7 +914,7 @@ const styles = StyleSheet.create({
   },
   regionImprovDiff: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.caption,
+    fontSize: fontSize.sm,
     color: colors.textTertiary,
   },
   regionImprovDiffUp: {
@@ -923,7 +927,7 @@ const styles = StyleSheet.create({
   // ── Section
   sectionTitle: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
+    fontSize: fontSize.xs,
     letterSpacing: 1.2,
     textTransform: 'uppercase',
     color: colors.textTertiary,
@@ -937,7 +941,7 @@ const styles = StyleSheet.create({
   },
   sectionMeta: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
   },
 
@@ -956,7 +960,7 @@ const styles = StyleSheet.create({
   },
   rank: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.xl,
+    fontSize: fontSize.lg,
     color: colors.textTertiary,
     minWidth: 20,
     textAlign: 'center',
@@ -975,7 +979,7 @@ const styles = StyleSheet.create({
   },
   scoreBadgeText: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.success,
   },
   scoreBadgeWrong: { backgroundColor: colors.errorBg },
@@ -997,7 +1001,7 @@ const styles = StyleSheet.create({
   },
   distLabel: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
     width: 56,
     textAlign: 'right',
@@ -1019,7 +1023,7 @@ const styles = StyleSheet.create({
   },
   distCount: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
     width: 24,
     textAlign: 'right',
@@ -1061,18 +1065,18 @@ const styles = StyleSheet.create({
   },
   challengeCode: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.caption,
+    fontSize: fontSize.sm,
     letterSpacing: 1.5,
     color: colors.ink,
   },
   challengeDate: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
   },
   challengeMode: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
     marginBottom: 4,
   },
@@ -1083,23 +1087,23 @@ const styles = StyleSheet.create({
   },
   challengeScoreLabel: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textSecondary,
   },
   challengeScore: {
     fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.ink,
   },
   challengeVs: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
     marginHorizontal: 4,
   },
   challengeResult: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     marginTop: 2,
   },
   challengeDirectionPill: {
@@ -1110,7 +1114,7 @@ const styles = StyleSheet.create({
   },
   challengeDirectionText: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
+    fontSize: fontSize.xs,
     letterSpacing: 0.6,
     textTransform: 'uppercase',
     color: colors.textTertiary,
@@ -1137,14 +1141,14 @@ const styles = StyleSheet.create({
   },
   badgeName: {
     fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.caption,
+    fontSize: fontSize.sm,
     color: colors.ink,
     marginBottom: 3,
   },
   badgeNameLocked: { color: colors.textTertiary },
   badgeDesc: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.xs,
     color: colors.textSecondary,
     lineHeight: 16,
   },
@@ -1163,7 +1167,7 @@ const styles = StyleSheet.create({
   },
   badgeProgressText: {
     fontFamily: fontFamily.body,
-    fontSize: fontSize.xxs,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
     marginTop: 3,
   },

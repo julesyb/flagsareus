@@ -109,7 +109,7 @@ export default function NeighborsScreen({ navigation, route }: Props) {
           <Text style={styles.emptyBody}>
             {t('neighbors.noCountriesDesc')}
           </Text>
-          <TouchableOpacity style={styles.emptyButton} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={styles.emptyButton} onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel={t('common.goBack')}>
             <Text style={styles.emptyButtonText}>{t('common.goBack')}</Text>
           </TouchableOpacity>
         </View>
@@ -226,6 +226,19 @@ export default function NeighborsScreen({ navigation, route }: Props) {
                   onPress={() => toggleSelect(flag.id)}
                   activeOpacity={0.7}
                   disabled={submitted}
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    submitted
+                      ? showCorrect && isSelected
+                        ? `${flagName(flag)}, correct neighbor`
+                        : showMissed
+                        ? `${flagName(flag)}, missed neighbor`
+                        : showWrong
+                        ? `${flagName(flag)}, not a neighbor`
+                        : flagName(flag)
+                      : `${flagName(flag)}${isSelected ? ', selected' : ''}`
+                  }
+                  accessibilityState={{ selected: isSelected, disabled: submitted }}
                 >
                   <FlagImage countryCode={flag.id} size="small" />
                   {submitted && showCorrect && isSelected && (
@@ -300,11 +313,14 @@ export default function NeighborsScreen({ navigation, route }: Props) {
             onPress={handleSubmit}
             activeOpacity={0.8}
             disabled={selected.size === 0}
+            accessibilityRole="button"
+            accessibilityLabel={t('neighbors.submitSelected', { count: selected.size })}
+            accessibilityState={{ disabled: selected.size === 0 }}
           >
             <Text style={styles.actionButtonText}>{t('neighbors.submitSelected', { count: selected.size })}</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={styles.actionButton} onPress={handleNext} activeOpacity={0.8}>
+          <TouchableOpacity style={styles.actionButton} onPress={handleNext} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel={isLastRound ? t('common.seeResults') : t('common.next')}>
             <Text style={styles.actionButtonText}>{isLastRound ? t('common.seeResults') : t('common.next')}</Text>
           </TouchableOpacity>
         )}
@@ -325,7 +341,7 @@ const styles = StyleSheet.create({
   },
   exitButton: { padding: spacing.sm, width: 60 },
   exitText: {
-    fontSize: fontSize.caption,
+    fontSize: fontSize.sm,
     fontFamily: fontFamily.uiLabelMedium,
     letterSpacing: 0.5,
     color: colors.textTertiary,
@@ -339,7 +355,7 @@ const styles = StyleSheet.create({
   content: { padding: spacing.lg, paddingBottom: 120 },
   prompt: { ...typography.headingUpper, color: colors.text, textAlign: 'center', marginBottom: spacing.lg },
   flagCenter: { alignItems: 'center', marginBottom: spacing.lg },
-  countryName: { fontFamily: fontFamily.display, fontSize: fontSize.heading, color: colors.ink, marginTop: spacing.sm },
+  countryName: { fontFamily: fontFamily.display, fontSize: fontSize.lg, color: colors.ink, marginTop: spacing.sm },
   optionsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, justifyContent: 'center' },
   optionCard: {
     width: '30%',
@@ -356,12 +372,12 @@ const styles = StyleSheet.create({
   optionCorrect: { borderColor: colors.success, backgroundColor: colors.successBg },
   optionWrong: { borderColor: colors.error, backgroundColor: colors.errorBg },
   optionMissed: { borderColor: colors.warning, backgroundColor: colors.warningBg },
-  optionName: { fontFamily: fontFamily.bodyMedium, fontSize: fontSize.xxs, color: colors.textSecondary, textAlign: 'center' },
+  optionName: { fontFamily: fontFamily.bodyMedium, fontSize: fontSize.xs, color: colors.textSecondary, textAlign: 'center' },
   optionNameCorrect: { color: colors.success, fontFamily: fontFamily.bodyBold },
   optionNameMissed: { color: colors.warning, fontFamily: fontFamily.bodyBold },
   optionNameWrong: { color: colors.error },
-  missedLabel: { fontFamily: fontFamily.uiLabel, fontSize: fontSize.xxs, letterSpacing: 1, color: colors.warning, textTransform: 'uppercase' },
-  wrongLabel: { fontFamily: fontFamily.uiLabel, fontSize: fontSize.xxs, letterSpacing: 0.5, color: colors.error, textTransform: 'uppercase' },
+  missedLabel: { fontFamily: fontFamily.uiLabel, fontSize: fontSize.xs, letterSpacing: 1, color: colors.warning, textTransform: 'uppercase' },
+  wrongLabel: { fontFamily: fontFamily.uiLabel, fontSize: fontSize.xs, letterSpacing: 0.5, color: colors.error, textTransform: 'uppercase' },
   resultBadgeCircle: {
     position: 'absolute',
     top: spacing.xs,
@@ -375,7 +391,7 @@ const styles = StyleSheet.create({
   resultBadgeCorrect: { backgroundColor: colors.success },
   resultBadgeMissed: { backgroundColor: colors.warning },
   resultBadgeWrong: { backgroundColor: colors.error },
-  resultBadgeText: { fontFamily: fontFamily.uiLabel, fontSize: fontSize.sm, color: colors.white },
+  resultBadgeText: { fontFamily: fontFamily.uiLabel, fontSize: fontSize.xs, color: colors.white },
   checkBadge: {
     position: 'absolute',
     top: spacing.xs,
@@ -401,7 +417,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     gap: spacing.xs,
   },
-  neighborChipText: { fontFamily: fontFamily.bodyMedium, fontSize: fontSize.sm, color: colors.success },
+  neighborChipText: { fontFamily: fontFamily.bodyMedium, fontSize: fontSize.xs, color: colors.success },
   bottomBar: {
     position: 'absolute',
     bottom: 0, left: 0, right: 0,
