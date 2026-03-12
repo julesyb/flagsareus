@@ -700,7 +700,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
           <Animated.View style={{ opacity: restFade }}>
             <TouchableOpacity
               style={styles.challengeButton}
-              onPress={() => { hapticTap(); navigation.replace('GameSetup', { initialMode: config.mode }); }}
+              onPress={() => { hapticTap(); navigation.replace('GameSetup', { initialMode: config.mode, ...(config.difficulty && { initialDifficulty: config.difficulty }) }); }}
               activeOpacity={0.7}
             >
               <UsersIcon size={18} color={colors.ink} />

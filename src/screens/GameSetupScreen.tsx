@@ -67,6 +67,7 @@ const DIFFICULTIES: { key: QuizDifficulty; labelKey: string }[] = [
 export default function GameSetupScreen({ route, navigation }: Props) {
   const onNavigate = useNavTabs();
   const initialMode = route.params?.initialMode;
+  const initialDifficulty = route.params?.initialDifficulty;
 
   const [displayMode, setDisplayMode] = useState<DisplayMode>('flag');
   const [setupMode, setSetupMode] = useState<SetupMode>(() => {
@@ -81,6 +82,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
     }
   });
   const [difficulty, setDifficulty] = useState<QuizDifficulty>(() => {
+    if (initialDifficulty) return initialDifficulty;
     switch (initialMode) {
       case 'easy': return 'easy';
       case 'hard': return 'hard';
