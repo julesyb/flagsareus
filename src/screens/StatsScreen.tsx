@@ -30,7 +30,6 @@ import { useNavTabs } from '../hooks/useNavTabs';
 import { getAllEarnedBadges, buildBadgeContext, deriveFromContext, BADGES, TIER_COLORS, getBadgeProgress, getBadgeName, getBadgeDescription, Badge } from '../utils/badges';
 import { computeLevelProgress, LevelProgress, getTierLabel, getLevelTier } from '../utils/levels';
 import { ChevronRightIcon, BadgeIconView, UsersIcon, CheckIcon, CrossIcon, FlameIcon, CopyIcon } from '../components/Icons';
-import * as Clipboard from 'expo-clipboard';
 import { decodeChallenge } from '../utils/challengeCode';
 import PageHeader from '../components/PageHeader';
 
@@ -870,7 +869,7 @@ export default function StatsScreen() {
                       accessibilityRole="button"
                       accessibilityLabel={t('challenge.copyCode')}
                       onPress={async () => {
-                        await Clipboard.setStringAsync(ch.fullCode);
+                        await navigator.clipboard.writeText(ch.fullCode);
                         setCodeCopied(true);
                         setTimeout(() => setCodeCopied(false), 2000);
                       }}
