@@ -64,6 +64,8 @@ export interface UserStats {
   totalAnswered: number;
   bestStreak: number;
   bestTimeAttackScore: number;
+  totalCorrectTimeMs: number;  // cumulative time on correct answers (ms)
+  totalCorrectCount: number;   // total correct answers with time tracked
   modeStats: Record<GameMode, { correct: number; total: number }>;
   categoryStats: Partial<Record<CategoryId, { correct: number; total: number }>>;
 }

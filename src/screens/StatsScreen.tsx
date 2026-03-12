@@ -308,6 +308,9 @@ export default function StatsScreen() {
   const countriesSeen = Object.values(flagStats).filter((fs) => fs.right > 0).length;
   const overallAccuracy = stats.totalAnswered > 0
     ? Math.round((stats.totalCorrect / stats.totalAnswered) * 100) : 0;
+  const avgSpeedLabel = stats.totalCorrectCount > 0
+    ? `${(stats.totalCorrectTimeMs / stats.totalCorrectCount / 1000).toFixed(1)}s`
+    : '-';
   const progressPct = totalFlags > 0 ? Math.round((countriesSeen / totalFlags) * 100) : 0;
 
   // Region accuracy data (only regions with games played)
@@ -350,6 +353,10 @@ export default function StatsScreen() {
             <View style={[styles.heroStatItem, styles.heroStatDivider]}>
               <Text style={[styles.heroStatValue, { color: colors.success }]}>{displayAcc}%</Text>
               <Text style={styles.heroStatLabel}>{t('stats.accuracy')}</Text>
+            </View>
+            <View style={[styles.heroStatItem, styles.heroStatDivider]}>
+              <Text style={styles.heroStatValue}>{avgSpeedLabel}</Text>
+              <Text style={styles.heroStatLabel}>{t('stats.avgSpeed')}</Text>
             </View>
             <View style={[styles.heroStatItem, styles.heroStatDivider]}>
               <Text style={styles.heroStatValue}>{countriesSeen}</Text>

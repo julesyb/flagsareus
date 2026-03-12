@@ -173,6 +173,8 @@ const DEFAULT_STATS: UserStats = {
   totalAnswered: 0,
   bestStreak: 0,
   bestTimeAttackScore: 0,
+  totalCorrectTimeMs: 0,
+  totalCorrectCount: 0,
   modeStats: {
     easy: { correct: 0, total: 0 },
     medium: { correct: 0, total: 0 },
@@ -226,6 +228,7 @@ export async function updateStats(
   streak: number,
   mode: GameMode,
   category: CategoryId,
+  speedData?: { correctTimeMs: number; correctCount: number },
 ): Promise<void> {
   try {
     const stats = await getStats();
@@ -235,6 +238,12 @@ export async function updateStats(
     stats.bestStreak = Math.max(stats.bestStreak, streak);
     if (mode === 'timeattack') {
       stats.bestTimeAttackScore = Math.max(stats.bestTimeAttackScore || 0, correct);
+    }
+
+    // Speed tracking
+    if (speedData && speedData.correctCount > 0) {
+      stats.totalCorrectTimeMs = (stats.totalCorrectTimeMs || 0) + speedData.correctTimeMs;
+      stats.totalCorrectCount = (stats.totalCorrectCount || 0) + speedData.correctCount;
     }
 
     stats.modeStats[mode].correct += correct;
