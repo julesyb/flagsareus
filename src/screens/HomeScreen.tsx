@@ -11,31 +11,28 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { fontFamily, fontSize, spacing, borderRadius, shadows, buildButtons, typography } from '../utils/theme';
+import { fontFamily, fontSize, spacing, borderRadius, buildButtons, typography } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { ThemeColors } from '../utils/theme';
 import { getTotalFlagCount, getCategoryCount } from '../data';
 import { initAudio, hapticTap, hapticCorrect, hapticWrong, playWrongSound, setSoundsEnabled, setHapticsEnabled } from '../utils/feedback';
-import { getStats, getDayStreak, getSettings, getMissedFlagIds, getBaselineData, BaselineData } from '../utils/storage';
+import { getStats, getDayStreak, getSettings, getMissedFlagIds, getBaselineData, BaselineData, getFlagStats, getBadgeData, getDayStreakInfo, getPersistedLevel, persistLevel } from '../utils/storage';
 import { generateQuestions } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
-import { GameMode, UserStats, GameQuestion, CategoryId } from '../types';
-import { PlayIcon, ChevronRightIcon, ChevronDownIcon, ClockIcon, EyeIcon, CrosshairIcon, PuzzleIcon, CheckIcon, FlameIcon, UsersIcon, LinkIcon } from '../components/Icons';
+import { GameMode, UserStats, GameQuestion, CategoryId, BASELINE_REGIONS } from '../types';
+import { PlayIcon, ChevronRightIcon, CheckIcon, FlameIcon, LinkIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import SegBtn from '../components/SegBtn';
 import ConfigRow, { ConfigCard } from '../components/ConfigRow';
 import { useNavTabs } from '../hooks/useNavTabs';
+import { computeLevelProgress, LevelProgress } from '../utils/levels';
 import { t } from '../utils/i18n';
 import { translateName, flagName } from '../data/countryNames';
+import { HOME_QUESTION_COUNTS, UNLIMITED_QUESTIONS, TIMEATTACK_DEFAULT_TIME } from '../utils/config';
 
 const MODE_KEYS: GameMode[] = ['easy', 'medium', 'hard'];
-
-const QUESTION_COUNTS = [5, 10, 15, 20];
-
-
-
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -156,6 +153,7 @@ export default function HomeScreen({ navigation }: Props) {
   const [weakFlagCount, setWeakFlagCount] = useState(0);
   const [autocomplete, setAutocomplete] = useState(false);
   const [baseline, setBaseline] = useState<BaselineData | null>(null);
+  const [levelProgress, setLevelProgress] = useState<LevelProgress | null>(null);
   const playBtnScale = useRef(new Animated.Value(1)).current;
 
   const pulsePlayBtn = useCallback(() => {
@@ -177,11 +175,18 @@ export default function HomeScreen({ navigation }: Props) {
 
   useFocusEffect(
     useCallback(() => {
-      getStats().then(setStats);
       getDayStreak().then(setDayStreak);
       getMissedFlagIds().then((ids) => setWeakFlagCount(ids.length));
       getBaselineData().then(setBaseline);
       setTeaserKey((k) => k + 1);
+      Promise.all([getStats(), getFlagStats(), getBadgeData(), getDayStreakInfo(), getPersistedLevel()]).then(
+        ([s, fs, bd, dsi, pl]) => {
+          setStats(s);
+          const lp = computeLevelProgress({ stats: s, flagStats: fs, badgeData: bd, dayStreakInfo: dsi }, pl);
+          setLevelProgress(lp);
+          persistLevel(lp.currentLevel);
+        },
+      );
     }, []),
   );
 
@@ -192,10 +197,9 @@ export default function HomeScreen({ navigation }: Props) {
     });
   };
 
-  const ONBOARDING_REGIONS = ['africa', 'asia', 'europe', 'americas', 'oceania'] as const;
   const onboardingComplete = baseline ? baseline.completedAt !== null : true;
-  const onboardingCount = baseline ? ONBOARDING_REGIONS.filter((r) => baseline.regions[r]).length : 0;
-  const nextRegion = baseline ? ONBOARDING_REGIONS.find((r) => !baseline.regions[r]) ?? 'africa' : 'africa';
+  const onboardingCount = baseline ? BASELINE_REGIONS.filter((r) => baseline.regions[r]).length : 0;
+  const nextRegion = baseline ? BASELINE_REGIONS.find((r) => !baseline.regions[r]) ?? BASELINE_REGIONS[0] : BASELINE_REGIONS[0];
 
 
   return (
@@ -210,22 +214,37 @@ export default function HomeScreen({ navigation }: Props) {
             <Text style={styles.wmFlag}>Flag</Text>
             <Text style={styles.wmThat}>That</Text>
           </Text>
-          <TouchableOpacity
-            style={styles.streakBadge}
-            onPress={() => navigation.navigate('Stats')}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-            accessibilityLabel={`${dayStreak} ${t('home.dayStreak')}`}
-            accessibilityHint={t('a11y.opensStats')}
-          >
-            <FlameIcon size={16} color={dayStreak > 0 ? colors.goldBright : colors.textTertiary} />
-            <Text style={[styles.streakNum, dayStreak === 0 && styles.streakNumInactive]}>{dayStreak}</Text>
-            <View style={styles.streakPips}>
-              {Array.from({ length: 7 }).map((_, i) => (
-                <View key={i} style={[styles.pip, i < Math.min(dayStreak, 7) && styles.pipLit]} />
-              ))}
-            </View>
-          </TouchableOpacity>
+          <View style={styles.headerRight}>
+            {levelProgress && (
+              <TouchableOpacity
+                style={styles.levelBadge}
+                onPress={() => navigation.navigate('Stats')}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={t('stats.level', { level: levelProgress.currentLevel })}
+                accessibilityHint={t('a11y.opensStats')}
+              >
+                <Text style={styles.levelBadgeLabel}>{t('stats.levelLabel')}</Text>
+                <Text style={styles.levelBadgeNum}>{levelProgress.currentLevel}</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              style={styles.streakBadge}
+              onPress={() => navigation.navigate('Stats')}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={`${dayStreak} ${t('home.dayStreak')}`}
+              accessibilityHint={t('a11y.opensStats')}
+            >
+              <FlameIcon size={16} color={dayStreak > 0 ? colors.goldBright : colors.textTertiary} />
+              <Text style={[styles.streakNum, dayStreak === 0 && styles.streakNumInactive]}>{dayStreak}</Text>
+              <View style={styles.streakPips}>
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <View key={i} style={[styles.pip, i < Math.min(dayStreak, 7) && styles.pipLit]} />
+                ))}
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* ── FLAG TEASER ── */}
@@ -243,7 +262,7 @@ export default function HomeScreen({ navigation }: Props) {
         <View style={{ marginHorizontal: spacing.md, marginTop: spacing.sm }}>
           <ConfigCard>
             <ConfigRow label={t('home.cards')} showDivider={false}>
-              {QUESTION_COUNTS.map((c) => (
+              {HOME_QUESTION_COUNTS.map((c) => (
                 <SegBtn
                   key={c}
                   label={String(c)}
@@ -310,7 +329,7 @@ export default function HomeScreen({ navigation }: Props) {
               onPress={() => {
                 hapticTap();
                 navigation.navigate('Game', {
-                  config: { mode: 'timeattack', category: 'all', questionCount: 999, timeLimit: 60, displayMode: 'flag' },
+                  config: { mode: 'timeattack', category: 'all', questionCount: UNLIMITED_QUESTIONS, timeLimit: TIMEATTACK_DEFAULT_TIME, displayMode: 'flag' },
                 });
               }}
               accessibilityRole="button"
@@ -410,7 +429,7 @@ export default function HomeScreen({ navigation }: Props) {
               <View style={styles.onboardingTopLeft}>
                 <Text style={styles.onboardingTitle}>{t('onboarding.baselineProgress')}</Text>
                 <Text style={styles.onboardingCount}>
-                  {t('onboarding.regionsComplete', { count: onboardingCount, total: ONBOARDING_REGIONS.length })}
+                  {t('onboarding.regionsComplete', { count: onboardingCount, total: BASELINE_REGIONS.length })}
                 </Text>
               </View>
               <TouchableOpacity
@@ -436,7 +455,7 @@ export default function HomeScreen({ navigation }: Props) {
                 <Animated.View
                   style={[
                     styles.onboardingBarFill,
-                    { width: `${(onboardingCount / ONBOARDING_REGIONS.length) * 100}%` },
+                    { width: `${(onboardingCount / BASELINE_REGIONS.length) * 100}%` },
                   ]}
                 />
               </View>
@@ -444,7 +463,7 @@ export default function HomeScreen({ navigation }: Props) {
             </View>
             {/* Region chips */}
             <View style={styles.onboardingChips}>
-              {ONBOARDING_REGIONS.map((r) => {
+              {BASELINE_REGIONS.map((r) => {
                 const result = baseline?.regions[r];
                 const isDone = !!result;
                 return (
@@ -527,6 +546,35 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     fontFamily: fontFamily.displayItalic,
     fontSize: fontSize.title,
     color: colors.goldBright,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  levelBadge: {
+    alignItems: 'center',
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm + 2,
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
+    borderColor: colors.goldBright,
+    backgroundColor: colors.surface,
+  },
+  levelBadgeLabel: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: 9,
+    color: colors.textTertiary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    lineHeight: 12,
+  },
+  levelBadgeNum: {
+    fontFamily: fontFamily.display,
+    fontSize: fontSize.md,
+    color: colors.goldBright,
+    letterSpacing: -0.5,
+    lineHeight: 18,
   },
   streakBadge: {
     flexDirection: 'row',
@@ -786,7 +834,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   modeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm + 4,
+    gap: 12,
     paddingVertical: 11,
     paddingHorizontal: 2,
     borderBottomWidth: 1,

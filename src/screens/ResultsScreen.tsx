@@ -19,12 +19,12 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { spacing, typography, fontFamily, fontSize, buildButtons, borderRadius, APP_URL, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { getStreakFromResults, generateDailyShareGrid, generateShareGrid, getDailyNumber } from '../utils/gameEngine';
-import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreakInfo, getBadgeData, persistEarnedBadges, getMissedFlagIds, addGameHistoryEntry, getChallengeName, saveChallengeName, addChallengeToHistory, recordRegionScore, UNLOCK_THRESHOLD } from '../utils/storage';
-import { BaselineRegionId, UserStats, GameMode, CategoryId } from '../types';
+import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreakInfo, getBadgeData, persistEarnedBadges, getMissedFlagIds, addGameHistoryEntry, getChallengeName, saveChallengeName, addChallengeToHistory, recordRegionScore, getPersistedLevel, persistLevel } from '../utils/storage';
+import { BaselineRegionId, UserStats, GameMode, CategoryId, BASELINE_REGIONS } from '../types';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
 import { FlagImageSmall } from '../components/FlagImage';
-import { CheckIcon, CrossIcon, ChevronRightIcon, BarChartIcon, GlobeIcon, CalendarIcon, UsersIcon, CrosshairIcon, BadgeIconView } from '../components/Icons';
+import { CheckIcon, CrossIcon, ChevronRightIcon, BarChartIcon, CalendarIcon, UsersIcon, CrosshairIcon, BadgeIconView } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
@@ -32,6 +32,7 @@ import { countCorrect } from '../utils/gameHelpers';
 import { RootStackParamList } from '../types/navigation';
 import { getAllEarnedBadges, detectPerGameBadges, buildBadgeContext, BADGES, TIER_COLORS, EarnedBadge } from '../utils/badges';
 import { getTotalFlagCount, getCategoryCount } from '../data';
+import { computeLevelProgress, getTierLabel, getLevelTier } from '../utils/levels';
 import { encodeChallenge, ChallengeData, CHALLENGE_MODES, generateShortCode, generateChallengeShareCard, encodeResponse } from '../utils/challengeCode';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
@@ -77,20 +78,15 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const heroGlow = useRef(new Animated.Value(0)).current;
   // Review items
   const reviewAnims = useRef(results.map(() => new Animated.Value(0))).current;
-  // Progress bar
-  const progressBarAnim = useRef(new Animated.Value(0)).current;
-
   // Progress data
   const [overallStats, setOverallStats] = useState<UserStats | null>(null);
-  const [countriesSeen, setCountriesSeen] = useState(0);
-  const [totalFlags, setTotalFlags] = useState(0);
   const [dayStreakCount, setDayStreakCount] = useState(0);
   const [newBadges, setNewBadges] = useState<EarnedBadge[]>([]);
   const [totalBadgesEarned, setTotalBadgesEarned] = useState(0);
   const [isNewBestStreak, setIsNewBestStreak] = useState(false);
-  const [newCountriesCount, setNewCountriesCount] = useState(0);
   const [prevAccuracy, setPrevAccuracy] = useState<number | null>(null);
   const [weakFlagCount, setWeakFlagCount] = useState(0);
+  const [levelUpTo, setLevelUpTo] = useState<number | null>(null);
 
   // Challenge modal state
   const [showChallengeModal, setShowChallengeModal] = useState(false);
@@ -250,9 +246,8 @@ export default function ResultsScreen({ route, navigation }: Props) {
         await updateFlagResults(results);
         await addGameHistoryEntry(accuracy, config.mode);
         // Record per-region score for region-based games
-        const regionIds = ['africa', 'asia', 'europe', 'americas', 'oceania'] as const;
-        if (regionIds.includes(config.category as typeof regionIds[number])) {
-          await recordRegionScore(config.category as typeof regionIds[number], correct, results.length);
+        if ((BASELINE_REGIONS as readonly string[]).includes(config.category)) {
+          await recordRegionScore(config.category as BaselineRegionId, correct, results.length);
         }
         if (isDaily) {
           await saveDailyChallenge(results);
@@ -297,27 +292,32 @@ export default function ResultsScreen({ route, navigation }: Props) {
 
       setOverallStats(postStats);
       setDayStreakCount(postDayStreakInfo.current);
-      const totalF = getTotalFlagCount();
-      setTotalFlags(totalF);
-      const seen = Object.values(postFlagStats).filter((fs) => fs.right >= UNLOCK_THRESHOLD).length;
-      const preSeen = Object.values(preFlagStats).filter((fs) => fs.right >= UNLOCK_THRESHOLD).length;
-      setCountriesSeen(seen);
       setNewBadges(postBadges.filter((b) => !preBadgeIds.has(b.id)));
       setTotalBadgesEarned(postBadges.length);
       setIsNewBestStreak(wasNewBestStreak && !reviewOnly);
-      setNewCountriesCount(reviewOnly ? 0 : seen - preSeen);
       setPrevAccuracy(prevAcc);
       setWeakFlagCount(postMissed.length);
 
-      // Animate progress bar after data loads
-      const pct = totalF > 0 ? seen / totalF : 0;
-      Animated.timing(progressBarAnim, {
-        toValue: pct,
-        duration: 800,
-        delay: 200,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: false,
-      }).start();
+      // ── Level-up detection ──
+      if (!reviewOnly) {
+        const prePersisted = await getPersistedLevel();
+        const levelCtx = {
+          stats: postStats,
+          flagStats: postFlagStats,
+          badgeData: { ...postBadgeData, earnedBadgeIds: postBadges.map((b) => b.id) },
+          dayStreakInfo: postDayStreakInfo,
+        };
+        const lp = computeLevelProgress(levelCtx, prePersisted);
+        if (lp.currentLevel > prePersisted) {
+          await persistLevel(lp.currentLevel);
+          setLevelUpTo(lp.currentLevel);
+          // Only fire celebration sound if perfect-score celebration won't already play it
+          if (!isPerfect) {
+            hapticCorrect();
+            playCelebrationSound();
+          }
+        }
+      }
     }
     processResults();
 
@@ -435,7 +435,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
           ? t('results.tryHardMode')
           : t('results.playAgain');
 
-  const progressPct = totalFlags > 0 ? Math.round((countriesSeen / totalFlags) * 100) : 0;
   const dataLoaded = overallStats !== null;
   const accDiff = prevAccuracy !== null ? accuracy - prevAccuracy : null;
   const accInsight = !dataLoaded
@@ -445,12 +444,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
     : accDiff !== null && accDiff > 0 ? t('results.aboveAverage', { pct: accDiff })
     : accDiff !== null && accDiff < 0 ? t('results.belowAverage', { pct: Math.abs(accDiff) })
     : null;
-
-  // Interpolate progress bar width
-  const progressBarWidth = progressBarAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0%', '100%'],
-  });
 
   // Hero glow: interpolate to a warm gold border overlay
   const heroGlowColor = heroGlow.interpolate({
@@ -687,14 +680,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
         {/* ── INSIGHT CHIPS (hidden for challenges) ── */}
         {!reviewOnly && !isChallenge && (
           <Animated.View style={[styles.insightRow, { opacity: restFade }]}>
-            {newCountriesCount > 0 && (
-              <View style={styles.insightChip}>
-                <GlobeIcon size={13} color={colors.success} />
-                <Text style={[styles.insightText, { color: colors.success }]}>
-                  {t('results.newCountries', { count: newCountriesCount })}
-                </Text>
-              </View>
-            )}
             {accInsight && (
               <View style={styles.insightChip}>
                 <BarChartIcon size={13} color={accDiff !== null && accDiff >= 0 ? colors.success : colors.textTertiary} />
@@ -777,27 +762,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
         {/* ── YOUR PROGRESS (animated bar) — hidden for challenges ── */}
         {overallStats && !reviewOnly && !isChallenge && (
           <Animated.View style={[styles.progressSection, { opacity: restFade }]}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>{t('results.yourProgress')}</Text>
-            </View>
-            <View style={styles.progressCard}>
-              <View style={styles.progressTopRow}>
-                <View style={styles.progressStat}>
-                  <Text style={styles.progressStatValue}>{countriesSeen}</Text>
-                  <Text style={styles.progressStatLabel}>
-                    {t('stats.countriesOf', { seen: countriesSeen, total: totalFlags })}
-                  </Text>
-                </View>
-                <View style={styles.progressStat}>
-                  <Text style={styles.progressStatValue}>{overallStats.totalGamesPlayed}</Text>
-                  <Text style={styles.progressStatLabel}>{t('stats.gamesPlayed')}</Text>
-                </View>
-              </View>
-              <View style={styles.progressBarWrap}>
-                <Animated.View style={[styles.progressBarFill, { width: progressBarWidth }]} />
-              </View>
-              <Text style={styles.progressPctLabel}>{t('stats.percentComplete', { pct: progressPct })}</Text>
-            </View>
 
             {weakFlagCount > 0 && (
               <TouchableOpacity
@@ -936,6 +900,38 @@ export default function ResultsScreen({ route, navigation }: Props) {
           </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
+
+      {/* ── Level-up celebration modal ── */}
+      <Modal
+        visible={levelUpTo !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setLevelUpTo(null)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setLevelUpTo(null)}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.closeDialog')}
+        >
+          <TouchableOpacity activeOpacity={1} style={styles.levelUpCard} onPress={() => {}}>
+            <Text style={styles.levelUpTitle}>{t('stats.levelUp')}</Text>
+            <Text style={styles.levelUpNumber}>{levelUpTo}</Text>
+            <Text style={styles.levelUpTier}>{getTierLabel(getLevelTier(levelUpTo ?? 1))}</Text>
+            <Text style={styles.levelUpDesc}>{t('stats.levelReached', { level: levelUpTo })}</Text>
+            <TouchableOpacity
+              style={styles.levelUpButton}
+              onPress={() => setLevelUpTo(null)}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.next')}
+            >
+              <Text style={styles.levelUpButtonText}>{t('common.next')}</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -1053,28 +1049,12 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   badgeTierPill: { borderRadius: borderRadius.full, paddingVertical: 3, paddingHorizontal: 10 },
   badgeTierText: { ...typography.eyebrow },
 
-  // ── Progress
+  // ── Actions
   progressSection: { marginBottom: spacing.md },
-  progressCard: {
-    backgroundColor: colors.surface, borderRadius: borderRadius.lg,
-    borderWidth: 1, borderColor: colors.border, padding: 18,
-  },
-  progressTopRow: { flexDirection: 'row', gap: spacing.lg, marginBottom: 14 },
-  progressStat: { alignItems: 'center', flex: 1 },
-  progressStatValue: { ...typography.statValue, color: colors.ink },
-  progressStatLabel: {
-    ...typography.eyebrow,
-    color: colors.textTertiary, marginTop: spacing.xxs, textAlign: 'center',
-  },
-  progressBarWrap: {
-    height: 7, backgroundColor: colors.border, borderRadius: borderRadius.full, overflow: 'hidden',
-  },
-  progressBarFill: { height: '100%', backgroundColor: colors.accent, borderRadius: borderRadius.full },
-  progressPctLabel: { ...typography.microBold, color: colors.ink, marginTop: 6 },
   practiceButton: {
     flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
     backgroundColor: colors.accentBg, borderRadius: borderRadius.lg,
-    borderWidth: 1.5, borderColor: colors.accent, padding: 14, marginTop: 8,
+    borderWidth: 1.5, borderColor: colors.accent, padding: 14, marginBottom: 8,
   },
   practiceButtonText: {
     ...typography.actionLabel, letterSpacing: 0.8, color: colors.accent,
@@ -1087,7 +1067,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
     gap: spacing.sm, backgroundColor: colors.surface,
     borderRadius: borderRadius.lg, borderWidth: 1, borderColor: colors.border,
-    padding: 14, marginTop: 8,
+    padding: 14,
   },
   viewStatsText: {
     ...typography.actionLabel, letterSpacing: 0.8, color: colors.ink, flex: 1,
@@ -1293,6 +1273,37 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   },
   modalShareDisabled: { backgroundColor: colors.textTertiary },
   modalShareText: {
+    ...typography.actionLabel, color: colors.playText,
+  },
+
+  // ── Level-up celebration
+  levelUpCard: {
+    backgroundColor: colors.surface, borderRadius: borderRadius.xl,
+    padding: spacing.xl, width: '100%', maxWidth: 320,
+    alignItems: 'center', borderWidth: 2, borderColor: colors.goldBright,
+  },
+  levelUpTitle: {
+    ...typography.eyebrow, color: colors.goldBright,
+    letterSpacing: 1.5, marginBottom: spacing.sm,
+  },
+  levelUpNumber: {
+    fontFamily: fontFamily.display, fontSize: 56,
+    color: colors.goldBright, lineHeight: 64,
+  },
+  levelUpTier: {
+    ...typography.bodyBold, color: colors.textSecondary,
+    marginTop: spacing.xxs, marginBottom: spacing.md,
+  },
+  levelUpDesc: {
+    ...typography.body, color: colors.text,
+    textAlign: 'center', marginBottom: spacing.lg,
+  },
+  levelUpButton: {
+    paddingVertical: 14, paddingHorizontal: spacing.xxl,
+    alignItems: 'center', borderRadius: borderRadius.md,
+    backgroundColor: colors.goldBright,
+  },
+  levelUpButtonText: {
     ...typography.actionLabel, color: colors.playText,
   },
 }); };

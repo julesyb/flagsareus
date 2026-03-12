@@ -16,9 +16,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { ThemeColors, spacing, fontFamily, fontSize, borderRadius, typography } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
-import { UserStats, CategoryId, BaselineRegionId } from '../types';
-import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getGameHistory, GameHistoryEntry, getChallengeHistory, ChallengeHistoryEntry, MASTERED_STREAK, UNLOCK_THRESHOLD, getRegionScoreHistory, RegionScoreHistory } from '../utils/storage';
-import { getAllFlags, getTotalFlagCount, getCategoryCount } from '../data';
+import { UserStats, CategoryId, BaselineRegionId, BASELINE_REGIONS } from '../types';
+import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getGameHistory, GameHistoryEntry, getChallengeHistory, ChallengeHistoryEntry, MASTERED_STREAK, UNLOCK_THRESHOLD, getRegionScoreHistory, RegionScoreHistory, getPersistedLevel, persistLevel } from '../utils/storage';
+import { GOOD_ACCURACY_PCT, UNLIMITED_QUESTIONS, TIMEATTACK_DEFAULT_TIME } from '../utils/config';
+import { getAllFlags, getCategoryCount } from '../data';
 
 import { t } from '../utils/i18n';
 import { FlagImageSmall } from '../components/FlagImage';
@@ -26,15 +27,14 @@ import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { getAllEarnedBadges, buildBadgeContext, deriveFromContext, BADGES, TIER_COLORS, getBadgeProgress, Badge } from '../utils/badges';
+import { computeLevelProgress, LevelProgress, getTierLabel, getLevelTier } from '../utils/levels';
 import { ChevronRightIcon, BadgeIconView, UsersIcon, CheckIcon, CrossIcon } from '../components/Icons';
 import PageHeader from '../components/PageHeader';
 
-const REGIONS: CategoryId[] = ['africa', 'asia', 'europe', 'americas', 'oceania'];
 const EMPTY_FLAG_STATS: FlagStats = {};
-const GOOD_ACCURACY_PCT = 70;
 const toPct = (e: { correct: number; total: number } | undefined) =>
   e && e.total > 0 ? Math.round((e.correct / e.total) * 100) : null;
-const TIME_ATTACK_CONFIG = { mode: 'timeattack' as const, category: 'all' as const, questionCount: 999, timeLimit: 60, displayMode: 'flag' as const };
+const TIME_ATTACK_CONFIG = { mode: 'timeattack' as const, category: 'all' as const, questionCount: UNLIMITED_QUESTIONS, timeLimit: TIMEATTACK_DEFAULT_TIME, displayMode: 'flag' as const };
 
 // All async data the stats screen needs, loaded atomically.
 interface StatsData {
@@ -46,15 +46,16 @@ interface StatsData {
   gameHistory: GameHistoryEntry[];
   challengeHistory: ChallengeHistoryEntry[];
   regionScoreHistory: RegionScoreHistory;
+  persistedLevel: number;
 }
 
 async function loadStatsData(): Promise<StatsData> {
-  const [stats, flagStats, dayStreakInfo, badgeData, missed, gameHistory, challengeHistory, regionScoreHistory] =
+  const [stats, flagStats, dayStreakInfo, badgeData, missed, gameHistory, challengeHistory, regionScoreHistory, persistedLevel] =
     await Promise.all([
       getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(),
-      getMissedFlagIds(), getGameHistory(), getChallengeHistory(), getRegionScoreHistory(),
+      getMissedFlagIds(), getGameHistory(), getChallengeHistory(), getRegionScoreHistory(), getPersistedLevel(),
     ]);
-  return { stats, flagStats, dayStreakInfo, badgeData, weakFlagCount: missed.length, gameHistory, challengeHistory, regionScoreHistory };
+  return { stats, flagStats, dayStreakInfo, badgeData, weakFlagCount: missed.length, gameHistory, challengeHistory, regionScoreHistory, persistedLevel };
 }
 
 export default function StatsScreen() {
@@ -106,9 +107,11 @@ export default function StatsScreen() {
 
         const acc = loaded.stats.totalAnswered > 0
           ? Math.round((loaded.stats.totalCorrect / loaded.stats.totalAnswered) * 100) : 0;
-        const totalF = getTotalFlagCount();
-        const seen = Object.values(loaded.flagStats).filter((f) => f.right >= UNLOCK_THRESHOLD).length;
-        const pct = totalF > 0 ? seen / totalF : 0;
+        const lp = computeLevelProgress(
+          { stats: loaded.stats, flagStats: loaded.flagStats, badgeData: loaded.badgeData, dayStreakInfo: loaded.dayStreakInfo },
+          loaded.persistedLevel,
+        );
+        const pct = lp.target > 0 ? Math.min(lp.progress / lp.target, 1) : 0;
 
         if (shouldAnimate) {
           hasAnimated.current = true;
@@ -226,6 +229,16 @@ export default function StatsScreen() {
     return getAllEarnedBadges(badgeCtx, data.badgeData.earnedBadgeIds);
   }, [badgeCtx, data]);
 
+  const levelProgress = React.useMemo<LevelProgress | null>(() => {
+    if (!data) return null;
+    const lp = computeLevelProgress(
+      { stats: data.stats, flagStats: data.flagStats, badgeData: data.badgeData, dayStreakInfo: data.dayStreakInfo },
+      data.persistedLevel,
+    );
+    // Persist new high-water mark (fire-and-forget)
+    persistLevel(lp.currentLevel);
+    return lp;
+  }, [data]);
 
   const activityGrid = React.useMemo(() => {
     const gh = data?.gameHistory ?? [];
@@ -315,13 +328,9 @@ export default function StatsScreen() {
   // ── Destructure for render (data is guaranteed non-null below) ──
   const { stats, challengeHistory, regionScoreHistory } = data;
 
-  const totalFlags = getTotalFlagCount();
-  const countriesSeen = Object.values(flagStats).filter((fs) => fs.right >= UNLOCK_THRESHOLD).length;
-  const progressPct = totalFlags > 0 ? Math.round((countriesSeen / totalFlags) * 100) : 0;
-
   // Region data - show all regions regardless of whether played
-  const regionData = REGIONS.map((regionId) => {
-    const scores = regionScoreHistory[regionId as BaselineRegionId];
+  const regionData = BASELINE_REGIONS.map((regionId) => {
+    const scores = regionScoreHistory[regionId];
     return { id: regionId, scores };
   });
 
@@ -372,25 +381,35 @@ export default function StatsScreen() {
           </View>
         </Animated.View>
 
-        {/* ── COUNTRIES PROGRESS (compact) ── */}
+        {/* ── LEVEL PROGRESS ── */}
+        {levelProgress && (
         <Animated.View style={[styles.tileCompact, { opacity: progressFade }]}>
           <View style={styles.tileCompactRow}>
             <View>
-              <Text style={styles.tileLabel}>{t('stats.countriesUnlocked')}</Text>
-              {countriesSeen < totalFlags && (
-                <Text style={styles.unlockHint}>{t('stats.unlockHint', { count: UNLOCK_THRESHOLD })}</Text>
-              )}
+              <Text style={styles.levelNumber}>{t('stats.level', { level: levelProgress.currentLevel })}</Text>
+              <Text style={styles.levelTier}>{getTierLabel(getLevelTier(levelProgress.currentLevel || 1))}</Text>
             </View>
-            <Text style={styles.tileCompactVal}>{countriesSeen} / {totalFlags}</Text>
+            {!levelProgress.isMaxLevel && (
+              <Text style={styles.tileCompactVal}>{levelProgress.progress} / {levelProgress.target}</Text>
+            )}
           </View>
-          <View style={styles.progressWrap}>
-            <Animated.View style={[styles.progressFill, { width: progressBarWidth }]} />
-          </View>
-          <View style={styles.progressLabels}>
-            <Text style={styles.progressLabelBold}>{t('stats.percentComplete', { pct: progressPct })}</Text>
-            <Text style={styles.progressLabelMuted}>{t('stats.toGo', { count: totalFlags - countriesSeen })}</Text>
-          </View>
+          {!levelProgress.isMaxLevel && (
+            <>
+              <View style={styles.progressWrap}>
+                <Animated.View style={[styles.progressFill, { width: progressBarWidth }]} />
+              </View>
+              <View style={styles.progressLabels}>
+                <Text style={styles.progressLabelBold}>{t('stats.nextGoal')}</Text>
+                <Text style={styles.progressLabelMuted}>{t('stats.percentComplete', { pct: levelProgress.pct })}</Text>
+              </View>
+              <Text style={styles.levelGoalDesc}>{levelProgress.description}</Text>
+            </>
+          )}
+          {levelProgress.isMaxLevel && (
+            <Text style={styles.levelGoalDesc}>{t('stats.levelMaxed')}</Text>
+          )}
         </Animated.View>
+        )}
 
         {/* ── ACTIVITY HEATMAP (last 28 days, 7x4 grid) ── */}
         {activityGrid.hasActivity && (
@@ -864,6 +883,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderColor: colors.border,
     padding: 12,
     paddingHorizontal: 14,
+    marginBottom: spacing.sm,
   },
   tileCompactRow: {
     flexDirection: 'row',
@@ -875,14 +895,25 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     ...typography.bodyBold,
     color: colors.ink,
   },
-  tileLabel: {
-    ...typography.eyebrow,
-    color: colors.textTertiary,
+  levelNumber: {
+    fontFamily: fontFamily.display,
+    fontSize: fontSize.xl,
+    color: colors.goldBright,
+    letterSpacing: -0.5,
+    lineHeight: 28,
   },
-  unlockHint: {
+  levelTier: {
     ...typography.micro,
     color: colors.textTertiary,
-    marginTop: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginTop: 1,
+  },
+  levelGoalDesc: {
+    ...typography.micro,
+    color: colors.textSecondary,
+    marginTop: 6,
+    fontStyle: 'italic',
   },
 
   // ── Progress

@@ -36,14 +36,16 @@ import {
   LinkIcon,
   ChevronRightIcon,
 } from '../components/Icons';
+import {
+  SETUP_QUESTION_COUNTS,
+  FLAGPUZZLE_TIMES,
+  TIMEATTACK_TIMES,
+  DEFAULT_GUESS_LIMIT,
+  GUESS_LIMIT_OPTIONS,
+  UNLIMITED_QUESTIONS,
+} from '../utils/config';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'GameSetup'>;
-
-const QUESTION_COUNTS = [10, 20, 50, 100];
-const FLAGPUZZLE_TIMES = [15, 30, 60];
-const TIMEATTACK_TIMES = [30, 60, 90, 120];
-const DEFAULT_GUESS_LIMIT = 3;
-const GUESS_LIMIT_OPTIONS = [3, 5, 0] as const; // 0 = unlimited
 
 type SetupMode = 'quiz' | 'flashflag' | 'flagpuzzle' | 'timeattack' | 'neighbors' | 'capitalconnection';
 type QuizDifficulty = 'easy' | 'medium' | 'hard';
@@ -159,7 +161,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
     const config: GameConfig = {
       mode: resolvedMode,
       category: selectedCategory,
-      questionCount: (isTimeAttack || isFlashFlag) ? 999 : effectiveQuestionCount,
+      questionCount: (isTimeAttack || isFlashFlag) ? UNLIMITED_QUESTIONS : effectiveQuestionCount,
       ...(showMapToggle && { displayMode }),
       ...(hasTimeLimit && { timeLimit }),
       ...(difficulty === 'hard' && isQuiz && { autocomplete }),
@@ -338,7 +340,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
           {/* Question Count (for FlagPuzzle within time modes) */}
           {hasTimeLimit && isFlagPuzzle && (
             <ConfigRow label={t('setup.questions')}>
-              {QUESTION_COUNTS.map((count) => (
+              {SETUP_QUESTION_COUNTS.map((count) => (
                 <SegBtn
                   key={count}
                   label={String(count)}
@@ -359,7 +361,7 @@ export default function GameSetupScreen({ route, navigation }: Props) {
           {/* Question Count (everything except Flash Flag/TimeAttack/FlagPuzzle) */}
           {showQuestionCount && (
             <ConfigRow label={t('setup.questions')}>
-              {QUESTION_COUNTS.map((count) => (
+              {SETUP_QUESTION_COUNTS.map((count) => (
                 <SegBtn
                   key={count}
                   label={String(count)}
