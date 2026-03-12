@@ -378,7 +378,7 @@ export interface ChallengeResponseData {
 export function encodeResponse(data: ChallengeResponseData): string {
   const name = sanitizeName(data.recipientName);
   const base = `R~${name}~${data.shortCode}~${data.recipientScore}~${data.totalFlags}`;
-  if (data.resultDetails && data.resultDetails.length > 0) {
+  if (data.resultDetails && data.resultDetails.length > 0 && data.resultDetails.length === data.totalFlags) {
     let bits = 0;
     for (const correct of data.resultDetails) {
       bits = (bits << 1) | (correct ? 1 : 0);
