@@ -145,6 +145,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
       opponentScore: null,
       direction: 'sent',
       fullCode: code,
+      myResults: results.map((r) => r.correct),
     });
     try {
       await Share.share({ message });
@@ -179,6 +180,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
       shortCode,
       recipientScore: correct,
       totalFlags: results.length,
+      resultDetails: results.map((r) => r.correct),
     });
     const link = `${APP_URL}/r/${responseCode}`;
     const message = t('challenge.responseShareCard', {
@@ -272,6 +274,8 @@ export default function ResultsScreen({ route, navigation }: Props) {
             opponentScore: hostScore,
             direction: 'received',
             fullCode: encodeChallenge(challenge) || '',
+            myResults: results.map((r) => r.correct),
+            opponentResults: challenge.hostResults.map((r) => r.correct),
           });
         }
       }

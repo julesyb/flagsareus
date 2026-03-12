@@ -33,6 +33,7 @@ export default function ChallengeResponseScreen({ route, navigation }: Props) {
     name?: string;
     score?: number;
     total?: number;
+    shortCode?: string;
   }>({ status: 'loading' });
 
   useEffect(() => {
@@ -48,11 +49,11 @@ export default function ChallengeResponseScreen({ route, navigation }: Props) {
       return;
     }
 
-    const { recipientName, shortCode, recipientScore, totalFlags } = decoded.data;
-    updateSentChallengeWithOpponent(shortCode, recipientName, recipientScore).then((found) => {
+    const { recipientName, shortCode, recipientScore, totalFlags, resultDetails } = decoded.data;
+    updateSentChallengeWithOpponent(shortCode, recipientName, recipientScore, resultDetails).then((found) => {
       if (found) {
         hapticCorrect();
-        setResult({ status: 'success', name: recipientName, score: recipientScore, total: totalFlags });
+        setResult({ status: 'success', name: recipientName, score: recipientScore, total: totalFlags, shortCode });
       } else {
         hapticWrong();
         setResult({ status: 'not_found', name: recipientName, score: recipientScore, total: totalFlags });
@@ -88,7 +89,7 @@ export default function ChallengeResponseScreen({ route, navigation }: Props) {
               </Text>
               <TouchableOpacity
                 style={styles.primaryButton}
-                onPress={() => navigation.navigate('Stats')}
+                onPress={() => navigation.navigate('Stats', { highlightChallenge: result.shortCode })}
                 activeOpacity={0.7}
                 accessibilityRole="button"
                 accessibilityLabel={t('stats.challengeDetail')}

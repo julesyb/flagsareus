@@ -11,7 +11,7 @@ import {
   Easing,
   Modal,
 } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { ThemeColors, spacing, fontFamily, fontSize, borderRadius, typography } from '../utils/theme';
@@ -59,6 +59,8 @@ async function loadStatsData(): Promise<StatsData> {
 
 export default function StatsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'Stats'>>();
+  const highlightChallenge = route.params?.highlightChallenge;
   const onNavigate = useNavTabs();
   const { colors } = useTheme();
   const styles = React.useMemo(() => createStyles(colors), [colors]);
@@ -167,6 +169,18 @@ export default function StatsScreen() {
       };
     }, []),
   );
+
+  // Auto-open challenge detail when navigated with highlightChallenge param
+  const highlightHandled = useRef(false);
+  React.useEffect(() => {
+    if (highlightChallenge && data && !highlightHandled.current) {
+      const match = data.challengeHistory.find((ch) => ch.shortCode === highlightChallenge);
+      if (match) {
+        highlightHandled.current = true;
+        setSelectedChallenge(match);
+      }
+    }
+  }, [highlightChallenge, data]);
 
   const flagStats = data?.flagStats ?? EMPTY_FLAG_STATS;
 
@@ -753,6 +767,30 @@ export default function StatsScreen() {
                         : `${ch.myScore}/${ch.totalFlags}`}
                     </Text>
                   </View>
+
+                  {/* Per-question result details */}
+                  {(ch.myResults || ch.opponentResults) && (
+                    <View style={styles.h2hDetailsWrap}>
+                      <View style={styles.h2hDetailsHeader}>
+                        <Text style={styles.h2hDetailsLabel}>{ch.myName || t('challenge.you')}</Text>
+                        <Text style={[styles.h2hDetailsLabel, { textAlign: 'center' }]}>Q</Text>
+                        {hasOpponent && <Text style={[styles.h2hDetailsLabel, { textAlign: 'right' }]}>{ch.opponentName}</Text>}
+                      </View>
+                      {Array.from({ length: ch.totalFlags }).map((_, qi) => {
+                        const myOk = ch.myResults ? ch.myResults[qi] : undefined;
+                        const oppOk = ch.opponentResults ? ch.opponentResults[qi] : undefined;
+                        return (
+                          <View key={qi} style={styles.h2hDetailsRow}>
+                            <View style={[styles.h2hDot, { backgroundColor: myOk === undefined ? colors.surfaceSecondary : myOk ? colors.success : colors.error }]} />
+                            <Text style={styles.h2hDetailsQ}>{qi + 1}</Text>
+                            {hasOpponent && (
+                              <View style={[styles.h2hDot, { backgroundColor: oppOk === undefined ? colors.surfaceSecondary : oppOk ? colors.success : colors.error }]} />
+                            )}
+                          </View>
+                        );
+                      })}
+                    </View>
+                  )}
                 </>
               );
             })()}
@@ -1269,5 +1307,42 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   h2hVs: {
     ...typography.caption,
     color: colors.textTertiary,
+  },
+  h2hDetailsWrap: {
+    width: '100%',
+    marginTop: spacing.lg,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  h2hDetailsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+    paddingHorizontal: spacing.sm,
+  },
+  h2hDetailsLabel: {
+    ...typography.caption,
+    color: colors.textTertiary,
+    flex: 1,
+  },
+  h2hDetailsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 3,
+    paddingHorizontal: spacing.sm,
+  },
+  h2hDetailsQ: {
+    ...typography.caption,
+    color: colors.textTertiary,
+    textAlign: 'center',
+    width: 24,
+  },
+  h2hDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
   },
 });
