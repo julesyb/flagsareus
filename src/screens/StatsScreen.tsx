@@ -17,7 +17,7 @@ import { RootStackParamList } from '../types/navigation';
 import { ThemeColors, spacing, fontFamily, fontSize, borderRadius, typography } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { UserStats, CategoryId, BaselineRegionId } from '../types';
-import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData, getChallengeHistory, ChallengeHistoryEntry, MASTERED_STREAK, getRegionScoreHistory, RegionScoreHistory } from '../utils/storage';
+import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getGameHistory, GameHistoryEntry, getChallengeHistory, ChallengeHistoryEntry, MASTERED_STREAK, getRegionScoreHistory, RegionScoreHistory } from '../utils/storage';
 import { getAllFlags, getTotalFlagCount } from '../data';
 
 import { t } from '../utils/i18n';
@@ -31,6 +31,7 @@ import { ChevronRightIcon, BadgeIconView, UsersIcon } from '../components/Icons'
 const REGIONS: CategoryId[] = ['africa', 'asia', 'europe', 'americas', 'oceania'];
 const EMPTY_FLAG_STATS: FlagStats = {};
 const GOOD_ACCURACY_PCT = 70;
+const TIME_ATTACK_CONFIG = { mode: 'timeattack' as const, category: 'all' as const, questionCount: 999, timeLimit: 60, displayMode: 'flag' as const };
 
 // All async data the stats screen needs, loaded atomically.
 interface StatsData {
@@ -40,18 +41,17 @@ interface StatsData {
   badgeData: BadgeData;
   weakFlagCount: number;
   gameHistory: GameHistoryEntry[];
-  baseline: BaselineData | null;
   challengeHistory: ChallengeHistoryEntry[];
   regionScoreHistory: RegionScoreHistory;
 }
 
 async function loadStatsData(): Promise<StatsData> {
-  const [stats, flagStats, dayStreakInfo, badgeData, missed, gameHistory, baseline, challengeHistory, regionScoreHistory] =
+  const [stats, flagStats, dayStreakInfo, badgeData, missed, gameHistory, challengeHistory, regionScoreHistory] =
     await Promise.all([
       getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(),
-      getMissedFlagIds(), getGameHistory(), getBaselineData(), getChallengeHistory(), getRegionScoreHistory(),
+      getMissedFlagIds(), getGameHistory(), getChallengeHistory(), getRegionScoreHistory(),
     ]);
-  return { stats, flagStats, dayStreakInfo, badgeData, weakFlagCount: missed.length, gameHistory, baseline, challengeHistory, regionScoreHistory };
+  return { stats, flagStats, dayStreakInfo, badgeData, weakFlagCount: missed.length, gameHistory, challengeHistory, regionScoreHistory };
 }
 
 export default function StatsScreen() {
@@ -223,12 +223,10 @@ export default function StatsScreen() {
       countMap.set(entry.date, (countMap.get(entry.date) || 0) + 1);
     }
 
-    // Find the most recent Friday (or today if Friday), then go back 27 days to Saturday
+    // End on the most recent Friday (or today if Friday), start on Saturday 27 days before
     const endDate = new Date(today);
     const dayOfWeek = endDate.getDay(); // 0=Sun...6=Sat
-    // We want Friday (5) as the last day
-    const daysUntilFriday = dayOfWeek <= 5 ? 5 - dayOfWeek : 6; // days forward to next Friday
-    // Actually we want the most recent Friday (including today)
+    // Days since last Friday: Fri(5)=0, Sat(6)=1, Sun(0)=2, Mon(1)=3...
     const daysSinceFriday = dayOfWeek >= 5 ? dayOfWeek - 5 : dayOfWeek + 2;
     endDate.setDate(endDate.getDate() - daysSinceFriday);
 
@@ -309,10 +307,8 @@ export default function StatsScreen() {
 
   // Region data - show all regions regardless of whether played
   const regionData = REGIONS.map((regionId) => {
-    const cs = stats.categoryStats[regionId];
-    const pct = cs && cs.total > 0 ? Math.round((cs.correct / cs.total) * 100) : 0;
     const scores = regionScoreHistory[regionId as BaselineRegionId];
-    return { id: regionId, pct, correct: cs?.correct ?? 0, total: cs?.total ?? 0, scores };
+    return { id: regionId, scores };
   });
 
   const progressBarWidth = progressBarAnim.interpolate({
@@ -430,23 +426,27 @@ export default function StatsScreen() {
 
           <View style={styles.regionCards}>
             {regionData.map(({ id, scores }) => {
-              const formatScore = (entry: { correct: number; total: number } | undefined) =>
-                entry ? `${Math.round((entry.correct / entry.total) * 100)}%` : t('stats.notPlayed');
+              const toPct = (e: { correct: number; total: number } | undefined) =>
+                e && e.total > 0 ? Math.round((e.correct / e.total) * 100) : null;
+              const firstPct = toPct(scores?.first);
+              const bestPct = toPct(scores?.best);
+              const recentPct = toPct(scores?.mostRecent);
+              const dash = t('stats.notPlayed');
               return (
                 <View key={id} style={styles.regionScoreCard}>
                   <Text style={styles.regionScoreTitle}>{t(`categories.${id}`)}</Text>
                   <View style={styles.regionScoreRow}>
                     <View style={styles.regionScoreCol}>
                       <Text style={styles.regionScoreLabel}>{t('stats.firstScore')}</Text>
-                      <Text style={[styles.regionScoreValue, !scores?.first && styles.regionScoreEmpty]}>{formatScore(scores?.first)}</Text>
+                      <Text style={[styles.regionScoreValue, firstPct === null && styles.regionScoreEmpty]}>{firstPct !== null ? `${firstPct}%` : dash}</Text>
                     </View>
                     <View style={[styles.regionScoreCol, styles.regionScoreColDivider]}>
                       <Text style={styles.regionScoreLabel}>{t('stats.bestScore')}</Text>
-                      <Text style={[styles.regionScoreValue, scores?.best && (scores.best.total > 0 && Math.round((scores.best.correct / scores.best.total) * 100) >= GOOD_ACCURACY_PCT) && { color: colors.success }, !scores?.best && styles.regionScoreEmpty]}>{formatScore(scores?.best)}</Text>
+                      <Text style={[styles.regionScoreValue, bestPct !== null && bestPct >= GOOD_ACCURACY_PCT && { color: colors.success }, bestPct === null && styles.regionScoreEmpty]}>{bestPct !== null ? `${bestPct}%` : dash}</Text>
                     </View>
                     <View style={[styles.regionScoreCol, styles.regionScoreColDivider]}>
                       <Text style={styles.regionScoreLabel}>{t('stats.recentScore')}</Text>
-                      <Text style={[styles.regionScoreValue, !scores?.mostRecent && styles.regionScoreEmpty]}>{formatScore(scores?.mostRecent)}</Text>
+                      <Text style={[styles.regionScoreValue, recentPct === null && styles.regionScoreEmpty]}>{recentPct !== null ? `${recentPct}%` : dash}</Text>
                     </View>
                   </View>
                   <TouchableOpacity
@@ -653,7 +653,7 @@ export default function StatsScreen() {
           activeOpacity={1}
           onPress={() => setSelectedBadge(null)}
         >
-          <View style={styles.modalCard}>
+          <View style={styles.modalCard} onStartShouldSetResponder={() => true}>
             {selectedBadge && (() => {
               const isEarned = earnedBadges.some((b) => b.id === selectedBadge.id);
               const tierColor = TIER_COLORS[selectedBadge.tier];
@@ -703,7 +703,7 @@ export default function StatsScreen() {
           activeOpacity={1}
           onPress={() => setSelectedChallenge(null)}
         >
-          <View style={styles.modalCard}>
+          <View style={styles.modalCard} onStartShouldSetResponder={() => true}>
             {selectedChallenge && (() => {
               const ch = selectedChallenge;
               const hasOpponent = ch.opponentName !== null && ch.opponentScore !== null;
@@ -812,13 +812,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   },
 
   // ── Tiles
-  tile: {
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 18,
-  },
   tileCompact: {
     backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
@@ -839,15 +832,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   tileLabel: {
     ...typography.eyebrow,
-    color: colors.textTertiary,
-  },
-  tileVal: {
-    ...typography.displayValue,
-    lineHeight: 40,
-    color: colors.ink,
-  },
-  tileUnit: {
-    ...typography.label,
     color: colors.textTertiary,
   },
 
@@ -1045,28 +1029,6 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     ...typography.microBold,
     color: colors.ink,
   },
-  challengeVs: {
-    ...typography.micro,
-    color: colors.textTertiary,
-    marginHorizontal: 4,
-  },
-  challengeResult: {
-    ...typography.microMedium,
-    marginTop: 2,
-  },
-  challengeDirectionPill: {
-    backgroundColor: colors.surfaceSecondary,
-    borderRadius: borderRadius.full,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-  },
-  challengeDirectionText: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
-    letterSpacing: 0.6,
-    textTransform: 'uppercase',
-    color: colors.textTertiary,
-  },
 
   // ── Badges
   badgeGrid: {
@@ -1110,7 +1072,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderRadius: borderRadius.full,
   },
 
-  // ── Activity Heatmap (wider ovals)
+  // ── Activity Heatmap (wider ovals, full-width)
   heatmapCard: {
     flexDirection: 'column',
     gap: spacing.xs,
@@ -1118,7 +1080,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   },
   heatmapDayRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: spacing.xs,
   },
   heatmapDayLabel: {
     flex: 1,
@@ -1134,8 +1096,9 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     gap: spacing.xs,
   },
   heatmapDot: {
-    flex: 1,
-    minWidth: 0,
+    // ~14.28% minus gap share = approx 1/7th of row
+    flexBasis: '12.5%',
+    flexGrow: 1,
     height: 14,
     borderRadius: 5,
     backgroundColor: colors.surfaceSecondary,
