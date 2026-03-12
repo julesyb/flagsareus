@@ -31,6 +31,7 @@ import { useNavTabs } from '../hooks/useNavTabs';
 import { getAllEarnedBadges, buildBadgeContext, deriveFromContext, BADGES, TIER_COLORS, getBadgeProgress, getBadgeName, getBadgeDescription, Badge } from '../utils/badges';
 import { computeLevelProgress, LevelProgress, getTierLabel, getLevelTier } from '../utils/levels';
 import { ChevronRightIcon, BadgeIconView, UsersIcon, CheckIcon, CrossIcon, FlameIcon, CopyIcon } from '../components/Icons';
+import { hapticTap } from '../utils/feedback';
 import { decodeChallenge } from '../utils/challengeCode';
 import PageHeader from '../components/PageHeader';
 
@@ -865,14 +866,17 @@ export default function StatsScreen() {
 
                   {ch.fullCode ? (
                     <TouchableOpacity
-                      style={[styles.copyCodeBtn, codeCopied && { backgroundColor: colors.successBg }]}
+                      style={[styles.copyCodeBtn, codeCopied && styles.copyCodeBtnCopied]}
                       activeOpacity={0.7}
                       accessibilityRole="button"
                       accessibilityLabel={t('challenge.copyCode')}
                       onPress={async () => {
-                        await Clipboard.setStringAsync(ch.fullCode);
-                        setCodeCopied(true);
-                        setTimeout(() => setCodeCopied(false), 2000);
+                        hapticTap();
+                        try {
+                          await Clipboard.setStringAsync(ch.fullCode);
+                          setCodeCopied(true);
+                          setTimeout(() => setCodeCopied(false), 2000);
+                        } catch { /* clipboard unavailable on some platforms */ }
                       }}
                     >
                       {codeCopied ? (
@@ -880,7 +884,7 @@ export default function StatsScreen() {
                       ) : (
                         <CopyIcon size={14} color={colors.textSecondary} />
                       )}
-                      <Text style={[styles.copyCodeText, codeCopied && { color: colors.success }]}>
+                      <Text style={[styles.copyCodeText, codeCopied && styles.copyCodeTextCopied]}>
                         {codeCopied ? t('challenge.codeCopied') : t('challenge.copyCode')}
                       </Text>
                     </TouchableOpacity>
@@ -1511,5 +1515,11 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   copyCodeText: {
     ...typography.captionStrong,
     color: colors.textSecondary,
+  },
+  copyCodeBtnCopied: {
+    backgroundColor: colors.successBg,
+  },
+  copyCodeTextCopied: {
+    color: colors.success,
   },
 });

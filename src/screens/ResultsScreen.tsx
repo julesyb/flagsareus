@@ -40,7 +40,6 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
 // ── Extracted helpers for processResults ──
 
 interface PreGameSnapshot {
-  preStats: UserStats;
   preFlagStats: Awaited<ReturnType<typeof getFlagStats>>;
   preBadgeIds: Set<string>;
   wasNewBestStreak: boolean;
@@ -55,7 +54,7 @@ async function snapshotPreGameState(streak: number): Promise<PreGameSnapshot> {
 
   const wasNewBestStreak = streak > preStats.bestStreak;
 
-  return { preStats, preFlagStats, preBadgeIds, wasNewBestStreak };
+  return { preFlagStats, preBadgeIds, wasNewBestStreak };
 }
 
 async function persistGameData(
