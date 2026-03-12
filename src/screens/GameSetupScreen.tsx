@@ -8,7 +8,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius } from '../utils/theme';
+import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius, shadows } from '../utils/theme';
 import {
   GameMode,
   DisplayMode,
@@ -46,12 +46,12 @@ type SetupMode = 'quiz' | 'flagflash' | 'flagpuzzle' | 'timeattack' | 'neighbors
 type QuizDifficulty = 'easy' | 'medium' | 'hard';
 
 const SETUP_MODES: { key: SetupMode; labelKey: string; descKey: string; icon: (active: boolean) => React.ReactNode }[] = [
-  { key: 'quiz', labelKey: 'setup.quiz', descKey: 'setup.quizDesc', icon: (a) => <FlagIcon size={18} color={a ? colors.white : colors.textSecondary} /> },
-  { key: 'flagflash', labelKey: 'setup.flagFlash', descKey: 'setup.flagFlashDesc', icon: (a) => <LightningIcon size={18} color={a ? colors.white : colors.textSecondary} /> },
-  { key: 'flagpuzzle', labelKey: 'setup.flagPuzzle', descKey: 'setup.flagPuzzleDesc', icon: (a) => <PuzzleIcon size={18} color={a ? colors.white : colors.textSecondary} /> },
-  { key: 'timeattack', labelKey: 'setup.timedQuiz', descKey: 'setup.timedQuizDesc', icon: (a) => <ClockIcon size={18} color={a ? colors.white : colors.textSecondary} /> },
-  { key: 'neighbors', labelKey: 'setup.neighbors', descKey: 'setup.neighborsDesc', icon: (a) => <UsersIcon size={18} color={a ? colors.white : colors.textSecondary} /> },
-  { key: 'capitalconnection', labelKey: 'setup.capitalQuiz', descKey: 'setup.capitalQuizDesc', icon: (a) => <LinkIcon size={18} color={a ? colors.white : colors.textSecondary} /> },
+  { key: 'quiz', labelKey: 'setup.quiz', descKey: 'setup.quizDesc', icon: (a) => <FlagIcon size={18} color={a ? colors.goldBright : colors.textTertiary} /> },
+  { key: 'flagflash', labelKey: 'setup.flagFlash', descKey: 'setup.flagFlashDesc', icon: (a) => <LightningIcon size={18} color={a ? colors.goldBright : colors.textTertiary} /> },
+  { key: 'flagpuzzle', labelKey: 'setup.flagPuzzle', descKey: 'setup.flagPuzzleDesc', icon: (a) => <PuzzleIcon size={18} color={a ? colors.goldBright : colors.textTertiary} /> },
+  { key: 'timeattack', labelKey: 'setup.timedQuiz', descKey: 'setup.timedQuizDesc', icon: (a) => <ClockIcon size={18} color={a ? colors.goldBright : colors.textTertiary} /> },
+  { key: 'neighbors', labelKey: 'setup.neighbors', descKey: 'setup.neighborsDesc', icon: (a) => <UsersIcon size={18} color={a ? colors.goldBright : colors.textTertiary} /> },
+  { key: 'capitalconnection', labelKey: 'setup.capitalQuiz', descKey: 'setup.capitalQuizDesc', icon: (a) => <LinkIcon size={18} color={a ? colors.goldBright : colors.textTertiary} /> },
 ];
 
 const DIFFICULTIES: { key: QuizDifficulty; labelKey: string }[] = [
@@ -240,23 +240,49 @@ export default function GameSetupScreen({ route, navigation }: Props) {
           })}
         </View>
 
+        {/* Difficulty hero section (only for Quiz mode) */}
+        {isQuiz && (
+          <View style={styles.diffSection}>
+            <Text style={styles.diffLabel}>{t('home.difficulty')}</Text>
+            <View style={styles.diffGrid}>
+              {DIFFICULTIES.map((d) => {
+                const isActive = difficulty === d.key;
+                const diffColor = d.key === 'easy' ? colors.diffEasy
+                  : d.key === 'hard' ? colors.diffHard
+                  : colors.diffMedium;
+                const diffBg = d.key === 'easy' ? colors.diffEasyBg
+                  : d.key === 'hard' ? colors.diffHardBg
+                  : colors.diffMediumBg;
+                const diffBorder = d.key === 'easy' ? colors.diffEasyBorder
+                  : d.key === 'hard' ? colors.diffHardBorder
+                  : colors.diffMediumBorder;
+                return (
+                  <TouchableOpacity
+                    key={d.key}
+                    style={[
+                      styles.diffBtn,
+                      isActive && { backgroundColor: diffBg, borderColor: diffBorder },
+                    ]}
+                    onPress={() => { hapticTap(); setDifficulty(d.key); }}
+                    activeOpacity={0.7}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: isActive }}
+                  >
+                    <Text style={[
+                      styles.diffBtnText,
+                      isActive && { color: diffColor },
+                    ]}>{t(d.labelKey)}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
         {/* Options card - compact rows matching HomeScreen config style */}
         <View style={styles.configCard}>
-          {/* Difficulty (only for Quiz mode) */}
-          {isQuiz && (
-            <ConfigRow label={t('home.difficulty')}>
-              {DIFFICULTIES.map((d) => (
-                <SegBtn
-                  key={d.key}
-                  label={t(d.labelKey)}
-                  active={difficulty === d.key}
-                  onPress={() => setDifficulty(d.key)}
-                />
-              ))}
-            </ConfigRow>
-          )}
 
-          {/* Autocomplete (only for Hard quiz) */}
+          {/* Autocomplete (only for Hard quiz - first row, no divider above) */}
           {isQuiz && difficulty === 'hard' && (
             <ConfigRow label={t('home.hints')}>
               <SegBtn label={t('common.off')} active={!autocomplete} onPress={() => setAutocomplete(false)} />
@@ -406,7 +432,11 @@ export default function GameSetupScreen({ route, navigation }: Props) {
       {/* Pinned start button */}
       <View style={styles.startButtonWrap}>
         <TouchableOpacity
-          style={styles.startButton}
+          style={[
+            styles.startButton,
+            isQuiz && difficulty === 'easy' && { backgroundColor: colors.diffEasy },
+            isQuiz && difficulty === 'hard' && { backgroundColor: colors.diffHard },
+          ]}
           onPress={startGame}
           activeOpacity={0.8}
           accessibilityRole="button"
@@ -442,6 +472,40 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
 
+  // Difficulty hero section
+  diffSection: {
+    marginTop: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  diffLabel: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.xxs,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: colors.textTertiary,
+    marginBottom: spacing.sm,
+  },
+  diffGrid: {
+    flexDirection: 'row',
+    gap: 7,
+  },
+  diffBtn: {
+    flex: 1,
+    paddingVertical: 13,
+    paddingHorizontal: 8,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+  },
+  diffBtnText: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.caption - 0.5,
+    color: colors.textTertiary,
+    letterSpacing: -0.1,
+  },
+
   // Section labels - small eyebrow style for form sections
   sectionLabel: {
     ...typography.eyebrow,
@@ -473,8 +537,8 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
   },
   modeCardActive: {
-    borderColor: colors.ink,
-    backgroundColor: colors.ink,
+    borderColor: 'rgba(233, 186, 76, 0.50)',
+    backgroundColor: 'rgba(233, 186, 76, 0.10)',
   },
   modeIconBadge: {
     width: 36,
@@ -486,14 +550,14 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   modeIconBadgeActive: {
-    backgroundColor: colors.whiteAlpha15,
+    backgroundColor: 'rgba(233, 186, 76, 0.15)',
   },
   modeLabel: {
     ...typography.bodyBold,
     color: colors.text,
   },
   modeLabelActive: {
-    color: colors.white,
+    color: colors.goldBright,
   },
   modeDesc: {
     ...typography.caption,
@@ -502,7 +566,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modeDescActive: {
-    color: colors.whiteAlpha60,
+    color: colors.textTertiary,
   },
 
   // Config card - compact rows matching HomeScreen pattern

@@ -12,7 +12,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { colors, fontFamily, fontSize, spacing, borderRadius, shadows } from '../utils/theme';
+import { colors, fontFamily, fontSize, spacing, borderRadius, shadows, buttons } from '../utils/theme';
 import { getTotalFlagCount, getCategoryCount } from '../data';
 import { initAudio, hapticTap, hapticCorrect, hapticWrong, playWrongSound, setSoundsEnabled, setHapticsEnabled } from '../utils/feedback';
 import { getStats, getDayStreak, getSettings, getMissedFlagIds, getBaselineData, BaselineData } from '../utils/storage';
@@ -221,30 +221,35 @@ export default function HomeScreen({ navigation }: Props) {
         <ScreenContainer>
         {/* ── HEADER ── */}
         <View style={s.header}>
-          <View style={s.wordmark}>
-            <Text style={s.wmLine1}>Flag</Text>
-            <Text style={s.wmLine2}>That</Text>
-          </View>
-          <View style={s.headerRight}>
-            {dayStreak > 0 ? (
-              <>
-                <Text style={s.streakVal}>{dayStreak}</Text>
-                <Text style={s.streakLbl}>{t('home.dayStreak')}</Text>
-              </>
-            ) : (
-              <>
-                <Text style={s.streakVal}>{totalFlags}</Text>
-                <Text style={s.streakLblMuted}>{t('home.countries')}</Text>
-              </>
-            )}
-          </View>
-          <TouchableOpacity
-            style={s.settingsBtn}
-            onPress={() => navigation.navigate('Settings')}
-            activeOpacity={0.6}
-          >
-            <GearIcon size={20} color={colors.textTertiary} />
-          </TouchableOpacity>
+          <Text style={s.wordmark}>
+            <Text style={s.wmFlag}>Flag</Text>
+            <Text style={s.wmThat}>That</Text>
+          </Text>
+          {dayStreak > 0 ? (
+            <TouchableOpacity
+              style={s.streakBadge}
+              onPress={() => navigation.navigate('Stats')}
+              activeOpacity={0.7}
+            >
+              <Text style={s.streakNum}>{dayStreak}</Text>
+              <View style={s.streakMeta}>
+                <Text style={s.streakLabel}>{t('home.dayStreak')}</Text>
+                <View style={s.streakPips}>
+                  {Array.from({ length: 7 }).map((_, i) => (
+                    <View key={i} style={[s.pip, i < Math.min(dayStreak, 7) && s.pipLit]} />
+                  ))}
+                </View>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={s.settingsBtn}
+              onPress={() => navigation.navigate('Settings')}
+              activeOpacity={0.6}
+            >
+              <GearIcon size={20} color={colors.textTertiary} />
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* ── ONBOARDING PROGRESS ── */}
@@ -326,10 +331,8 @@ export default function HomeScreen({ navigation }: Props) {
         {/* ── PLAY NOW ── */}
         <View style={s.playWrap}>
           <TouchableOpacity style={s.playBtn} onPress={play} activeOpacity={0.85}>
-            <View style={s.playBolt}>
-              <PlayIcon size={14} color={colors.white} />
-            </View>
             <Text style={s.playBtnText}>{t('home.playNow')}</Text>
+            <PlayIcon size={14} color={colors.white} />
           </TouchableOpacity>
         </View>
 
@@ -401,89 +404,80 @@ export default function HomeScreen({ navigation }: Props) {
 
         {/* ── GAME MODES ── */}
         <View style={s.sectionWrap}>
-          <Text style={s.sectionLbl}>{t('home.gameModes')}</Text>
+          <View style={s.sectionHead}>
+            <Text style={s.sectionLbl}>{t('home.gameModes')}</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('GameSetup')} activeOpacity={0.7}>
+              <Text style={s.sectionAll}>{t('common.all')}</Text>
+            </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity
-            style={s.modeCard}
-            activeOpacity={0.85}
-            onPress={() => {
-              hapticTap();
-              navigation.navigate('FlagImpostor', {
-                config: { mode: 'impostor', category: 'all', questionCount: 10, displayMode: 'flag' },
-              });
-            }}
-          >
-            <View style={s.modeIcon}>
-              <EyeIcon size={18} color={colors.white} />
-            </View>
-            <View style={s.modeText}>
-              <Text style={s.modeTitle}>{t('home.flagImpostor')}</Text>
-              <Text style={s.modeSub}>{t('home.flagImpostorDesc')}</Text>
-            </View>
-            <ChevronRightIcon size={18} color={colors.rule} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={s.modeCard}
-            activeOpacity={0.85}
-            onPress={() => {
-              hapticTap();
-              navigation.navigate('Game', {
-                config: { mode: 'timeattack', category: 'all', questionCount: 999, timeLimit: 60, displayMode: 'flag' },
-              });
-            }}
-          >
-            <View style={[s.modeIcon, { backgroundColor: colors.teal }]}>
-              <ClockIcon size={18} color={colors.white} />
-            </View>
-            <View style={s.modeText}>
-              <Text style={s.modeTitle}>{t('home.timedQuiz')}</Text>
-              <Text style={s.modeSub}>{t('home.timedQuizDesc')}</Text>
-            </View>
-            <ChevronRightIcon size={18} color={colors.rule} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={s.modeCard}
-            activeOpacity={0.85}
-            onPress={() => {
-              hapticTap();
-              navigation.navigate('FlagPuzzle', {
-                config: { mode: 'flagpuzzle', category: 'all', questionCount: 10, timeLimit: 15, displayMode: 'flag' },
-              });
-            }}
-          >
-            <View style={[s.modeIcon, { backgroundColor: colors.amber }]}>
-              <PuzzleIcon size={18} color={colors.white} />
-            </View>
-            <View style={s.modeText}>
-              <Text style={s.modeTitle}>{t('setup.flagPuzzle')}</Text>
-              <Text style={s.modeSub}>{t('setup.flagPuzzleDesc')}</Text>
-            </View>
-            <ChevronRightIcon size={18} color={colors.rule} />
-          </TouchableOpacity>
-
-          {weakFlagCount > 0 && (
+          <View style={s.modeList}>
             <TouchableOpacity
-              style={[s.modeCard, { borderColor: colors.accent, borderWidth: 1.5 }]}
+              style={s.modeRow}
               activeOpacity={0.85}
               onPress={() => {
                 hapticTap();
                 navigation.navigate('Game', {
-                  config: { mode: 'practice', category: 'all', questionCount: weakFlagCount, displayMode: 'flag' },
+                  config: { mode: 'timeattack', category: 'all', questionCount: 999, timeLimit: 60, displayMode: 'flag' },
                 });
               }}
             >
-              <View style={[s.modeIcon, { backgroundColor: colors.accent }]}>
-                <CrosshairIcon size={18} color={colors.white} />
-              </View>
-              <View style={s.modeText}>
-                <Text style={s.modeTitle}>{t('home.practiceWeak')}</Text>
-                <Text style={s.modeSub}>{weakFlagCount === 1 ? t('home.flagsToReview', { count: weakFlagCount }) : t('home.flagsToReviewPlural', { count: weakFlagCount })}</Text>
-              </View>
-              <ChevronRightIcon size={18} color={colors.accent} />
+              <View style={[s.modeBar, { backgroundColor: colors.modeRed }]} />
+              <Text style={s.modeTitle}>{t('home.timedQuiz')}</Text>
+              <Text style={s.modeTag}>60 sec</Text>
+              <ChevronRightIcon size={14} color={colors.dim} />
             </TouchableOpacity>
-          )}
+
+            <TouchableOpacity
+              style={s.modeRow}
+              activeOpacity={0.85}
+              onPress={() => {
+                hapticTap();
+                navigation.navigate('FlagImpostor', {
+                  config: { mode: 'impostor', category: 'all', questionCount: 10, displayMode: 'flag' },
+                });
+              }}
+            >
+              <View style={[s.modeBar, { backgroundColor: colors.modeGreen }]} />
+              <Text style={s.modeTitle}>{t('home.flagImpostor')}</Text>
+              <Text style={s.modeTag}>{t('home.flagImpostorDesc')}</Text>
+              <ChevronRightIcon size={14} color={colors.dim} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={s.modeRow}
+              activeOpacity={0.85}
+              onPress={() => {
+                hapticTap();
+                navigation.navigate('FlagPuzzle', {
+                  config: { mode: 'flagpuzzle', category: 'all', questionCount: 10, timeLimit: 15, displayMode: 'flag' },
+                });
+              }}
+            >
+              <View style={[s.modeBar, { backgroundColor: colors.modePurple }]} />
+              <Text style={s.modeTitle}>{t('setup.flagPuzzle')}</Text>
+              <Text style={s.modeTag}>{t('setup.flagPuzzleDesc')}</Text>
+              <ChevronRightIcon size={14} color={colors.dim} />
+            </TouchableOpacity>
+
+            {weakFlagCount > 0 && (
+              <TouchableOpacity
+                style={s.modeRow}
+                activeOpacity={0.85}
+                onPress={() => {
+                  hapticTap();
+                  navigation.navigate('Game', {
+                    config: { mode: 'practice', category: 'all', questionCount: weakFlagCount, displayMode: 'flag' },
+                  });
+                }}
+              >
+                <View style={[s.modeBar, { backgroundColor: colors.modeRed }]} />
+                <Text style={[s.modeTitle, { color: colors.red }]}>{t('home.practiceWeak')}</Text>
+                <Text style={s.modeTag}>{weakFlagCount === 1 ? t('home.flagsToReview', { count: weakFlagCount }) : t('home.flagsToReviewPlural', { count: weakFlagCount })}</Text>
+                <ChevronRightIcon size={14} color={colors.dim} />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
 
         {/* ── SUPPORT ── */}
@@ -516,58 +510,71 @@ const s = StyleSheet.create({
   // ── Header
   header: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
     paddingBottom: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.rule,
   },
-  wordmark: {},
-  wmLine1: {
+  wordmark: {
+    lineHeight: 28,
+  },
+  wmFlag: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.wordmark,
-    lineHeight: 36,
+    fontSize: fontSize.heading + 1,
     color: colors.ink,
-    letterSpacing: -0.5,
+    letterSpacing: -0.4,
   },
-  wmLine2: {
+  wmThat: {
     fontFamily: fontFamily.displayItalic,
-    fontSize: fontSize.wordmark,
-    lineHeight: 36,
-    color: colors.accent,
+    fontSize: fontSize.heading + 1,
+    color: colors.goldBright,
   },
-  headerRight: {
-    alignItems: 'flex-end',
-    flex: 1,
+  streakBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingLeft: spacing.sm + 2,
+    borderRadius: borderRadius.full,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+  },
+  streakNum: {
+    fontFamily: fontFamily.display,
+    fontSize: fontSize.xl,
+    color: colors.goldBright,
+    letterSpacing: -0.8,
+    lineHeight: 22,
+  },
+  streakMeta: {
+    gap: 3,
+  },
+  streakLabel: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: 9,
+    letterSpacing: 0.9,
+    textTransform: 'uppercase',
+    color: colors.textTertiary,
+    lineHeight: 10,
+  },
+  streakPips: {
+    flexDirection: 'row',
+    gap: 3,
+  },
+  pip: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.pipInactive,
+  },
+  pipLit: {
+    backgroundColor: colors.pipActive,
   },
   settingsBtn: {
     padding: spacing.sm,
-    marginLeft: spacing.sm,
-  },
-  streakVal: {
-    fontFamily: fontFamily.display,
-    fontSize: fontSize.title,
-    lineHeight: 30,
-    color: colors.ink,
-    letterSpacing: -0.5,
-  },
-  streakLbl: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    color: colors.accent,
-    marginTop: spacing.xxs,
-  },
-  streakLblMuted: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    color: colors.textTertiary,
-    marginTop: spacing.xxs,
   },
 
   // ── Onboarding progress
@@ -795,29 +802,14 @@ const s = StyleSheet.create({
     paddingBottom: spacing.xs,
   },
   playBtn: {
+    ...buttons.primary,
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.sm,
-    backgroundColor: colors.ink,
-    borderRadius: borderRadius.lg,
-    paddingVertical: spacing.md + spacing.xs,
-    ...shadows.accentShadow,
-  },
-  playBolt: {
-    width: 24,
-    height: 24,
-    backgroundColor: colors.accent,
-    borderRadius: borderRadius.sm,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingVertical: 15,
   },
   playBtnText: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xl,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    color: colors.white,
+    ...buttons.primaryText,
   },
 
   // ── Config card
@@ -883,48 +875,49 @@ const s = StyleSheet.create({
     paddingHorizontal: spacing.md,
     marginTop: spacing.lg,
   },
-  sectionLbl: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xxs,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    color: colors.textTertiary,
-    marginBottom: spacing.sm,
+  sectionHead: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
   },
-  modeCard: {
+  sectionLbl: {
+    fontFamily: fontFamily.display,
+    fontSize: fontSize.lg + 1,
+    letterSpacing: -0.3,
+    color: colors.ink,
+  },
+  sectionAll: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: fontSize.sm,
+    color: colors.textTertiary,
+  },
+  modeList: {},
+  modeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
-    borderWidth: 2,
-    borderColor: colors.rule,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    paddingHorizontal: spacing.md,
-    marginBottom: spacing.sm,
-    gap: spacing.md,
+    gap: spacing.sm + 4,
+    paddingVertical: 11,
+    paddingHorizontal: 2,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
-  modeIcon: {
-    width: 40,
-    height: 40,
-    backgroundColor: colors.ink,
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modeText: {
-    flex: 1,
+  modeBar: {
+    width: 3,
+    height: 18,
+    borderRadius: 2,
   },
   modeTitle: {
+    flex: 1,
     fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.lg,
-    color: colors.ink,
-    marginBottom: 2,
-  },
-  modeSub: {
-    fontFamily: fontFamily.body,
     fontSize: fontSize.caption,
+    color: colors.ink,
+    letterSpacing: -0.1,
+  },
+  modeTag: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.sm - 1,
     color: colors.textTertiary,
-    lineHeight: 18,
   },
 
 });

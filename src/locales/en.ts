@@ -188,6 +188,11 @@ const en = {
     improvementUp: 'Up {pct}%, way to go!',
     improvementSame: 'Holding steady',
     improvementDown: '{pct}% to recover, you got this',
+    yourStats: 'Your Stats',
+    allTime: 'All time',
+    roundsPlayed: 'rounds played',
+    streak: 'Streak',
+    mastered: 'Mastered',
   },
 
   // ─── Settings Screen ────────────────────────────────────

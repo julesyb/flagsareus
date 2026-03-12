@@ -198,8 +198,8 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   regionChipActive: {
-    borderColor: colors.ink,
-    backgroundColor: colors.ink,
+    borderColor: colors.goldBright,
+    backgroundColor: colors.goldBright,
   },
   regionLabel: {
     ...typography.captionBold,

@@ -993,10 +993,10 @@ const st = StyleSheet.create({
   insightText: { fontFamily: fontFamily.bodyMedium, fontSize: fontSize.sm, color: colors.textSecondary },
 
   // ── Buttons
-  buttonRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
-  secondaryButton: { ...buttons.secondary, flex: 1, justifyContent: 'center', alignItems: 'center' },
+  buttonRow: { gap: spacing.sm, marginBottom: spacing.md },
+  secondaryButton: { ...buttons.secondary, justifyContent: 'center', alignItems: 'center' },
   secondaryButtonText: { ...buttons.secondaryText, textAlign: 'center' },
-  primaryButton: { ...buttons.primary, flex: 1, justifyContent: 'center', alignItems: 'center' },
+  primaryButton: { ...buttons.primary, justifyContent: 'center', alignItems: 'center' },
   primaryButtonText: { ...buttons.primaryText, textAlign: 'center' },
 
   // ── Badges

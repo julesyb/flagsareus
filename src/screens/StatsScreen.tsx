@@ -280,33 +280,29 @@ export default function StatsScreen() {
         <ScreenContainer>
 
         {/* ══════════════════════════════════════════════════════════
-            HERO: animated accuracy count-up
-            Mirrors the Results page hero reveal for cohesion
+            HERO: 3-column stats card (streak / accuracy / mastered)
             ══════════════════════════════════════════════════════════ */}
         <Animated.View style={[
-          s.heroCard,
           { opacity: heroFade, transform: [{ translateY: heroSlide }] },
         ]}>
-          <Text style={s.heroEyebrow}>{t('stats.overallAccuracy')}</Text>
-
-          {/* Animated accuracy number */}
-          <Text style={s.heroAccuracy}>{displayAcc}%</Text>
-
-          <View style={s.heroDivider} />
-
-          <View style={s.heroStatsRow}>
+          <View style={s.pageHeader}>
+            <Text style={s.pageTitle}>{t('stats.yourStats')}</Text>
+            <Text style={s.pageSub}>
+              {t('stats.allTime')} - {stats.totalGamesPlayed} {t('stats.roundsPlayed')}
+            </Text>
+          </View>
+          <View style={s.heroCard}>
             <View style={s.heroStatItem}>
-              <Text style={s.heroStatValue}>{stats.bestStreak}</Text>
-              <Text style={s.heroStatLabel}>{t('stats.bestStreak')}</Text>
+              <Text style={[s.heroStatValue, { color: colors.goldBright }]}>{dayStreakInfo.current}</Text>
+              <Text style={s.heroStatLabel}>{t('stats.streak')}</Text>
             </View>
-            <View style={s.heroStatItem}>
-              <Text style={s.heroStatValue}>{stats.totalGamesPlayed}</Text>
-              <Text style={s.heroStatLabel}>{t('stats.gamesPlayed')}</Text>
+            <View style={[s.heroStatItem, s.heroStatDivider]}>
+              <Text style={[s.heroStatValue, { color: colors.success }]}>{displayAcc}%</Text>
+              <Text style={s.heroStatLabel}>{t('stats.accuracy')}</Text>
             </View>
-            <View style={s.heroStatItem}>
-              <Text style={s.heroStatValue}>{dayStreakInfo.current}</Text>
-              <Text style={s.heroStatLabel}>{t('stats.dayStreak')}</Text>
-              {dayStreakInfo.current > 0 && <Text style={s.heroStatHint}>{t('stats.playTomorrow')}</Text>}
+            <View style={[s.heroStatItem, s.heroStatDivider]}>
+              <Text style={s.heroStatValue}>{countriesSeen}</Text>
+              <Text style={s.heroStatLabel}>{t('stats.mastered')}</Text>
             </View>
           </View>
         </Animated.View>
@@ -626,56 +622,55 @@ const s = StyleSheet.create({
   loadingText: { fontFamily: fontFamily.body, fontSize: fontSize.lg, color: colors.textSecondary },
   content: { padding: spacing.md, paddingBottom: spacing.xxl },
 
-  // ── Hero (mirrors Results v3 hero)
-  heroCard: {
-    backgroundColor: colors.ink,
-    borderRadius: borderRadius.xl,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.lg,
-    alignItems: 'center',
-    marginBottom: spacing.sm,
+  // ── Page Header
+  pageHeader: {
+    marginBottom: spacing.md,
   },
-  heroEyebrow: {
-    fontFamily: fontFamily.uiLabel, fontSize: fontSize.xxs,
-    letterSpacing: 1.5, textTransform: 'uppercase',
-    color: colors.whiteAlpha45, marginBottom: spacing.lg,
-  },
-  heroAccuracy: {
+  pageTitle: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.countdown, // 120px - same as Results hero
-    color: colors.white,
-    letterSpacing: -3,
-    lineHeight: 120,
+    fontSize: fontSize.title - 2,
+    letterSpacing: -0.5,
+    color: colors.ink,
+    marginBottom: spacing.xxs,
   },
-  heroDivider: {
-    height: 1,
-    backgroundColor: colors.whiteAlpha15,
-    marginVertical: spacing.md,
-    alignSelf: 'stretch',
+  pageSub: {
+    fontFamily: fontFamily.body,
+    fontSize: fontSize.caption - 1,
+    color: colors.textTertiary,
   },
-  heroStatsRow: { flexDirection: 'row' },
-  heroStatItem: { flex: 1, alignItems: 'center' },
+
+  // ── Hero (3-column stats card)
+  heroCard: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg,
+    flexDirection: 'row',
+    marginBottom: spacing.md,
+  },
+  heroStatItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  heroStatDivider: {
+    borderLeftWidth: 1,
+    borderLeftColor: colors.border,
+  },
   heroStatValue: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.heading,
-    color: colors.white,
-    letterSpacing: -0.5,
+    fontSize: fontSize.stat - 6,
+    color: colors.ink,
+    letterSpacing: -1,
+    lineHeight: 36,
+    marginBottom: 5,
   },
   heroStatLabel: {
     fontFamily: fontFamily.uiLabel,
     fontSize: fontSize.xxs,
-    letterSpacing: 0.8,
+    letterSpacing: 0.9,
     textTransform: 'uppercase',
-    color: colors.whiteAlpha45,
-    marginTop: spacing.xxs,
-    textAlign: 'center',
-  },
-  heroStatHint: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.xxs,
-    color: colors.whiteAlpha45,
-    marginTop: 2,
+    color: colors.textTertiary,
   },
 
   // ── Tiles

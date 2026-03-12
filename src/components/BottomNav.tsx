@@ -41,9 +41,9 @@ export default function BottomNav({ activeTab, onNavigate }: BottomNavProps) {
               accessibilityLabel={t(tab.labelKey)}
               accessibilityState={{ selected: isActive }}
             >
+              {isActive && <View style={styles.activeBar} />}
               {TAB_ICONS[tab.id](isActive)}
               <Text style={[styles.label, isActive && styles.labelActive]}>{t(tab.labelKey)}</Text>
-              {isActive && <View style={styles.dot} />}
             </TouchableOpacity>
           );
         })}
@@ -83,11 +83,12 @@ const styles = StyleSheet.create({
   labelActive: {
     color: colors.ink,
   },
-  dot: {
-    width: 4,
-    height: 4,
-    backgroundColor: colors.accent,
-    borderRadius: 2,
-    marginTop: 2,
+  activeBar: {
+    position: 'absolute',
+    top: 0,
+    width: 22,
+    height: 2,
+    backgroundColor: colors.goldBright,
+    borderRadius: 1,
   },
 });

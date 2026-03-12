@@ -6,22 +6,36 @@
 - **Two font families only** — no exceptions.
   - `LibreBaskerville` — display/editorial headings, wordmark, big numbers
   - `Barlow` — everything else (body, labels, buttons, gameplay, UI)
-- Homepage wordmark ("Flag That") uses LibreBaskerville at 36px.
+- Homepage wordmark ("FlagThat") uses LibreBaskerville at ~23px, single line. "Flag" in ink, "That" in italic gold.
 
 ### Visual Rules
 - Rounded corners on cards and interactive elements (sm-xl scale).
 - No gradients. Flat color planes.
-- No drop shadows except offset hard shadows on hover states.
-- Accent red (#E84855) appears maximum twice per screen.
+- No drop shadows except offset hard shadows on CTA buttons.
+- Gold (`colors.goldBright` / `colors.gold`) is the primary CTA accent color.
+- Red reserved for errors, hard difficulty, and wrong-answer feedback.
 - No emoji anywhere in the UI. Use SVG icons from `src/components/Icons.tsx`.
 - No em dashes in user-facing text. Use hyphens or commas.
 - No circles in procedurally generated fake flags (impostor mode).
 
 ### Colors
 - All colors defined in `src/utils/theme.ts` — single source of truth.
-- Retro-warm palette: midnight navy, warm cream, coral-red, teal/gold/blue pops.
-- Dark surfaces use `colors.ink` (#1A1A2E).
-- Background uses `colors.background` (#FFF7EE).
+- Warm-neutral palette: warm parchment background, midnight ink text, gold CTA accent, green/red/blue/purple pops.
+- Dark surfaces use `colors.ink` (#1A1820).
+- Background uses `colors.background` (#F5EFE6).
+- Primary CTA buttons use `colors.gold` (#9A5C0A) with white text.
+- Streak indicators and active states use `colors.goldBright` (#E9BA4C).
+- Difficulty colors: Easy=green, Medium=gold, Hard=red (use `colors.diffEasy/diffMedium/diffHard`).
+- Game mode bars use `colors.modeRed/modeGold/modeBlue/modeGreen/modePurple`.
+
+### Component Patterns
+- **Streak badge**: Pill with streak number + "Day streak" label + pip dots (max 7).
+- **Play/CTA button**: Gold background, white text, hard shadow below.
+- **Difficulty buttons**: 3-column grid, colored when active (green/gold/red).
+- **Mode list**: Rows with colored sidebar bar (3px), title, tag, and chevron.
+- **Stats hero**: 3-column card (streak/accuracy/mastered) with dividers.
+- **Bottom nav**: Gold active indicator bar at top of active tab.
+- **Region/filter chips**: Gold background when active.
 
 ## Architecture
 - React Native / Expo SDK 55 (iOS, Android, Web)
