@@ -29,14 +29,12 @@ import GameTopBar from '../components/GameTopBar';
 import ScreenContainer from '../components/ScreenContainer';
 import { buildChallengeQuestions } from '../utils/challengeCode';
 import { countCorrect, calculateProgress } from '../utils/gameHelpers';
-import { useLayout } from '../utils/useLayout';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
 
 export default function GameScreen({ route, navigation }: Props) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const { isDesktop } = useLayout();
   const { config, challenge, playerName } = route.params;
   const isTimeAttack = config.mode === 'timeattack';
   const [questions, setQuestions] = useState<GameQuestion[]>([]);
@@ -313,7 +311,6 @@ export default function GameScreen({ route, navigation }: Props) {
       <Animated.View
         style={[
           styles.questionContainer,
-          isDesktop && { maxHeight: 680 },
           { opacity: fadeAnim, transform: [{ translateX: shakeAnim }] },
         ]}
       >
