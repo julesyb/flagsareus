@@ -16,7 +16,7 @@ import { RootStackParamList } from '../types/navigation';
 import { ThemeColors, spacing, fontFamily, fontSize, borderRadius, typography } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { UserStats, CategoryId } from '../types';
-import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData, getChallengeHistory, ChallengeHistoryEntry } from '../utils/storage';
+import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData, getChallengeHistory, ChallengeHistoryEntry, MASTERED_STREAK } from '../utils/storage';
 import { getAllFlags, getTotalFlagCount } from '../data';
 
 import { t } from '../utils/i18n';
@@ -29,6 +29,7 @@ import { ChevronRightIcon, CrosshairIcon, BadgeIconView, UsersIcon } from '../co
 
 const REGIONS: CategoryId[] = ['africa', 'asia', 'europe', 'americas', 'oceania'];
 const EMPTY_FLAG_STATS: FlagStats = {};
+const GOOD_ACCURACY_PCT = 70;
 
 // All async data the stats screen needs, loaded atomically.
 interface StatsData {
@@ -181,7 +182,7 @@ export default function StatsScreen() {
 
   const bottom10 = React.useMemo(() => {
     return Object.entries(flagStats)
-      .filter(([, s]) => s.wrong > 0 && s.rightStreak < 3)
+      .filter(([, s]) => s.wrong > 0 && s.rightStreak < MASTERED_STREAK)
       .sort(([, a], [, b]) => {
         const totalA = a.right + a.wrong;
         const totalB = b.right + b.wrong;
@@ -488,7 +489,7 @@ export default function StatsScreen() {
                           <Text style={styles.regionImprovArrowText}>{isUp ? '\u2192' : isDown ? '\u2192' : '='}</Text>
                         </View>
                         <View style={styles.regionImprovCol}>
-                          <Text style={[styles.regionImprovNow, pct >= 70 && styles.regionImprovNowGood]}>{pct}%</Text>
+                          <Text style={[styles.regionImprovNow, pct >= GOOD_ACCURACY_PCT && styles.regionImprovNowGood]}>{pct}%</Text>
                         </View>
                       </View>
                       <Text style={[
@@ -516,9 +517,9 @@ export default function StatsScreen() {
                   <View key={id} style={styles.modeRow}>
                     <Text style={styles.modeLabel}>{t(`categories.${id}`)}</Text>
                     <View style={styles.modeBarWrap}>
-                      <View style={[styles.modeBarFill, { width: `${barWidth}%` }, pct >= 70 && styles.modeBarGood]} />
+                      <View style={[styles.modeBarFill, { width: `${barWidth}%` }, pct >= GOOD_ACCURACY_PCT && styles.modeBarGood]} />
                     </View>
-                    <Text style={[styles.modePct, pct >= 70 && styles.modePctGood]}>{pct}%</Text>
+                    <Text style={[styles.modePct, pct >= GOOD_ACCURACY_PCT && styles.modePctGood]}>{pct}%</Text>
                   </View>
                 );
               })}
@@ -538,7 +539,7 @@ export default function StatsScreen() {
                 const barPct = distribution.maxCount > 0
                   ? Math.max((bucket.count / distribution.maxCount) * 100, bucket.count > 0 ? 4 : 0)
                   : 0;
-                const isGood = bucket.min >= 70;
+                const isGood = bucket.min >= GOOD_ACCURACY_PCT;
                 return (
                   <View key={bucket.label} style={styles.distRow}>
                     <Text style={styles.distLabel}>{bucket.label}%</Text>
