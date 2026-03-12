@@ -358,7 +358,7 @@ export function generateChallengeShareCard(
     : mode === 'capitalconnection' ? 'Capitals'
     : mode;
 
-  return `${hostName} scored ${correct}/${total} on Flag That\n${modeLabel} | ${avgTime}s avg\n\n${gridStr}\n\nCan you beat me?\n${challengeUrl}`;
+  return `Flag That ${modeLabel} ${correct}/${total}\n${avgTime}s avg\n\n${gridStr}\n\nThink you can beat ${hostName}?\n${challengeUrl}`;
 }
 
 // ── Base64 helpers (for legacy V1/V2 decoding only) ──

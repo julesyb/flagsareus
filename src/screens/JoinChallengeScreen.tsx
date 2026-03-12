@@ -13,17 +13,17 @@ import {
   Animated,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { spacing, fontFamily, fontSize, buildButtons, borderRadius, typography, ThemeColors, shadows } from '../utils/theme';
+import { spacing, fontFamily, fontSize, buildButtons, borderRadius, typography, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types/navigation';
-import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName, CHALLENGE_MODES } from '../utils/challengeCode';
+import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName } from '../utils/challengeCode';
 import { hapticTap, hapticWrong, hapticCorrect } from '../utils/feedback';
 import ScreenContainer from '../components/ScreenContainer';
 import BottomNav from '../components/BottomNav';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { t } from '../utils/i18n';
 import { getChallengeName, saveChallengeName } from '../utils/storage';
-import { UsersIcon, PlayIcon, ClockIcon, ChevronRightIcon } from '../components/Icons';
+import { LinkIcon, PlayIcon } from '../components/Icons';
 import { GameMode } from '../types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'JoinChallenge'>;
@@ -155,9 +155,9 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
           {!preview && (
             <View style={styles.emptyState}>
               <View style={styles.iconCircle}>
-                <UsersIcon size={28} color={colors.goldBright} />
+                <LinkIcon size={28} color={colors.goldBright} />
               </View>
-              <Text style={styles.title}>{t('challenge.challengeFriend')}</Text>
+              <Text style={styles.title}>{t('challenge.joinTitle')}</Text>
               <Text style={styles.subtitle}>{t('challenge.joinSubtitle')}</Text>
 
               <TextInput
@@ -374,10 +374,10 @@ const createStyles = (colors: ThemeColors) => {
   },
   opponentScore: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.countdown,
+    fontSize: fontSize.hero,
     color: colors.ink,
     letterSpacing: -2,
-    lineHeight: 72,
+    lineHeight: 80,
   },
   opponentAccuracy: {
     fontFamily: fontFamily.uiLabel,

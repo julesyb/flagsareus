@@ -382,7 +382,7 @@ export default function HomeScreen({ navigation }: Props) {
               </TouchableOpacity>
             )}
 
-            {/* ── CHALLENGE A FRIEND ── */}
+            {/* ── JOIN A CHALLENGE ── */}
             <TouchableOpacity
               style={styles.modeRow}
               activeOpacity={0.85}
@@ -391,13 +391,13 @@ export default function HomeScreen({ navigation }: Props) {
                 navigation.navigate('JoinChallenge');
               }}
               accessibilityRole="button"
-              accessibilityLabel={t('challenge.challengeFriend')}
-              accessibilityHint={t('challenge.homeDesc')}
+              accessibilityLabel={t('challenge.joinTitle')}
+              accessibilityHint={t('challenge.codeHint')}
             >
               <View style={[styles.modeBar, { backgroundColor: colors.modeGold }]} />
-              <UsersIcon size={15} color={colors.goldBright} />
-              <Text style={[styles.modeTitle, { color: colors.goldBright }]}>{t('challenge.challengeFriend')}</Text>
-              <Text style={styles.modeTag}>{t('challenge.homeDesc')}</Text>
+              <LinkIcon size={15} color={colors.goldBright} />
+              <Text style={[styles.modeTitle, { color: colors.goldBright }]}>{t('challenge.joinTitle')}</Text>
+              <Text style={styles.modeTag}>{t('challenge.codeHint')}</Text>
               <ChevronRightIcon size={14} color={colors.dim} />
             </TouchableOpacity>
           </View>

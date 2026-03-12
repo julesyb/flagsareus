@@ -575,6 +575,28 @@ export default function ResultsScreen({ route, navigation }: Props) {
           </Animated.View>
         )}
 
+        {/* ── CHALLENGE BACK (right after h2h for momentum) ── */}
+        {isChallenge && canChallenge && !reviewOnly && (
+          <Animated.View style={{ opacity: restFade }}>
+            <TouchableOpacity
+              style={styles.challengeButton}
+              onPress={() => { hapticTap(); navigation.replace('GameSetup', { initialMode: config.mode, ...(config.difficulty && { initialDifficulty: config.difficulty }) }); }}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={t('challenge.challengeBack')}
+            >
+              <View style={styles.challengeButtonInner}>
+                <UsersIcon size={18} color={colors.goldBright} />
+                <View style={styles.challengeButtonContent}>
+                  <Text style={styles.challengeButtonTitle}>{t('challenge.challengeBack')}</Text>
+                  <Text style={styles.challengeButtonDesc}>{t('challenge.challengeBackDesc')}</Text>
+                </View>
+                <ChevronRightIcon size={14} color={colors.goldBright} />
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
         {/* ══════════════════════════════════════════════════════════
             STREAK TIMELINE: Dots appear one-by-one showing the flow
             ══════════════════════════════════════════════════════════ */}
@@ -716,27 +738,6 @@ export default function ResultsScreen({ route, navigation }: Props) {
           </Animated.View>
         )}
 
-        {/* ── CHALLENGE BACK ── */}
-        {isChallenge && canChallenge && !reviewOnly && (
-          <Animated.View style={{ opacity: restFade }}>
-            <TouchableOpacity
-              style={styles.challengeButton}
-              onPress={() => { hapticTap(); navigation.replace('GameSetup', { initialMode: config.mode, ...(config.difficulty && { initialDifficulty: config.difficulty }) }); }}
-              activeOpacity={0.7}
-              accessibilityRole="button"
-              accessibilityLabel={t('challenge.challengeBack')}
-            >
-              <View style={styles.challengeButtonInner}>
-                <UsersIcon size={18} color={colors.goldBright} />
-                <View style={styles.challengeButtonContent}>
-                  <Text style={styles.challengeButtonTitle}>{t('challenge.challengeBack')}</Text>
-                  <Text style={styles.challengeButtonDesc}>{t('challenge.challengeBackDesc')}</Text>
-                </View>
-                <ChevronRightIcon size={14} color={colors.goldBright} />
-              </View>
-            </TouchableOpacity>
-          </Animated.View>
-        )}
 
         {/* ── NEWLY EARNED BADGES ── */}
         {newBadges.length > 0 && (
@@ -1152,10 +1153,10 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   h2hNameWinner: { color: colors.success },
   h2hScoreBig: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.countdown,
+    fontSize: fontSize.display,
     color: colors.ink,
     letterSpacing: -1,
-    lineHeight: 56,
+    lineHeight: 48,
   },
   h2hScoreSub: {
     ...typography.body,
