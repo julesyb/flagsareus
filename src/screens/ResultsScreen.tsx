@@ -17,9 +17,9 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, spacing, typography, fontFamily, fontSize, buttons, borderRadius, screenContainer, APP_URL } from '../utils/theme';
-import { calculateAccuracy, getStreakFromResults, getGrade, generateDailyShareGrid, generateShareGrid, getDailyNumber } from '../utils/gameEngine';
+import { getStreakFromResults, getGrade, generateDailyShareGrid, generateShareGrid, getDailyNumber } from '../utils/gameEngine';
 import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreakInfo, getBadgeData, persistEarnedBadges, getMissedFlagIds, addGameHistoryEntry, getSupportData, getChallengeName, saveChallengeName, addChallengeToHistory } from '../utils/storage';
-import { BaselineRegionId, UserStats, GameMode } from '../types';
+import { BaselineRegionId, UserStats, GameMode, CategoryId } from '../types';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
 import { FlagImageSmall } from '../components/FlagImage';
@@ -30,7 +30,7 @@ import { useNavTabs } from '../hooks/useNavTabs';
 import { countCorrect } from '../utils/gameHelpers';
 import { RootStackParamList } from '../types/navigation';
 import { getAllEarnedBadges, detectPerGameBadges, buildBadgeContext, BADGES, TIER_COLORS, EarnedBadge } from '../utils/badges';
-import { getTotalFlagCount } from '../data';
+import { getTotalFlagCount, getCategoryCount } from '../data';
 import { useInterstitialAdUnit, shouldShowAd, recordAdImpression, incrementGameCount } from '../utils/ads';
 import { encodeChallenge, ChallengeData, CHALLENGE_MODES, generateShortCode } from '../utils/challengeCode';
 
@@ -42,15 +42,16 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const isChallenge = !!challenge;
   const canChallenge = CHALLENGE_MODES.includes(config.mode);
   const correct = countCorrect(results);
-  const accuracy = calculateAccuracy(results);
+  const isDaily = config.mode === 'daily';
+  const isBaseline = config.mode === 'baseline';
+  const questionTotal = isBaseline ? getCategoryCount(config.category as CategoryId) : results.length;
+  const accuracy = questionTotal > 0 ? Math.round((correct / questionTotal) * 100) : 0;
   const streak = getStreakFromResults(results);
   const grade = getGrade(accuracy);
   const avgTime = results.length > 0
     ? Math.round(results.reduce((sum, r) => sum + r.timeTaken, 0) / results.length / 1000 * 10) / 10
     : 0;
   const isPerfect = accuracy === 100 && results.length > 0;
-  const isDaily = config.mode === 'daily';
-  const isBaseline = config.mode === 'baseline';
 
   const skipAds = isDaily || isBaseline || reviewOnly;
   const interstitial = useInterstitialAdUnit();
@@ -277,7 +278,8 @@ export default function ResultsScreen({ route, navigation }: Props) {
         }
       }
       if (isBaseline) {
-        await saveBaselineResult(config.category as BaselineRegionId, results);
+        const regionTotal = getCategoryCount(config.category as CategoryId);
+        await saveBaselineResult(config.category as BaselineRegionId, results, regionTotal);
       }
 
       // ── Snapshot post-game state and evaluate badges ──
@@ -522,7 +524,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
 
           {/* Score line */}
           <Animated.Text style={[styles.heroScoreText, { opacity: scoreFade }]}>
-            {correct}/{results.length} {t('results.correct').toLowerCase()}
+            {correct}/{questionTotal} {t('results.correct').toLowerCase()}
           </Animated.Text>
         </Animated.View>
 
@@ -790,7 +792,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
         <Animated.View style={{ opacity: restFade }}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{t('common.review')}</Text>
-            <Text style={styles.sectionMeta}>{correct}/{results.length} {t('results.correct').toLowerCase()}</Text>
+            <Text style={styles.sectionMeta}>{correct}/{questionTotal} {t('results.correct').toLowerCase()}</Text>
           </View>
         </Animated.View>
         {results.map((result, index) => {
