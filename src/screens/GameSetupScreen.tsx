@@ -657,7 +657,7 @@ const createStyles = (colors: ThemeColors) => {
     fontSize: fontSize.xs,
   },
   categoryCountActive: {
-    color: colors.whiteAlpha60,
+    color: colors.playText,
   },
 
   // Pinned start button

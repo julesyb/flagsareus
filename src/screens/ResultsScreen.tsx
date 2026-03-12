@@ -951,18 +951,18 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   },
   heroEyebrow: {
     ...typography.eyebrow,
-    color: colors.whiteAlpha45, marginBottom: spacing.lg,
+    color: colors.textSecondary, marginBottom: spacing.lg,
   },
   heroAccuracy: {
     fontFamily: fontFamily.display,
     fontSize: fontSize.countdown, // 120px - THE number
-    color: colors.white,
+    color: colors.ink,
     letterSpacing: -3,
     lineHeight: 120,
   },
   heroScoreText: {
     fontFamily: fontFamily.bodyMedium, fontSize: fontSize.lg,
-    color: colors.whiteAlpha60,
+    color: colors.textSecondary,
   },
 
   // ── Timeline
@@ -1008,13 +1008,13 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   },
   dailyGridTitle: {
     ...typography.eyebrow,
-    color: colors.whiteAlpha45, marginBottom: spacing.md,
+    color: colors.textSecondary, marginBottom: spacing.md,
   },
   dailyGrid: { gap: 6 },
   dailyGridRow: { flexDirection: 'row', gap: 6 },
   dailyCell: { width: 44, height: 44, borderRadius: borderRadius.sm },
   dailyCellCorrect: { backgroundColor: colors.success },
-  dailyCellWrong: { backgroundColor: colors.whiteAlpha20 },
+  dailyCellWrong: { backgroundColor: colors.dim },
 
   // ── Insights
   insightRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: spacing.sm },
