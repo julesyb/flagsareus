@@ -537,8 +537,8 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
   },
   modeCardActive: {
-    borderColor: 'rgba(233, 186, 76, 0.50)',
-    backgroundColor: 'rgba(233, 186, 76, 0.10)',
+    borderColor: colors.goldAlpha50,
+    backgroundColor: colors.goldAlpha10,
   },
   modeIconBadge: {
     width: 36,
@@ -550,7 +550,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   modeIconBadgeActive: {
-    backgroundColor: 'rgba(233, 186, 76, 0.15)',
+    backgroundColor: colors.goldAlpha15,
   },
   modeLabel: {
     ...typography.bodyBold,
@@ -591,7 +591,7 @@ const styles = StyleSheet.create({
   },
   configLbl: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 15,
+    fontSize: fontSize.caption,
     color: colors.ink,
     minWidth: 72,
     flexShrink: 0,
@@ -618,7 +618,7 @@ const styles = StyleSheet.create({
   },
   segBtnText: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 14,
+    fontSize: fontSize.caption,
     textTransform: 'uppercase',
     color: colors.textTertiary,
   },

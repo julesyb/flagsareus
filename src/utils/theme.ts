@@ -72,7 +72,7 @@ export const colors = {
   primaryLight: palette.inkLight,
   accent: palette.gold,         // Gold is now the primary accent
   accentBright: palette.goldBright, // Bright gold for indicators
-  accentLight: palette.redLight,
+  accentLight: palette.goldBright,
   success: palette.green,
   error: palette.crimson,
   warning: palette.amber,
@@ -147,6 +147,11 @@ export const colors = {
   streakGold: palette.goldBright,
   pipActive: palette.goldBright,
   pipInactive: palette.dim,
+
+  // Gold alpha (for active cards on light bg)
+  goldAlpha10: 'rgba(233, 186, 76, 0.10)',
+  goldAlpha15: 'rgba(233, 186, 76, 0.15)',
+  goldAlpha50: 'rgba(233, 186, 76, 0.50)',
 
   // Mode bar colors (for game mode list)
   modeRed: '#E05555',
