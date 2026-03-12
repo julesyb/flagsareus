@@ -26,7 +26,7 @@ import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { getAllEarnedBadges, buildBadgeContext, deriveFromContext, BADGES, TIER_COLORS, getBadgeProgress, Badge } from '../utils/badges';
-import { ChevronRightIcon, BadgeIconView, UsersIcon } from '../components/Icons';
+import { ChevronRightIcon, BadgeIconView, UsersIcon, CheckIcon, CrossIcon } from '../components/Icons';
 import PageHeader from '../components/PageHeader';
 
 const REGIONS: CategoryId[] = ['africa', 'asia', 'europe', 'americas', 'oceania'];
@@ -171,16 +171,16 @@ export default function StatsScreen() {
   );
 
   // Auto-open challenge detail when navigated with highlightChallenge param
-  const highlightHandled = useRef(false);
   React.useEffect(() => {
-    if (highlightChallenge && data && !highlightHandled.current) {
+    if (highlightChallenge && data) {
       const match = data.challengeHistory.find((ch) => ch.shortCode === highlightChallenge);
       if (match) {
-        highlightHandled.current = true;
         setSelectedChallenge(match);
+        // Clear the param so re-navigation with a different code works
+        navigation.setParams({ highlightChallenge: undefined });
       }
     }
-  }, [highlightChallenge, data]);
+  }, [highlightChallenge, data, navigation]);
 
   const flagStats = data?.flagStats ?? EMPTY_FLAG_STATS;
 
@@ -772,19 +772,38 @@ export default function StatsScreen() {
                   {(ch.myResults || ch.opponentResults) && (
                     <View style={styles.h2hDetailsWrap}>
                       <View style={styles.h2hDetailsHeader}>
-                        <Text style={styles.h2hDetailsLabel}>{ch.myName || t('challenge.you')}</Text>
-                        <Text style={[styles.h2hDetailsLabel, { textAlign: 'center' }]}>Q</Text>
-                        {hasOpponent && <Text style={[styles.h2hDetailsLabel, { textAlign: 'right' }]}>{ch.opponentName}</Text>}
+                        <Text style={[styles.h2hDetailsLabel, { flex: 1 }]}>{ch.myName || t('challenge.you')}</Text>
+                        <Text style={[styles.h2hDetailsLabel, { width: 28, textAlign: 'center' }]}>#</Text>
+                        {hasOpponent && <Text style={[styles.h2hDetailsLabel, { flex: 1, textAlign: 'right' }]}>{ch.opponentName}</Text>}
                       </View>
                       {Array.from({ length: ch.totalFlags }).map((_, qi) => {
                         const myOk = ch.myResults ? ch.myResults[qi] : undefined;
                         const oppOk = ch.opponentResults ? ch.opponentResults[qi] : undefined;
+                        // Highlight the winner of each question
+                        const myWon = myOk === true && oppOk === false;
+                        const oppWon = oppOk === true && myOk === false;
                         return (
-                          <View key={qi} style={styles.h2hDetailsRow}>
-                            <View style={[styles.h2hDot, { backgroundColor: myOk === undefined ? colors.surfaceSecondary : myOk ? colors.success : colors.error }]} />
+                          <View key={qi} style={[styles.h2hDetailsRow, qi % 2 === 0 && { backgroundColor: colors.surfaceSecondary + '40' }]}>
+                            <View style={styles.h2hDetailsSide}>
+                              {myOk === undefined ? (
+                                <View style={[styles.h2hDot, { backgroundColor: colors.surfaceSecondary }]} />
+                              ) : myOk ? (
+                                <CheckIcon size={14} color={myWon ? colors.success : colors.success + '90'} />
+                              ) : (
+                                <CrossIcon size={14} color={colors.error + (oppWon ? 'FF' : '90')} />
+                              )}
+                            </View>
                             <Text style={styles.h2hDetailsQ}>{qi + 1}</Text>
                             {hasOpponent && (
-                              <View style={[styles.h2hDot, { backgroundColor: oppOk === undefined ? colors.surfaceSecondary : oppOk ? colors.success : colors.error }]} />
+                              <View style={[styles.h2hDetailsSide, { alignItems: 'flex-end' }]}>
+                                {oppOk === undefined ? (
+                                  <View style={[styles.h2hDot, { backgroundColor: colors.surfaceSecondary }]} />
+                                ) : oppOk ? (
+                                  <CheckIcon size={14} color={oppWon ? colors.success : colors.success + '90'} />
+                                ) : (
+                                  <CrossIcon size={14} color={colors.error + (myWon ? 'FF' : '90')} />
+                                )}
+                              </View>
                             )}
                           </View>
                         );
@@ -1325,20 +1344,23 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   h2hDetailsLabel: {
     ...typography.caption,
     color: colors.textTertiary,
-    flex: 1,
   },
   h2hDetailsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 3,
+    paddingVertical: 4,
     paddingHorizontal: spacing.sm,
+    borderRadius: borderRadius.sm,
+  },
+  h2hDetailsSide: {
+    flex: 1,
+    alignItems: 'flex-start',
   },
   h2hDetailsQ: {
     ...typography.caption,
     color: colors.textTertiary,
     textAlign: 'center',
-    width: 24,
+    width: 28,
   },
   h2hDot: {
     width: 12,
