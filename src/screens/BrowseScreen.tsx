@@ -229,15 +229,12 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     paddingTop: spacing.md,
   },
   pageTitle: {
-    fontFamily: fontFamily.display,
-    fontSize: fontSize.title,
-    letterSpacing: -0.5,
+    ...typography.title,
     color: colors.text,
     marginBottom: spacing.xxs,
   },
   pageSub: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.sm,
+    ...typography.caption,
     color: colors.textTertiary,
   },
   searchRow: {

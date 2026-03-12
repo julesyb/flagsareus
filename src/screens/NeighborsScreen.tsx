@@ -371,8 +371,8 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   optionNameCorrect: { color: colors.success, fontFamily: fontFamily.bodyBold },
   optionNameMissed: { color: colors.warning, fontFamily: fontFamily.bodyBold },
   optionNameWrong: { color: colors.error },
-  missedLabel: { fontFamily: fontFamily.uiLabel, fontSize: fontSize.xs, letterSpacing: 1, color: colors.warning, textTransform: 'uppercase' },
-  wrongLabel: { fontFamily: fontFamily.uiLabel, fontSize: fontSize.xs, letterSpacing: 0.5, color: colors.error, textTransform: 'uppercase' },
+  missedLabel: { ...typography.eyebrow, color: colors.warning },
+  wrongLabel: { ...typography.eyebrow, color: colors.error },
   resultBadgeCircle: {
     position: 'absolute',
     top: spacing.xs,
@@ -386,7 +386,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   resultBadgeCorrect: { backgroundColor: colors.success },
   resultBadgeMissed: { backgroundColor: colors.warning },
   resultBadgeWrong: { backgroundColor: colors.error },
-  resultBadgeText: { fontFamily: fontFamily.uiLabel, fontSize: fontSize.xs, color: colors.white },
+  resultBadgeText: { ...typography.eyebrow, color: colors.white },
   checkBadge: {
     position: 'absolute',
     top: spacing.xs,

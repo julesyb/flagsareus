@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { fontFamily, fontSize, spacing, borderRadius, shadows, buildButtons } from '../utils/theme';
+import { fontFamily, fontSize, spacing, borderRadius, shadows, buildButtons, typography } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { ThemeColors } from '../utils/theme';
 import { getTotalFlagCount, getCategoryCount } from '../data';
@@ -659,10 +659,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     marginTop: spacing.md,
   },
   heroLabel: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
+    ...typography.eyebrow,
     color: colors.textTertiary,
     marginBottom: spacing.sm,
   },
@@ -765,9 +762,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     marginBottom: spacing.md,
   },
   sectionLbl: {
-    fontFamily: fontFamily.display,
-    fontSize: fontSize.lg,
-    letterSpacing: -0.3,
+    ...typography.heading,
     color: colors.ink,
   },
   sectionAll: {

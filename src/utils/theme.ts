@@ -295,7 +295,7 @@ export const typography = {
   eyebrow: {
     fontSize: fontSize.xs,
     fontFamily: fontFamily.uiLabel,
-    letterSpacing: 2,
+    letterSpacing: 1.2,
     textTransform: 'uppercase' as const,
   },
 };

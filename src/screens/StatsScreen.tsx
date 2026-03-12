@@ -13,7 +13,7 @@ import {
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
-import { ThemeColors, spacing, fontFamily, fontSize, borderRadius } from '../utils/theme';
+import { ThemeColors, spacing, fontFamily, fontSize, borderRadius, typography } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { UserStats, GameMode, CategoryId } from '../types';
 import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getGameHistory, GameHistoryEntry, getBaselineData, BaselineData, getChallengeHistory, ChallengeHistoryEntry } from '../utils/storage';
@@ -633,7 +633,7 @@ export default function StatsScreen() {
 const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  loadingText: { fontFamily: fontFamily.body, fontSize: fontSize.body, color: colors.textSecondary },
+  loadingText: { ...typography.body, color: colors.textSecondary },
   content: { padding: spacing.md, paddingBottom: spacing.xxl },
 
   // ── Page Header
@@ -641,15 +641,12 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     marginBottom: spacing.md,
   },
   pageTitle: {
-    fontFamily: fontFamily.display,
-    fontSize: fontSize.title,
-    letterSpacing: -0.5,
+    ...typography.title,
     color: colors.ink,
     marginBottom: spacing.xxs,
   },
   pageSub: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.sm,
+    ...typography.caption,
     color: colors.textTertiary,
   },
 
@@ -680,10 +677,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     marginBottom: 5,
   },
   heroStatLabel: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
-    letterSpacing: 0.9,
-    textTransform: 'uppercase',
+    ...typography.eyebrow,
     color: colors.textTertiary,
   },
 
@@ -696,10 +690,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     padding: 18,
   },
   tileLabel: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
+    ...typography.eyebrow,
     color: colors.textTertiary,
     marginBottom: spacing.sm,
   },
@@ -711,8 +702,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     letterSpacing: -0.5,
   },
   tileUnit: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.body,
+    ...typography.label,
     color: colors.textTertiary,
   },
 
@@ -875,10 +865,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     padding: 14,
   },
   regionImprovName: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
+    ...typography.eyebrow,
     color: colors.textTertiary,
     marginBottom: spacing.sm,
   },
@@ -892,16 +879,14 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     flex: 1,
   },
   regionImprovLabel: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.sm,
+    ...typography.caption,
     color: colors.textTertiary,
   },
   regionImprovArrow: {
     paddingHorizontal: spacing.xs,
   },
   regionImprovArrowText: {
-    fontFamily: fontFamily.body,
-    fontSize: fontSize.body,
+    ...typography.body,
     color: colors.textTertiary,
   },
   regionImprovNow: {
@@ -928,10 +913,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
 
   // ── Section
   sectionTitle: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
+    ...typography.eyebrow,
     color: colors.textTertiary,
   },
   sectionHeader: {

@@ -404,10 +404,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     paddingBottom: spacing.xxl,
   },
   sectionTitle: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
+    ...typography.eyebrow,
     color: colors.textTertiary,
     marginBottom: spacing.sm,
     marginTop: spacing.lg,
