@@ -10,8 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import { colors, fontFamily, fontSize, spacing, borderRadius, shadows, buttons, screenContainer } from '../utils/theme';
 import { getTotalFlagCount, getCategoryCount } from '../data';
 import { initAudio, hapticTap, hapticCorrect, hapticWrong, playWrongSound, setSoundsEnabled, setHapticsEnabled } from '../utils/feedback';
@@ -696,7 +695,6 @@ const styles = StyleSheet.create({
   teaserResult: {
     marginTop: spacing.md,
     alignItems: 'center',
-    gap: spacing.md,
   },
   teaserResultText: {
     fontFamily: fontFamily.uiLabel,
