@@ -9,10 +9,11 @@ import {
   Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { spacing, typography, fontFamily, fontSize, buildButtons, borderRadius, buildNav, ThemeColors } from '../utils/theme';
+import { spacing, typography, fontFamily, fontSize, buildButtons, borderRadius, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { countCorrect } from '../utils/gameHelpers';
 import { t } from '../utils/i18n';
+import { CrossIcon } from '../components/Icons';
 import { GameQuestion, GameResult } from '../types';
 import { generateQuestions } from '../utils/gameEngine';
 import {
@@ -385,10 +386,11 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
           style={styles.exitButton}
           onPress={goHome}
           activeOpacity={0.7}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           accessibilityRole="button"
           accessibilityLabel={t('common.exit')}
         >
-          <Text style={styles.exitButtonText}>{t('common.exit')}</Text>
+          <CrossIcon size={20} color={colors.whiteAlpha50} />
         </TouchableOpacity>
         </View>
         </ScreenContainer>
@@ -502,11 +504,12 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
           style={styles.exitButtonPlaying}
           onPress={exitGame}
           activeOpacity={0.7}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           accessibilityRole="button"
           accessibilityLabel={t('common.exit')}
           accessibilityHint="Ends the game and shows results"
         >
-          <Text style={styles.exitButtonPlayingText}>{t('common.exit')}</Text>
+          <CrossIcon size={18} color={colors.whiteAlpha70} />
         </TouchableOpacity>
         <Text style={styles.scoreText}>{t('flagFlash.correctCount', { count: correctCount })}</Text>
       </View>
@@ -516,7 +519,6 @@ export default function FlagFlashScreen({ route, navigation }: Props) {
 
 const createStyles = (colors: ThemeColors) => {
   const btn = buildButtons(colors);
-  const n = buildNav(colors);
   return StyleSheet.create({
   container: {
     flex: 1,
@@ -695,19 +697,15 @@ const createStyles = (colors: ThemeColors) => {
   exitButton: {
     marginTop: spacing.lg,
     padding: spacing.sm,
-  },
-  exitButtonText: {
-    ...n.backText,
-    color: colors.whiteAlpha50,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   exitButtonPlaying: {
     padding: spacing.sm,
     backgroundColor: colors.whiteAlpha15,
     borderRadius: borderRadius.sm,
-  },
-  exitButtonPlayingText: {
-    ...n.backText,
-    color: colors.whiteAlpha70,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   });
 };
