@@ -43,7 +43,7 @@ export default function DailyLeaderboard({ entries }: Props) {
         const isTopThree = rank <= 3;
         return (
           <View
-            key={entry.name}
+            key={`${entry.name}-${entry.isMe ? 'me' : 'other'}`}
             style={[
               styles.row,
               entry.isMe && styles.rowMe,

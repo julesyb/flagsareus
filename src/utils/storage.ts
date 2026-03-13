@@ -828,10 +828,11 @@ export async function addDailyLeaderboardEntry(
     const lb = await getDailyLeaderboard();
     if (!lb[date]) lb[date] = [];
 
-    // Check if this person already exists (by name, case-insensitive) - update if so
-    const existingIdx = lb[date].findIndex(
-      (e) => e.name.toLowerCase() === entry.name.toLowerCase(),
-    );
+    // For "me" entries, replace any existing isMe entry (user may have changed name).
+    // For friend entries, upsert by name (case-insensitive).
+    const existingIdx = entry.isMe
+      ? lb[date].findIndex((e) => e.isMe)
+      : lb[date].findIndex((e) => e.name.toLowerCase() === entry.name.toLowerCase());
     if (existingIdx >= 0) {
       lb[date][existingIdx] = entry;
     } else {
