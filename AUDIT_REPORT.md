@@ -87,18 +87,34 @@ Only 5 unused exports found across the entire codebase (96.4% utilization rate).
 
 ## 3. Redundant/Duplicative Code
 
-The codebase follows DRY principles well. Observations:
+The codebase follows DRY principles well overall, but the deep analysis identified several refactoring opportunities:
+
+### High-Value Refactoring Opportunities
+
+| # | What | Impact | Effort | Files |
+|---|------|--------|--------|-------|
+| 1 | **`useGameTimer()` hook** - 3 game screens implement nearly identical timer setup/teardown | Consolidates timer logic, reduces bugs | Medium | GameScreen, FlagPuzzleScreen, FlashFlagScreen |
+| 2 | **`useGameQuestions()` hook** - Question generation + challenge handling duplicated | Centralizes question init logic | Medium | GameScreen, FlagPuzzleScreen, CapitalConnectionScreen |
+| 3 | **SettingsScreen uses raw Views instead of ConfigRow** - 11+ settings rows follow identical pattern but don't use the existing ConfigRow component | Reduces ~180 lines of boilerplate | Low | SettingsScreen |
+| 4 | **GameSetupScreen difficulty buttons** - Uses raw TouchableOpacity instead of SegBtn component already used for same pattern in HomeScreen | Eliminates duplicate UI pattern | Low | GameSetupScreen |
+
+### Medium-Value Refactoring Opportunities
+
+| # | What | Impact | Files |
+|---|------|--------|-------|
+| 5 | **`<SelectableChip>` component** - Chip selection pattern (active gold bg, border change) duplicated in HomeScreen and GameSetupScreen | 2 screens |
+| 6 | **`<ModeCard>` component** - 5+ mode rows in HomeScreen follow identical structure (color bar + icon + title + tag + chevron) but are hardcoded JSX | HomeScreen |
+| 7 | **Consolidate `getModeLabel`** - JoinChallengeScreen has its own `getModeLabel()` while gameEngine.ts exports `modeLabelKey()` for the same purpose | JoinChallengeScreen |
+| 8 | **Move `FLAG_ASPECT` to config.ts** - `const FLAG_ASPECT = 3/2` is defined locally in FlagPuzzleScreen but could be shared | FlagPuzzleScreen |
+| 9 | **Remove `pickRandom` wrapper** in FlagImpostorScreen - it's just `shuffleArray(arr).slice(0, count)` | FlagImpostorScreen |
 
 ### Consistent Patterns (Not Issues)
-- `createStyles(colors)` + `useMemo` pattern used identically in all 24 components/screens - this is the correct convention
+- `createStyles(colors)` + `useMemo` pattern used identically in all 24 components/screens - this is the correct convention per CLAUDE.md
 - `useTheme()` destructuring used consistently
-- `navigation.replace('Results', ...)` pattern appears in all game screens - each has slightly different params, so extraction is not warranted
+- `navigation.replace('Results', ...)` pattern in game screens - each has slightly different params, extraction not warranted
+- `hapticTap()` calls on button presses - 31 occurrences across 12 files, correct per convention
 
-### Minor Duplication Opportunities
-- The `navigation.replace('Results', { results, config, ...(challenge && { challenge, playerName }) })` pattern is very similar across GameScreen, CapitalConnectionScreen, NeighborsScreen, and FlagPuzzleScreen. A shared `navigateToResults()` helper could reduce this, but the benefit is marginal.
-- Game screens share similar state setup (questions, currentIndex, results, showFeedback). A `useGameState()` hook could encapsulate this, but each screen has enough variation that the abstraction may not be worth the coupling.
-
-**Overall assessment: No significant redundancy issues. The codebase is well-factored.**
+**Overall assessment: Well-factored codebase with a few opportunities for consolidation, primarily around game timer logic and SettingsScreen's underuse of existing components.**
 
 ---
 
