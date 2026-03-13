@@ -353,6 +353,16 @@ export async function isDailyCompleteToday(): Promise<boolean> {
   }
 }
 
+export async function getDailyChallengeData(): Promise<DailyChallengeData | null> {
+  try {
+    const json = await AsyncStorage.getItem(DAILY_CHALLENGE_KEY);
+    if (!json) return null;
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
 export async function saveDailyChallenge(results: GameResult[]): Promise<void> {
   try {
     const score = results.filter((r) => r.correct).length;

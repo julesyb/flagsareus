@@ -246,6 +246,10 @@ const de: DeepPartial<TranslationStrings> = {
     dayWed: 'M',
     dayThu: 'D',
     dayFri: 'F',
+    dailyLeaderboards: 'Tagliche Herausforderung',
+    dailyToday: 'Heute',
+    playDailyChallenge: 'Heutige Herausforderung spielen',
+    viewDailyResults: 'Ergebnisse ansehen',
     unlockHint: '{count} Mal richtig antworten zum Freischalten',
   },
 
