@@ -18,7 +18,7 @@ import { RootStackParamList } from '../types/navigation';
 import { ThemeColors, spacing, fontFamily, fontSize, borderRadius, typography } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { UserStats, CategoryId, BaselineRegionId, BASELINE_REGIONS } from '../types';
-import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getGameHistory, GameHistoryEntry, getChallengeHistory, ChallengeHistoryEntry, MASTERED_STREAK, getRegionScoreHistory, RegionScoreHistory, getPersistedLevel, persistLevel, getDailyLeaderboard, DailyLeaderboardEntry, getDailyChallengeData, isDailyCompleteToday } from '../utils/storage';
+import { getStats, getFlagStats, FlagStats, getDayStreakInfo, DayStreakInfo, getBadgeData, getMissedFlagIds, BadgeData, getGameHistory, GameHistoryEntry, getChallengeHistory, ChallengeHistoryEntry, MASTERED_STREAK, getRegionScoreHistory, RegionScoreHistory, getPersistedLevel, persistLevel, getDailyLeaderboard, DailyLeaderboardEntry, getDailyChallengeData, isDailyCompleteToday, getChallengeName, addDailyLeaderboardEntry } from '../utils/storage';
 import { GOOD_ACCURACY_PCT, UNLIMITED_QUESTIONS, TIMEATTACK_DEFAULT_TIME, STATS_WEAK_FLAGS_LIMIT } from '../utils/config';
 import { getAllFlags, getCategoryCount } from '../data';
 import { modeLabelKey } from '../utils/gameEngine';
@@ -65,14 +65,31 @@ interface StatsData {
 }
 
 async function loadStatsData(): Promise<StatsData> {
-  const [stats, flagStats, dayStreakInfo, badgeData, missed, gameHistory, challengeHistory, regionScoreHistory, persistedLevel, dailyLeaderboard, dailyCompleteToday] =
+  const [stats, flagStats, dayStreakInfo, badgeData, missed, gameHistory, challengeHistory, regionScoreHistory, persistedLevel, dailyLeaderboard, dailyCompleteToday, dailyChallengeData, challengeName] =
     await Promise.all([
       getStats(), getFlagStats(), getDayStreakInfo(), getBadgeData(),
-      getMissedFlagIds(), getGameHistory(), getChallengeHistory(), getRegionScoreHistory(), getPersistedLevel(), getDailyLeaderboard(), isDailyCompleteToday(),
+      getMissedFlagIds(), getGameHistory(), getChallengeHistory(), getRegionScoreHistory(), getPersistedLevel(), getDailyLeaderboard(), isDailyCompleteToday(), getDailyChallengeData(), getChallengeName(),
     ]);
   const lp = computeLevelProgress({ stats, flagStats, badgeData, dayStreakInfo }, persistedLevel);
   // Persist new high-water mark (fire-and-forget)
   persistLevel(lp.currentLevel);
+
+  // Ensure user's own daily score appears in the leaderboard if they completed today
+  const today = getTodayDateString();
+  if (dailyCompleteToday && dailyChallengeData && dailyChallengeData.date === today) {
+    const todayEntries = dailyLeaderboard[today] || [];
+    const hasMyEntry = todayEntries.some((e) => e.isMe);
+    if (!hasMyEntry) {
+      const name = challengeName || t('challenge.you');
+      const totalTimeMs = dailyChallengeData.results.reduce((sum, r) => sum + r.timeTaken, 0);
+      const entry: DailyLeaderboardEntry = { name, score: dailyChallengeData.score, totalTimeMs, isMe: true };
+      // Persist so it stays
+      await addDailyLeaderboardEntry(today, entry);
+      if (!dailyLeaderboard[today]) dailyLeaderboard[today] = [];
+      dailyLeaderboard[today].push(entry);
+    }
+  }
+
   return { stats, flagStats, dayStreakInfo, badgeData, weakFlagCount: missed.length, gameHistory, challengeHistory, regionScoreHistory, persistedLevel, levelProgress: lp, dailyLeaderboard, dailyCompleteToday };
 }
 
@@ -685,7 +702,7 @@ export default function StatsScreen() {
                 if (entries.length === 0) return null;
                 const today = getTodayDateString();
                 const isToday = date === today;
-                const label = isToday ? t('stats.dailyToday') : date;
+                const label = isToday ? t('stats.dailyToday') : new Date(date + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
                 return (
                   <View key={date} style={{ marginBottom: spacing.md }}>
                     <Text style={styles.dailyDateLabel}>{label}</Text>

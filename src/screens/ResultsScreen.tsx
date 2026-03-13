@@ -88,6 +88,18 @@ async function persistGameData(
   if (isDaily) {
     await saveDailyChallenge(results);
     await incrementDailyChallenges();
+    // Auto-add user's score to leaderboard if they have a saved name
+    const savedName = await getChallengeName();
+    if (savedName) {
+      const totalTimeMs = results.reduce((sum, r) => sum + r.timeTaken, 0);
+      const dateStr = getTodayDateString();
+      await addDailyLeaderboardEntry(dateStr, {
+        name: savedName,
+        score: correct,
+        totalTimeMs,
+        isMe: true,
+      });
+    }
   }
   if (isChallenge && challenge && playerName) {
     const shortCode = generateShortCode(challenge);
