@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1290">
-<title>Flag That - Screenshot 4: Daily Challenge & Streaks</title>
+<title>Flag That - Screenshot 4: Results</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Barlow:wght@400;500;600;700;800&display=swap');
 
@@ -16,16 +16,15 @@
     background: #15141A;
     font-family: 'Barlow', sans-serif;
     position: relative;
+    display: flex;
+    flex-direction: column;
   }
 
-  .headline {
+  .marketing {
     text-align: center;
-    padding: 180px 80px 50px;
-    position: relative;
-    z-index: 10;
+    padding: 140px 80px 50px;
   }
-
-  .headline .eyebrow {
+  .marketing .eyebrow {
     font-size: 28px;
     font-weight: 700;
     color: #E9BA4C;
@@ -33,8 +32,7 @@
     letter-spacing: 5px;
     margin-bottom: 16px;
   }
-
-  .headline h1 {
+  .marketing h1 {
     font-family: 'Libre Baskerville', serif;
     font-size: 84px;
     color: #EEE9E2;
@@ -42,310 +40,406 @@
     line-height: 1.15;
     margin-bottom: 20px;
   }
-
-  .headline p {
+  .marketing p {
     font-size: 40px;
     color: #B8B2A8;
     font-weight: 500;
   }
 
-  /* Big streak display */
-  .streak-hero {
-    text-align: center;
-    margin: 40px 0 30px;
-    position: relative;
-    z-index: 10;
-  }
-
-  .streak-number {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 220px;
-    font-weight: 700;
-    color: #E9BA4C;
-    line-height: 1;
-  }
-
-  .streak-label {
-    font-size: 48px;
-    font-weight: 700;
-    color: #EEE9E2;
-    letter-spacing: 2px;
-    margin-top: -10px;
-  }
-
-  /* Streak pip row */
-  .streak-pips {
-    display: flex;
-    justify-content: center;
-    gap: 18px;
-    margin: 50px 80px;
-    position: relative;
-    z-index: 10;
-  }
-
-  .day-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .day-dot {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .day-dot.active {
-    background: #E9BA4C;
-  }
-
-  .day-dot.today {
-    background: #E9BA4C;
-    box-shadow: 0 0 0 4px rgba(233,186,76,0.25);
-  }
-
-  .day-dot.empty {
-    background: #3D3A4A;
-  }
-
-  .day-label {
-    font-size: 22px;
-    font-weight: 600;
-    color: #6E6878;
-  }
-
-  .day-label.active-label {
-    color: #E9BA4C;
-  }
-
-  /* Phone with results */
   .phone-wrap {
     display: flex;
     justify-content: center;
-    margin-top: 40px;
-    position: relative;
-    z-index: 10;
+    flex: 1;
+    padding-bottom: 80px;
   }
-
   .phone {
-    width: 600px;
-    height: 1050px;
+    width: 700px;
     background: #25242D;
-    border-radius: 60px;
-    padding: 16px;
+    border-radius: 72px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
   }
-
-  .phone-screen {
-    width: 100%;
-    height: 100%;
+  .screen {
+    flex: 1;
     background: #F5EFE6;
-    border-radius: 46px;
+    border-radius: 54px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
   }
 
-  .phone-status {
-    padding: 14px 28px 6px;
+  .status-bar {
+    padding: 18px 36px 10px;
     display: flex;
     justify-content: space-between;
-    font-size: 15px;
-    font-weight: 600;
-    color: #1A1820;
-  }
-
-  .results-content {
-    flex: 1;
-    padding: 20px 26px;
-    text-align: center;
-  }
-
-  .results-title {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: #1A1820;
-    margin-bottom: 6px;
-  }
-
-  .results-sub {
-    font-size: 16px;
-    color: #8A8494;
-    margin-bottom: 20px;
-  }
-
-  .results-score-ring {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    border: 8px solid #1E8F56;
-    margin: 0 auto 20px;
-    display: flex;
     align-items: center;
-    justify-content: center;
-    background: rgba(30, 143, 86, 0.10);
-  }
-
-  .ring-inner {
-    text-align: center;
-  }
-
-  .ring-pct {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 46px;
-    font-weight: 700;
-    color: #1E8F56;
-    line-height: 1;
-  }
-
-  .ring-label {
-    font-size: 14px;
-    color: #5C5764;
+    font-size: 18px;
     font-weight: 600;
-  }
-
-  /* Stats row */
-  .stats-row {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin: 16px 0 20px;
-  }
-
-  .stat-box {
-    background: #FFFFFF;
-    border-radius: 14px;
-    padding: 14px 22px;
-    text-align: center;
-    flex: 1;
-  }
-
-  .stat-val {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 28px;
-    font-weight: 700;
     color: #1A1820;
   }
 
-  .stat-label {
-    font-size: 13px;
-    color: #8A8494;
-    font-weight: 600;
-  }
-
-  /* Share grid */
-  .share-grid {
-    background: #1A1820;
-    border-radius: 14px;
-    padding: 16px 20px;
-    margin-bottom: 16px;
-  }
-
-  .share-grid-title {
-    font-size: 14px;
-    color: #E9BA4C;
-    font-weight: 700;
-    margin-bottom: 8px;
-    text-align: left;
-  }
-
-  .share-grid-row {
+  .app-content {
+    flex: 1;
+    padding: 8px 32px 0;
     display: flex;
-    gap: 6px;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  /* ── Hero score card ── */
+  .hero-card {
+    background: #FFFFFF;
+    border-radius: 18px;
+    padding: 28px 24px 24px;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 16px;
+    border: 2px solid rgba(201,150,12,0.35);
+  }
+  .hero-eyebrow {
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #5C5764;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 8px;
+  }
+  .hero-pct {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 120px;
+    font-weight: 700;
+    color: #1A1820;
+    line-height: 120px;
+    letter-spacing: -3px;
     margin-bottom: 4px;
   }
-
-  .share-cell {
-    width: 36px;
-    height: 36px;
-    border-radius: 6px;
+  .hero-score-text {
+    font-family: 'Barlow', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #5C5764;
   }
 
-  .share-cell.g { background: #3DBF80; }
-  .share-cell.r { background: #EC6666; }
+  /* ── Results timeline dots ── */
+  .timeline-card {
+    background: #FFFFFF;
+    border-radius: 18px;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 20px;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  .dots-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+  .dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+  }
+  .dot.g { background: #1E8F56; }
+  .dot.r { background: #C43030; }
+
+  /* Stats row inside timeline */
+  .stats-row {
+    display: flex;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    padding-top: 14px;
+  }
+  .stat-col {
+    flex: 1;
+    text-align: center;
+    position: relative;
+  }
+  .stat-col + .stat-col::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    height: 36px;
+    width: 1px;
+    background: rgba(0,0,0,0.08);
+  }
+  .stat-val {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1A1820;
+    letter-spacing: -0.5px;
+  }
+  .stat-unit {
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #5C5764;
+  }
+  .stat-label {
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #8A8494;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-top: 2px;
+  }
+  .new-best {
+    display: inline-block;
+    background: rgba(233,186,76,0.12);
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #9A5C0A;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  /* ── Daily share grid ── */
+  .share-card {
+    background: #FFFFFF;
+    border-radius: 18px;
+    padding: 18px 20px;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  .share-title {
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #5C5764;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 12px;
+  }
+  .share-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .share-row { display: flex; gap: 6px; }
+  .share-cell { width: 46px; height: 46px; border-radius: 8px; }
+  .sc-g { background: #1E8F56; }
+  .sc-d { background: #D5CFC6; }
+
+  /* ── Review list ── */
+  .review-section {
+    width: 100%;
+  }
+  .review-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .review-title {
+    font-family: 'Barlow', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1A1820;
+  }
+
+  .review-item {
+    display: flex;
+    align-items: center;
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 6px;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .review-item .bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 10px 0 0 10px;
+  }
+  .review-idx {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 14px;
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
+    margin-left: 6px;
+  }
+  .review-flag {
+    width: 40px;
+    height: 27px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #EDE7DE;
+    flex-shrink: 0;
+  }
+  .review-flag img { width: 100%; height: 100%; object-fit: cover; }
+  .review-name {
+    flex: 1;
+    font-family: 'Barlow', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: #1A1820;
+  }
+  .review-time {
+    font-size: 13px;
+    font-weight: 500;
+    color: #8A8494;
+  }
+
+  /* ── Action buttons ── */
+  .action-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: 8px;
+    margin-bottom: 12px;
+  }
+  .btn-primary {
+    flex: 1;
+    background: #E9BA4C;
+    border-radius: 14px;
+    padding: 14px 18px;
+    text-align: center;
+    box-shadow: 0 4px 0 #5C3506;
+  }
+  .btn-primary-text {
+    font-family: 'Barlow', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: #130F00;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .btn-secondary {
+    flex: 1;
+    background: #FFFFFF;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 14px;
+    padding: 14px 18px;
+    text-align: center;
+  }
+  .btn-secondary-text {
+    font-family: 'Barlow', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: #5C5764;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
 </style>
 </head>
 <body>
 
-<div class="headline">
+<div class="marketing">
   <div class="eyebrow">Come Back Every Day</div>
   <h1>Build Your Streak</h1>
-  <p>New flags daily, track your progress</p>
-</div>
-
-<div class="streak-hero">
-  <div class="streak-number">12</div>
-  <div class="streak-label">Day Streak</div>
-</div>
-
-<div class="streak-pips">
-  <div class="day-col">
-    <div class="day-dot active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#130F00" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg></div>
-    <div class="day-label active-label">Mon</div>
-  </div>
-  <div class="day-col">
-    <div class="day-dot active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#130F00" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg></div>
-    <div class="day-label active-label">Tue</div>
-  </div>
-  <div class="day-col">
-    <div class="day-dot active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#130F00" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg></div>
-    <div class="day-label active-label">Wed</div>
-  </div>
-  <div class="day-col">
-    <div class="day-dot active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#130F00" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg></div>
-    <div class="day-label active-label">Thu</div>
-  </div>
-  <div class="day-col">
-    <div class="day-dot today"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#130F00" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg></div>
-    <div class="day-label active-label">Fri</div>
-  </div>
-  <div class="day-col">
-    <div class="day-dot empty"></div>
-    <div class="day-label">Sat</div>
-  </div>
-  <div class="day-col">
-    <div class="day-dot empty"></div>
-    <div class="day-label">Sun</div>
-  </div>
+  <p>Daily challenge with shareable results</p>
 </div>
 
 <div class="phone-wrap">
   <div class="phone">
-    <div class="phone-screen">
-      <div class="phone-status">
+    <div class="screen">
+      <div class="status-bar">
         <span>9:41</span>
-        <span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#1A1820"><rect x="1" y="14" width="4" height="8" rx="1"/><rect x="7" y="10" width="4" height="12" rx="1"/><rect x="13" y="6" width="4" height="16" rx="1"/><rect x="19" y="2" width="4" height="20" rx="1"/></svg>
-        </span>
+        <svg width="16" height="12" viewBox="0 0 20 14" fill="#1A1820"><rect x="0" y="8" width="3" height="6" rx="0.5"/><rect x="5" y="5" width="3" height="9" rx="0.5"/><rect x="10" y="2" width="3" height="12" rx="0.5"/><rect x="15" y="0" width="3" height="14" rx="0.5"/></svg>
       </div>
-      <div class="results-content">
-        <div class="results-title">Daily Challenge Complete!</div>
-        <div class="results-sub">March 13, 2026</div>
 
-        <div class="results-score-ring">
-          <div class="ring-inner">
-            <div class="ring-pct">90%</div>
-            <div class="ring-label">Accuracy</div>
+      <div class="app-content">
+        <!-- Hero Score -->
+        <div class="hero-card">
+          <div class="hero-eyebrow">Daily Challenge</div>
+          <div class="hero-pct">90%</div>
+          <div class="hero-score-text">9 of 10 correct</div>
+        </div>
+
+        <!-- Timeline dots + stats -->
+        <div class="timeline-card">
+          <div class="dots-row">
+            <div class="dot g"></div><div class="dot g"></div><div class="dot g"></div><div class="dot g"></div><div class="dot r"></div>
+            <div class="dot g"></div><div class="dot g"></div><div class="dot g"></div><div class="dot g"></div><div class="dot g"></div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-col">
+              <div class="stat-val">5</div>
+              <div class="stat-label">Best Streak</div>
+              <div class="new-best">New Best</div>
+            </div>
+            <div class="stat-col">
+              <div class="stat-val">2.1<span class="stat-unit">s</span></div>
+              <div class="stat-label">Avg Time</div>
+            </div>
+            <div class="stat-col">
+              <div class="stat-val">1.2<span class="stat-unit">s</span></div>
+              <div class="stat-label">Fastest</div>
+            </div>
           </div>
         </div>
 
-        <div class="stats-row">
-          <div class="stat-box"><div class="stat-val">9</div><div class="stat-label">Correct</div></div>
-          <div class="stat-box"><div class="stat-val">10</div><div class="stat-label">Total</div></div>
-          <div class="stat-box"><div class="stat-val">5</div><div class="stat-label">Streak</div></div>
+        <!-- Share grid -->
+        <div class="share-card">
+          <div class="share-title">FlagThat Daily #47</div>
+          <div class="share-grid">
+            <div class="share-row">
+              <div class="share-cell sc-g"></div><div class="share-cell sc-g"></div><div class="share-cell sc-g"></div><div class="share-cell sc-g"></div><div class="share-cell sc-d"></div>
+            </div>
+            <div class="share-row">
+              <div class="share-cell sc-g"></div><div class="share-cell sc-g"></div><div class="share-cell sc-g"></div><div class="share-cell sc-g"></div><div class="share-cell sc-g"></div>
+            </div>
+          </div>
         </div>
 
-        <div class="share-grid">
-          <div class="share-grid-title">FlagThat Daily #3 - 9/10</div>
-          <div class="share-grid-row">
-            <div class="share-cell g"></div><div class="share-cell g"></div><div class="share-cell g"></div><div class="share-cell g"></div><div class="share-cell g"></div>
+        <!-- Action buttons -->
+        <div class="action-row">
+          <div class="btn-primary"><span class="btn-primary-text">Play Again</span></div>
+          <div class="btn-secondary"><span class="btn-secondary-text">Share</span></div>
+        </div>
+
+        <!-- Review -->
+        <div class="review-section">
+          <div class="review-head"><span class="review-title">Review</span></div>
+          <div class="review-item">
+            <div class="bar" style="background:#1E8F56"></div>
+            <div class="review-idx" style="color:#1E8F56">1</div>
+            <div class="review-flag"><img src="https://flagcdn.com/w160/jp.png" alt=""></div>
+            <span class="review-name">Japan</span>
+            <span class="review-time">1.8s</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E8F56" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg>
           </div>
-          <div class="share-grid-row">
-            <div class="share-cell g"></div><div class="share-cell r"></div><div class="share-cell g"></div><div class="share-cell g"></div><div class="share-cell g"></div>
+          <div class="review-item">
+            <div class="bar" style="background:#1E8F56"></div>
+            <div class="review-idx" style="color:#1E8F56">2</div>
+            <div class="review-flag"><img src="https://flagcdn.com/w160/br.png" alt=""></div>
+            <span class="review-name">Brazil</span>
+            <span class="review-time">1.2s</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E8F56" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg>
+          </div>
+          <div class="review-item">
+            <div class="bar" style="background:#1E8F56"></div>
+            <div class="review-idx" style="color:#1E8F56">3</div>
+            <div class="review-flag"><img src="https://flagcdn.com/w160/de.png" alt=""></div>
+            <span class="review-name">Germany</span>
+            <span class="review-time">2.4s</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E8F56" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg>
+          </div>
+          <div class="review-item">
+            <div class="bar" style="background:#C43030"></div>
+            <div class="review-idx" style="color:#C43030">4</div>
+            <div class="review-flag"><img src="https://flagcdn.com/w160/td.png" alt=""></div>
+            <span class="review-name">Chad</span>
+            <span class="review-time">4.1s</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C43030" stroke-width="2.5"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
           </div>
         </div>
       </div>
