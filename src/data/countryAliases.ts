@@ -1131,8 +1131,9 @@ export const twinPairs: Record<string, string[]> = {
   'Venezuela': ['Ecuador', 'Colombia'],
 
   // ── Stars-and-stripes designs ──
-  'Liberia': ['Malaysia'],
-  'Malaysia': ['Liberia'],
+  'Liberia': ['Malaysia', 'United States'],
+  'Malaysia': ['Liberia', 'United States'],
+  'United States': ['Liberia', 'Malaysia'],
 
   // ── Union Jack + southern cross ──
   'New Zealand': ['Australia'],
@@ -1152,10 +1153,11 @@ export const twinPairs: Record<string, string[]> = {
   'Yemen': ['Egypt', 'Syria', 'Iraq'],
 
   // ── Nordic crosses ──
-  'Norway': ['Iceland', 'Denmark', 'Finland'],
-  'Iceland': ['Norway', 'Denmark', 'Finland'],
-  'Denmark': ['Norway', 'Iceland', 'Finland'],
-  'Finland': ['Norway', 'Iceland', 'Denmark'],
+  'Norway': ['Iceland', 'Denmark', 'Finland', 'Sweden'],
+  'Iceland': ['Norway', 'Denmark', 'Finland', 'Sweden'],
+  'Denmark': ['Norway', 'Iceland', 'Finland', 'Sweden'],
+  'Finland': ['Norway', 'Iceland', 'Denmark', 'Sweden'],
+  'Sweden': ['Norway', 'Iceland', 'Denmark', 'Finland'],
 
   // ── Serrated-edge red/maroon and white ──
   'Qatar': ['Bahrain'],

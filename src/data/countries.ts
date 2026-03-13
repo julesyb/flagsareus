@@ -154,7 +154,7 @@ export const countries: FlagItem[] = [
   { id: 'sk', name: 'Slovakia', emoji: '🇸🇰', region: 'Europe', tags: ['europe', 'tricky_twins'] },
   { id: 'si', name: 'Slovenia', emoji: '🇸🇮', region: 'Europe', tags: ['europe', 'tricky_twins'] },
   { id: 'es', name: 'Spain', emoji: '🇪🇸', region: 'Europe', tags: ['europe', 'easy_flags', 'top_travel', 'short_names'] },
-  { id: 'se', name: 'Sweden', emoji: '🇸🇪', region: 'Europe', tags: ['europe'] },
+  { id: 'se', name: 'Sweden', emoji: '🇸🇪', region: 'Europe', tags: ['europe', 'tricky_twins'] },
   { id: 'ch', name: 'Switzerland', emoji: '🇨🇭', region: 'Europe', tags: ['europe', 'easy_flags'] },
   { id: 'ua', name: 'Ukraine', emoji: '🇺🇦', region: 'Europe', tags: ['europe', 'easy_flags'] },
   { id: 'gb', name: 'United Kingdom', emoji: '🇬🇧', region: 'Europe', tags: ['europe', 'easy_flags', 'top_travel'] },
@@ -193,7 +193,7 @@ export const countries: FlagItem[] = [
   { id: 'vc', name: 'Saint Vincent and the Grenadines', emoji: '🇻🇨', region: 'Americas', tags: ['americas', 'island_nations'] },
   { id: 'sr', name: 'Suriname', emoji: '🇸🇷', region: 'Americas', tags: ['americas'] },
   { id: 'tt', name: 'Trinidad and Tobago', emoji: '🇹🇹', region: 'Americas', tags: ['americas', 'island_nations'] },
-  { id: 'us', name: 'United States', emoji: '🇺🇸', region: 'Americas', tags: ['americas', 'easy_flags', 'top_travel'] },
+  { id: 'us', name: 'United States', emoji: '🇺🇸', region: 'Americas', tags: ['americas', 'easy_flags', 'top_travel', 'tricky_twins'] },
   { id: 'uy', name: 'Uruguay', emoji: '🇺🇾', region: 'Americas', tags: ['americas', 'tricky_twins'] },
   { id: 've', name: 'Venezuela', emoji: '🇻🇪', region: 'Americas', tags: ['americas', 'tricky_twins'] },
 
