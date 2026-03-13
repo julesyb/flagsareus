@@ -125,7 +125,7 @@ export const countries: FlagItem[] = [
   { id: 'cz', name: 'Czech Republic', emoji: '🇨🇿', region: 'Europe', tags: ['europe', 'top_travel'] },
   { id: 'dk', name: 'Denmark', emoji: '🇩🇰', region: 'Europe', tags: ['europe', 'tricky_twins'] },
   { id: 'ee', name: 'Estonia', emoji: '🇪🇪', region: 'Europe', tags: ['europe'] },
-  { id: 'fi', name: 'Finland', emoji: '🇫🇮', region: 'Europe', tags: ['europe'] },
+  { id: 'fi', name: 'Finland', emoji: '🇫🇮', region: 'Europe', tags: ['europe', 'tricky_twins'] },
   { id: 'fr', name: 'France', emoji: '🇫🇷', region: 'Europe', tags: ['europe', 'easy_flags', 'top_travel', 'tricky_twins'] },
   { id: 'de', name: 'Germany', emoji: '🇩🇪', region: 'Europe', tags: ['europe', 'easy_flags', 'top_travel', 'tricky_twins'] },
   { id: 'gr', name: 'Greece', emoji: '🇬🇷', region: 'Europe', tags: ['europe', 'easy_flags', 'top_travel'] },

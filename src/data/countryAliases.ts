@@ -1152,9 +1152,10 @@ export const twinPairs: Record<string, string[]> = {
   'Yemen': ['Egypt', 'Syria', 'Iraq'],
 
   // ── Nordic crosses ──
-  'Norway': ['Iceland', 'Denmark'],
-  'Iceland': ['Norway', 'Denmark'],
-  'Denmark': ['Norway', 'Iceland'],
+  'Norway': ['Iceland', 'Denmark', 'Finland'],
+  'Iceland': ['Norway', 'Denmark', 'Finland'],
+  'Denmark': ['Norway', 'Iceland', 'Finland'],
+  'Finland': ['Norway', 'Iceland', 'Denmark'],
 
   // ── Serrated-edge red/maroon and white ──
   'Qatar': ['Bahrain'],
