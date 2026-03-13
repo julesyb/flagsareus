@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=1290">
 <title>Flag That - Screenshot 6: Browse Flags</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Barlow:wght@400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Barlow:wght@400;500;600;700;800;900&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -13,7 +13,7 @@
     width: 1290px;
     height: 2796px;
     overflow: hidden;
-    background: #F5EFE6;
+    background: radial-gradient(ellipse at 50% 70%, #FFF8EF 0%, #F5EFE6 60%);
     font-family: 'Barlow', sans-serif;
     display: flex;
     flex-direction: column;
@@ -22,56 +22,97 @@
 
   .headline {
     text-align: center;
-    padding: 120px 100px 50px;
+    padding: 130px 80px 54px;
     flex-shrink: 0;
   }
   .headline h1 {
     font-family: 'Barlow', sans-serif;
-    font-size: 88px;
-    font-weight: 800;
+    font-size: 96px;
+    font-weight: 900;
     color: #1A1820;
-    line-height: 1.08;
-    letter-spacing: -2px;
+    line-height: 1.04;
+    letter-spacing: -3px;
   }
   .headline h1 em {
+    font-family: 'Libre Baskerville', serif;
+    font-weight: 700;
     font-style: italic;
     color: #9A5C0A;
   }
 
-  /* Phone */
-  .phone {
-    width: 1100px;
-    height: 2500px;
-    background: #000000;
-    border-radius: 56px;
-    padding: 8px;
+  /* Phone Container */
+  .phone-wrap {
     position: relative;
     flex-shrink: 0;
   }
-  .phone::before {
+
+  .phone-shadow {
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 960px;
+    height: 120px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.18) 0%, transparent 70%);
+    z-index: 0;
+  }
+
+  .phone {
+    width: 1080px;
+    height: 2500px;
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(180deg, #8A8690 0%, #6E6A74 50%, #8A8690 100%);
+    border-radius: 58px;
+    padding: 2px;
+  }
+
+  .phone::after {
     content: '';
     position: absolute;
-    top: 18px;
+    left: -3px;
+    top: 340px;
+    width: 3px;
+    height: 66px;
+    background: linear-gradient(180deg, #8A8690, #6E6A74, #8A8690);
+    border-radius: 2px 0 0 2px;
+    box-shadow: 0 50px 0 0 #7A7680;
+  }
+
+  .phone-inner {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    border-radius: 56px;
+    padding: 6px;
+    position: relative;
+  }
+
+  .phone-inner::before {
+    content: '';
+    position: absolute;
+    top: 16px;
     left: 50%;
     transform: translateX(-50%);
     width: 126px;
-    height: 36px;
-    background: #000000;
-    border-radius: 18px;
+    height: 37px;
+    background: #000;
+    border-radius: 20px;
     z-index: 10;
   }
+
   .screen {
     width: 100%;
     height: 100%;
     background: #F5EFE6;
-    border-radius: 50px;
+    border-radius: 51px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
   }
 
   .status-bar {
-    padding: 20px 44px 14px;
+    padding: 20px 46px 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -82,52 +123,53 @@
 
   .app-content {
     flex: 1;
-    padding: 6px 40px 0;
+    padding: 6px 42px 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
 
-  .page-header { padding: 14px 0 6px; }
+  .page-header { padding: 14px 0 8px; }
   .page-title {
     font-family: 'Libre Baskerville', serif;
-    font-size: 40px; font-weight: 700; color: #1A1820; letter-spacing: -0.5px;
+    font-size: 42px; font-weight: 700; color: #1A1820; letter-spacing: -0.5px;
   }
-  .page-sub { font-size: 19px; font-weight: 500; color: #8A8494; margin-top: 5px; }
+  .page-sub { font-size: 20px; font-weight: 500; color: #8A8494; margin-top: 6px; }
 
   /* Search */
   .search-bar {
-    display: flex; align-items: center; gap: 12px;
-    background: #FFFFFF; border-radius: 22px; padding: 16px 22px;
-    border: 2px solid rgba(0,0,0,0.08); margin: 18px 0 16px;
+    display: flex; align-items: center; gap: 14px;
+    background: #FFFFFF; border-radius: 22px; padding: 18px 24px;
+    border: 2px solid rgba(0,0,0,0.08); margin: 20px 0 18px;
   }
-  .search-placeholder { font-size: 22px; font-weight: 400; color: #8A8494; }
+  .search-placeholder { font-size: 24px; font-weight: 400; color: #8A8494; }
 
   /* Chips */
-  .filter-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
   .chip {
-    padding: 10px 20px; border-radius: 999px; background: #FFFFFF;
+    padding: 12px 22px; border-radius: 999px; background: #FFFFFF;
     border: 2px solid rgba(0,0,0,0.08);
-    font-size: 17px; font-weight: 600; text-transform: uppercase;
+    font-size: 18px; font-weight: 600; text-transform: uppercase;
     letter-spacing: 1px; color: #5C5764;
   }
   .chip.active { background: #E9BA4C; border-color: #E9BA4C; color: #130F00; }
 
-  .result-count { font-size: 17px; color: #8A8494; margin-bottom: 14px; }
+  .result-count { font-size: 18px; color: #8A8494; margin-bottom: 16px; }
 
   /* Flag grid */
   .flag-grid {
     display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 14px; flex: 1; overflow: hidden;
+    gap: 16px; flex: 1; overflow: hidden;
   }
   .flag-card { text-align: center; }
   .flag-img-wrap {
-    width: 100%; aspect-ratio: 3/2; border-radius: 10px;
+    width: 100%; aspect-ratio: 3/2; border-radius: 12px;
     overflow: hidden; background: transparent;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   }
   .flag-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
   .flag-card-name {
-    font-size: 17px; font-weight: 600; color: #1A1820; margin-top: 6px;
+    font-size: 18px; font-weight: 600; color: #1A1820; margin-top: 8px;
     overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
   }
 
@@ -135,7 +177,7 @@
   .bottom-nav {
     border-top: 1px solid rgba(0,0,0,0.06);
     background: rgba(245,239,230,0.97);
-    padding: 10px 0 40px;
+    padding: 12px 0 42px;
     display: flex; justify-content: space-around;
   }
   .nav-tab {
@@ -143,7 +185,7 @@
     gap: 4px; padding-top: 12px; position: relative; min-width: 80px;
   }
   .nav-tab.active::before {
-    content: ''; position: absolute; top: 0; width: 28px; height: 3px;
+    content: ''; position: absolute; top: 0; width: 30px; height: 3px;
     background: #E9BA4C; border-radius: 2px;
   }
   .nav-label { font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #8A8494; }
@@ -156,118 +198,123 @@
   <h1>Explore <em>197 flags</em></h1>
 </div>
 
-<div class="phone">
-  <div class="screen">
-    <div class="status-bar">
-      <span>9:41</span>
-      <svg width="18" height="14" viewBox="0 0 20 14" fill="#1A1820"><rect x="0" y="8" width="3" height="6" rx="0.5"/><rect x="5" y="5" width="3" height="9" rx="0.5"/><rect x="10" y="2" width="3" height="12" rx="0.5"/><rect x="15" y="0" width="3" height="14" rx="0.5"/></svg>
-    </div>
-    <div class="app-content">
-      <div class="page-header">
-        <div class="page-title">Browse Flags</div>
-        <div class="page-sub">197 flags from around the world</div>
-      </div>
+<div class="phone-wrap">
+  <div class="phone-shadow"></div>
+  <div class="phone">
+    <div class="phone-inner">
+      <div class="screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <svg width="18" height="14" viewBox="0 0 20 14" fill="#1A1820"><rect x="0" y="8" width="3" height="6" rx="0.5"/><rect x="5" y="5" width="3" height="9" rx="0.5"/><rect x="10" y="2" width="3" height="12" rx="0.5"/><rect x="15" y="0" width="3" height="14" rx="0.5"/></svg>
+        </div>
+        <div class="app-content">
+          <div class="page-header">
+            <div class="page-title">Browse Flags</div>
+            <div class="page-sub">197 flags from around the world</div>
+          </div>
 
-      <div class="search-bar">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <span class="search-placeholder">Search flags...</span>
-      </div>
+          <div class="search-bar">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span class="search-placeholder">Search flags...</span>
+          </div>
 
-      <div class="filter-row">
-        <div class="chip active">All</div>
-        <div class="chip">Africa</div>
-        <div class="chip">Asia</div>
-        <div class="chip">Europe</div>
-        <div class="chip">Americas</div>
-        <div class="chip">Oceania</div>
-      </div>
+          <div class="filter-row">
+            <div class="chip active">All</div>
+            <div class="chip">Africa</div>
+            <div class="chip">Asia</div>
+            <div class="chip">Europe</div>
+            <div class="chip">Americas</div>
+            <div class="chip">Oceania</div>
+          </div>
 
-      <div class="result-count">197 flags</div>
+          <div class="result-count">197 flags</div>
 
-      <div class="flag-grid">
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/af.png" alt=""></div>
-          <div class="flag-card-name">Afghanistan</div>
+          <div class="flag-grid">
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/af.png" alt=""></div>
+              <div class="flag-card-name">Afghanistan</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/al.png" alt=""></div>
+              <div class="flag-card-name">Albania</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/dz.png" alt=""></div>
+              <div class="flag-card-name">Algeria</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/ad.png" alt=""></div>
+              <div class="flag-card-name">Andorra</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/ao.png" alt=""></div>
+              <div class="flag-card-name">Angola</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/ag.png" alt=""></div>
+              <div class="flag-card-name">Antigua and Barbuda</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/ar.png" alt=""></div>
+              <div class="flag-card-name">Argentina</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/am.png" alt=""></div>
+              <div class="flag-card-name">Armenia</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/au.png" alt=""></div>
+              <div class="flag-card-name">Australia</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/at.png" alt=""></div>
+              <div class="flag-card-name">Austria</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/az.png" alt=""></div>
+              <div class="flag-card-name">Azerbaijan</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/bs.png" alt=""></div>
+              <div class="flag-card-name">Bahamas</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/bh.png" alt=""></div>
+              <div class="flag-card-name">Bahrain</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/bd.png" alt=""></div>
+              <div class="flag-card-name">Bangladesh</div>
+            </div>
+            <div class="flag-card">
+              <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/bb.png" alt=""></div>
+              <div class="flag-card-name">Barbados</div>
+            </div>
+          </div>
         </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/al.png" alt=""></div>
-          <div class="flag-card-name">Albania</div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/dz.png" alt=""></div>
-          <div class="flag-card-name">Algeria</div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/ad.png" alt=""></div>
-          <div class="flag-card-name">Andorra</div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/ao.png" alt=""></div>
-          <div class="flag-card-name">Angola</div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/ag.png" alt=""></div>
-          <div class="flag-card-name">Antigua and Barbuda</div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/ar.png" alt=""></div>
-          <div class="flag-card-name">Argentina</div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/am.png" alt=""></div>
-          <div class="flag-card-name">Armenia</div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/au.png" alt=""></div>
-          <div class="flag-card-name">Australia</div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/at.png" alt=""></div>
-          <div class="flag-card-name">Austria</div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/az.png" alt=""></div>
-          <div class="flag-card-name">Azerbaijan</div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/bs.png" alt=""></div>
-          <div class="flag-card-name">Bahamas</div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/bh.png" alt=""></div>
-          <div class="flag-card-name">Bahrain</div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/bd.png" alt=""></div>
-          <div class="flag-card-name">Bangladesh</div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-img-wrap"><img src="https://flagcdn.com/w320/bb.png" alt=""></div>
-          <div class="flag-card-name">Barbados</div>
-        </div>
-      </div>
-    </div>
 
-    <div class="bottom-nav">
-      <div class="nav-tab">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><path d="M3 10.5L12 3L21 10.5V20C21 20.55 20.55 21 20 21H4C3.45 21 3 20.55 3 20V10.5Z"/><polyline points="9 21 9 14 15 14 15 21"/></svg>
-        <span class="nav-label">Home</span>
-      </div>
-      <div class="nav-tab">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><circle cx="12" cy="12" r="7"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="2" fill="#8A8494" stroke="none"/></svg>
-        <span class="nav-label">Modes</span>
-      </div>
-      <div class="nav-tab">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><rect x="3" y="13" width="4" height="8"/><rect x="10" y="8" width="4" height="13"/><rect x="17" y="3" width="4" height="18"/></svg>
-        <span class="nav-label">Stats</span>
-      </div>
-      <div class="nav-tab active">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A1820" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3 C8 7 8 17 12 21 C16 17 16 7 12 3Z"/></svg>
-        <span class="nav-label">Browse</span>
-      </div>
-      <div class="nav-tab">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span class="nav-label">Settings</span>
+        <div class="bottom-nav">
+          <div class="nav-tab">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><path d="M3 10.5L12 3L21 10.5V20C21 20.55 20.55 21 20 21H4C3.45 21 3 20.55 3 20V10.5Z"/><polyline points="9 21 9 14 15 14 15 21"/></svg>
+            <span class="nav-label">Home</span>
+          </div>
+          <div class="nav-tab">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><circle cx="12" cy="12" r="7"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="2" fill="#8A8494" stroke="none"/></svg>
+            <span class="nav-label">Modes</span>
+          </div>
+          <div class="nav-tab">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><rect x="3" y="13" width="4" height="8"/><rect x="10" y="8" width="4" height="13"/><rect x="17" y="3" width="4" height="18"/></svg>
+            <span class="nav-label">Stats</span>
+          </div>
+          <div class="nav-tab active">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A1820" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3 C8 7 8 17 12 21 C16 17 16 7 12 3Z"/></svg>
+            <span class="nav-label">Browse</span>
+          </div>
+          <div class="nav-tab">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span class="nav-label">Settings</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
