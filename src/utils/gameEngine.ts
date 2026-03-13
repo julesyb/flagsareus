@@ -58,12 +58,6 @@ export function getTodayDateString(): string {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-export function getDailyNumber(): number {
-  const start = new Date(DAILY_CHALLENGE_EPOCH).getTime();
-  const now = new Date(getTodayDateString() + 'T00:00:00').getTime();
-  return Math.round((now - start) / MS_PER_DAY) + 1;
-}
-
 export function generateDailyQuestions(dateStr?: string): GameQuestion[] {
   const date = dateStr || getTodayDateString();
   const seed = dateSeed(date);

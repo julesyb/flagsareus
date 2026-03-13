@@ -76,7 +76,7 @@ export default function ChallengeResponseScreen({ route, navigation }: Props) {
 
           {result.status === 'success' && (
             <View style={styles.centered}>
-              <View style={[styles.iconCircle, { backgroundColor: colors.success + '18' }]}>
+              <View style={[styles.iconCircle, { backgroundColor: colors.successBg }]}>
                 <CheckIcon size={28} color={colors.success} />
               </View>
               <Text style={styles.title}>{t('challenge.responseReceived')}</Text>
@@ -101,7 +101,7 @@ export default function ChallengeResponseScreen({ route, navigation }: Props) {
 
           {result.status === 'not_found' && (
             <View style={styles.centered}>
-              <View style={[styles.iconCircle, { backgroundColor: colors.warning + '18' }]}>
+              <View style={[styles.iconCircle, { backgroundColor: colors.warningBg }]}>
                 <CrossIcon size={28} color={colors.warning} />
               </View>
               <Text style={styles.title}>{t('challenge.responseNotFound')}</Text>
