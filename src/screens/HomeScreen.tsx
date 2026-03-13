@@ -574,10 +574,9 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   },
   levelBadgeNum: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.body,
     color: colors.goldBright,
     letterSpacing: -0.5,
-    lineHeight: 18,
   },
 
   // ── Onboarding progress
@@ -801,7 +800,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   modeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.sm + spacing.xs,
     paddingVertical: spacing.sm + spacing.xs,
     paddingHorizontal: spacing.xxs,
     borderBottomWidth: 1,
