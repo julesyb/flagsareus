@@ -219,24 +219,28 @@ export function describeRequirement(req: LevelRequirement): string {
 }
 
 // ─── 10 Level definitions ─────────────────────────────────────
-// Simple, hard-to-skip progression:
-//   1-3:   Mode mastery - get all flags right in easy, medium, hard
-//   4-10:  Depth mastery - get every flag right N times (scaling)
+// Each level forces a different activity so you can't skip ahead.
+//   1-3:   Core difficulty mastery (easy, medium, hard)
+//   4-8:   Explore every game mode (one mode per level)
+//   9:     Prove all-mode breadth (play all 9 modes)
+//   10:    Ultimate mastery (every flag right 10 times)
 
 export const LEVELS: LevelDef[] = [
-  // ── Mode Mastery (1-3) ──
+  // ── Core Difficulty (1-3) ──
   { level: 1, requirement: { type: 'mode_correct', mode: 'easy', count: 197 } },
   { level: 2, requirement: { type: 'mode_correct', mode: 'medium', count: 197 } },
   { level: 3, requirement: { type: 'mode_correct', mode: 'hard', count: 197 } },
 
-  // ── Depth Mastery (4-10) ──
-  { level: 4, requirement: { type: 'flags_correct_all', times: 2 } },
-  { level: 5, requirement: { type: 'flags_correct_all', times: 3 } },
-  { level: 6, requirement: { type: 'flags_correct_all', times: 5 } },
-  { level: 7, requirement: { type: 'flags_correct_all', times: 7 } },
-  { level: 8, requirement: { type: 'flags_correct_all', times: 10 } },
-  { level: 9, requirement: { type: 'flags_correct_all', times: 15 } },
-  { level: 10, requirement: { type: 'flags_correct_all', times: 20 } },
+  // ── Mode Exploration (4-8) ──
+  { level: 4, requirement: { type: 'mode_correct', mode: 'flashflag', count: 100 } },
+  { level: 5, requirement: { type: 'mode_correct', mode: 'neighbors', count: 100 } },
+  { level: 6, requirement: { type: 'mode_correct', mode: 'flagpuzzle', count: 100 } },
+  { level: 7, requirement: { type: 'mode_correct', mode: 'capitalconnection', count: 100 } },
+  { level: 8, requirement: { type: 'mode_correct', mode: 'impostor', count: 100 } },
+
+  // ── Full Mastery (9-10) ──
+  { level: 9, requirement: { type: 'modes_played', count: 9 } },
+  { level: 10, requirement: { type: 'flags_correct_all', times: 10 } },
 ];
 
 export const MAX_LEVEL = LEVELS.length;
@@ -246,7 +250,7 @@ export type LevelTier = 'starter' | 'expert' | 'master';
 
 export function getLevelTier(level: number): LevelTier {
   if (level <= 3) return 'starter';
-  if (level <= 7) return 'expert';
+  if (level <= 8) return 'expert';
   return 'master';
 }
 
