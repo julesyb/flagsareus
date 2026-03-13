@@ -56,12 +56,22 @@
 - `src/utils/useLayout.ts` — responsive breakpoints hook
 - `src/utils/notifications.ts` — daily reminder scheduling
 - `src/utils/challengeCode.ts` — URL-safe challenge encoding/decoding
+- `src/utils/config.ts` — app domain, game constants, challenge limits
+- `src/utils/levels.ts` — 100-level progression system with requirement types and evaluation
+- `src/utils/gameHelpers.ts` — helper functions (countCorrect, countWrong, calculateProgress)
 - `src/hooks/useGameAnimations.ts` — shared game animation hook (fade, shake, streak spring)
+- `src/hooks/useNavTabs.ts` — navigation tab state management
 - `src/components/Icons.tsx` — all SVG icons (no emoji)
 - `src/components/BottomNav.tsx` — shared bottom navigation
 - `src/components/ScreenContainer.tsx` — max-width wrapper for responsive layout
 - `src/components/SegBtn.tsx` — segmented button component
 - `src/components/ConfigRow.tsx` — settings row with label + controls
+- `src/components/FlagImage.tsx` — optimized flag image loading with CDN width selection
+- `src/components/MapImage.tsx` — country/region map display
+- `src/components/GameTopBar.tsx` — game screen header with score, streak, progress
+- `src/components/PageHeader.tsx` — screen title and subtitle header
+- `src/components/ErrorBoundary.tsx` — error boundary wrapper for crash recovery
+- `src/components/AppIcon.tsx` — app icon display component
 - `src/contexts/ThemeContext.tsx` — theme provider with light/dark/system support
 
 ## Conventions
