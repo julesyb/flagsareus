@@ -11,12 +11,13 @@ import {
   Alert,
   Platform,
   Animated,
+  Share,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { spacing, fontFamily, fontSize, buildButtons, borderRadius, typography, ThemeColors } from '../utils/theme';
+import { spacing, fontFamily, fontSize, buildButtons, borderRadius, typography, ThemeColors, APP_URL } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types/navigation';
-import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName, generateShortCode } from '../utils/challengeCode';
+import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName, generateShortCode, encodeResponse } from '../utils/challengeCode';
 import { hapticTap, hapticWrong, hapticCorrect } from '../utils/feedback';
 import ScreenContainer from '../components/ScreenContainer';
 import BottomNav from '../components/BottomNav';
@@ -160,6 +161,30 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
     (navigation.replace as (screen: string, params: typeof gameParams) => void)(screen, gameParams);
   };
 
+  const handleResendResults = async () => {
+    if (!preview || !previousAttempt) return;
+    hapticTap();
+    const shortCode = generateShortCode(preview);
+    const responseCode = encodeResponse({
+      recipientName: previousAttempt.myName,
+      shortCode,
+      recipientScore: previousAttempt.myScore,
+      totalFlags: previousAttempt.totalFlags,
+      resultDetails: previousAttempt.myResults,
+    });
+    const link = `${APP_URL}/r/${responseCode}`;
+    const message = t('challenge.responseShareCard', {
+      name: previousAttempt.myName,
+      correct: String(previousAttempt.myScore),
+      total: String(previousAttempt.totalFlags),
+      opponent: preview.hostName,
+      link,
+    });
+    try {
+      await Share.share({ message });
+    } catch { /* share cancelled */ }
+  };
+
   const hostScore = preview
     ? preview.hostResults.filter((r) => r.correct).length
     : 0;
@@ -281,6 +306,16 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
                     ))}
                   </View>
                 )}
+                <TouchableOpacity
+                  style={styles.resendButton}
+                  onPress={handleResendResults}
+                  activeOpacity={0.7}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('challenge.sendResultsBack')}
+                >
+                  <LinkIcon size={14} color={colors.gold} />
+                  <Text style={styles.resendButtonText}>{t('challenge.sendResultsBack')}</Text>
+                </TouchableOpacity>
               </View>
             </Animated.View>
           )}
@@ -533,6 +568,23 @@ const createStyles = (colors: ThemeColors) => {
   alreadyPlayedScore: {
     ...typography.body,
     color: colors.ink,
+  },
+  resendButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.gold,
+    marginTop: spacing.xs,
+  },
+  resendButtonText: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: fontSize.sm,
+    color: colors.gold,
   },
 
   // ── Play button
