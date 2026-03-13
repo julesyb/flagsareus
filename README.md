@@ -4,13 +4,16 @@ A mobile flag quiz app built with React Native and Expo. Test your knowledge of 
 
 ## Game Modes
 
-- **Quick Play** - Choose 2 Pick, 4 Pick, or Free-form and hit Play Now
+- **Easy / Medium / Hard** - Standard flag identification at varying difficulty (2-pick, 4-pick, or free-form)
 - **Full Game Setup** - Pick difficulty, display mode (flag or map), category filter, question count, lives (3/5/unlimited)
 - **Timed Quiz** - 60 seconds, answer as many as you can
 - **Flag Puzzle** - Flag reveals tile by tile, guess before time runs out
 - **Neighbors** - Name all bordering countries of a given flag
 - **Flag Impostor** - Spot the fake flag among real ones
 - **Capital Connection** - Match flags to their capital cities
+- **Flash Flag** - Party mode with device tilt-to-answer
+- **Daily Challenge** - Same 10 flags for everyone, play once per day
+- **Practice** - Review your weak flags for targeted improvement
 
 ### Categories
 
@@ -18,7 +21,7 @@ Filter by region (Africa, Asia, Europe, Americas, Oceania) or theme (Famous Flag
 
 ## Tech Stack
 
-- **React Native** 0.83 + **Expo** 55 + **TypeScript** 5.9 (strict)
+- **React Native** 0.83.2 + **Expo** 55 + **TypeScript** 5.9 (strict)
 - **React Navigation** (native-stack) for routing
 - **AsyncStorage** for persistent stats
 - **expo-image** for performant flag loading via flagcdn.com
@@ -83,7 +86,11 @@ src/
     NeighborsScreen.tsx   # Find bordering countries
     FlagImpostorScreen.tsx # Spot the fake flag
     CapitalConnectionScreen.tsx # Match flags to capitals
-    FlagFlashScreen.tsx   # Party tilt-to-answer mode (hidden)
+    FlashFlagScreen.tsx   # Party tilt-to-answer mode (hidden)
+    OnboardingScreen.tsx  # First-time user onboarding
+    SettingsScreen.tsx    # User preferences and settings
+    JoinChallengeScreen.tsx      # Join shared challenges via code
+    ChallengeResponseScreen.tsx  # View shared challenge results
   components/            # Shared UI (FlagImage, MapImage, BottomNav, Icons, ErrorBoundary)
   data/                  # Country database (195+ countries), capitals, neighbors, aliases, coordinates
   hooks/                 # Custom hooks (useGameAnimations)
@@ -108,6 +115,6 @@ Two font families only:
 - Rounded corners on cards and interactive elements (sm-xl scale)
 - No gradients - flat color planes only
 - No drop shadows except offset hard shadows on hover
-- Accent red (#E5271C) appears maximum twice per screen
+- Accent red (#C43030) appears maximum twice per screen
 - No emoji anywhere in the UI - use SVG icons from Icons.tsx
 - No em dashes in user-facing text - use hyphens or commas
