@@ -548,7 +548,7 @@ export default function StatsScreen() {
             </View>
             <View style={styles.challengeList}>
               {challengeHistory.map((ch, i) => {
-                const oppCount = ch.opponents?.length ?? (ch.opponentName !== null ? 1 : 0);
+                const oppCount = ch.opponents?.length ?? (ch.opponentName !== null && ch.opponentScore !== null ? 1 : 0);
                 const hasOpponent = oppCount > 0;
                 const isSingleOpponent = oppCount === 1;
                 const won = isSingleOpponent && ch.myScore > ch.opponentScore!;
