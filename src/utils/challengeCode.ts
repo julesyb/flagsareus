@@ -433,6 +433,54 @@ export function decodeResponse(code: string): DecodeResponseResult {
   }
 }
 
+// ── Daily challenge share code ──
+// Format: D~name~date~score~totalDeci
+// Since every player gets the same daily questions, we only need name + date + score + speed.
+// The date identifies which daily challenge, score is correct count, totalDeci is total time in deciseconds.
+
+export interface DailyShareData {
+  name: string;
+  date: string;       // YYYY-MM-DD
+  score: number;       // correct count (0-10)
+  totalTimeMs: number; // total completion time in ms
+}
+
+export function encodeDailyShare(data: DailyShareData): string {
+  const name = sanitizeName(data.name);
+  const totalDeci = Math.round(data.totalTimeMs / 100);
+  return `D~${name}~${data.date}~${data.score}~${totalDeci}`;
+}
+
+export type DecodeDailyResult =
+  | { status: 'ok'; data: DailyShareData }
+  | { status: 'invalid' };
+
+export function decodeDailyShare(code: string): DecodeDailyResult {
+  try {
+    const escaped = APP_DOMAIN.replace(/\./g, '\\.');
+    const trimmed = code.trim()
+      .replace(new RegExp(`^https?://${escaped}/d/`, 'i'), '')
+      .replace(new RegExp(`^${escaped}/d/`, 'i'), '')
+      .replace(/^flagthat:\/\/d\//i, '');
+
+    if (!trimmed.startsWith('D~')) return { status: 'invalid' };
+    const parts = trimmed.slice(2).split('~');
+    if (parts.length !== 4) return { status: 'invalid' };
+
+    const [name, date, scoreStr, totalDeciStr] = parts;
+    if (!name || name.length > MAX_HOSTNAME_LENGTH) return { status: 'invalid' };
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return { status: 'invalid' };
+
+    const score = parseInt(scoreStr, 10);
+    const totalDeci = parseInt(totalDeciStr, 10);
+    if (isNaN(score) || isNaN(totalDeci) || score < 0 || totalDeci < 0) return { status: 'invalid' };
+
+    return { status: 'ok', data: { name, date, score, totalTimeMs: totalDeci * 100 } };
+  } catch {
+    return { status: 'invalid' };
+  }
+}
+
 // ── Base64 helpers (for legacy V1/V2 decoding only) ──
 
 function fromBase64(encoded: string): string {

@@ -17,7 +17,7 @@ import { ThemeColors } from '../utils/theme';
 import { getTotalFlagCount, getCategoryCount } from '../data';
 import { initAudio, hapticTap, hapticCorrect, hapticWrong, playWrongSound, setSoundsEnabled, setHapticsEnabled } from '../utils/feedback';
 import { getStats, getSettings, getMissedFlagIds, getBaselineData, isDailyCompleteToday, BaselineData, getFlagStats, getBadgeData, getDayStreakInfo, getPersistedLevel, persistLevel } from '../utils/storage';
-import { generateQuestions } from '../utils/gameEngine';
+import { generateQuestions, getDailyConfig, getDailyVariant } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion, CategoryId, BASELINE_REGIONS } from '../types';
 import { PlayIcon, ChevronRightIcon, CheckIcon, LinkIcon, CalendarIcon } from '../components/Icons';
@@ -151,6 +151,14 @@ export default function HomeScreen({ navigation }: Props) {
   const [teaserKey, setTeaserKey] = useState(0);
   const [weakFlagCount, setWeakFlagCount] = useState(0);
   const [dailyDone, setDailyDone] = useState(false);
+  const dailyTagText = useMemo(() => {
+    const v = getDailyVariant();
+    const diffLabel = t(`common.${v.difficulty}`).toLowerCase();
+    const modeStr = v.displayMode === 'map'
+      ? `${diffLabel} ${t('setup.displayMap').toLowerCase()}`
+      : diffLabel;
+    return t('home.dailyVariant', { mode: modeStr });
+  }, []);
   const [autocomplete, setAutocomplete] = useState(false);
   const [baseline, setBaseline] = useState<BaselineData | null>(null);
   const [levelProgress, setLevelProgress] = useState<LevelProgress | null>(null);
@@ -313,7 +321,7 @@ export default function HomeScreen({ navigation }: Props) {
               onPress={() => {
                 hapticTap();
                 navigation.navigate('Game', {
-                  config: { mode: 'daily', category: 'all', questionCount: 10, displayMode: 'flag' },
+                  config: getDailyConfig(),
                 });
               }}
               accessibilityRole="button"
@@ -327,7 +335,7 @@ export default function HomeScreen({ navigation }: Props) {
                 {t('home.daily')}
               </Text>
               <Text style={styles.modeTag}>
-                {dailyDone ? t('home.comeBackTomorrow') : t('home.tenFlags')}
+                {dailyDone ? t('home.comeBackTomorrow') : dailyTagText}
               </Text>
               {dailyDone ? <CheckIcon size={14} color={colors.success} /> : <ChevronRightIcon size={14} color={colors.dim} />}
             </TouchableOpacity>

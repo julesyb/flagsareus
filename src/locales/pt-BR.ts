@@ -53,6 +53,7 @@ const ptBR: DeepPartial<TranslationStrings> = {
     daily: 'Desafio Di\u00e1rio',
     comeBackTomorrow: 'Volte amanh\u00e3',
     tenFlags: '10 bandeiras, iguais para todos',
+    dailyVariant: '10 bandeiras - {mode}',
     playNow: 'Jogar',
     cards: 'Cartas',
     difficulty: 'Dificuldade',
@@ -365,6 +366,15 @@ const ptBR: DeepPartial<TranslationStrings> = {
     channelName: 'Desafio di\u00e1rio',
   },
 
+  // ─── Daily Challenge ───────────────────────────────────
+  daily: {
+    leaderboard: 'Classifica\u00e7\u00e3o',
+    leaderboardCount: '{count} jogadores',
+    enterName: 'Seu nome para a classifica\u00e7\u00e3o',
+    shareInvite: 'Consegue superar {name}?',
+  },
+
+  // ─── Error Boundary ─────────────────────────────────────
   error: {
     title: 'Algo deu errado',
     message: 'O aplicativo encontrou um erro inesperado.',

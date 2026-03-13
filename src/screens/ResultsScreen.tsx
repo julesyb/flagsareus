@@ -34,7 +34,10 @@ import { RootStackParamList } from '../types/navigation';
 import { getAllEarnedBadges, detectPerGameBadges, buildBadgeContext, BADGES, TIER_COLORS, EarnedBadge, getBadgeName, getBadgeDescription } from '../utils/badges';
 import { getTotalFlagCount, getCategoryCount } from '../data';
 import { computeLevelProgress, getTierLabel, getLevelTier } from '../utils/levels';
-import { encodeChallenge, ChallengeData, CHALLENGE_MODES, generateShortCode, generateChallengeShareCard, encodeResponse } from '../utils/challengeCode';
+import { encodeChallenge, ChallengeData, CHALLENGE_MODES, generateShortCode, generateChallengeShareCard, encodeResponse, encodeDailyShare } from '../utils/challengeCode';
+import { DailyLeaderboardEntry, getDailyLeaderboardForDate, addDailyLeaderboardEntry } from '../utils/storage';
+import DailyLeaderboard from '../components/DailyLeaderboard';
+import { getTodayDateString } from '../utils/gameEngine';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
 
@@ -204,16 +207,28 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const [newCountriesCount, setNewCountriesCount] = useState(0);
   const [levelUpTo, setLevelUpTo] = useState<number | null>(null);
 
+  // Daily leaderboard state
+  const [leaderboardEntries, setLeaderboardEntries] = useState<DailyLeaderboardEntry[]>([]);
+  const [showDailyNameModal, setShowDailyNameModal] = useState(false);
+  const [dailyName, setDailyName] = useState('');
+
   // Challenge modal state
   const [showChallengeModal, setShowChallengeModal] = useState(false);
   const [challengeName, setChallengeName] = useState('');
 
-  // Load saved challenge name
+  // Load saved challenge name + daily leaderboard
   useEffect(() => {
     getChallengeName().then((saved) => {
-      if (saved) setChallengeName(saved);
+      if (saved) {
+        setChallengeName(saved);
+        setDailyName(saved);
+      }
     });
-  }, []);
+    if (isDaily) {
+      const dateStr = getTodayDateString();
+      getDailyLeaderboardForDate(dateStr).then(setLeaderboardEntries);
+    }
+  }, [isDaily]);
 
   const doShareChallenge = async (name: string) => {
     const flagIds = results.map((r) => r.question.flag.id);
@@ -450,10 +465,49 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const modeLabel = t(modeLabelKey(config.mode));
 
   const handleShare = async () => {
-    const message = isDaily
-      ? generateDailyShareGrid(results)
-      : generateShareGrid(results, modeLabel);
+    const message = generateShareGrid(results, modeLabel);
     try { await Share.share({ message }); markShared(); } catch { /* cancelled */ }
+  };
+
+  const doDailyShare = async (name: string) => {
+    const totalTimeMs = results.reduce((sum, r) => sum + r.timeTaken, 0);
+    const dateStr = getTodayDateString();
+    const code = encodeDailyShare({ name, date: dateStr, score: correct, totalTimeMs });
+    const link = `${APP_URL}/d/${code}`;
+    const gridText = generateDailyShareGrid(results);
+    const message = `${gridText}\n\n${t('daily.shareInvite', { name })}\n${link}`;
+
+    // Save own entry to leaderboard
+    const updated = await addDailyLeaderboardEntry(dateStr, {
+      name,
+      score: correct,
+      totalTimeMs,
+      isMe: true,
+    });
+    setLeaderboardEntries(updated);
+
+    try {
+      await Share.share({ message });
+      markShared();
+      saveChallengeName(name.trim());
+    } catch { /* share cancelled */ }
+  };
+
+  const handleDailyShareTap = () => {
+    hapticTap();
+    if (dailyName.trim().length > 0) {
+      doDailyShare(dailyName.trim());
+    } else {
+      setShowDailyNameModal(true);
+    }
+  };
+
+  const handleDailyNameSubmit = async () => {
+    if (dailyName.trim().length === 0) return;
+    Keyboard.dismiss();
+    setShowDailyNameModal(false);
+    hapticTap();
+    await doDailyShare(dailyName.trim());
   };
 
 
@@ -474,11 +528,9 @@ export default function ResultsScreen({ route, navigation }: Props) {
     navigatePlayAgain();
   };
 
-  // Contextual Play CTA text
+  // Contextual Play CTA text (not used for daily - daily only has Share)
   const playCtaText = isBaseline
     ? t('onboarding.next')
-    : isDaily
-    ? t('common.home')
     : overallStats && accuracy < (overallStats.totalAnswered > 0
         ? Math.round((overallStats.totalCorrect / overallStats.totalAnswered) * 100) : 100)
       ? t('results.beatYourScore')
@@ -726,8 +778,16 @@ export default function ResultsScreen({ route, navigation }: Props) {
           </Animated.View>
         )}
 
-        {/* ── ACTION BUTTONS (hidden for challenges — they have Send Results + Challenge Again) ── */}
-        {!isChallenge && (
+        {/* ── ACTION BUTTONS ── */}
+        {/* Daily: just Share. Challenge: Send Results + Challenge Again. Other: Play Again + Share */}
+        {isDaily && !isChallenge && (
+          <Animated.View style={[styles.buttonRow, { opacity: restFade }]}>
+            <TouchableOpacity style={styles.primaryButton} onPress={handleDailyShareTap} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={t('common.share')}>
+              <Text style={styles.primaryButtonText}>{t('common.share')}</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+        {!isDaily && !isChallenge && (
         <Animated.View style={[styles.buttonRow, { opacity: restFade }]}>
           <TouchableOpacity style={[styles.primaryButton, !isBaseline && styles.buttonHalf]} onPress={playAgain} activeOpacity={0.7} accessibilityRole="button" accessibilityLabel={playCtaText}>
             <Text style={styles.primaryButtonText}>{playCtaText}</Text>
@@ -740,8 +800,15 @@ export default function ResultsScreen({ route, navigation }: Props) {
         </Animated.View>
         )}
 
-        {/* ── CHALLENGE A FRIEND ── */}
-        {canChallenge && !isChallenge && !reviewOnly && (
+        {/* ── DAILY LEADERBOARD ── */}
+        {isDaily && leaderboardEntries.length > 0 && (
+          <Animated.View style={{ opacity: restFade }}>
+            <DailyLeaderboard entries={leaderboardEntries} />
+          </Animated.View>
+        )}
+
+        {/* ── CHALLENGE A FRIEND (not shown for daily — daily has its own share) ── */}
+        {canChallenge && !isChallenge && !isDaily && !reviewOnly && (
           <Animated.View style={{ opacity: restFade }}>
             <TouchableOpacity
               style={styles.challengeShareButton}
@@ -757,8 +824,8 @@ export default function ResultsScreen({ route, navigation }: Props) {
         )}
 
 
-        {/* ── NEWLY EARNED BADGES (hidden for challenges) ── */}
-        {newBadges.length > 0 && !isChallenge && (
+        {/* ── NEWLY EARNED BADGES (hidden for challenges and daily) ── */}
+        {newBadges.length > 0 && !isChallenge && !isDaily && (
           <Animated.View style={[styles.badgesSection, { opacity: restFade }]}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>{t('results.badgesUnlocked')}</Text>
@@ -893,6 +960,51 @@ export default function ResultsScreen({ route, navigation }: Props) {
               accessibilityRole="button"
               accessibilityLabel={t('common.share')}
               accessibilityState={{ disabled: challengeName.trim().length === 0 }}
+            >
+              <Text style={styles.modalShareText}>{t('common.share')}</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* ── Daily share name modal ── */}
+      <Modal
+        visible={showDailyNameModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowDailyNameModal(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowDailyNameModal(false)}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.closeDialog')}
+        >
+          <TouchableOpacity activeOpacity={1} style={styles.modalCard} onPress={() => {}}>
+            <Text style={styles.modalTitle}>{t('daily.enterName')}</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={dailyName}
+              onChangeText={setDailyName}
+              placeholder={t('challenge.namePlaceholder')}
+              placeholderTextColor={colors.textTertiary}
+              autoCapitalize="words"
+              autoCorrect={false}
+              maxLength={8}
+              autoFocus
+              returnKeyType="done"
+              onSubmitEditing={dailyName.trim().length > 0 ? handleDailyNameSubmit : undefined}
+              accessibilityLabel={t('daily.enterName')}
+            />
+            <TouchableOpacity
+              style={[styles.modalShare, dailyName.trim().length === 0 && styles.modalShareDisabled]}
+              onPress={handleDailyNameSubmit}
+              disabled={dailyName.trim().length === 0}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.share')}
+              accessibilityState={{ disabled: dailyName.trim().length === 0 }}
             >
               <Text style={styles.modalShareText}>{t('common.share')}</Text>
             </TouchableOpacity>

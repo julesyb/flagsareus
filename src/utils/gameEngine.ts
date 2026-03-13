@@ -58,14 +58,60 @@ export function getTodayDateString(): string {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+// Daily challenge mode variants — deterministic per day.
+// Each day rotates through difficulty + display mode combinations.
+// Excludes neighbors and flash flag for daily challenges.
+export type DailyVariant = {
+  difficulty: 'easy' | 'medium' | 'hard';
+  displayMode: 'flag' | 'map';
+};
+
+const DAILY_VARIANTS: DailyVariant[] = [
+  { difficulty: 'medium', displayMode: 'flag' },
+  { difficulty: 'easy', displayMode: 'flag' },
+  { difficulty: 'hard', displayMode: 'flag' },
+  { difficulty: 'medium', displayMode: 'map' },
+  { difficulty: 'easy', displayMode: 'map' },
+  { difficulty: 'hard', displayMode: 'map' },
+];
+
+/** Get the daily challenge variant for a given date. Deterministic per day. */
+export function getDailyVariant(dateStr?: string): DailyVariant {
+  const date = dateStr || getTodayDateString();
+  const seed = dateSeed(date);
+  // Use absolute value and mod to pick a variant
+  const idx = Math.abs(seed) % DAILY_VARIANTS.length;
+  return DAILY_VARIANTS[idx];
+}
+
+/** Build the GameConfig for today's daily challenge. */
+export function getDailyConfig(dateStr?: string): GameConfig {
+  const variant = getDailyVariant(dateStr);
+  return {
+    mode: 'daily',
+    category: 'all',
+    questionCount: DAILY_QUESTION_COUNT,
+    displayMode: variant.displayMode,
+    difficulty: variant.difficulty,
+  };
+}
+
 export function generateDailyQuestions(dateStr?: string): GameQuestion[] {
   const date = dateStr || getTodayDateString();
   const seed = dateSeed(date);
+  const variant = getDailyVariant(date);
   const allFlags = getAllFlags();
   const shuffled = seededShuffle(allFlags, seed);
   const selected = shuffled.slice(0, DAILY_QUESTION_COUNT);
 
   const rng = seededRandom(seed + 1000);
+
+  // Hard mode: no options (user types answer)
+  if (variant.difficulty === 'hard') {
+    return selected.map((flag) => ({ flag, options: [] }));
+  }
+
+  const choiceCount = variant.difficulty === 'easy' ? EASY_CHOICE_COUNT : STANDARD_CHOICE_COUNT;
 
   return selected.map((flag) => {
     const otherFlags = allFlags.filter((f) => f.id !== flag.id);
@@ -74,7 +120,7 @@ export function generateDailyQuestions(dateStr?: string): GameQuestion[] {
     const nonTwins = otherFlags.filter((f) => !twinNames.includes(f.name));
 
     // Pick wrong answers, prioritizing twins
-    const wrongCount = STANDARD_CHOICE_COUNT - 1;
+    const wrongCount = choiceCount - 1;
     const seededShuffleTwins = [...twins].sort(() => rng() - 0.5);
     const selectedTwins = seededShuffleTwins.slice(0, wrongCount);
     const remaining = wrongCount - selectedTwins.length;
@@ -96,7 +142,7 @@ export function generateDailyShareGrid(results: GameResult[]): string {
   // Split into rows of 5
   const row1 = grid.slice(0, SHARE_GRID_ROW_SIZE);
   const row2 = grid.slice(SHARE_GRID_ROW_SIZE, DAILY_QUESTION_COUNT);
-  return `Flag That Daily Challenge\n${correct}/${DAILY_QUESTION_COUNT}\n\n${row1}\n${row2}\n\n${APP_DOMAIN}`;
+  return `${t('results.shareTitle')}\n${t('results.shareScore', { correct })}\n\n${row1}\n${row2}`;
 }
 
 export function generateShareGrid(results: GameResult[], modeLabel: string): string {

@@ -53,6 +53,7 @@ const es: DeepPartial<TranslationStrings> = {
     daily: 'Desaf\u00edo Diario',
     comeBackTomorrow: 'Vuelve ma\u00f1ana',
     tenFlags: '10 banderas, iguales para todos',
+    dailyVariant: '10 banderas - {mode}',
     playNow: 'Jugar',
     cards: 'Tarjetas',
     difficulty: 'Dificultad',
@@ -365,6 +366,15 @@ const es: DeepPartial<TranslationStrings> = {
     channelName: 'Desaf\u00edo diario',
   },
 
+  // ─── Daily Challenge ───────────────────────────────────
+  daily: {
+    leaderboard: 'Clasificaci\u00f3n',
+    leaderboardCount: '{count} jugadores',
+    enterName: 'Tu nombre para la clasificaci\u00f3n',
+    shareInvite: '\u00bfPuedes superar a {name}?',
+  },
+
+  // ─── Error Boundary ─────────────────────────────────────
   error: {
     title: 'Algo sali\u00f3 mal',
     message: 'La aplicaci\u00f3n encontr\u00f3 un error inesperado.',
