@@ -6,245 +6,152 @@
 <title>Flag That - Screenshot 1: Hero</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Barlow:wght@400;500;600;700;800;900&display=swap');
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    width: 1290px;
-    height: 2796px;
-    overflow: hidden;
+    width: 1290px; height: 2796px; overflow: hidden;
     background: #1A1820;
     font-family: 'Barlow', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex; flex-direction: column; align-items: center;
     position: relative;
   }
-
-  /* Subtle radial glow */
   body::before {
-    content: '';
-    position: absolute;
-    top: 40%;
-    left: 50%;
+    content: ''; position: absolute; top: 40%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 1400px;
-    height: 1400px;
+    width: 1400px; height: 1400px;
     background: radial-gradient(circle, rgba(233,186,76,0.07) 0%, transparent 65%);
     pointer-events: none;
   }
 
-  /* ── Headline Area ── */
+  /* ── HEADLINE (same on all screenshots) ── */
   .headline {
-    text-align: center;
-    padding: 160px 100px 20px;
-    flex-shrink: 0;
-    z-index: 2;
+    text-align: center; padding: 140px 100px 20px;
+    flex-shrink: 0; z-index: 2;
   }
-  .wordmark {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 52px;
-    margin-bottom: 32px;
-    letter-spacing: 1px;
-  }
-  .wm-flag { color: #FFFFFF; font-weight: 700; }
-  .wm-that { color: #E9BA4C; font-style: italic; }
-
   .headline h1 {
     font-family: 'Barlow', sans-serif;
-    font-size: 108px;
-    font-weight: 900;
-    color: #FFFFFF;
-    line-height: 1.0;
-    letter-spacing: -3px;
+    font-size: 108px; font-weight: 900; color: #FFFFFF;
+    line-height: 1.0; letter-spacing: -3px;
   }
   .headline h1 em {
     font-family: 'Libre Baskerville', serif;
-    font-weight: 700;
-    font-style: italic;
-    color: #E9BA4C;
+    font-weight: 700; font-style: italic; color: #E9BA4C;
   }
   .headline .sub {
-    font-size: 36px;
-    font-weight: 500;
+    font-size: 36px; font-weight: 500;
     color: rgba(255,255,255,0.40);
-    margin-top: 20px;
-    letter-spacing: 1px;
+    margin-top: 18px; letter-spacing: 1px;
   }
 
-  /* ── Phone ── */
-  .phone-wrap {
-    position: relative;
-    flex-shrink: 0;
-    z-index: 1;
-    margin-top: 60px;
-  }
-
+  /* ── PHONE FRAME (same on all screenshots) ── */
+  .phone-wrap { position: relative; flex-shrink: 0; z-index: 1; margin-top: 50px; }
   .phone {
-    width: 1080px;
-    height: 2400px;
+    width: 1080px; height: 2400px;
     background: linear-gradient(180deg, #7A7680 0%, #5E5A64 50%, #7A7680 100%);
-    border-radius: 58px;
-    padding: 2px;
-    position: relative;
+    border-radius: 58px; padding: 2px; position: relative;
   }
-
-  /* Volume buttons */
   .phone::before {
-    content: '';
-    position: absolute;
-    right: -3px; top: 280px;
+    content: ''; position: absolute; right: -3px; top: 280px;
     width: 3px; height: 80px;
     background: linear-gradient(180deg, #7A7680, #5E5A64, #7A7680);
     border-radius: 0 2px 2px 0;
   }
-
   .phone-inner {
-    width: 100%;
-    height: 100%;
-    background: #000;
-    border-radius: 56px;
-    padding: 5px;
-    position: relative;
+    width: 100%; height: 100%; background: #000;
+    border-radius: 56px; padding: 5px; position: relative;
   }
-
-  /* Dynamic island */
   .phone-inner::before {
-    content: '';
-    position: absolute;
-    top: 14px;
-    left: 50%;
+    content: ''; position: absolute; top: 14px; left: 50%;
     transform: translateX(-50%);
-    width: 126px;
-    height: 36px;
-    background: #000;
-    border-radius: 20px;
-    z-index: 10;
+    width: 126px; height: 36px; background: #000;
+    border-radius: 20px; z-index: 10;
   }
-
   .screen {
-    width: 100%;
-    height: 100%;
-    background: #F5EFE6;
-    border-radius: 52px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    width: 100%; height: 100%; background: #F5EFE6;
+    border-radius: 52px; overflow: hidden;
+    display: flex; flex-direction: column;
   }
-
-  /* ── Screen Content: Curated Hero Moment ── */
-  /* Just: wordmark + a gorgeous flag + correct answer + play button */
-
   .status-bar {
-    padding: 18px 44px 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 19px;
-    font-weight: 600;
-    color: #1A1820;
+    padding: 18px 50px 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 20px; font-weight: 600; color: #1A1820;
   }
 
+  /* ── SCREEN CONTENT ── */
   .screen-content {
-    flex: 1;
-    padding: 16px 44px 0;
-    display: flex;
-    flex-direction: column;
+    flex: 1; padding: 10px 50px 0;
+    display: flex; flex-direction: column;
   }
 
   .app-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0 28px;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0 24px;
   }
-  .app-wm { font-family: 'Libre Baskerville', serif; font-size: 48px; }
+  .app-wm { font-family: 'Libre Baskerville', serif; font-size: 56px; }
   .app-wm-f { color: #1A1820; font-weight: 700; }
   .app-wm-t { color: #E9BA4C; font-style: italic; }
   .level-pill {
-    display: flex; align-items: center; gap: 8px;
-    border: 2px solid #E9BA4C; border-radius: 999px;
-    padding: 8px 18px; background: #FFFFFF;
+    display: flex; align-items: center; gap: 10px;
+    border: 2.5px solid #E9BA4C; border-radius: 999px;
+    padding: 10px 22px; background: #FFFFFF;
   }
-  .lp-label { font-size: 14px; font-weight: 600; color: #8A8494; text-transform: uppercase; }
-  .lp-num { font-family: 'Libre Baskerville', serif; font-size: 28px; font-weight: 700; color: #E9BA4C; }
+  .lp-label { font-size: 16px; font-weight: 700; color: #8A8494; text-transform: uppercase; letter-spacing: 1px; }
+  .lp-num { font-family: 'Libre Baskerville', serif; font-size: 34px; font-weight: 700; color: #E9BA4C; }
 
   .eyebrow {
-    font-size: 20px; font-weight: 600; color: #8A8494;
-    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px;
+    font-size: 24px; font-weight: 700; color: #8A8494;
+    text-transform: uppercase; letter-spacing: 3px; margin-bottom: 18px;
   }
 
-  /* Big beautiful flag */
   .flag-hero {
-    width: 100%;
-    aspect-ratio: 3/2;
-    border-radius: 20px;
-    overflow: hidden;
-    background: #EDE7DE;
+    width: 100%; aspect-ratio: 3/2; border-radius: 22px;
+    overflow: hidden; background: #EDE7DE;
   }
   .flag-hero img { width: 100%; height: 100%; object-fit: cover; }
 
-  /* Answer options - just 2, big and clear */
-  .answer-row {
-    display: flex; gap: 14px; margin-top: 20px;
-  }
-  .answer {
-    flex: 1; height: 80px; border-radius: 16px;
+  .answers { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+  .ans {
+    width: calc(50% - 8px); height: 96px; border-radius: 18px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 26px; font-weight: 600; color: #1A1820;
-    background: #FFFFFF; border: 2px solid rgba(0,0,0,0.08);
+    font-size: 32px; font-weight: 600; color: #1A1820;
+    background: #FFFFFF; border: 2.5px solid rgba(0,0,0,0.08);
   }
-  .answer.correct {
-    background: #1E8F56; border-color: #1E8F56; color: #FFFFFF;
-  }
-
-  .answer-row-2 {
-    display: flex; gap: 14px; margin-top: 14px;
-  }
+  .ans.correct { background: #1E8F56; border-color: #1E8F56; color: #FFFFFF; }
 
   .result-text {
     text-align: center; margin-top: 20px;
-    font-size: 30px; font-weight: 700; color: #1E8F56;
-    text-transform: uppercase; letter-spacing: 2px;
+    font-size: 36px; font-weight: 700; color: #1E8F56;
+    text-transform: uppercase; letter-spacing: 3px;
   }
 
-  /* Giant CTA */
   .cta {
     margin-top: 28px;
-    background: #E9BA4C; border-radius: 20px; padding: 26px 0;
+    background: #E9BA4C; border-radius: 22px; padding: 30px 0;
     display: flex; align-items: center; justify-content: center; gap: 14px;
     box-shadow: 0 6px 0 #5C3506;
   }
   .cta-text {
-    font-size: 30px; font-weight: 700; color: #130F00;
-    text-transform: uppercase; letter-spacing: 1.5px;
+    font-size: 36px; font-weight: 700; color: #130F00;
+    text-transform: uppercase; letter-spacing: 2px;
   }
 
-  /* Streak banner */
   .streak-banner {
-    margin-top: 24px;
-    background: #FFFFFF;
-    border-radius: 16px;
-    border: 2px solid rgba(233,186,76,0.25);
-    padding: 20px 24px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
+    margin-top: 28px; background: #FFFFFF;
+    border-radius: 20px; border: 2.5px solid rgba(233,186,76,0.25);
+    padding: 24px 28px; display: flex; align-items: center; gap: 16px;
   }
   .streak-icon {
-    width: 48px; height: 48px;
-    background: rgba(233,186,76,0.12);
-    border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
+    width: 56px; height: 56px; background: rgba(233,186,76,0.12);
+    border-radius: 16px; display: flex; align-items: center; justify-content: center;
   }
   .streak-info { flex: 1; }
   .streak-num {
     font-family: 'Libre Baskerville', serif;
-    font-size: 28px; font-weight: 700; color: #E9BA4C;
+    font-size: 34px; font-weight: 700; color: #E9BA4C;
   }
-  .streak-label { font-size: 18px; font-weight: 600; color: #8A8494; text-transform: uppercase; letter-spacing: 1px; }
-  .streak-pips { display: flex; gap: 6px; }
-  .pip { width: 10px; height: 10px; border-radius: 50%; }
+  .streak-label { font-size: 22px; font-weight: 600; color: #8A8494; text-transform: uppercase; letter-spacing: 1px; }
+  .streak-pips { display: flex; gap: 7px; }
+  .pip { width: 12px; height: 12px; border-radius: 50%; }
   .pip.on { background: #E9BA4C; }
   .pip.off { background: #D5CFC6; }
 </style>
@@ -252,7 +159,6 @@
 <body>
 
 <div class="headline">
-  <div class="wordmark"><span class="wm-flag">Flag</span><span class="wm-that">That</span></div>
   <h1>Know every flag<br>in the <em>world</em></h1>
   <div class="sub">197 flags. Endless fun.</div>
 </div>
@@ -270,28 +176,22 @@
             <div class="app-wm"><span class="app-wm-f">Flag</span><span class="app-wm-t">That</span></div>
             <div class="level-pill"><span class="lp-label">Lvl</span><span class="lp-num">14</span></div>
           </div>
-
           <div class="eyebrow">Name this flag</div>
           <div class="flag-hero"><img src="https://flagcdn.com/w640/br.png" alt="Brazil"></div>
-
-          <div class="answer-row">
-            <div class="answer correct">Brazil</div>
-            <div class="answer">Colombia</div>
-          </div>
-          <div class="answer-row-2">
-            <div class="answer">Bolivia</div>
-            <div class="answer">Ecuador</div>
+          <div class="answers">
+            <div class="ans correct">Brazil</div>
+            <div class="ans">Colombia</div>
+            <div class="ans">Bolivia</div>
+            <div class="ans">Ecuador</div>
           </div>
           <div class="result-text">Correct!</div>
-
           <div class="cta">
             <span class="cta-text">Play Now</span>
-            <svg width="18" height="18" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#130F00"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#130F00"/></svg>
           </div>
-
           <div class="streak-banner">
             <div class="streak-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="#E9BA4C"><path d="M13.5 0.67C13.5 0.67 14.24 3.32 14.24 5.47C14.24 7.53 12.89 9.2 10.83 9.2C8.76 9.2 7.2 7.53 7.2 5.47L7.23 5.11C5.21 7.51 4 10.62 4 14C4 18.42 7.58 22 12 22C16.42 22 20 18.42 20 14C20 8.61 17.41 3.8 13.5 0.67Z"/></svg>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="#E9BA4C"><path d="M13.5 0.67C13.5 0.67 14.24 3.32 14.24 5.47C14.24 7.53 12.89 9.2 10.83 9.2C8.76 9.2 7.2 7.53 7.2 5.47L7.23 5.11C5.21 7.51 4 10.62 4 14C4 18.42 7.58 22 12 22C16.42 22 20 18.42 20 14C20 8.61 17.41 3.8 13.5 0.67Z"/></svg>
             </div>
             <div class="streak-info">
               <span class="streak-num">12</span>
