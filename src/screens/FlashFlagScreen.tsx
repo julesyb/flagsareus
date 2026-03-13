@@ -28,6 +28,7 @@ import FlagImage from '../components/FlagImage';
 import { flagName } from '../data/countryNames';
 import MapImage from '../components/MapImage';
 import { RootStackParamList } from '../types/navigation';
+import { useCountdown } from '../hooks/useCountdown';
 import ScreenContainer from '../components/ScreenContainer';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FlashFlag'>;
@@ -71,9 +72,9 @@ export default function FlashFlagScreen({ route, navigation }: Props) {
   const [questions, setQuestions] = useState<GameQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<GameResult[]>([]);
-  const [timeLeft, setTimeLeft] = useState(config.timeLimit || 60);
   const [tiltState, setTiltState] = useState<TiltState>('neutral');
   const [phase, setPhase] = useState<Phase>('tutorial');
+  const timeLeft = useCountdown(config.timeLimit || 60, phase === 'playing');
   const [countdown, setCountdown] = useState(3);
   const [motionGranted, setMotionGranted] = useState(false);
   const questionStartTime = useRef(Date.now());
@@ -125,20 +126,12 @@ export default function FlashFlagScreen({ route, navigation }: Props) {
     }
   }, [phase, countdown]);
 
-  // Game timer
+  // Navigate to results when time runs out
   useEffect(() => {
-    if (phase !== 'playing') return;
-    if (timeLeft <= 0) {
+    if (phase === 'playing' && timeLeft <= 0) {
       navigation.replace('Results', { results: resultsRef.current, config });
-      return;
     }
-
-    const interval = setInterval(() => {
-      setTimeLeft((t) => t - 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [phase, timeLeft]);
+  }, [timeLeft]);
 
   // Accelerometer for tilt detection (native only)
   useEffect(() => {

@@ -18,6 +18,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types/navigation';
 import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName } from '../utils/challengeCode';
 import { hapticTap, hapticWrong, hapticCorrect } from '../utils/feedback';
+import { modeLabelKey } from '../utils/gameEngine';
 import ScreenContainer from '../components/ScreenContainer';
 import BottomNav from '../components/BottomNav';
 import { useNavTabs } from '../hooks/useNavTabs';
@@ -27,19 +28,6 @@ import { LinkIcon, PlayIcon } from '../components/Icons';
 import { GameMode } from '../types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'JoinChallenge'>;
-
-function getModeLabel(mode: GameMode): string {
-  const labels: Partial<Record<GameMode, string>> = {
-    easy: t('common.easy'),
-    medium: t('common.medium'),
-    hard: t('common.hard'),
-    timeattack: t('home.timedQuiz'),
-    flagpuzzle: t('setup.flagPuzzle'),
-    neighbors: t('setup.neighbors'),
-    capitalconnection: t('setup.capitalConnection'),
-  };
-  return labels[mode] || mode;
-}
 
 export default function JoinChallengeScreen({ route, navigation }: Props) {
   const { colors } = useTheme();
@@ -205,7 +193,7 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
               {/* Challenge details */}
               <View style={styles.detailRow}>
                 <View style={styles.detailItem}>
-                  <Text style={styles.detailValue}>{getModeLabel(preview.mode)}</Text>
+                  <Text style={styles.detailValue}>{t(modeLabelKey(preview.mode))}</Text>
                   <Text style={styles.detailLabel}>{t('challenge.previewMode')}</Text>
                 </View>
                 <View style={styles.detailDivider} />
