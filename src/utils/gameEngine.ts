@@ -133,7 +133,7 @@ export function generateDailyQuestions(dateStr?: string): GameQuestion[] {
   const shuffled = seededShuffle(allFlags, seed);
   const selected = shuffled.slice(0, DAILY_QUESTION_COUNT);
 
-  let optionSeed = seed + 1000;
+  const optionSeed = seed + 1000;
 
   // Hard mode: no options (user types answer)
   if (variant.difficulty === 'hard') {
