@@ -151,14 +151,20 @@ export default function HomeScreen({ navigation }: Props) {
   const [teaserKey, setTeaserKey] = useState(0);
   const [weakFlagCount, setWeakFlagCount] = useState(0);
   const [dailyDone, setDailyDone] = useState(false);
+  const dailyVariant = useMemo(() => getDailyVariant(), []);
   const dailyTagText = useMemo(() => {
-    const v = getDailyVariant();
-    const diffLabel = t(`common.${v.difficulty}`).toLowerCase();
-    const modeStr = v.displayMode === 'map'
+    const diffLabel = t(`common.${dailyVariant.difficulty}`).toLowerCase();
+    if (dailyVariant.gameType === 'flagpuzzle') {
+      return t('home.dailyVariant', { mode: t('setup.flagPuzzle').toLowerCase() });
+    }
+    if (dailyVariant.gameType === 'capitalconnection') {
+      return t('home.dailyVariant', { mode: `${t('setup.capitalQuiz').toLowerCase()} - ${diffLabel}` });
+    }
+    const modeStr = dailyVariant.displayMode === 'map'
       ? `${diffLabel} ${t('setup.displayMap').toLowerCase()}`
       : diffLabel;
     return t('home.dailyVariant', { mode: modeStr });
-  }, []);
+  }, [dailyVariant]);
   const [autocomplete, setAutocomplete] = useState(false);
   const [baseline, setBaseline] = useState<BaselineData | null>(null);
   const [levelProgress, setLevelProgress] = useState<LevelProgress | null>(null);
@@ -320,9 +326,14 @@ export default function HomeScreen({ navigation }: Props) {
               disabled={dailyDone}
               onPress={() => {
                 hapticTap();
-                navigation.navigate('Game', {
-                  config: getDailyConfig(),
-                });
+                const config = getDailyConfig();
+                if (dailyVariant.gameType === 'flagpuzzle') {
+                  navigation.navigate('FlagPuzzle', { config });
+                } else if (dailyVariant.gameType === 'capitalconnection') {
+                  navigation.navigate('CapitalConnection', { config });
+                } else {
+                  navigation.navigate('Game', { config });
+                }
               }}
               accessibilityRole="button"
               accessibilityLabel={dailyDone ? t('home.comeBackTomorrow') : t('home.daily')}

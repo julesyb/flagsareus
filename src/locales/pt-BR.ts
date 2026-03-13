@@ -372,6 +372,10 @@ const ptBR: DeepPartial<TranslationStrings> = {
     leaderboardCount: '{count} jogadores',
     enterName: 'Seu nome para a classifica\u00e7\u00e3o',
     shareInvite: 'Consegue superar {name}?',
+    leaderboardCountSingle: '{count} jogador',
+    leaderboardEntry: 'Posi\u00e7\u00e3o {rank}: {name}, {score} de {total}, {time}',
+    invalidShareCode: 'Link inv\u00e1lido',
+    invalidShareCodeDesc: 'Este link do desafio di\u00e1rio \u00e9 inv\u00e1lido ou expirou.',
   },
 
   // ─── Error Boundary ─────────────────────────────────────

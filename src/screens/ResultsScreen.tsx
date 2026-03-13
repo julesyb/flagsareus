@@ -9,14 +9,14 @@ import {
   Animated,
   Easing,
   Share,
-  TextInput,
   Modal,
   Platform,
   Keyboard,
   Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { spacing, typography, fontFamily, fontSize, buildButtons, borderRadius, APP_URL, ThemeColors } from '../utils/theme';
+import { spacing, typography, fontFamily, fontSize, buildButtons, borderRadius, ThemeColors } from '../utils/theme';
+import { APP_URL } from '../utils/config';
 import { useTheme } from '../contexts/ThemeContext';
 import { getStreakFromResults, generateDailyShareGrid, generateShareGrid, modeLabelKey } from '../utils/gameEngine';
 import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChallenges, markShared, saveBaselineResult, getStats, getFlagStats, getDayStreakInfo, getBadgeData, persistEarnedBadges, getMissedFlagIds, addGameHistoryEntry, getChallengeName, saveChallengeName, addChallengeToHistory, recordRegionScore, getPersistedLevel, persistLevel, UNLOCK_THRESHOLD } from '../utils/storage';
@@ -28,7 +28,7 @@ import { CheckIcon, CrossIcon, ChevronRightIcon, GlobeIcon, UsersIcon, BadgeIcon
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
-import { UNLIMITED_QUESTIONS } from '../utils/config';
+import { UNLIMITED_QUESTIONS, SHARE_GRID_ROW_SIZE, DAILY_QUESTION_COUNT } from '../utils/config';
 import { countCorrect } from '../utils/gameHelpers';
 import { RootStackParamList } from '../types/navigation';
 import { getAllEarnedBadges, detectPerGameBadges, buildBadgeContext, BADGES, TIER_COLORS, EarnedBadge, getBadgeName, getBadgeDescription } from '../utils/badges';
@@ -37,6 +37,7 @@ import { computeLevelProgress, getTierLabel, getLevelTier } from '../utils/level
 import { encodeChallenge, ChallengeData, CHALLENGE_MODES, generateShortCode, generateChallengeShareCard, encodeResponse, encodeDailyShare } from '../utils/challengeCode';
 import { DailyLeaderboardEntry, getDailyLeaderboardForDate, addDailyLeaderboardEntry } from '../utils/storage';
 import DailyLeaderboard from '../components/DailyLeaderboard';
+import NameInputModal from '../components/NameInputModal';
 import { getTodayDateString } from '../utils/gameEngine';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
@@ -486,10 +487,11 @@ export default function ResultsScreen({ route, navigation }: Props) {
     });
     setLeaderboardEntries(updated);
 
+    // Persist name before sharing so it's remembered even if share is cancelled
+    saveChallengeName(name.trim());
     try {
       await Share.share({ message });
       markShared();
-      saveChallengeName(name.trim());
     } catch { /* share cancelled */ }
   };
 
@@ -751,12 +753,12 @@ export default function ResultsScreen({ route, navigation }: Props) {
             <Text style={styles.dailyGridTitle}>{t('results.shareTitle')}</Text>
             <View style={styles.dailyGrid}>
               <View style={styles.dailyGridRow}>
-                {results.slice(0, 5).map((r, i) => (
+                {results.slice(0, SHARE_GRID_ROW_SIZE).map((r, i) => (
                   <View key={i} style={[styles.dailyCell, r.correct ? styles.dailyCellCorrect : styles.dailyCellWrong]} />
                 ))}
               </View>
               <View style={styles.dailyGridRow}>
-                {results.slice(5, 10).map((r, i) => (
+                {results.slice(SHARE_GRID_ROW_SIZE, DAILY_QUESTION_COUNT).map((r, i) => (
                   <View key={i} style={[styles.dailyCell, r.correct ? styles.dailyCellCorrect : styles.dailyCellWrong]} />
                 ))}
               </View>
@@ -923,94 +925,24 @@ export default function ResultsScreen({ route, navigation }: Props) {
       <BottomNav activeTab="Home" onNavigate={onNavigate} />
 
       {/* ── Challenge name modal (only shown if no saved name) ── */}
-      <Modal
+      <NameInputModal
         visible={showChallengeModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowChallengeModal(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowChallengeModal(false)}
-          accessibilityRole="button"
-          accessibilityLabel={t('common.closeDialog')}
-        >
-          <TouchableOpacity activeOpacity={1} style={styles.modalCard} onPress={() => {}}>
-            <Text style={styles.modalTitle}>{t('challenge.enterName')}</Text>
-            <TextInput
-              style={styles.modalInput}
-              value={challengeName}
-              onChangeText={setChallengeName}
-              placeholder={t('challenge.namePlaceholder')}
-              placeholderTextColor={colors.textTertiary}
-              autoCapitalize="words"
-              autoCorrect={false}
-              maxLength={8}
-              autoFocus
-              returnKeyType="done"
-              onSubmitEditing={challengeName.trim().length > 0 ? handleChallengeShare : undefined}
-              accessibilityLabel={t('challenge.enterName')}
-            />
-            <TouchableOpacity
-              style={[styles.modalShare, challengeName.trim().length === 0 && styles.modalShareDisabled]}
-              onPress={handleChallengeShare}
-              disabled={challengeName.trim().length === 0}
-              activeOpacity={0.7}
-              accessibilityRole="button"
-              accessibilityLabel={t('common.share')}
-              accessibilityState={{ disabled: challengeName.trim().length === 0 }}
-            >
-              <Text style={styles.modalShareText}>{t('common.share')}</Text>
-            </TouchableOpacity>
-          </TouchableOpacity>
-        </TouchableOpacity>
-      </Modal>
+        value={challengeName}
+        onChangeText={setChallengeName}
+        title={t('challenge.enterName')}
+        onSubmit={handleChallengeShare}
+        onClose={() => setShowChallengeModal(false)}
+      />
 
       {/* ── Daily share name modal ── */}
-      <Modal
+      <NameInputModal
         visible={showDailyNameModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowDailyNameModal(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowDailyNameModal(false)}
-          accessibilityRole="button"
-          accessibilityLabel={t('common.closeDialog')}
-        >
-          <TouchableOpacity activeOpacity={1} style={styles.modalCard} onPress={() => {}}>
-            <Text style={styles.modalTitle}>{t('daily.enterName')}</Text>
-            <TextInput
-              style={styles.modalInput}
-              value={dailyName}
-              onChangeText={setDailyName}
-              placeholder={t('challenge.namePlaceholder')}
-              placeholderTextColor={colors.textTertiary}
-              autoCapitalize="words"
-              autoCorrect={false}
-              maxLength={8}
-              autoFocus
-              returnKeyType="done"
-              onSubmitEditing={dailyName.trim().length > 0 ? handleDailyNameSubmit : undefined}
-              accessibilityLabel={t('daily.enterName')}
-            />
-            <TouchableOpacity
-              style={[styles.modalShare, dailyName.trim().length === 0 && styles.modalShareDisabled]}
-              onPress={handleDailyNameSubmit}
-              disabled={dailyName.trim().length === 0}
-              activeOpacity={0.7}
-              accessibilityRole="button"
-              accessibilityLabel={t('common.share')}
-              accessibilityState={{ disabled: dailyName.trim().length === 0 }}
-            >
-              <Text style={styles.modalShareText}>{t('common.share')}</Text>
-            </TouchableOpacity>
-          </TouchableOpacity>
-        </TouchableOpacity>
-      </Modal>
+        value={dailyName}
+        onChangeText={setDailyName}
+        title={t('daily.enterName')}
+        onSubmit={handleDailyNameSubmit}
+        onClose={() => setShowDailyNameModal(false)}
+      />
 
       {/* ── Level-up celebration modal ── */}
       <Modal
@@ -1123,8 +1055,8 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     ...typography.eyebrow,
     color: colors.textSecondary, marginBottom: spacing.md,
   },
-  dailyGrid: { gap: 6 },
-  dailyGridRow: { flexDirection: 'row', gap: 6 },
+  dailyGrid: { gap: spacing.xs },
+  dailyGridRow: { flexDirection: 'row', gap: spacing.xs },
   dailyCell: { width: 44, height: 44, borderRadius: borderRadius.sm },
   dailyCellCorrect: { backgroundColor: colors.success },
   dailyCellWrong: { backgroundColor: colors.dim },
@@ -1345,32 +1277,10 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     textDecorationLine: 'underline',
   },
 
-  // ── Challenge modal
+  // ── Shared modal overlay (used by level-up modal)
   modalOverlay: {
     flex: 1, backgroundColor: colors.overlay,
     justifyContent: 'center', alignItems: 'center', padding: spacing.lg,
-  },
-  modalCard: {
-    backgroundColor: colors.surface, borderRadius: borderRadius.xl,
-    padding: spacing.xl, width: '100%', maxWidth: 360,
-  },
-  modalTitle: {
-    ...typography.bodyBold,
-    color: colors.ink, textAlign: 'center', marginBottom: spacing.md,
-  },
-  modalInput: {
-    backgroundColor: colors.surfaceSecondary, borderWidth: 2, borderColor: colors.border,
-    borderRadius: borderRadius.md, padding: spacing.md,
-    ...typography.body,
-    color: colors.text, textAlign: 'center', marginBottom: spacing.md,
-  },
-  modalShare: {
-    paddingVertical: 14, alignItems: 'center',
-    borderRadius: borderRadius.md, backgroundColor: colors.goldBright,
-  },
-  modalShareDisabled: { backgroundColor: colors.textTertiary },
-  modalShareText: {
-    ...typography.actionLabel, color: colors.playText,
   },
 
   // ── Level-up celebration

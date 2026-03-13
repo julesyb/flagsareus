@@ -372,6 +372,10 @@ const es: DeepPartial<TranslationStrings> = {
     leaderboardCount: '{count} jugadores',
     enterName: 'Tu nombre para la clasificaci\u00f3n',
     shareInvite: '\u00bfPuedes superar a {name}?',
+    leaderboardCountSingle: '{count} jugador',
+    leaderboardEntry: 'Puesto {rank}: {name}, {score} de {total}, {time}',
+    invalidShareCode: 'Enlace inv\u00e1lido',
+    invalidShareCodeDesc: 'Este enlace del desaf\u00edo diario es inv\u00e1lido o ha expirado.',
   },
 
   // ─── Error Boundary ─────────────────────────────────────

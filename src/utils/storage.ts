@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserStats, GameMode, CategoryId, GameResult, BaselineRegionId, BASELINE_REGIONS } from '../types';
-import { MS_PER_DAY, MASTERED_STREAK, UNLOCK_THRESHOLD, MAX_GAME_HISTORY, MAX_CHALLENGE_HISTORY } from './config';
+import { MS_PER_DAY, MASTERED_STREAK, UNLOCK_THRESHOLD, MAX_GAME_HISTORY, MAX_CHALLENGE_HISTORY, DAILY_LEADERBOARD_MAX_AGE_DAYS } from './config';
 
 // Re-export for existing consumers
 export { MASTERED_STREAK, UNLOCK_THRESHOLD };
@@ -277,6 +277,7 @@ export async function resetStats(): Promise<void> {
     await AsyncStorage.removeItem(BASELINE_KEY);
     await AsyncStorage.removeItem(CHALLENGE_HISTORY_KEY);
     await AsyncStorage.removeItem(LEVEL_KEY);
+    await AsyncStorage.removeItem(DAILY_LEADERBOARD_KEY);
   } catch {
     // Silently fail
   }
@@ -825,9 +826,9 @@ export async function addDailyLeaderboardEntry(
       lb[date].push(entry);
     }
 
-    // Prune old dates (keep last 7 days)
+    // Prune old dates
     const dates = Object.keys(lb).sort();
-    while (dates.length > 7) {
+    while (dates.length > DAILY_LEADERBOARD_MAX_AGE_DAYS) {
       const oldest = dates.shift()!;
       delete lb[oldest];
     }

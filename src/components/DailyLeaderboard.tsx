@@ -31,9 +31,11 @@ export default function DailyLeaderboard({ entries }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{t('daily.leaderboard')}</Text>
+        <Text style={styles.title} accessibilityRole="header">{t('daily.leaderboard')}</Text>
         <Text style={styles.meta}>
-          {t('daily.leaderboardCount', { count: sorted.length })}
+          {sorted.length === 1
+            ? t('daily.leaderboardCountSingle', { count: 1 })
+            : t('daily.leaderboardCount', { count: sorted.length })}
         </Text>
       </View>
       {sorted.map((entry, index) => {
@@ -46,6 +48,7 @@ export default function DailyLeaderboard({ entries }: Props) {
               styles.row,
               entry.isMe && styles.rowMe,
             ]}
+            accessibilityLabel={t('daily.leaderboardEntry', { rank, name: entry.name, score: entry.score, total: DAILY_QUESTION_COUNT, time: formatTime(entry.totalTimeMs) })}
           >
             <View style={[styles.rankBadge, isTopThree && styles.rankBadgeTop]}>
               {rank === 1 ? (
@@ -106,10 +109,10 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderRadius: borderRadius.md,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing.sm + 2,
+    padding: spacing.sm,
     paddingHorizontal: spacing.md,
-    marginBottom: 6,
-    gap: spacing.sm + 2,
+    marginBottom: spacing.xs,
+    gap: spacing.sm,
   },
   rowMe: {
     borderColor: colors.goldBright + '50',
@@ -148,10 +151,9 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     alignItems: 'flex-end',
   },
   score: {
-    fontFamily: fontFamily.display,
+    ...typography.statValue,
     fontSize: fontSize.body,
-    color: colors.ink,
-    letterSpacing: -0.3,
+    color: colors.text,
   },
   time: {
     ...typography.micro,

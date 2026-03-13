@@ -372,6 +372,10 @@ const zh: DeepPartial<TranslationStrings> = {
     leaderboardCount: '{count} \u4f4d\u73a9\u5bb6',
     enterName: '\u4f60\u7684\u6392\u884c\u699c\u6635\u79f0',
     shareInvite: '\u4f60\u80fd\u8d85\u8d8a{name}\u5417\uff1f',
+    leaderboardCountSingle: '{count} \u4f4d\u73a9\u5bb6',
+    leaderboardEntry: '\u7b2c{rank}\u540d\uff1a{name}\uff0c{score}/{total}\uff0c{time}',
+    invalidShareCode: '\u94fe\u63a5\u65e0\u6548',
+    invalidShareCodeDesc: '\u6b64\u6bcf\u65e5\u6311\u6218\u94fe\u63a5\u65e0\u6548\u6216\u5df2\u8fc7\u671f\u3002',
   },
 
   error: {

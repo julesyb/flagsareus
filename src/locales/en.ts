@@ -475,6 +475,10 @@ const en = {
     leaderboardCount: '{count} players',
     enterName: 'Your name for the leaderboard',
     shareInvite: 'Can you beat {name}?',
+    leaderboardCountSingle: '{count} player',
+    leaderboardEntry: 'Rank {rank}: {name}, {score} out of {total}, {time}',
+    invalidShareCode: 'Invalid Link',
+    invalidShareCodeDesc: 'This daily challenge link is invalid or has expired.',
   },
 
   // ─── Error Boundary ─────────────────────────────────────

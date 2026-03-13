@@ -372,6 +372,10 @@ const de: DeepPartial<TranslationStrings> = {
     leaderboardCount: '{count} Spieler',
     enterName: 'Dein Name f\u00fcr die Bestenliste',
     shareInvite: 'Kannst du {name} schlagen?',
+    leaderboardCountSingle: '{count} Spieler',
+    leaderboardEntry: 'Rang {rank}: {name}, {score} von {total}, {time}',
+    invalidShareCode: 'Ung\u00fcltiger Link',
+    invalidShareCodeDesc: 'Dieser Link zur t\u00e4glichen Herausforderung ist ung\u00fcltig oder abgelaufen.',
   },
 
   // ─── Error Boundary ─────────────────────────────────────
