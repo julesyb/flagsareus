@@ -15,246 +15,158 @@
     overflow: hidden;
     background: #1A1820;
     font-family: 'Barlow', sans-serif;
-    position: relative;
     display: flex;
     flex-direction: column;
+    align-items: center;
   }
 
-  /* ── Marketing headline ── */
-  .marketing {
+  .headline {
     text-align: center;
-    padding: 140px 80px 50px;
+    padding: 160px 60px 0;
   }
-  .marketing h1 {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 88px;
-    color: #EEE9E2;
+  .hook {
+    font-family: 'Barlow', sans-serif;
+    font-size: 60px;
     font-weight: 700;
+    color: #EEE9E2;
     line-height: 1.15;
-    margin-bottom: 20px;
+    max-width: 1000px;
+    margin: 0 auto 16px;
   }
-  .marketing h1 .gold { color: #E9BA4C; }
-  .marketing p {
-    font-size: 42px;
-    color: #B8B2A8;
+  .hook em { font-style: normal; color: #E9BA4C; }
+  .subhook {
+    font-size: 38px;
     font-weight: 500;
+    color: #B8B2A8;
+    margin-bottom: 50px;
   }
 
-  /* ── Phone frame ── */
-  .phone-wrap {
-    display: flex;
-    justify-content: center;
-    flex: 1;
-    padding-bottom: 80px;
-  }
+  /* Phone */
   .phone {
-    width: 700px;
+    width: 740px;
+    flex: 1;
     background: #2A2930;
-    border-radius: 72px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
+    border-radius: 72px 72px 0 0;
+    padding: 20px 20px 0;
   }
   .screen {
-    flex: 1;
+    width: 100%;
+    height: 100%;
     background: #F5EFE6;
-    border-radius: 54px;
+    border-radius: 54px 54px 0 0;
     overflow: hidden;
     display: flex;
     flex-direction: column;
   }
 
-  /* ── Status bar ── */
   .status-bar {
     padding: 18px 36px 10px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
     font-size: 18px;
     font-weight: 600;
     color: #1A1820;
   }
 
-  /* ── Progress bar (thin line under status bar) ── */
-  .progress-line {
-    height: 3px;
-    background: rgba(0,0,0,0.08);
-    margin: 0 32px;
-  }
-  .progress-fill {
-    height: 100%;
-    background: #1A1820;
-    border-radius: 2px;
-    width: 60%;
-  }
+  /* Progress */
+  .progress-line { height: 3px; background: rgba(0,0,0,0.08); margin: 0 32px; }
+  .progress-fill { height: 100%; background: #1A1820; border-radius: 2px; width: 60%; }
 
-  /* ── Game top bar ── */
-  .game-topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  /* Top bar */
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
     padding: 12px 32px;
   }
-  .exit-btn {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #8A8494;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  .exit {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 14px; font-weight: 600; color: #8A8494;
+    text-transform: uppercase; letter-spacing: 0.5px;
   }
-  .counter {
-    text-align: center;
+  .counter { text-align: center; }
+  .counter-text { font-size: 18px; font-weight: 600; color: #1A1820; }
+  .streak {
+    font-size: 14px; font-weight: 600; color: #9A5C0A; margin-top: 2px;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
   }
-  .counter-text {
-    font-family: 'Barlow', sans-serif;
-    font-size: 18px;
-    font-weight: 600;
-    color: #1A1820;
-  }
-  .streak-badge {
-    font-family: 'Barlow', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: #9A5C0A;
-    margin-top: 2px;
-  }
-  .score-correct {
-    font-family: 'Barlow', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: #1E8F56;
-  }
+  .score-right { font-size: 14px; font-weight: 600; color: #1E8F56; }
 
-  /* ── Flag display ── */
+  /* Flag */
   .flag-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 0 40px;
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 0 40px;
   }
-  .flag-image {
-    width: 420px;
-    aspect-ratio: 3/2;
-    border-radius: 14px;
-    overflow: hidden;
-    background: #EDE7DE;
+  .flag-img {
+    width: 440px; aspect-ratio: 3/2; border-radius: 14px;
+    overflow: hidden; background: #EDE7DE;
   }
-  .flag-image img { width: 100%; height: 100%; object-fit: cover; }
+  .flag-img img { width: 100%; height: 100%; object-fit: cover; }
 
-  /* ── Answer options ── */
+  /* Feedback */
+  .feedback {
+    text-align: center; padding: 16px 32px 8px;
+    font-size: 22px; font-weight: 600; letter-spacing: 0.3px; color: #1E8F56;
+  }
+
+  /* Options */
   .options {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 0 32px 32px;
+    display: flex; flex-direction: column; gap: 6px; padding: 0 32px 36px;
   }
   .option {
-    height: 56px;
-    border-radius: 10px;
-    border: 2px solid rgba(0,0,0,0.08);
-    background: #FFFFFF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Barlow', sans-serif;
-    font-size: 18px;
-    font-weight: 600;
-    color: #1A1820;
-    position: relative;
+    height: 56px; border-radius: 10px; border: 2px solid rgba(0,0,0,0.08);
+    background: #FFFFFF; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 600; color: #1A1820; position: relative;
   }
   .option.correct {
-    background: #1E8F56;
-    border-color: #1E8F56;
-    color: #FFFFFF;
+    background: #1E8F56; border-color: #1E8F56; color: #FFFFFF;
   }
-  .option.wrong {
-    background: #C43030;
-    border-color: #C43030;
-    color: #FFFFFF;
+  .option .icon-r {
+    position: absolute; right: 18px; display: flex; align-items: center;
   }
-  .option .icon-right {
-    position: absolute;
-    right: 18px;
-    display: flex;
-    align-items: center;
-  }
-
-  /* ── Feedback text ── */
-  .feedback {
-    text-align: center;
-    padding: 12px 32px 20px;
-  }
-  .feedback-text {
-    font-family: 'Barlow', sans-serif;
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-  }
-  .feedback-text.is-correct { color: #1E8F56; }
-  .feedback-text.is-wrong { color: #C43030; }
 </style>
 </head>
 <body>
 
-<div class="marketing">
-  <h1>Guess the Flag.<br/><span class="gold">Beat Your Best.</span></h1>
-  <p>Easy, medium, or hard - you choose the challenge</p>
+<div class="headline">
+  <div class="hook">Guess the flag.<br/><em>Beat your best.</em></div>
+  <div class="subhook">Easy, medium, or hard - you choose</div>
 </div>
 
-<div class="phone-wrap">
-  <div class="phone">
-    <div class="screen">
-      <div class="status-bar">
-        <span>9:41</span>
-        <svg width="16" height="12" viewBox="0 0 20 14" fill="#1A1820"><rect x="0" y="8" width="3" height="6" rx="0.5"/><rect x="5" y="5" width="3" height="9" rx="0.5"/><rect x="10" y="2" width="3" height="12" rx="0.5"/><rect x="15" y="0" width="3" height="14" rx="0.5"/></svg>
+<div class="phone">
+  <div class="screen">
+    <div class="status-bar">
+      <span>9:41</span>
+      <svg width="16" height="12" viewBox="0 0 20 14" fill="#1A1820"><rect x="0" y="8" width="3" height="6" rx="0.5"/><rect x="5" y="5" width="3" height="9" rx="0.5"/><rect x="10" y="2" width="3" height="12" rx="0.5"/><rect x="15" y="0" width="3" height="14" rx="0.5"/></svg>
+    </div>
+    <div class="progress-line"><div class="progress-fill"></div></div>
+    <div class="topbar">
+      <div class="exit">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="2.5"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+        Exit
       </div>
-
-      <!-- Progress bar -->
-      <div class="progress-line"><div class="progress-fill"></div></div>
-
-      <!-- Game top bar -->
-      <div class="game-topbar">
-        <div class="exit-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="2.5"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
-          Exit
-        </div>
-        <div class="counter">
-          <div class="counter-text">6 of 10</div>
-          <div class="streak-badge">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="#9A5C0A" style="vertical-align: -1px;"><path d="M13.5 0.67C13.5 0.67 14.24 3.32 14.24 5.47C14.24 7.53 12.89 9.2 10.83 9.2C8.76 9.2 7.2 7.53 7.2 5.47L7.23 5.11C5.21 7.51 4 10.62 4 14C4 18.42 7.58 22 12 22C16.42 22 20 18.42 20 14C20 8.61 17.41 3.8 13.5 0.67Z"/></svg>
-            Streak 4
-          </div>
-        </div>
-        <div class="score-correct">5 correct</div>
-      </div>
-
-      <!-- Flag -->
-      <div class="flag-area">
-        <div class="flag-image">
-          <img src="https://flagcdn.com/w640/se.png" alt="Sweden">
+      <div class="counter">
+        <div class="counter-text">6 of 10</div>
+        <div class="streak">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="#9A5C0A"><path d="M13.5 0.67C13.5 0.67 14.24 3.32 14.24 5.47C14.24 7.53 12.89 9.2 10.83 9.2C8.76 9.2 7.2 7.53 7.2 5.47L7.23 5.11C5.21 7.51 4 10.62 4 14C4 18.42 7.58 22 12 22C16.42 22 20 18.42 20 14C20 8.61 17.41 3.8 13.5 0.67Z"/></svg>
+          Streak 4
         </div>
       </div>
+      <div class="score-right">5 correct</div>
+    </div>
 
-      <!-- Feedback -->
-      <div class="feedback">
-        <div class="feedback-text is-correct">Correct!</div>
-      </div>
+    <div class="flag-area">
+      <div class="flag-img"><img src="https://flagcdn.com/w640/dj.png" alt="Djibouti"></div>
+    </div>
 
-      <!-- Options -->
-      <div class="options">
-        <div class="option correct">
-          <span>Sweden</span>
-          <span class="icon-right"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg></span>
-        </div>
-        <div class="option">Finland</div>
-        <div class="option">Denmark</div>
-        <div class="option">Norway</div>
+    <div class="feedback">Correct!</div>
+
+    <div class="options">
+      <div class="option correct">
+        Djibouti
+        <span class="icon-r"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg></span>
       </div>
+      <div class="option">Eritrea</div>
+      <div class="option">Somalia</div>
+      <div class="option">Ethiopia</div>
     </div>
   </div>
 </div>

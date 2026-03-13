@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1290">
-<title>Flag That - Screenshot 3: Game Setup</title>
+<title>Flag That - Screenshot 3: Game Modes</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Barlow:wght@400;500;600;700;800&display=swap');
 
@@ -13,59 +13,47 @@
     width: 1290px;
     height: 2796px;
     overflow: hidden;
-    background: #F5EFE6;
-    font-family: 'Barlow', sans-serif;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* ── Marketing headline ── */
-  .marketing {
-    text-align: center;
-    padding: 140px 80px 50px;
-  }
-  .marketing .eyebrow {
-    font-size: 28px;
-    font-weight: 700;
-    color: #9A5C0A;
-    text-transform: uppercase;
-    letter-spacing: 5px;
-    margin-bottom: 16px;
-  }
-  .marketing h1 {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 84px;
-    color: #1A1820;
-    font-weight: 700;
-    line-height: 1.15;
-    margin-bottom: 20px;
-  }
-  .marketing p {
-    font-size: 40px;
-    color: #5C5764;
-    font-weight: 500;
-  }
-
-  /* ── Phone frame ── */
-  .phone-wrap {
-    display: flex;
-    justify-content: center;
-    flex: 1;
-    padding-bottom: 80px;
-  }
-  .phone {
-    width: 700px;
     background: #1A1820;
-    border-radius: 72px;
-    padding: 20px;
+    font-family: 'Barlow', sans-serif;
     display: flex;
     flex-direction: column;
+    align-items: center;
+  }
+
+  .headline {
+    text-align: center;
+    padding: 160px 60px 0;
+  }
+  .hook {
+    font-family: 'Barlow', sans-serif;
+    font-size: 60px;
+    font-weight: 700;
+    color: #EEE9E2;
+    line-height: 1.15;
+    max-width: 1000px;
+    margin: 0 auto 16px;
+  }
+  .hook em { font-style: normal; color: #E9BA4C; }
+  .subhook {
+    font-size: 38px;
+    font-weight: 500;
+    color: #B8B2A8;
+    margin-bottom: 50px;
+  }
+
+  /* Phone */
+  .phone {
+    width: 740px;
+    flex: 1;
+    background: #2A2930;
+    border-radius: 72px 72px 0 0;
+    padding: 20px 20px 0;
   }
   .screen {
-    flex: 1;
+    width: 100%;
+    height: 100%;
     background: #F5EFE6;
-    border-radius: 54px;
+    border-radius: 54px 54px 0 0;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -75,13 +63,12 @@
     padding: 18px 36px 10px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
     font-size: 18px;
     font-weight: 600;
     color: #1A1820;
   }
 
-  .app-content {
+  .app {
     flex: 1;
     padding: 4px 32px 0;
     display: flex;
@@ -89,403 +76,180 @@
     overflow: hidden;
   }
 
-  /* ── Page title ── */
   .page-title {
     font-family: 'Libre Baskerville', serif;
-    font-size: 34px;
-    font-weight: 700;
-    color: #1A1820;
-    letter-spacing: -0.5px;
-    padding: 12px 0 16px;
+    font-size: 34px; font-weight: 700; color: #1A1820;
+    letter-spacing: -0.5px; padding: 12px 0 16px;
   }
 
-  /* ── Mode grid (2x3) ── */
+  /* Mode grid */
   .mode-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
+    display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;
   }
   .mode-card {
-    width: calc(50% - 5px);
-    background: #FFFFFF;
-    border: 2px solid rgba(0,0,0,0.08);
-    border-radius: 10px;
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+    width: calc(50% - 5px); background: #FFFFFF;
+    border: 2px solid rgba(0,0,0,0.08); border-radius: 10px;
+    padding: 18px; text-align: center;
   }
   .mode-card.active {
-    border-color: rgba(233,186,76,0.50);
-    background: rgba(233,186,76,0.10);
+    border-color: rgba(233,186,76,0.50); background: rgba(233,186,76,0.10);
   }
-  .mode-icon-badge {
-    width: 46px;
-    height: 46px;
-    background: #EDE7DE;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
+  .mode-icon {
+    width: 46px; height: 46px; background: #EDE7DE; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 10px;
   }
-  .mode-card.active .mode-icon-badge {
-    background: rgba(233,186,76,0.15);
-  }
-  .mode-card-name {
-    font-family: 'Barlow', sans-serif;
-    font-size: 17px;
-    font-weight: 600;
-    color: #1A1820;
-  }
-  .mode-card.active .mode-card-name { color: #E9BA4C; }
-  .mode-card-desc {
-    font-size: 14px;
-    font-weight: 400;
-    color: #5C5764;
-    margin-top: 2px;
-  }
-  .mode-card.active .mode-card-desc { color: #8A8494; }
+  .mode-card.active .mode-icon { background: rgba(233,186,76,0.15); }
+  .mc-name { font-size: 17px; font-weight: 600; color: #1A1820; }
+  .mode-card.active .mc-name { color: #E9BA4C; }
+  .mc-desc { font-size: 14px; color: #5C5764; margin-top: 2px; }
 
-  /* ── Section label ── */
+  /* Difficulty */
   .section-label {
-    font-family: 'Barlow', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: #8A8494;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    margin: 16px 0 10px;
+    font-size: 14px; font-weight: 600; color: #8A8494;
+    text-transform: uppercase; letter-spacing: 1.2px; margin: 16px 0 10px;
   }
-
-  /* ── Difficulty grid ── */
-  .diff-grid {
-    display: flex;
-    gap: 7px;
-    margin-bottom: 16px;
-  }
+  .diff-grid { display: flex; gap: 7px; margin-bottom: 16px; }
   .diff-btn {
-    flex: 1;
-    padding: 14px 8px;
-    border-radius: 10px;
-    border: 1px solid rgba(0,0,0,0.08);
-    background: #FFFFFF;
-    text-align: center;
-    font-family: 'Barlow', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: #8A8494;
-    letter-spacing: -0.1px;
-  }
-  .diff-btn.easy-on {
-    background: rgba(30,143,86,0.10);
-    border-color: rgba(30,143,86,0.25);
-    color: #1E8F56;
+    flex: 1; padding: 14px 8px; border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.08); background: #FFFFFF;
+    text-align: center; font-size: 14px; font-weight: 600; color: #8A8494;
   }
   .diff-btn.medium-on {
-    background: rgba(233,186,76,0.12);
-    border-color: rgba(154,92,10,0.25);
-    color: #E9BA4C;
-  }
-  .diff-btn.hard-on {
-    background: rgba(196,48,48,0.10);
-    border-color: rgba(196,48,48,0.25);
-    color: #C43030;
+    background: rgba(233,186,76,0.12); border-color: rgba(154,92,10,0.25); color: #E9BA4C;
   }
 
-  /* ── Config card ── */
+  /* Config */
   .config-card {
-    background: #FFFFFF;
-    border-radius: 14px;
-    border: 1px solid rgba(0,0,0,0.08);
-    padding: 14px 16px;
-    margin-bottom: 16px;
+    background: #FFFFFF; border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.08); padding: 14px 16px; margin-bottom: 16px;
   }
   .config-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 0;
+    display: flex; align-items: center; justify-content: space-between; padding: 8px 0;
   }
   .config-row + .config-row {
-    border-top: 1px solid rgba(0,0,0,0.06);
-    padding-top: 10px;
-    margin-top: 4px;
+    border-top: 1px solid rgba(0,0,0,0.06); padding-top: 10px; margin-top: 4px;
   }
-  .config-label {
-    font-size: 17px;
-    font-weight: 500;
-    color: #5C5764;
-  }
+  .config-label { font-size: 17px; font-weight: 500; color: #5C5764; }
   .seg-btns { display: flex; gap: 6px; }
   .seg {
-    padding: 7px 13px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    background: #FFFFFF;
-    border: 1px solid rgba(0,0,0,0.08);
-    color: #5C5764;
-    min-width: 42px;
-    text-align: center;
+    padding: 7px 13px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    background: #FFF; border: 1px solid rgba(0,0,0,0.08); color: #5C5764;
+    min-width: 42px; text-align: center;
   }
-  .seg.on {
-    background: #E9BA4C;
-    border-color: #E9BA4C;
-    color: #130F00;
-  }
+  .seg.on { background: #E9BA4C; border-color: #E9BA4C; color: #130F00; }
 
-  /* ── Filter chips ── */
-  .filter-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
+  /* Filters */
+  .filter-row { display: flex; gap: 10px; margin-bottom: 12px; }
   .filter-chip {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 10px 16px;
-    border: 1.5px solid rgba(0,0,0,0.08);
-    border-radius: 10px;
-    background: #FFFFFF;
-    font-size: 17px;
-    font-weight: 500;
-    color: #1A1820;
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 16px; border: 1.5px solid rgba(0,0,0,0.08);
+    border-radius: 10px; background: #FFF; font-size: 17px; font-weight: 500; color: #1A1820;
   }
-  .filter-chip.active {
-    background: #E9BA4C;
-    border-color: #E9BA4C;
-    color: #130F00;
-  }
+  .filter-chip.active { background: #E9BA4C; border-color: #E9BA4C; color: #130F00; }
 
-  .category-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 16px;
+  .cat-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .cat {
+    padding: 10px 18px; border: 1.5px solid rgba(0,0,0,0.08);
+    border-radius: 10px; background: #FFF; font-size: 17px; font-weight: 500; color: #1A1820;
   }
-  .cat-chip {
-    padding: 10px 18px;
-    border: 1.5px solid rgba(0,0,0,0.08);
-    border-radius: 10px;
-    background: #FFFFFF;
-    font-size: 17px;
-    font-weight: 500;
-    color: #1A1820;
-  }
-  .cat-chip.active {
-    background: #E9BA4C;
-    border-color: #E9BA4C;
-    color: #130F00;
-  }
-  .cat-count {
-    font-size: 13px;
-    color: #8A8494;
-    margin-left: 2px;
-  }
-  .cat-chip.active .cat-count { color: #130F00; }
+  .cat.active { background: #E9BA4C; border-color: #E9BA4C; color: #130F00; }
+  .cat-count { font-size: 13px; color: #8A8494; margin-left: 2px; }
+  .cat.active .cat-count { color: #130F00; }
 
-  /* ── Start button (pinned) ── */
+  /* Start btn */
   .start-wrap {
-    border-top: 1px solid rgba(0,0,0,0.06);
-    background: #F5EFE6;
-    padding: 12px 32px 16px;
+    border-top: 1px solid rgba(0,0,0,0.06); background: #F5EFE6;
+    padding: 12px 32px 20px; margin-top: auto;
   }
   .start-btn {
-    background: #E9BA4C;
-    border-radius: 14px;
-    padding: 17px 0;
-    text-align: center;
-    box-shadow: 0 4px 0 #5C3506;
+    background: #E9BA4C; border-radius: 14px; padding: 17px 0;
+    text-align: center; box-shadow: 0 4px 0 #5C3506;
+    font-size: 22px; font-weight: 600; color: #130F00;
+    text-transform: uppercase; letter-spacing: 0.8px;
   }
-  .start-btn-text {
-    font-family: 'Barlow', sans-serif;
-    font-size: 22px;
-    font-weight: 600;
-    color: #130F00;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-  }
-
-  /* ── Bottom Nav ── */
-  .bottom-nav {
-    border-top: 1px solid rgba(0,0,0,0.06);
-    background: rgba(245,239,230,0.97);
-    padding: 8px 0 24px;
-    display: flex;
-    justify-content: space-around;
-  }
-  .nav-tab {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    padding-top: 10px;
-    position: relative;
-    min-width: 64px;
-  }
-  .nav-tab.active::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 24px;
-    height: 2px;
-    background: #E9BA4C;
-    border-radius: 1px;
-  }
-  .nav-label {
-    font-family: 'Barlow', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #8A8494;
-  }
-  .nav-tab.active .nav-label { color: #1A1820; }
 </style>
 </head>
 <body>
 
-<div class="marketing">
-  <div class="eyebrow">Never Get Bored</div>
-  <h1>12 Ways to Play</h1>
-  <p>Every mode is a new challenge</p>
+<div class="headline">
+  <div class="hook"><em>12 ways</em> to play.<br/>Zero ways to get bored.</div>
+  <div class="subhook">Tilt, type, race the clock, or spot the fake</div>
 </div>
 
-<div class="phone-wrap">
-  <div class="phone">
-    <div class="screen">
-      <div class="status-bar">
-        <span>9:41</span>
-        <svg width="16" height="12" viewBox="0 0 20 14" fill="#1A1820"><rect x="0" y="8" width="3" height="6" rx="0.5"/><rect x="5" y="5" width="3" height="9" rx="0.5"/><rect x="10" y="2" width="3" height="12" rx="0.5"/><rect x="15" y="0" width="3" height="14" rx="0.5"/></svg>
-      </div>
-      <div class="app-content">
-        <div class="page-title">Game Setup</div>
-
-        <!-- Mode Grid -->
-        <div class="mode-grid">
-          <div class="mode-card active">
-            <div class="mode-icon-badge">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E9BA4C" stroke-width="1.5"><path d="M4 21V4"/><path d="M4 4 C4 4 7 2 10 4 C13 6 16 4 20 4 L20 15 C20 15 17 17 14 15 C11 13 8 15 4 15"/></svg>
-            </div>
-            <div class="mode-card-name">Quiz</div>
-            <div class="mode-card-desc">Classic flag quiz</div>
-          </div>
-          <div class="mode-card">
-            <div class="mode-icon-badge">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><path d="M13 2L4.5 13.5H11L10 22L19.5 10H13L13 2Z"/></svg>
-            </div>
-            <div class="mode-card-name">Flash Flag</div>
-            <div class="mode-card-desc">Tilt to answer</div>
-          </div>
-          <div class="mode-card">
-            <div class="mode-icon-badge">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 0 2 2 2 2 0 0 1 0 4 2 2 0 0 0-2 2v3H4v-3a2 2 0 0 1 0-4 2 2 0 0 0 0-4V7Z"/></svg>
-            </div>
-            <div class="mode-card-name">Flag Puzzle</div>
-            <div class="mode-card-desc">Progressive reveal</div>
-          </div>
-          <div class="mode-card">
-            <div class="mode-icon-badge">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
-            </div>
-            <div class="mode-card-name">Timed Quiz</div>
-            <div class="mode-card-desc">60 seconds</div>
-          </div>
-          <div class="mode-card">
-            <div class="mode-icon-badge">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3 C8 7 8 17 12 21 C16 17 16 7 12 3Z"/></svg>
-            </div>
-            <div class="mode-card-name">Neighbors</div>
-            <div class="mode-card-desc">Bordering countries</div>
-          </div>
-          <div class="mode-card">
-            <div class="mode-icon-badge">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-            </div>
-            <div class="mode-card-name">Capital Connection</div>
-            <div class="mode-card-desc">Match capitals</div>
-          </div>
+<div class="phone">
+  <div class="screen">
+    <div class="status-bar">
+      <span>9:41</span>
+      <svg width="16" height="12" viewBox="0 0 20 14" fill="#1A1820"><rect x="0" y="8" width="3" height="6" rx="0.5"/><rect x="5" y="5" width="3" height="9" rx="0.5"/><rect x="10" y="2" width="3" height="12" rx="0.5"/><rect x="15" y="0" width="3" height="14" rx="0.5"/></svg>
+    </div>
+    <div class="app">
+      <div class="page-title">Game Setup</div>
+      <div class="mode-grid">
+        <div class="mode-card active">
+          <div class="mode-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E9BA4C" stroke-width="1.5"><path d="M4 21V4"/><path d="M4 4 C4 4 7 2 10 4 C13 6 16 4 20 4 L20 15 C20 15 17 17 14 15 C11 13 8 15 4 15"/></svg></div>
+          <div class="mc-name">Quiz</div>
+          <div class="mc-desc">Classic flag quiz</div>
         </div>
-
-        <!-- Difficulty -->
-        <div class="section-label">Difficulty</div>
-        <div class="diff-grid">
-          <div class="diff-btn">Easy</div>
-          <div class="diff-btn medium-on">Medium</div>
-          <div class="diff-btn">Hard</div>
+        <div class="mode-card">
+          <div class="mode-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><path d="M13 2L4.5 13.5H11L10 22L19.5 10H13L13 2Z"/></svg></div>
+          <div class="mc-name">Flash Flag</div>
+          <div class="mc-desc">Tilt to answer</div>
         </div>
-
-        <!-- Config -->
-        <div class="config-card">
-          <div class="config-row">
-            <span class="config-label">Display</span>
-            <div class="seg-btns">
-              <span class="seg on">Flag</span>
-              <span class="seg">Map</span>
-            </div>
-          </div>
-          <div class="config-row">
-            <span class="config-label">Questions</span>
-            <div class="seg-btns">
-              <span class="seg">5</span>
-              <span class="seg on">10</span>
-              <span class="seg">15</span>
-              <span class="seg">20</span>
-            </div>
-          </div>
+        <div class="mode-card">
+          <div class="mode-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 0 2 2 2 2 0 0 1 0 4 2 2 0 0 0-2 2v3H4v-3a2 2 0 0 1 0-4 2 2 0 0 0 0-4V7Z"/></svg></div>
+          <div class="mc-name">Flag Puzzle</div>
+          <div class="mc-desc">Progressive reveal</div>
         </div>
-
-        <!-- Filters -->
-        <div class="section-label">Filter</div>
-        <div class="filter-row">
-          <div class="filter-chip active">By Region</div>
-          <div class="filter-chip">By Theme</div>
+        <div class="mode-card">
+          <div class="mode-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg></div>
+          <div class="mc-name">Time Attack</div>
+          <div class="mc-desc">60 seconds</div>
         </div>
-        <div class="category-row">
-          <div class="cat-chip active">All<span class="cat-count">195</span></div>
-          <div class="cat-chip">Africa<span class="cat-count">54</span></div>
-          <div class="cat-chip">Americas<span class="cat-count">35</span></div>
-          <div class="cat-chip">Asia<span class="cat-count">48</span></div>
-          <div class="cat-chip">Europe<span class="cat-count">44</span></div>
+        <div class="mode-card">
+          <div class="mode-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="mc-name">Impostor</div>
+          <div class="mc-desc">Spot the fake</div>
+        </div>
+        <div class="mode-card">
+          <div class="mode-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3 C8 7 8 17 12 21 C16 17 16 7 12 3Z"/></svg></div>
+          <div class="mc-name">Neighbors</div>
+          <div class="mc-desc">Border countries</div>
         </div>
       </div>
 
-      <!-- Start Button -->
-      <div class="start-wrap">
-        <div class="start-btn">
-          <span class="start-btn-text">Start Quiz</span>
+      <div class="section-label">Difficulty</div>
+      <div class="diff-grid">
+        <div class="diff-btn">Easy</div>
+        <div class="diff-btn medium-on">Medium</div>
+        <div class="diff-btn">Hard</div>
+      </div>
+
+      <div class="config-card">
+        <div class="config-row">
+          <span class="config-label">Display</span>
+          <div class="seg-btns"><span class="seg on">Flag</span><span class="seg">Map</span></div>
+        </div>
+        <div class="config-row">
+          <span class="config-label">Questions</span>
+          <div class="seg-btns"><span class="seg">5</span><span class="seg on">10</span><span class="seg">15</span><span class="seg">20</span></div>
         </div>
       </div>
 
-      <!-- Bottom Nav -->
-      <div class="bottom-nav">
-        <div class="nav-tab">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><path d="M3 10.5L12 3L21 10.5V20C21 20.55 20.55 21 20 21H4C3.45 21 3 20.55 3 20V10.5Z"/><polyline points="9 21 9 14 15 14 15 21"/></svg>
-          <span class="nav-label">Home</span>
-        </div>
-        <div class="nav-tab active">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1A1820" stroke-width="1.5"><circle cx="12" cy="12" r="7"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="2" fill="#1A1820" stroke="none"/></svg>
-          <span class="nav-label">Modes</span>
-        </div>
-        <div class="nav-tab">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><rect x="3" y="13" width="4" height="8"/><rect x="10" y="8" width="4" height="13"/><rect x="17" y="3" width="4" height="18"/></svg>
-          <span class="nav-label">Stats</span>
-        </div>
-        <div class="nav-tab">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3 C8 7 8 17 12 21 C16 17 16 7 12 3Z"/></svg>
-          <span class="nav-label">Browse</span>
-        </div>
-        <div class="nav-tab">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          <span class="nav-label">Settings</span>
-        </div>
+      <div class="section-label">Filter</div>
+      <div class="filter-row">
+        <div class="filter-chip active">By Region</div>
+        <div class="filter-chip">By Theme</div>
       </div>
+      <div class="cat-row">
+        <div class="cat active">All<span class="cat-count">195</span></div>
+        <div class="cat">Africa<span class="cat-count">54</span></div>
+        <div class="cat">Americas<span class="cat-count">35</span></div>
+        <div class="cat">Europe<span class="cat-count">44</span></div>
+      </div>
+    </div>
+    <div class="start-wrap">
+      <div class="start-btn">Start Quiz</div>
     </div>
   </div>
 </div>
