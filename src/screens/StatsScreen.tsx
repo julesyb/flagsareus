@@ -476,8 +476,6 @@ export default function StatsScreen() {
           </Animated.View>
         )}
 
-        {/* Best Timed Quiz, Next Milestone, and Practice Now removed */}
-
         {/* ══════════════════════════════════════════════════════════
             REGION SCORES: first / best / most recent per region
             ══════════════════════════════════════════════════════════ */}
@@ -659,8 +657,8 @@ export default function StatsScreen() {
                   <Text style={styles.rank}>{i + 1}</Text>
                   <FlagImageSmall countryCode={id} />
                   <Text style={styles.rankName}>{flagNameMap[id] || id}</Text>
-                  <View style={[styles.scoreBadge, styles.scoreBadgeWrong]}>
-                    <Text style={[styles.scoreBadgeText, styles.scoreBadgeTextWrong]}>{fs.right}/{totalSeen}</Text>
+                  <View style={styles.scoreBadge}>
+                    <Text style={styles.scoreBadgeText}>{fs.right}/{totalSeen}</Text>
                   </View>
                 </View>
               );
@@ -1077,17 +1075,15 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     flex: 1,
   },
   scoreBadge: {
-    backgroundColor: colors.successBg,
+    backgroundColor: colors.errorBg,
     borderRadius: borderRadius.full,
     paddingVertical: 3,
     paddingHorizontal: 10,
   },
   scoreBadgeText: {
     ...typography.tag,
-    color: colors.success,
+    color: colors.error,
   },
-  scoreBadgeWrong: { backgroundColor: colors.errorBg },
-  scoreBadgeTextWrong: { color: colors.error },
 
   // ── Score Distribution
   distCard: {
