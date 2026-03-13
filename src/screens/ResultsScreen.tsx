@@ -28,6 +28,7 @@ import { CheckIcon, CrossIcon, ChevronRightIcon, GlobeIcon, UsersIcon, BadgeIcon
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
+import { UNLIMITED_QUESTIONS } from '../utils/config';
 import { countCorrect } from '../utils/gameHelpers';
 import { RootStackParamList } from '../types/navigation';
 import { getAllEarnedBadges, detectPerGameBadges, buildBadgeContext, BADGES, TIER_COLORS, EarnedBadge, getBadgeName, getBadgeDescription } from '../utils/badges';
@@ -161,7 +162,7 @@ export default function ResultsScreen({ route, navigation }: Props) {
   const correct = countCorrect(results);
   const isDaily = config.mode === 'daily';
   const isBaseline = config.mode === 'baseline';
-  const questionTotal = isBaseline ? getCategoryCount(config.category as CategoryId) : results.length;
+  const questionTotal = config.questionCount < UNLIMITED_QUESTIONS ? config.questionCount : results.length;
   const accuracy = questionTotal > 0 ? Math.round((correct / questionTotal) * 100) : 0;
   const streak = getStreakFromResults(results);
   const avgTime = results.length > 0
