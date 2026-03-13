@@ -29,7 +29,7 @@ export const countries: FlagItem[] = [
   { id: 'et', name: 'Ethiopia', emoji: '🇪🇹', region: 'Africa', tags: ['africa'] },
   { id: 'ga', name: 'Gabon', emoji: '🇬🇦', region: 'Africa', tags: ['africa', 'short_names'] },
   { id: 'gm', name: 'Gambia', emoji: '🇬🇲', region: 'Africa', tags: ['africa'] },
-  { id: 'gh', name: 'Ghana', emoji: '🇬🇭', region: 'Africa', tags: ['africa', 'short_names'] },
+  { id: 'gh', name: 'Ghana', emoji: '🇬🇭', region: 'Africa', tags: ['africa', 'tricky_twins', 'short_names'] },
   { id: 'gn', name: 'Guinea', emoji: '🇬🇳', region: 'Africa', tags: ['africa', 'tricky_twins'] },
   { id: 'gw', name: 'Guinea-Bissau', emoji: '🇬🇼', region: 'Africa', tags: ['africa'] },
   { id: 'ke', name: 'Kenya', emoji: '🇰🇪', region: 'Africa', tags: ['africa', 'easy_flags', 'top_travel', 'short_names'] },

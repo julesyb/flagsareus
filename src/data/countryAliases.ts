@@ -1096,11 +1096,12 @@ export const twinPairs: Record<string, string[]> = {
   'Niger': ['India'],
   'India': ['Niger'],
 
-  // ── Red-yellow-green vertical tricolors ──
-  'Guinea': ['Mali', 'Senegal', 'Cameroon'],
-  'Mali': ['Guinea', 'Senegal', 'Cameroon'],
-  'Senegal': ['Guinea', 'Mali', 'Cameroon'],
-  'Cameroon': ['Guinea', 'Mali', 'Senegal'],
+  // ── Red-yellow-green tricolors (pan-African colors) ──
+  'Guinea': ['Mali', 'Senegal', 'Cameroon', 'Ghana'],
+  'Mali': ['Guinea', 'Senegal', 'Cameroon', 'Ghana'],
+  'Senegal': ['Guinea', 'Mali', 'Cameroon', 'Ghana'],
+  'Cameroon': ['Guinea', 'Mali', 'Senegal', 'Ghana'],
+  'Ghana': ['Guinea', 'Mali', 'Senegal', 'Cameroon'],
 
   // ── Red-white horizontal bicolors ──
   'Indonesia': ['Monaco', 'Poland'],
@@ -1110,8 +1111,8 @@ export const twinPairs: Record<string, string[]> = {
   // ── Red-white-blue vertical/horizontal tricolors ──
   'France': ['Netherlands', 'Luxembourg', 'Russia'],
   'Netherlands': ['France', 'Luxembourg', 'Russia'],
-  'Luxembourg': ['Netherlands', 'France'],
-  'Russia': ['France', 'Netherlands', 'Serbia', 'Slovenia', 'Slovakia'],
+  'Luxembourg': ['Netherlands', 'France', 'Russia'],
+  'Russia': ['France', 'Netherlands', 'Luxembourg', 'Serbia', 'Slovenia', 'Slovakia'],
 
   // ── Red-white-green horizontal tricolors ──
   'Hungary': ['Italy', 'Bulgaria', 'Tajikistan'],
