@@ -402,6 +402,12 @@ export default function ResultsScreen({ route, navigation }: Props) {
           playCelebrationSound();
         }
       }
+
+      // Refresh leaderboard after persist so user's own entry appears
+      if (isDaily && !reviewOnly) {
+        const dateStr = getTodayDateString();
+        getDailyLeaderboardForDate(dateStr).then(setLeaderboardEntries);
+      }
     }
     processResults();
 
