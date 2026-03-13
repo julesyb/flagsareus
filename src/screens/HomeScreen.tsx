@@ -567,18 +567,16 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   },
   levelBadgeLabel: {
     fontFamily: fontFamily.uiLabel,
-    fontSize: 9,
+    fontSize: fontSize.xs,
     color: colors.textTertiary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    lineHeight: 12,
   },
   levelBadgeNum: {
     fontFamily: fontFamily.display,
-    fontSize: fontSize.md,
+    fontSize: fontSize.body,
     color: colors.goldBright,
     letterSpacing: -0.5,
-    lineHeight: 18,
   },
 
   // ── Onboarding progress
@@ -603,7 +601,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   onboardingTitle: {
     ...typography.bodyBold,
     color: colors.ink,
-    marginBottom: 2,
+    marginBottom: spacing.xxs,
   },
   onboardingCount: {
     ...typography.micro,
@@ -803,15 +801,15 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingVertical: 11,
-    paddingHorizontal: 2,
+    paddingVertical: 12,
+    paddingHorizontal: spacing.xxs,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   modeBar: {
     width: 3,
     height: 18,
-    borderRadius: 2,
+    borderRadius: borderRadius.xs,
   },
   modeTitle: {
     flex: 1,

@@ -201,30 +201,11 @@ export function CalendarIcon({ size = 16, color, strokeWidth = 1.5 }: IconProps)
   );
 }
 
-// Bell — Notifications icon
-export function BellIcon({ size = 16, color, strokeWidth = 1.5 }: IconProps) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth}>
-      <Path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-      <Path d="M13.73 21a2 2 0 0 1-3.46 0" />
-    </Svg>
-  );
-}
-
 // Heart — support / love icon
 export function HeartIcon({ size = 16, color, strokeWidth = 1.5, filled = false }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? color : 'none'} stroke={color} strokeWidth={strokeWidth}>
       <Path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" />
-    </Svg>
-  );
-}
-
-export function MapPinIcon({ size = 16, color, strokeWidth = 1.5 }: IconProps) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth}>
-      <Path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
-      <Circle cx={12} cy={9} r={2.5} />
     </Svg>
   );
 }

@@ -23,6 +23,7 @@ import { translateName, flagName } from '../data/countryNames';
 import FlagImage from '../components/FlagImage';
 import MapImage from '../components/MapImage';
 import { useGameAnimations } from '../hooks/useGameAnimations';
+import { useCountdown } from '../hooks/useCountdown';
 import { getFlagByName, getFlagsForCategory } from '../data';
 import { RootStackParamList } from '../types/navigation';
 import { UNLIMITED_QUESTIONS } from '../utils/config';
@@ -50,7 +51,7 @@ export default function GameScreen({ route, navigation }: Props) {
   const guessLimit = config.guessLimit ?? 0; // 0 = unlimited
   const livesRemaining = guessLimit > 0 ? guessLimit - wrongCount : null;
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
-  const [timeLeft, setTimeLeft] = useState(config.timeLimit || 60);
+  const timeLeft = useCountdown(config.timeLimit || 60, isTimeAttack);
   const { fadeAnim, streakScale, shakeAnim, animateStreak, animateWrong, animateTransition } = useGameAnimations();
 
   useEffect(() => {
@@ -77,21 +78,6 @@ export default function GameScreen({ route, navigation }: Props) {
       setQuestionStartTime(Date.now());
     }
   }, []);
-
-  // Countdown timer for timeattack mode
-  useEffect(() => {
-    if (!isTimeAttack) return;
-    const interval = setInterval(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return t - 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isTimeAttack]);
 
   const pendingResultsRef = useRef<GameResult[] | null>(null);
   const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
