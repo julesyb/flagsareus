@@ -60,6 +60,7 @@
 - `src/utils/levels.ts` — 100-level progression system with requirement types and evaluation
 - `src/utils/gameHelpers.ts` — helper functions (countCorrect, countWrong, calculateProgress)
 - `src/hooks/useGameAnimations.ts` — shared game animation hook (fade, shake, streak spring)
+- `src/hooks/useCountdown.ts` — countdown timer hook for timed game modes
 - `src/hooks/useNavTabs.ts` — navigation tab state management
 - `src/components/Icons.tsx` — all SVG icons (no emoji)
 - `src/components/BottomNav.tsx` — shared bottom navigation
