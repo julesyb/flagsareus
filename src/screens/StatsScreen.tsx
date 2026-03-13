@@ -550,8 +550,9 @@ export default function StatsScreen() {
               {challengeHistory.map((ch, i) => {
                 const oppCount = ch.opponents?.length ?? (ch.opponentName !== null ? 1 : 0);
                 const hasOpponent = oppCount > 0;
-                const won = hasOpponent && ch.myScore > ch.opponentScore!;
-                const lost = hasOpponent && ch.myScore < ch.opponentScore!;
+                const isSingleOpponent = oppCount === 1;
+                const won = isSingleOpponent && ch.myScore > ch.opponentScore!;
+                const lost = isSingleOpponent && ch.myScore < ch.opponentScore!;
                 const dateStr = new Date(ch.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
                 return (
                   <TouchableOpacity
@@ -791,15 +792,14 @@ export default function StatsScreen() {
                   <Text style={styles.modalTitle}>{t('challenge.headToHead')}</Text>
                   <Text style={[styles.modalSubtitle, { marginBottom: spacing.md }]}>{t(modeLabelKey(ch.mode))} - {dateStr}</Text>
 
-                  {isMulti ? (() => {
-                    // Build sorted leaderboard with host + all opponents
-                    const leaderboard = [
-                      { name: ch.myName || t('challenge.you'), score: ch.myScore, isMe: true },
-                      ...opponents.map((o) => ({ name: o.name, score: o.score, isMe: false })),
-                    ].sort((a, b) => b.score - a.score);
-                    return (
-                      <View style={styles.multiOpponentList}>
-                        {leaderboard.map((entry, rank) => (
+                  {isMulti ? (
+                    <View style={styles.multiOpponentList}>
+                      {[
+                        { name: ch.myName || t('challenge.you'), score: ch.myScore, isMe: true },
+                        ...opponents.map((o) => ({ name: o.name, score: o.score, isMe: false })),
+                      ]
+                        .sort((a, b) => b.score - a.score)
+                        .map((entry, rank) => (
                           <View key={`${entry.name}-${rank}`} style={styles.multiOpponentRow}>
                             <Text style={styles.multiOpponentRank}>{rank + 1}</Text>
                             <Text style={[styles.multiOpponentName, { flex: 1 }]} numberOfLines={1}>
@@ -813,9 +813,7 @@ export default function StatsScreen() {
                             </Text>
                           </View>
                         ))}
-                      </View>
-                    );
-                  })(
+                    </View>
                   ) : hasOpponent ? (
                     <View style={styles.h2hContainer}>
                       <View style={styles.h2hColumn}>
