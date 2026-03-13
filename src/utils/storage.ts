@@ -576,6 +576,13 @@ export async function skipOnboarding(): Promise<void> {
 }
 
 // ─── Challenge History ────────────────────────────────────
+export interface ChallengeOpponent {
+  name: string;
+  score: number;
+  results?: boolean[];
+  date: string;             // ISO date when this opponent responded
+}
+
 export interface ChallengeHistoryEntry {
   shortCode: string;        // 6-char alphanumeric identifier
   mode: GameMode;
@@ -589,6 +596,7 @@ export interface ChallengeHistoryEntry {
   fullCode: string;         // Full FT2: code for resharing
   myResults?: boolean[];    // Per-question correct/wrong for me
   opponentResults?: boolean[]; // Per-question correct/wrong for opponent
+  opponents?: ChallengeOpponent[]; // All opponents who responded (multiplayer)
 }
 
 export async function getChallengeHistory(): Promise<ChallengeHistoryEntry[]> {
@@ -632,11 +640,43 @@ export async function updateSentChallengeWithOpponent(
       (h) => h.shortCode === shortCode && h.direction === 'sent',
     );
     if (idx < 0) return false;
+
+    // Initialize opponents array from legacy single-opponent fields if needed
+    if (!history[idx].opponents) {
+      history[idx].opponents = [];
+      if (history[idx].opponentName !== null && history[idx].opponentScore !== null) {
+        history[idx].opponents.push({
+          name: history[idx].opponentName!,
+          score: history[idx].opponentScore!,
+          results: history[idx].opponentResults,
+          date: history[idx].date,
+        });
+      }
+    }
+
+    // Check if this opponent already responded (by name) - update their score
+    const existingOpp = history[idx].opponents!.findIndex(
+      (o) => o.name.toLowerCase() === opponentName.toLowerCase(),
+    );
+    const oppEntry: ChallengeOpponent = {
+      name: opponentName,
+      score: opponentScore,
+      results: opponentResults,
+      date: new Date().toISOString(),
+    };
+    if (existingOpp >= 0) {
+      history[idx].opponents![existingOpp] = oppEntry;
+    } else {
+      history[idx].opponents!.push(oppEntry);
+    }
+
+    // Keep legacy fields in sync with the most recent opponent for backward compat
     history[idx].opponentName = opponentName;
     history[idx].opponentScore = opponentScore;
     if (opponentResults) {
       history[idx].opponentResults = opponentResults;
     }
+
     await AsyncStorage.setItem(CHALLENGE_HISTORY_KEY, JSON.stringify(history));
     return true;
   } catch {

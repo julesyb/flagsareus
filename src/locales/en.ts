@@ -450,6 +450,7 @@ const en = {
     received: 'Played',
     copyCode: 'Copy Code',
     codeCopied: 'Copied!',
+    opponentCount: '{count} challengers',
   },
 
   // ─── Notifications ─────────────────────────────────────

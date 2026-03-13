@@ -49,6 +49,14 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
   const [code, setCode] = useState(initialCode);
   const [name, setName] = useState('');
 
+  // Keep code in sync with route params (handles deep link re-navigation)
+  useEffect(() => {
+    const newCode = route.params?.code ?? '';
+    if (newCode && newCode !== code) {
+      setCode(newCode);
+    }
+  }, [route.params?.code]);
+
   // Animations
   const cardSlide = useRef(new Animated.Value(0)).current;
   const cardOpacity = useRef(new Animated.Value(0)).current;

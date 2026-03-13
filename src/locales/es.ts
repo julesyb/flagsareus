@@ -494,6 +494,7 @@ const es: DeepPartial<TranslationStrings> = {
     received: 'Jugado',
     copyCode: 'Copiar codigo',
     codeCopied: 'Copiado!',
+    opponentCount: '{count} participantes',
   },
 };
 
