@@ -74,7 +74,7 @@ async function persistGameData(
   const speedData = correctResults.length > 0
     ? { correctTimeMs: correctResults.reduce((sum, r) => sum + r.timeTaken, 0), correctCount: correctResults.length }
     : undefined;
-  await updateStats(correct, results.length, streak, config.mode, config.category, speedData);
+  await updateStats(correct, questionTotal, streak, config.mode, config.category, speedData);
   await updateFlagResults(results);
   await addGameHistoryEntry(accuracy, config.mode);
 
