@@ -176,7 +176,6 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
       name: previousAttempt.myName,
       correct: String(previousAttempt.myScore),
       total: String(previousAttempt.totalFlags),
-      opponent: preview.hostName,
       link,
     });
     try {
