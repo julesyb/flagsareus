@@ -451,6 +451,8 @@ const en = {
     copyCode: 'Copy Code',
     codeCopied: 'Copied!',
     opponentCount: '{count} challengers',
+    alreadyPlayed: 'Already played',
+    yourPreviousScore: 'You scored {correct}/{total}',
   },
 
   // ─── Notifications ─────────────────────────────────────

@@ -495,6 +495,8 @@ const ptBR: DeepPartial<TranslationStrings> = {
     copyCode: 'Copiar codigo',
     codeCopied: 'Copiado!',
     opponentCount: '{count} desafiantes',
+    alreadyPlayed: 'Ja jogado',
+    yourPreviousScore: 'Voce fez {correct}/{total}',
   },
 };
 

@@ -495,6 +495,8 @@ const zh: DeepPartial<TranslationStrings> = {
     copyCode: '复制代码',
     codeCopied: '已复制!',
     opponentCount: '{count} 位挑战者',
+    alreadyPlayed: '已经玩过',
+    yourPreviousScore: '你的成绩: {correct}/{total}',
   },
 };
 

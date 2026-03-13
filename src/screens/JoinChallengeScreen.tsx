@@ -16,14 +16,14 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { spacing, fontFamily, fontSize, buildButtons, borderRadius, typography, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { RootStackParamList } from '../types/navigation';
-import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName } from '../utils/challengeCode';
+import { decodeChallenge, buildChallengeQuestions, getScreenForMode, ChallengeData, ChallengeScreenName, generateShortCode } from '../utils/challengeCode';
 import { hapticTap, hapticWrong, hapticCorrect } from '../utils/feedback';
 import ScreenContainer from '../components/ScreenContainer';
 import BottomNav from '../components/BottomNav';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { t } from '../utils/i18n';
-import { getChallengeName, saveChallengeName } from '../utils/storage';
-import { LinkIcon, PlayIcon } from '../components/Icons';
+import { getChallengeName, saveChallengeName, getChallengeHistory, ChallengeHistoryEntry } from '../utils/storage';
+import { LinkIcon, PlayIcon, CheckIcon, CrossIcon } from '../components/Icons';
 import { GameMode } from '../types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'JoinChallenge'>;
@@ -48,6 +48,7 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
   const initialCode = route.params?.code ?? '';
   const [code, setCode] = useState(initialCode);
   const [name, setName] = useState('');
+  const [previousAttempt, setPreviousAttempt] = useState<ChallengeHistoryEntry | null>(null);
 
   // Keep code in sync with route params (handles deep link re-navigation)
   useEffect(() => {
@@ -75,7 +76,23 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
   }, [code]);
 
   const preview: ChallengeData | null = decoded?.status === 'ok' ? decoded.data : null;
-  const canPlay = decoded?.status === 'ok' && name.trim().length > 0;
+
+  // Check if user has already played this challenge
+  useEffect(() => {
+    if (!preview) {
+      setPreviousAttempt(null);
+      return;
+    }
+    const shortCode = generateShortCode(preview);
+    getChallengeHistory().then((history) => {
+      const existing = history.find(
+        (h) => h.shortCode === shortCode && h.direction === 'received',
+      );
+      setPreviousAttempt(existing ?? null);
+    });
+  }, [preview]);
+
+  const canPlay = decoded?.status === 'ok' && name.trim().length > 0 && !previousAttempt;
 
   // Animate challenge card in when preview becomes available
   useEffect(() => {
@@ -240,8 +257,36 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
             </Animated.View>
           )}
 
-          {/* ── NAME INPUT (always visible when challenge loaded) ── */}
-          {preview && (
+          {/* ── ALREADY PLAYED ── */}
+          {preview && previousAttempt && (
+            <Animated.View style={{ opacity: cardOpacity }}>
+              <View style={styles.alreadyPlayedCard}>
+                <View style={styles.alreadyPlayedHeader}>
+                  <CheckIcon size={18} color={colors.success} />
+                  <Text style={styles.alreadyPlayedTitle}>{t('challenge.alreadyPlayed')}</Text>
+                </View>
+                <Text style={styles.alreadyPlayedScore}>
+                  {t('challenge.yourPreviousScore', {
+                    correct: previousAttempt.myScore,
+                    total: previousAttempt.totalFlags,
+                  })}
+                </Text>
+                {previousAttempt.myResults && (
+                  <View style={styles.dotRow}>
+                    {previousAttempt.myResults.map((ok, i) => (
+                      <View
+                        key={i}
+                        style={[styles.dot, ok ? styles.dotCorrect : styles.dotWrong]}
+                      />
+                    ))}
+                  </View>
+                )}
+              </View>
+            </Animated.View>
+          )}
+
+          {/* ── NAME INPUT (only when not already played) ── */}
+          {preview && !previousAttempt && (
             <Animated.View style={{ opacity: cardOpacity }}>
               <Text style={styles.nameLabel}>{t('challenge.enterName')}</Text>
               <TextInput
@@ -261,8 +306,8 @@ export default function JoinChallengeScreen({ route, navigation }: Props) {
             </Animated.View>
           )}
 
-          {/* ── PLAY CTA ── */}
-          {preview && (
+          {/* ── PLAY CTA (only when not already played) ── */}
+          {preview && !previousAttempt && (
             <Animated.View style={{ opacity: cardOpacity, transform: [{ scale: ctaScale }] }}>
               <TouchableOpacity
                 style={[styles.playButton, !canPlay && styles.playButtonDisabled]}
@@ -465,6 +510,29 @@ const createStyles = (colors: ThemeColors) => {
     ...typography.body,
     color: colors.text,
     marginBottom: spacing.md,
+  },
+
+  // ── Already played
+  alreadyPlayedCard: {
+    backgroundColor: colors.successBg,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+    gap: spacing.sm,
+  },
+  alreadyPlayedHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  alreadyPlayedTitle: {
+    fontFamily: fontFamily.bodyBold,
+    fontSize: fontSize.sm,
+    color: colors.success,
+  },
+  alreadyPlayedScore: {
+    ...typography.body,
+    color: colors.ink,
   },
 
   // ── Play button
