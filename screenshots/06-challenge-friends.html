@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1290">
+<title>Flag That - Screenshot 6: Challenge Friends</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Barlow:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1290px;
+    height: 2796px;
+    overflow: hidden;
+    background: #F5EFE6;
+    font-family: 'Barlow', sans-serif;
+    position: relative;
+  }
+
+  .headline {
+    text-align: center;
+    padding: 180px 80px 30px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .headline .eyebrow {
+    font-size: 30px;
+    font-weight: 700;
+    color: #9A5C0A;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    margin-bottom: 16px;
+  }
+
+  .headline h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 80px;
+    color: #1A1820;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .headline h1 .gold { color: #9A5C0A; }
+
+  .headline p {
+    font-size: 40px;
+    color: #5C5764;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  /* Two phones side by side */
+  .phones-wrap {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 60px;
+    position: relative;
+    z-index: 10;
+    padding: 0 40px;
+  }
+
+  .phone {
+    width: 540px;
+    background: #1A1820;
+    border-radius: 56px;
+    padding: 14px;
+    box-shadow: 0 30px 80px rgba(26,24,32,0.2);
+  }
+
+  .phone.left { transform: rotate(-3deg) translateY(30px); }
+  .phone.right { transform: rotate(3deg) translateY(30px); }
+
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: #F5EFE6;
+    border-radius: 44px;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .phone-status {
+    padding: 14px 24px 6px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1A1820;
+  }
+
+  /* Challenge send screen */
+  .challenge-send {
+    padding: 16px 22px;
+    text-align: center;
+  }
+
+  .challenge-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1A1820;
+    margin-bottom: 16px;
+  }
+
+  .challenge-score-ring {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: 7px solid #1E8F56;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #E8F8EF;
+  }
+
+  .ring-pct {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: #1E8F56;
+    line-height: 1;
+  }
+
+  .challenge-grid {
+    background: #1A1820;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin: 12px 0;
+  }
+
+  .challenge-grid-title {
+    font-size: 13px;
+    color: #E9BA4C;
+    font-weight: 700;
+    margin-bottom: 6px;
+    text-align: left;
+  }
+
+  .grid-row {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 4px;
+  }
+
+  .grid-cell {
+    width: 32px;
+    height: 32px;
+    border-radius: 5px;
+  }
+
+  .gc-g { background: #3DBF80; }
+  .gc-r { background: #EC6666; }
+
+  .challenge-code {
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .code-text {
+    font-family: 'Barlow', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1A1820;
+    letter-spacing: 3px;
+  }
+
+  .code-copy {
+    font-size: 14px;
+    color: #9A5C0A;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .challenge-share-btn {
+    background: #9A5C0A;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 0;
+    font-family: 'Barlow', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 0 #5C3506;
+    margin-top: 6px;
+  }
+
+  /* Challenge receive screen */
+  .challenge-receive {
+    padding: 16px 22px;
+    text-align: center;
+  }
+
+  .challenger-badge {
+    background: #E9BA4C;
+    color: #130F00;
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .vs-text {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1A1820;
+    margin-bottom: 4px;
+  }
+
+  .vs-sub {
+    font-size: 15px;
+    color: #8A8494;
+    margin-bottom: 16px;
+  }
+
+  .opponent-stats {
+    background: #FFFFFF;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .opponent-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #EDE7DE;
+  }
+
+  .opponent-row:last-child { border-bottom: none; }
+
+  .opponent-label {
+    font-size: 16px;
+    color: #5C5764;
+    font-weight: 500;
+  }
+
+  .opponent-val {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A1820;
+  }
+
+  .opponent-val.green { color: #1E8F56; }
+
+  .accept-btn {
+    background: #1E8F56;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 0;
+    font-family: 'Barlow', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 0 #146B3F;
+  }
+
+  /* Connecting line */
+  .connect-line {
+    position: absolute;
+    top: 1100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+  }
+
+  .connect-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #E9BA4C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: #130F00;
+    box-shadow: 0 4px 24px rgba(233,186,76,0.4);
+  }
+
+  /* Features at bottom */
+  .bottom-features {
+    position: absolute;
+    bottom: 100px;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    z-index: 10;
+  }
+
+  .bf {
+    text-align: center;
+  }
+
+  .bf .bf-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    font-size: 36px;
+  }
+
+  .bf .bf-label {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1A1820;
+  }
+
+  .bf .bf-sub {
+    font-size: 22px;
+    color: #8A8494;
+    font-weight: 500;
+  }
+
+  /* Language flags */
+  .lang-strip {
+    position: absolute;
+    bottom: 280px;
+    left: 0; right: 0;
+    text-align: center;
+    z-index: 10;
+  }
+
+  .lang-strip .lang-title {
+    font-size: 30px;
+    font-weight: 700;
+    color: #1A1820;
+    margin-bottom: 14px;
+  }
+
+  .lang-flags {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .lang-pill {
+    background: #FFFFFF;
+    padding: 10px 22px;
+    border-radius: 14px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1A1820;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .lang-pill.active {
+    background: #9A5C0A;
+    color: #FFFFFF;
+  }
+</style>
+</head>
+<body>
+
+<div class="headline">
+  <div class="eyebrow">Compete Together</div>
+  <h1>Challenge Your <span class="gold">Friends</span></h1>
+  <p>Share codes, compare scores, settle debates</p>
+</div>
+
+<div class="phones-wrap">
+  <div class="phone left">
+    <div class="phone-screen">
+      <div class="phone-status"><span>9:41</span><span>&#9679;&#9679;&#9679;</span></div>
+      <div class="challenge-send">
+        <div class="challenge-title">Challenge Created!</div>
+
+        <div class="challenge-score-ring">
+          <div class="ring-pct">80%</div>
+        </div>
+
+        <div class="challenge-grid">
+          <div class="challenge-grid-title">Your Results - 8/10</div>
+          <div class="grid-row">
+            <div class="grid-cell gc-g"></div><div class="grid-cell gc-g"></div><div class="grid-cell gc-r"></div><div class="grid-cell gc-g"></div><div class="grid-cell gc-g"></div>
+          </div>
+          <div class="grid-row">
+            <div class="grid-cell gc-g"></div><div class="grid-cell gc-g"></div><div class="grid-cell gc-g"></div><div class="grid-cell gc-r"></div><div class="grid-cell gc-g"></div>
+          </div>
+        </div>
+
+        <div class="challenge-code">
+          <span class="code-text">FT-X4K9M2</span>
+          <span class="code-copy">Copy</span>
+        </div>
+
+        <div class="challenge-share-btn">Share Challenge</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phone right">
+    <div class="phone-screen">
+      <div class="phone-status"><span>9:42</span><span>&#9679;&#9679;&#9679;</span></div>
+      <div class="challenge-receive">
+        <div class="challenger-badge">Challenge from Alex</div>
+        <div class="vs-text">Can You Beat 80%?</div>
+        <div class="vs-sub">10 flags, medium difficulty</div>
+
+        <div class="opponent-stats">
+          <div class="opponent-row">
+            <span class="opponent-label">Score</span>
+            <span class="opponent-val green">8 / 10</span>
+          </div>
+          <div class="opponent-row">
+            <span class="opponent-label">Accuracy</span>
+            <span class="opponent-val green">80%</span>
+          </div>
+          <div class="opponent-row">
+            <span class="opponent-label">Best Streak</span>
+            <span class="opponent-val">5</span>
+          </div>
+          <div class="opponent-row">
+            <span class="opponent-label">Difficulty</span>
+            <span class="opponent-val" style="color:#E9BA4C">Medium</span>
+          </div>
+        </div>
+
+        <div class="accept-btn">Accept Challenge</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="connect-line">
+  <div class="connect-circle">&#8646;</div>
+</div>
+
+<div class="lang-strip">
+  <div class="lang-title">Available in 6 Languages</div>
+  <div class="lang-flags">
+    <div class="lang-pill active">EN</div>
+    <div class="lang-pill">ES</div>
+    <div class="lang-pill">FR</div>
+    <div class="lang-pill">DE</div>
+    <div class="lang-pill">PT</div>
+    <div class="lang-pill">ZH</div>
+  </div>
+</div>
+
+<div class="bottom-features">
+  <div class="bf">
+    <div class="bf-icon">&#127760;</div>
+    <div class="bf-label">No Account</div>
+    <div class="bf-sub">100% offline</div>
+  </div>
+  <div class="bf">
+    <div class="bf-icon">&#128274;</div>
+    <div class="bf-label">Private</div>
+    <div class="bf-sub">Data stays local</div>
+  </div>
+  <div class="bf">
+    <div class="bf-icon">&#9889;</div>
+    <div class="bf-label">Free</div>
+    <div class="bf-sub">No ads or IAP</div>
+  </div>
+</div>
+
+</body>
+</html>

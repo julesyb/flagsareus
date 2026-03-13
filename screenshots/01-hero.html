@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1290">
+<title>Flag That - Screenshot 1: Hero</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Barlow:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1290px;
+    height: 2796px;
+    overflow: hidden;
+    background: #F5EFE6;
+    font-family: 'Barlow', sans-serif;
+    position: relative;
+  }
+
+  /* Decorative flag mosaic background */
+  .mosaic {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1500px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 6px;
+    padding: 40px 30px;
+    opacity: 0.18;
+    transform: rotate(-3deg) scale(1.15);
+    transform-origin: center top;
+  }
+
+  .mosaic .flag {
+    font-size: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(154, 92, 10, 0.08);
+    border-radius: 14px;
+  }
+
+  /* Gold burst accent */
+  .burst {
+    position: absolute;
+    top: 300px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1100px;
+    height: 1100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(233,186,76,0.25) 0%, rgba(233,186,76,0) 70%);
+  }
+
+  /* Content */
+  .content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 80px;
+    text-align: center;
+  }
+
+  .wordmark {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 120px;
+    letter-spacing: -2px;
+    margin-bottom: 30px;
+  }
+  .wordmark .flag-word { color: #1A1820; font-weight: 700; }
+  .wordmark .that-word { color: #9A5C0A; font-style: italic; font-weight: 400; }
+
+  .tagline {
+    font-family: 'Barlow', sans-serif;
+    font-size: 52px;
+    font-weight: 600;
+    color: #5C5764;
+    line-height: 1.35;
+    max-width: 900px;
+    margin-bottom: 80px;
+  }
+
+  /* Phone mockup */
+  .phone {
+    width: 580px;
+    height: 1180px;
+    background: #1A1820;
+    border-radius: 60px;
+    padding: 18px;
+    box-shadow: 0 40px 100px rgba(26,24,32,0.25), 0 0 0 4px rgba(26,24,32,0.1);
+    position: relative;
+  }
+
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: #F5EFE6;
+    border-radius: 44px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Mini home screen inside phone */
+  .phone-status {
+    padding: 16px 30px 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1A1820;
+  }
+
+  .phone-home {
+    flex: 1;
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .phone-wordmark {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 32px;
+    margin-bottom: 4px;
+  }
+  .phone-wordmark .flag-word { color: #1A1820; font-weight: 700; }
+  .phone-wordmark .that-word { color: #9A5C0A; font-style: italic; }
+
+  .phone-streak {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 20px;
+  }
+  .phone-streak-badge {
+    background: #E9BA4C;
+    color: #130F00;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .streak-flame { font-size: 14px; }
+  .streak-pips {
+    display: flex;
+    gap: 4px;
+  }
+  .streak-pips .pip {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #E9BA4C;
+  }
+  .streak-pips .pip.empty {
+    background: #D5CFC6;
+  }
+
+  .phone-daily {
+    background: #FFFFFF;
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+  .phone-daily-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #8A8494;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+  .phone-daily-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 22px;
+    color: #1A1820;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .phone-daily-flags {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    font-size: 28px;
+  }
+  .phone-play-btn {
+    background: #9A5C0A;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 0;
+    font-family: 'Barlow', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 4px 0 #5C3506;
+  }
+
+  .phone-quick {
+    margin-top: 4px;
+  }
+  .phone-quick-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #5C5764;
+    margin-bottom: 10px;
+  }
+  .phone-quick-row {
+    display: flex;
+    gap: 10px;
+  }
+  .phone-quick-btn {
+    flex: 1;
+    background: #FFFFFF;
+    border-radius: 14px;
+    padding: 16px 8px;
+    text-align: center;
+  }
+  .phone-quick-btn .num {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1A1820;
+  }
+  .phone-quick-btn .label {
+    font-size: 12px;
+    color: #8A8494;
+    font-weight: 500;
+  }
+
+  /* Bottom tagline */
+  .bottom-bar {
+    position: absolute;
+    bottom: 100px;
+    left: 0; right: 0;
+    text-align: center;
+  }
+  .bottom-bar p {
+    font-size: 36px;
+    font-weight: 700;
+    color: #9A5C0A;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="mosaic">
+  <div class="flag">🇺🇸</div><div class="flag">🇧🇷</div><div class="flag">🇯🇵</div><div class="flag">🇫🇷</div><div class="flag">🇰🇪</div><div class="flag">🇦🇺</div><div class="flag">🇮🇳</div>
+  <div class="flag">🇩🇪</div><div class="flag">🇲🇽</div><div class="flag">🇬🇧</div><div class="flag">🇨🇦</div><div class="flag">🇪🇬</div><div class="flag">🇮🇹</div><div class="flag">🇰🇷</div>
+  <div class="flag">🇿🇦</div><div class="flag">🇪🇸</div><div class="flag">🇹🇷</div><div class="flag">🇸🇪</div><div class="flag">🇳🇬</div><div class="flag">🇦🇷</div><div class="flag">🇨🇳</div>
+  <div class="flag">🇵🇹</div><div class="flag">🇳🇴</div><div class="flag">🇬🇷</div><div class="flag">🇵🇱</div><div class="flag">🇹🇭</div><div class="flag">🇨🇴</div><div class="flag">🇵🇪</div>
+  <div class="flag">🇨🇱</div><div class="flag">🇳🇿</div><div class="flag">🇵🇭</div><div class="flag">🇻🇳</div><div class="flag">🇮🇩</div><div class="flag">🇺🇦</div><div class="flag">🇷🇴</div>
+  <div class="flag">🇲🇦</div><div class="flag">🇨🇭</div><div class="flag">🇫🇮</div><div class="flag">🇩🇰</div><div class="flag">🇭🇺</div><div class="flag">🇮🇪</div><div class="flag">🇯🇲</div>
+</div>
+
+<div class="burst"></div>
+
+<div class="content">
+  <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 200px;">
+    <div class="wordmark">
+      <span class="flag-word">Flag</span><span class="that-word">That</span>
+    </div>
+    <p class="tagline">The ultimate flag quiz with 195 countries and 12 game modes</p>
+  </div>
+
+  <div class="phone">
+    <div class="phone-screen">
+      <div class="phone-status">
+        <span>9:41</span>
+        <span>&#9679;&#9679;&#9679;</span>
+      </div>
+      <div class="phone-home">
+        <div class="phone-wordmark">
+          <span class="flag-word">Flag</span><span class="that-word">That</span>
+        </div>
+
+        <div class="phone-streak">
+          <div class="phone-streak-badge">
+            <span class="streak-flame">&#9733;</span>
+            <span>5 Day streak</span>
+          </div>
+          <div class="streak-pips">
+            <div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip empty"></div><div class="pip empty"></div>
+          </div>
+        </div>
+
+        <div class="phone-daily">
+          <div class="phone-daily-label">Daily Challenge</div>
+          <div class="phone-daily-title">Today's 10 Flags</div>
+          <div class="phone-daily-flags">
+            🇧🇷 🇯🇵 🇰🇪 🇸🇪 🇦🇷
+          </div>
+          <div class="phone-play-btn">Play Now</div>
+        </div>
+
+        <div class="phone-quick">
+          <div class="phone-quick-label">Quick Play</div>
+          <div class="phone-quick-row">
+            <div class="phone-quick-btn"><div class="num">5</div><div class="label">flags</div></div>
+            <div class="phone-quick-btn"><div class="num">10</div><div class="label">flags</div></div>
+            <div class="phone-quick-btn"><div class="num">15</div><div class="label">flags</div></div>
+            <div class="phone-quick-btn"><div class="num">20</div><div class="label">flags</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <p>195 Countries. Infinite Fun.</p>
+  </div>
+</div>
+
+</body>
+</html>

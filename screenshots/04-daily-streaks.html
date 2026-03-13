@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1290">
+<title>Flag That - Screenshot 4: Daily Challenge & Streaks</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Barlow:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1290px;
+    height: 2796px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #1A1820 0%, #25242D 100%);
+    font-family: 'Barlow', sans-serif;
+    position: relative;
+  }
+
+  .headline {
+    text-align: center;
+    padding: 180px 80px 50px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .headline .eyebrow {
+    font-size: 30px;
+    font-weight: 700;
+    color: #E9BA4C;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    margin-bottom: 16px;
+  }
+
+  .headline h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 84px;
+    color: #EEE9E2;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .headline p {
+    font-size: 40px;
+    color: #B8B2A8;
+    font-weight: 500;
+  }
+
+  /* Big streak display */
+  .streak-hero {
+    text-align: center;
+    margin: 40px 0 30px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .streak-number {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 220px;
+    font-weight: 700;
+    color: #E9BA4C;
+    line-height: 1;
+    text-shadow: 0 8px 40px rgba(233,186,76,0.3);
+  }
+
+  .streak-label {
+    font-size: 48px;
+    font-weight: 700;
+    color: #EEE9E2;
+    letter-spacing: 2px;
+    margin-top: -10px;
+  }
+
+  /* Streak calendar */
+  .streak-calendar {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin: 50px 80px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .day-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .day-dot {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 700;
+  }
+
+  .day-dot.active {
+    background: #E9BA4C;
+    color: #130F00;
+  }
+
+  .day-dot.today {
+    background: #E9BA4C;
+    color: #130F00;
+    box-shadow: 0 0 0 4px rgba(233,186,76,0.3), 0 0 20px rgba(233,186,76,0.3);
+  }
+
+  .day-dot.empty {
+    background: #3D3A4A;
+    color: #6E6878;
+  }
+
+  .day-label {
+    font-size: 22px;
+    font-weight: 600;
+    color: #6E6878;
+  }
+
+  .day-label.active-label {
+    color: #E9BA4C;
+  }
+
+  /* Phone with results */
+  .phone-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .phone {
+    width: 600px;
+    height: 1050px;
+    background: #2A2930;
+    border-radius: 60px;
+    padding: 16px;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  }
+
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: #F5EFE6;
+    border-radius: 46px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .phone-status {
+    padding: 14px 28px 6px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1A1820;
+  }
+
+  .results-content {
+    flex: 1;
+    padding: 20px 26px;
+    text-align: center;
+  }
+
+  .results-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1A1820;
+    margin-bottom: 6px;
+  }
+
+  .results-sub {
+    font-size: 16px;
+    color: #8A8494;
+    margin-bottom: 20px;
+  }
+
+  .results-score-ring {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 8px solid #1E8F56;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #E8F8EF;
+  }
+
+  .ring-inner {
+    text-align: center;
+  }
+
+  .ring-pct {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 46px;
+    font-weight: 700;
+    color: #1E8F56;
+    line-height: 1;
+  }
+
+  .ring-label {
+    font-size: 14px;
+    color: #5C5764;
+    font-weight: 600;
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin: 16px 0 20px;
+  }
+
+  .stat-box {
+    background: #FFFFFF;
+    border-radius: 14px;
+    padding: 14px 22px;
+    text-align: center;
+    flex: 1;
+  }
+
+  .stat-val {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1A1820;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: #8A8494;
+    font-weight: 600;
+  }
+
+  /* Share grid */
+  .share-grid {
+    background: #1A1820;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+
+  .share-grid-title {
+    font-size: 14px;
+    color: #E9BA4C;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-align: left;
+  }
+
+  .share-grid-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .share-cell {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+  }
+
+  .share-cell.g { background: #3DBF80; }
+  .share-cell.r { background: #EC6666; }
+  .share-cell.y { background: #E9BA4C; }
+
+  /* Gold glow */
+  .glow {
+    position: absolute;
+    top: 350px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(233,186,76,0.1) 0%, transparent 70%);
+  }
+</style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<div class="headline">
+  <div class="eyebrow">Come Back Every Day</div>
+  <h1>Build Your Streak</h1>
+  <p>New flags daily, track your progress</p>
+</div>
+
+<div class="streak-hero">
+  <div class="streak-number">12</div>
+  <div class="streak-label">Day Streak</div>
+</div>
+
+<div class="streak-calendar">
+  <div class="day-col"><div class="day-dot active">&#10003;</div><div class="day-label active-label">Mon</div></div>
+  <div class="day-col"><div class="day-dot active">&#10003;</div><div class="day-label active-label">Tue</div></div>
+  <div class="day-col"><div class="day-dot active">&#10003;</div><div class="day-label active-label">Wed</div></div>
+  <div class="day-col"><div class="day-dot active">&#10003;</div><div class="day-label active-label">Thu</div></div>
+  <div class="day-col"><div class="day-dot today">&#10003;</div><div class="day-label active-label">Fri</div></div>
+  <div class="day-col"><div class="day-dot empty">&#8212;</div><div class="day-label">Sat</div></div>
+  <div class="day-col"><div class="day-dot empty">&#8212;</div><div class="day-label">Sun</div></div>
+</div>
+
+<div class="phone-wrap">
+  <div class="phone">
+    <div class="phone-screen">
+      <div class="phone-status"><span>9:41</span><span>&#9679;&#9679;&#9679;</span></div>
+      <div class="results-content">
+        <div class="results-title">Daily Challenge Complete!</div>
+        <div class="results-sub">March 13, 2026</div>
+
+        <div class="results-score-ring">
+          <div class="ring-inner">
+            <div class="ring-pct">90%</div>
+            <div class="ring-label">Accuracy</div>
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-val">9</div><div class="stat-label">Correct</div></div>
+          <div class="stat-box"><div class="stat-val">10</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-val">5</div><div class="stat-label">Streak</div></div>
+        </div>
+
+        <div class="share-grid">
+          <div class="share-grid-title">FlagThat Daily #3 - 9/10</div>
+          <div class="share-grid-row">
+            <div class="share-cell g"></div><div class="share-cell g"></div><div class="share-cell g"></div><div class="share-cell g"></div><div class="share-cell g"></div>
+          </div>
+          <div class="share-grid-row">
+            <div class="share-cell g"></div><div class="share-cell r"></div><div class="share-cell g"></div><div class="share-cell g"></div><div class="share-cell g"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

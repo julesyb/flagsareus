@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1290">
+<title>Flag That - Screenshot 3: Game Modes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Barlow:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1290px;
+    height: 2796px;
+    overflow: hidden;
+    background: #F5EFE6;
+    font-family: 'Barlow', sans-serif;
+    position: relative;
+  }
+
+  .headline {
+    text-align: center;
+    padding: 180px 80px 50px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .headline .eyebrow {
+    font-size: 30px;
+    font-weight: 700;
+    color: #9A5C0A;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    margin-bottom: 16px;
+  }
+
+  .headline h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 84px;
+    color: #1A1820;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .headline p {
+    font-size: 40px;
+    color: #5C5764;
+    font-weight: 500;
+  }
+
+  /* Mode cards grid */
+  .modes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    padding: 50px 70px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .mode-card {
+    background: #FFFFFF;
+    border-radius: 24px;
+    padding: 36px 30px;
+    position: relative;
+    overflow: hidden;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .mode-card .bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+  }
+
+  .mode-card .mode-icon {
+    font-size: 72px;
+    margin-bottom: 16px;
+  }
+
+  .mode-card .mode-name {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: #1A1820;
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+
+  .mode-card .mode-desc {
+    font-size: 22px;
+    color: #5C5764;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .mode-card .mode-tag {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 4px 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Color variants */
+  .bar-red { background: #C43030; }
+  .bar-gold { background: #E9BA4C; }
+  .bar-blue { background: #4DA8E8; }
+  .bar-green { background: #1E8F56; }
+  .bar-purple { background: #A47FD4; }
+  .bar-orange { background: #D4842A; }
+
+  .tag-red { background: #FDECEC; color: #C43030; }
+  .tag-gold { background: #FDF3E0; color: #9A5C0A; }
+  .tag-blue { background: #E8F4FC; color: #2B7BB8; }
+  .tag-green { background: #E8F8EF; color: #1E8F56; }
+  .tag-purple { background: #F0EAF8; color: #7B5BB0; }
+  .tag-orange { background: #FDF0E4; color: #9A5C0A; }
+
+  /* Featured mode - full width */
+  .mode-card.featured {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+    padding: 40px 36px;
+    min-height: 240px;
+  }
+
+  .mode-card.featured .mode-icon {
+    font-size: 90px;
+    margin-bottom: 0;
+  }
+
+  .mode-card.featured .mode-info {
+    flex: 1;
+  }
+
+  /* Bottom callout */
+  .bottom-callout {
+    position: absolute;
+    bottom: 100px;
+    left: 0; right: 0;
+    text-align: center;
+    z-index: 10;
+  }
+
+  .bottom-callout p {
+    font-size: 38px;
+    font-weight: 700;
+    color: #1A1820;
+  }
+
+  .bottom-callout .sub {
+    font-size: 32px;
+    color: #8A8494;
+    font-weight: 500;
+    margin-top: 8px;
+  }
+
+  /* Subtle decorative pattern */
+  .corner-flags {
+    position: absolute;
+    font-size: 80px;
+    opacity: 0.08;
+  }
+  .corner-flags.tl { top: 40px; left: 40px; transform: rotate(-15deg); }
+  .corner-flags.tr { top: 80px; right: 40px; transform: rotate(10deg); }
+  .corner-flags.bl { bottom: 200px; left: 40px; transform: rotate(5deg); }
+  .corner-flags.br { bottom: 240px; right: 40px; transform: rotate(-8deg); }
+</style>
+</head>
+<body>
+
+<div class="corner-flags tl">🇬🇧 🇫🇷</div>
+<div class="corner-flags tr">🇯🇵 🇰🇷</div>
+<div class="corner-flags bl">🇧🇷 🇦🇷</div>
+<div class="corner-flags br">🇮🇳 🇦🇺</div>
+
+<div class="headline">
+  <div class="eyebrow">Never Get Bored</div>
+  <h1>12 Ways to Play</h1>
+  <p>Every mode is a new challenge</p>
+</div>
+
+<div class="modes-grid">
+  <!-- Time Attack - Featured -->
+  <div class="mode-card featured">
+    <div class="bar bar-red"></div>
+    <div class="mode-icon">&#9201;</div>
+    <div class="mode-info">
+      <div class="mode-name">Time Attack</div>
+      <div class="mode-desc">Race the clock - 60 seconds, infinite flags. How many can you get?</div>
+      <span class="mode-tag tag-red">Intense</span>
+    </div>
+  </div>
+
+  <!-- Flash Flag -->
+  <div class="mode-card">
+    <div class="bar bar-gold"></div>
+    <div class="mode-icon">&#9889;</div>
+    <div class="mode-name">Flash Flag</div>
+    <div class="mode-desc">Tilt your phone to answer - party mode!</div>
+    <span class="mode-tag tag-gold">Party</span>
+  </div>
+
+  <!-- Flag Puzzle -->
+  <div class="mode-card">
+    <div class="bar bar-blue"></div>
+    <div class="mode-icon">&#9635;</div>
+    <div class="mode-name">Flag Puzzle</div>
+    <div class="mode-desc">The flag reveals slowly - guess before time runs out</div>
+    <span class="mode-tag tag-blue">Strategy</span>
+  </div>
+
+  <!-- Impostor -->
+  <div class="mode-card">
+    <div class="bar bar-purple"></div>
+    <div class="mode-icon">&#128269;</div>
+    <div class="mode-name">Flag Impostor</div>
+    <div class="mode-desc">Spot the fake among 9 flags</div>
+    <span class="mode-tag tag-purple">Detective</span>
+  </div>
+
+  <!-- Neighbors -->
+  <div class="mode-card">
+    <div class="bar bar-green"></div>
+    <div class="mode-icon">&#127758;</div>
+    <div class="mode-name">Neighbors</div>
+    <div class="mode-desc">Name all bordering countries</div>
+    <span class="mode-tag tag-green">Geography</span>
+  </div>
+
+  <!-- Capital Connection -->
+  <div class="mode-card featured">
+    <div class="bar bar-orange"></div>
+    <div class="mode-icon">&#127961;</div>
+    <div class="mode-info">
+      <div class="mode-name">Capital Connection</div>
+      <div class="mode-desc">Match flags to their capital cities. Test your world knowledge!</div>
+      <span class="mode-tag tag-orange">Knowledge</span>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-callout">
+  <p>Plus Daily Challenge, Practice Mode & more</p>
+  <div class="sub">Something new every single day</div>
+</div>
+
+</body>
+</html>
