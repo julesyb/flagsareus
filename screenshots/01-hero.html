@@ -18,40 +18,34 @@
     position: relative;
   }
 
-  /* Decorative flag mosaic background */
+  /* Decorative flag mosaic background using real flag images */
   .mosaic {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 1500px;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: repeat(6, 1fr);
-    gap: 6px;
+    grid-template-rows: repeat(5, 1fr);
+    gap: 12px;
     padding: 40px 30px;
-    opacity: 0.18;
+    opacity: 0.14;
     transform: rotate(-3deg) scale(1.15);
     transform-origin: center top;
   }
 
   .mosaic .flag {
-    font-size: 100px;
+    border-radius: 10px;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(154, 92, 10, 0.08);
-    border-radius: 14px;
+    background: rgba(154, 92, 10, 0.06);
   }
 
-  /* Gold burst accent */
-  .burst {
-    position: absolute;
-    top: 300px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 1100px;
-    height: 1100px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(233,186,76,0.25) 0%, rgba(233,186,76,0) 70%);
+  .mosaic .flag img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   /* Content */
@@ -78,7 +72,7 @@
 
   .tagline {
     font-family: 'Barlow', sans-serif;
-    font-size: 52px;
+    font-size: 48px;
     font-weight: 600;
     color: #5C5764;
     line-height: 1.35;
@@ -93,7 +87,6 @@
     background: #1A1820;
     border-radius: 60px;
     padding: 18px;
-    box-shadow: 0 40px 100px rgba(26,24,32,0.25), 0 0 0 4px rgba(26,24,32,0.1);
     position: relative;
   }
 
@@ -124,116 +117,169 @@
     flex-direction: column;
   }
 
+  .phone-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
   .phone-wordmark {
     font-family: 'Libre Baskerville', serif;
     font-size: 32px;
-    margin-bottom: 4px;
   }
   .phone-wordmark .flag-word { color: #1A1820; font-weight: 700; }
   .phone-wordmark .that-word { color: #9A5C0A; font-style: italic; }
 
-  .phone-streak {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 12px 0 20px;
-  }
-  .phone-streak-badge {
-    background: #E9BA4C;
-    color: #130F00;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 15px;
-    font-weight: 700;
+  .phone-level-badge {
     display: flex;
     align-items: center;
     gap: 6px;
+    border: 2px solid #E9BA4C;
+    border-radius: 20px;
+    padding: 4px 14px;
   }
-  .streak-flame { font-size: 14px; }
-  .streak-pips {
-    display: flex;
-    gap: 4px;
-  }
-  .streak-pips .pip {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: #E9BA4C;
-  }
-  .streak-pips .pip.empty {
-    background: #D5CFC6;
-  }
-
-  .phone-daily {
-    background: #FFFFFF;
-    border-radius: 18px;
-    padding: 22px;
-    margin-bottom: 16px;
-  }
-  .phone-daily-label {
-    font-size: 13px;
+  .phone-level-badge .lvl-label {
+    font-size: 11px;
     font-weight: 600;
     color: #8A8494;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 8px;
+    letter-spacing: 1px;
   }
-  .phone-daily-title {
+  .phone-level-badge .lvl-num {
     font-family: 'Libre Baskerville', serif;
-    font-size: 22px;
-    color: #1A1820;
+    font-size: 18px;
     font-weight: 700;
-    margin-bottom: 14px;
+    color: #E9BA4C;
   }
-  .phone-daily-flags {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 14px;
-    font-size: 28px;
+
+  /* Flag teaser card */
+  .phone-teaser {
+    background: #FFFFFF;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 16px;
   }
+
+  .teaser-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #8A8494;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 12px;
+  }
+
+  .teaser-flag {
+    width: 100%;
+    height: 160px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    background: #EDE7DE;
+  }
+
+  .teaser-flag img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .teaser-opts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .teaser-opt {
+    padding: 12px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    background: #FFFFFF;
+    border: 2px solid #EDE7DE;
+    color: #1A1820;
+  }
+
+  .teaser-opt.correct {
+    background: rgba(30, 143, 86, 0.10);
+    border-color: #1E8F56;
+    color: #1E8F56;
+  }
+
+  /* Play button */
   .phone-play-btn {
-    background: #9A5C0A;
-    color: #FFFFFF;
+    background: #E9BA4C;
+    color: #130F00;
     border: none;
     border-radius: 14px;
-    padding: 14px 0;
+    padding: 16px 0;
     font-family: 'Barlow', sans-serif;
     font-size: 18px;
     font-weight: 700;
     width: 100%;
     text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
     box-shadow: 0 4px 0 #5C3506;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
   }
 
-  .phone-quick {
-    margin-top: 4px;
+  .phone-play-btn svg {
+    display: inline-block;
+    vertical-align: middle;
   }
-  .phone-quick-label {
-    font-size: 15px;
-    font-weight: 600;
-    color: #5C5764;
-    margin-bottom: 10px;
-  }
-  .phone-quick-row {
-    display: flex;
-    gap: 10px;
-  }
-  .phone-quick-btn {
-    flex: 1;
+
+  /* Config card */
+  .phone-config {
     background: #FFFFFF;
     border-radius: 14px;
-    padding: 16px 8px;
-    text-align: center;
+    padding: 14px 16px;
   }
-  .phone-quick-btn .num {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 26px;
-    font-weight: 700;
-    color: #1A1820;
+
+  .config-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
   }
-  .phone-quick-btn .label {
-    font-size: 12px;
-    color: #8A8494;
+
+  .config-row + .config-row {
+    border-top: 1px solid rgba(0,0,0,0.06);
+    padding-top: 10px;
+    margin-top: 4px;
+  }
+
+  .config-label {
+    font-size: 14px;
     font-weight: 500;
+    color: #5C5764;
+  }
+
+  .config-btns {
+    display: flex;
+    gap: 6px;
+  }
+
+  .seg-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    background: #FFFFFF;
+    border: 1px solid rgba(0,0,0,0.08);
+    color: #5C5764;
+  }
+
+  .seg-btn.active {
+    background: #E9BA4C;
+    border-color: #E9BA4C;
+    color: #130F00;
   }
 
   /* Bottom tagline */
@@ -255,61 +301,109 @@
 <body>
 
 <div class="mosaic">
-  <div class="flag">🇺🇸</div><div class="flag">🇧🇷</div><div class="flag">🇯🇵</div><div class="flag">🇫🇷</div><div class="flag">🇰🇪</div><div class="flag">🇦🇺</div><div class="flag">🇮🇳</div>
-  <div class="flag">🇩🇪</div><div class="flag">🇲🇽</div><div class="flag">🇬🇧</div><div class="flag">🇨🇦</div><div class="flag">🇪🇬</div><div class="flag">🇮🇹</div><div class="flag">🇰🇷</div>
-  <div class="flag">🇿🇦</div><div class="flag">🇪🇸</div><div class="flag">🇹🇷</div><div class="flag">🇸🇪</div><div class="flag">🇳🇬</div><div class="flag">🇦🇷</div><div class="flag">🇨🇳</div>
-  <div class="flag">🇵🇹</div><div class="flag">🇳🇴</div><div class="flag">🇬🇷</div><div class="flag">🇵🇱</div><div class="flag">🇹🇭</div><div class="flag">🇨🇴</div><div class="flag">🇵🇪</div>
-  <div class="flag">🇨🇱</div><div class="flag">🇳🇿</div><div class="flag">🇵🇭</div><div class="flag">🇻🇳</div><div class="flag">🇮🇩</div><div class="flag">🇺🇦</div><div class="flag">🇷🇴</div>
-  <div class="flag">🇲🇦</div><div class="flag">🇨🇭</div><div class="flag">🇫🇮</div><div class="flag">🇩🇰</div><div class="flag">🇭🇺</div><div class="flag">🇮🇪</div><div class="flag">🇯🇲</div>
+  <div class="flag"><img src="https://flagcdn.com/w320/us.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/br.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/jp.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/fr.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/ke.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/au.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/in.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/de.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/mx.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/gb.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/ca.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/eg.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/it.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/kr.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/za.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/es.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/tr.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/se.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/ng.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/ar.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/cn.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/pt.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/no.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/gr.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/pl.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/th.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/co.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/pe.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/cl.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/nz.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/ph.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/vn.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/id.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/ua.png" alt=""></div>
+  <div class="flag"><img src="https://flagcdn.com/w320/ro.png" alt=""></div>
 </div>
-
-<div class="burst"></div>
 
 <div class="content">
   <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 200px;">
     <div class="wordmark">
       <span class="flag-word">Flag</span><span class="that-word">That</span>
     </div>
-    <p class="tagline">The ultimate flag quiz with 195 countries and 12 game modes</p>
+    <p class="tagline">Test your knowledge of 195+ country flags</p>
   </div>
 
   <div class="phone">
     <div class="phone-screen">
       <div class="phone-status">
         <span>9:41</span>
-        <span>&#9679;&#9679;&#9679;</span>
+        <span style="letter-spacing: 2px; font-size: 14px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#1A1820"><rect x="1" y="14" width="4" height="8" rx="1"/><rect x="7" y="10" width="4" height="12" rx="1"/><rect x="13" y="6" width="4" height="16" rx="1"/><rect x="19" y="2" width="4" height="20" rx="1"/></svg>
+        </span>
       </div>
       <div class="phone-home">
-        <div class="phone-wordmark">
-          <span class="flag-word">Flag</span><span class="that-word">That</span>
-        </div>
-
-        <div class="phone-streak">
-          <div class="phone-streak-badge">
-            <span class="streak-flame">&#9733;</span>
-            <span>5 Day streak</span>
+        <div class="phone-header">
+          <div class="phone-wordmark">
+            <span class="flag-word">Flag</span><span class="that-word">That</span>
           </div>
-          <div class="streak-pips">
-            <div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip"></div><div class="pip empty"></div><div class="pip empty"></div>
+          <div class="phone-level-badge">
+            <span class="lvl-label">Lvl</span>
+            <span class="lvl-num">14</span>
           </div>
         </div>
 
-        <div class="phone-daily">
-          <div class="phone-daily-label">Daily Challenge</div>
-          <div class="phone-daily-title">Today's 10 Flags</div>
-          <div class="phone-daily-flags">
-            🇧🇷 🇯🇵 🇰🇪 🇸🇪 🇦🇷
+        <!-- Flag Teaser -->
+        <div class="phone-teaser">
+          <div class="teaser-label">Name this flag</div>
+          <div class="teaser-flag">
+            <img src="https://flagcdn.com/w640/br.png" alt="Brazil flag">
           </div>
-          <div class="phone-play-btn">Play Now</div>
+          <div class="teaser-opts">
+            <div class="teaser-opt correct">Brazil</div>
+            <div class="teaser-opt">Bolivia</div>
+            <div class="teaser-opt">Colombia</div>
+            <div class="teaser-opt">Ecuador</div>
+          </div>
         </div>
 
-        <div class="phone-quick">
-          <div class="phone-quick-label">Quick Play</div>
-          <div class="phone-quick-row">
-            <div class="phone-quick-btn"><div class="num">5</div><div class="label">flags</div></div>
-            <div class="phone-quick-btn"><div class="num">10</div><div class="label">flags</div></div>
-            <div class="phone-quick-btn"><div class="num">15</div><div class="label">flags</div></div>
-            <div class="phone-quick-btn"><div class="num">20</div><div class="label">flags</div></div>
+        <!-- Play Now Button -->
+        <div class="phone-play-btn">
+          <span>PLAY NOW</span>
+          <svg width="12" height="12" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21" fill="#130F00"/></svg>
+        </div>
+
+        <!-- Config Card -->
+        <div class="phone-config">
+          <div class="config-row">
+            <span class="config-label">Cards</span>
+            <div class="config-btns">
+              <span class="seg-btn">5</span>
+              <span class="seg-btn active">10</span>
+              <span class="seg-btn">15</span>
+              <span class="seg-btn">20</span>
+              <span class="seg-btn">All</span>
+            </div>
+          </div>
+          <div class="config-row">
+            <span class="config-label">Difficulty</span>
+            <div class="config-btns">
+              <span class="seg-btn">Easy</span>
+              <span class="seg-btn active">Medium</span>
+              <span class="seg-btn">Hard</span>
+            </div>
           </div>
         </div>
       </div>

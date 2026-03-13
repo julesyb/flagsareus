@@ -26,7 +26,7 @@
   }
 
   .headline .eyebrow {
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 700;
     color: #9A5C0A;
     text-transform: uppercase;
@@ -49,101 +49,97 @@
     font-weight: 500;
   }
 
-  /* Mode cards grid */
-  .modes-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    padding: 50px 70px;
+  /* Mode list - matching app's mode rows with colored sidebar bars */
+  .mode-list {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 70px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
     position: relative;
     z-index: 10;
   }
 
-  .mode-card {
+  .mode-row {
     background: #FFFFFF;
-    border-radius: 24px;
-    padding: 36px 30px;
+    border-radius: 18px;
+    padding: 28px 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
     position: relative;
     overflow: hidden;
-    min-height: 320px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
   }
 
-  .mode-card .bar {
+  .mode-row .bar {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 6px;
+    width: 4px;
+    height: 100%;
   }
 
-  .mode-card .mode-icon {
-    font-size: 72px;
-    margin-bottom: 16px;
+  .mode-row .mode-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
 
-  .mode-card .mode-name {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 30px;
+  .mode-row .mode-info {
+    flex: 1;
+  }
+
+  .mode-row .mode-name {
+    font-family: 'Barlow', sans-serif;
+    font-size: 26px;
     font-weight: 700;
     color: #1A1820;
-    margin-bottom: 8px;
-    line-height: 1.2;
+    margin-bottom: 4px;
   }
 
-  .mode-card .mode-desc {
-    font-size: 22px;
+  .mode-row .mode-desc {
+    font-size: 20px;
     color: #5C5764;
     font-weight: 500;
-    line-height: 1.4;
   }
 
-  .mode-card .mode-tag {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 4px 14px;
+  .mode-row .mode-tag {
+    padding: 5px 14px;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  .mode-row .chevron {
+    flex-shrink: 0;
   }
 
   /* Color variants */
-  .bar-red { background: #C43030; }
   .bar-gold { background: #E9BA4C; }
+  .bar-red { background: #E05555; }
   .bar-blue { background: #4DA8E8; }
-  .bar-green { background: #1E8F56; }
+  .bar-green { background: #3DBF80; }
   .bar-purple { background: #A47FD4; }
-  .bar-orange { background: #D4842A; }
 
-  .tag-red { background: #FDECEC; color: #C43030; }
-  .tag-gold { background: #FDF3E0; color: #9A5C0A; }
-  .tag-blue { background: #E8F4FC; color: #2B7BB8; }
-  .tag-green { background: #E8F8EF; color: #1E8F56; }
-  .tag-purple { background: #F0EAF8; color: #7B5BB0; }
-  .tag-orange { background: #FDF0E4; color: #9A5C0A; }
+  .icon-gold { background: rgba(233,186,76,0.12); }
+  .icon-red { background: rgba(224,85,85,0.12); }
+  .icon-blue { background: rgba(77,168,232,0.12); }
+  .icon-green { background: rgba(61,191,128,0.12); }
+  .icon-purple { background: rgba(164,127,212,0.12); }
 
-  /* Featured mode - full width */
-  .mode-card.featured {
-    grid-column: 1 / -1;
-    flex-direction: row;
-    align-items: center;
-    gap: 30px;
-    padding: 40px 36px;
-    min-height: 240px;
-  }
-
-  .mode-card.featured .mode-icon {
-    font-size: 90px;
-    margin-bottom: 0;
-  }
-
-  .mode-card.featured .mode-info {
-    flex: 1;
-  }
+  .tag-gold { background: rgba(233,186,76,0.12); color: #9A5C0A; }
+  .tag-red { background: rgba(224,85,85,0.10); color: #C43030; }
+  .tag-blue { background: rgba(77,168,232,0.10); color: #2B7BB8; }
+  .tag-green { background: rgba(61,191,128,0.10); color: #1E8F56; }
+  .tag-purple { background: rgba(164,127,212,0.10); color: #7B5BB0; }
 
   /* Bottom callout */
   .bottom-callout {
@@ -166,25 +162,9 @@
     font-weight: 500;
     margin-top: 8px;
   }
-
-  /* Subtle decorative pattern */
-  .corner-flags {
-    position: absolute;
-    font-size: 80px;
-    opacity: 0.08;
-  }
-  .corner-flags.tl { top: 40px; left: 40px; transform: rotate(-15deg); }
-  .corner-flags.tr { top: 80px; right: 40px; transform: rotate(10deg); }
-  .corner-flags.bl { bottom: 200px; left: 40px; transform: rotate(5deg); }
-  .corner-flags.br { bottom: 240px; right: 40px; transform: rotate(-8deg); }
 </style>
 </head>
 <body>
-
-<div class="corner-flags tl">🇬🇧 🇫🇷</div>
-<div class="corner-flags tr">🇯🇵 🇰🇷</div>
-<div class="corner-flags bl">🇧🇷 🇦🇷</div>
-<div class="corner-flags br">🇮🇳 🇦🇺</div>
 
 <div class="headline">
   <div class="eyebrow">Never Get Bored</div>
@@ -192,68 +172,108 @@
   <p>Every mode is a new challenge</p>
 </div>
 
-<div class="modes-grid">
-  <!-- Time Attack - Featured -->
-  <div class="mode-card featured">
+<div class="mode-list">
+  <!-- Daily Challenge -->
+  <div class="mode-row">
+    <div class="bar bar-gold"></div>
+    <div class="mode-icon icon-gold">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E9BA4C" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <div class="mode-info">
+      <div class="mode-name">Daily Challenge</div>
+      <div class="mode-desc">10 new flags every day</div>
+    </div>
+    <span class="mode-tag tag-gold">Daily</span>
+    <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D5CFC6" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg></span>
+  </div>
+
+  <!-- Time Attack -->
+  <div class="mode-row">
     <div class="bar bar-red"></div>
-    <div class="mode-icon">&#9201;</div>
+    <div class="mode-icon icon-red">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E05555" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+    </div>
     <div class="mode-info">
       <div class="mode-name">Time Attack</div>
-      <div class="mode-desc">Race the clock - 60 seconds, infinite flags. How many can you get?</div>
-      <span class="mode-tag tag-red">Intense</span>
+      <div class="mode-desc">60 seconds, infinite flags</div>
     </div>
+    <span class="mode-tag tag-red">Intense</span>
+    <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D5CFC6" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg></span>
   </div>
 
   <!-- Flash Flag -->
-  <div class="mode-card">
+  <div class="mode-row">
     <div class="bar bar-gold"></div>
-    <div class="mode-icon">&#9889;</div>
-    <div class="mode-name">Flash Flag</div>
-    <div class="mode-desc">Tilt your phone to answer - party mode!</div>
+    <div class="mode-icon icon-gold">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E9BA4C" stroke-width="1.5"><path d="M13 2L4.5 13.5H11L10 22L19.5 10H13L13 2Z"/></svg>
+    </div>
+    <div class="mode-info">
+      <div class="mode-name">Flash Flag</div>
+      <div class="mode-desc">Tilt your phone to answer</div>
+    </div>
     <span class="mode-tag tag-gold">Party</span>
+    <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D5CFC6" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg></span>
   </div>
 
   <!-- Flag Puzzle -->
-  <div class="mode-card">
+  <div class="mode-row">
     <div class="bar bar-blue"></div>
-    <div class="mode-icon">&#9635;</div>
-    <div class="mode-name">Flag Puzzle</div>
-    <div class="mode-desc">The flag reveals slowly - guess before time runs out</div>
+    <div class="mode-icon icon-blue">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4DA8E8" stroke-width="1.5"><path d="M4 7h3a2 2 0 0 0 2-2 2 2 0 0 1 4 0 2 2 0 0 0 2 2h3v3a2 2 0 0 0 2 2 2 2 0 0 1 0 4 2 2 0 0 0-2 2v3H4v-3a2 2 0 0 1 0-4 2 2 0 0 0 0-4V7Z"/></svg>
+    </div>
+    <div class="mode-info">
+      <div class="mode-name">Flag Puzzle</div>
+      <div class="mode-desc">The flag reveals slowly, guess fast</div>
+    </div>
     <span class="mode-tag tag-blue">Strategy</span>
+    <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D5CFC6" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg></span>
   </div>
 
-  <!-- Impostor -->
-  <div class="mode-card">
+  <!-- Flag Impostor -->
+  <div class="mode-row">
     <div class="bar bar-purple"></div>
-    <div class="mode-icon">&#128269;</div>
-    <div class="mode-name">Flag Impostor</div>
-    <div class="mode-desc">Spot the fake among 9 flags</div>
+    <div class="mode-icon icon-purple">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A47FD4" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    </div>
+    <div class="mode-info">
+      <div class="mode-name">Flag Impostor</div>
+      <div class="mode-desc">Spot the fake among real flags</div>
+    </div>
     <span class="mode-tag tag-purple">Detective</span>
+    <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D5CFC6" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg></span>
   </div>
 
   <!-- Neighbors -->
-  <div class="mode-card">
+  <div class="mode-row">
     <div class="bar bar-green"></div>
-    <div class="mode-icon">&#127758;</div>
-    <div class="mode-name">Neighbors</div>
-    <div class="mode-desc">Name all bordering countries</div>
+    <div class="mode-icon icon-green">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3DBF80" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3 C8 7 8 17 12 21 C16 17 16 7 12 3Z"/></svg>
+    </div>
+    <div class="mode-info">
+      <div class="mode-name">Neighbors</div>
+      <div class="mode-desc">Name all bordering countries</div>
+    </div>
     <span class="mode-tag tag-green">Geography</span>
+    <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D5CFC6" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg></span>
   </div>
 
   <!-- Capital Connection -->
-  <div class="mode-card featured">
-    <div class="bar bar-orange"></div>
-    <div class="mode-icon">&#127961;</div>
+  <div class="mode-row">
+    <div class="bar bar-blue"></div>
+    <div class="mode-icon icon-blue">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4DA8E8" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </div>
     <div class="mode-info">
       <div class="mode-name">Capital Connection</div>
-      <div class="mode-desc">Match flags to their capital cities. Test your world knowledge!</div>
-      <span class="mode-tag tag-orange">Knowledge</span>
+      <div class="mode-desc">Match flags to their capital cities</div>
     </div>
+    <span class="mode-tag tag-blue">Knowledge</span>
+    <span class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D5CFC6" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg></span>
   </div>
 </div>
 
 <div class="bottom-callout">
-  <p>Plus Daily Challenge, Practice Mode & more</p>
+  <p>Plus Practice Mode, Browse and more</p>
   <div class="sub">Something new every single day</div>
 </div>
 

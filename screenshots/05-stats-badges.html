@@ -26,7 +26,7 @@
   }
 
   .headline .eyebrow {
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 700;
     color: #9A5C0A;
     text-transform: uppercase;
@@ -139,30 +139,39 @@
   }
 
   .badge-card.gold-badge {
-    background: linear-gradient(145deg, #FFFDF5, #FFF8E8);
+    background: #FFFDF5;
     border: 2px solid #E9BA4C;
   }
 
   .badge-card.silver-badge {
-    background: linear-gradient(145deg, #FAFAFA, #F0F0F0);
+    background: #FAFAFA;
     border: 2px solid #B8B2A8;
   }
 
   .badge-card.bronze-badge {
-    background: linear-gradient(145deg, #FFF9F0, #FFF0E0);
-    border: 2px solid #D4842A;
+    background: #FFF9F0;
+    border: 2px solid #C4884A;
   }
 
   .badge-card.platinum-badge {
-    background: linear-gradient(145deg, #F5F0FF, #EDE8FA);
+    background: #F5F0FF;
     border: 2px solid #A47FD4;
   }
 
   .badge-icon {
-    font-size: 56px;
-    margin-bottom: 10px;
-    display: block;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
   }
+
+  .badge-icon.gold-icon { background: rgba(233,186,76,0.15); }
+  .badge-icon.platinum-icon { background: rgba(164,127,212,0.15); }
+  .badge-icon.bronze-icon { background: rgba(196,136,74,0.15); }
+  .badge-icon.silver-icon { background: rgba(160,160,160,0.15); }
 
   .badge-name {
     font-size: 20px;
@@ -181,15 +190,11 @@
 
   .tier-gold { color: #9A5C0A; }
   .tier-silver { color: #8A8494; }
-  .tier-bronze { color: #D4842A; }
+  .tier-bronze { color: #C4884A; }
   .tier-platinum { color: #A47FD4; }
 
   .badge-card.locked {
     opacity: 0.3;
-  }
-
-  .badge-card.locked .badge-icon {
-    filter: grayscale(100%);
   }
 
   /* Level progress */
@@ -237,7 +242,7 @@
   .level-bar-fill {
     width: 65%;
     height: 100%;
-    background: linear-gradient(90deg, #E9BA4C, #9A5C0A);
+    background: #E9BA4C;
     border-radius: 10px;
   }
 
@@ -245,10 +250,6 @@
     display: flex;
     justify-content: space-between;
     margin-top: 12px;
-  }
-
-  .rank-dot {
-    text-align: center;
   }
 
   .rank-label {
@@ -363,14 +364,46 @@
 <div class="badges-section">
   <div class="badges-label">Earned Badges</div>
   <div class="badges-grid">
-    <div class="badge-card gold-badge earned"><span class="badge-icon">&#127942;</span><div class="badge-name">Perfect 10</div><div class="badge-tier tier-gold">Gold</div></div>
-    <div class="badge-card platinum-badge earned"><span class="badge-icon">&#9733;</span><div class="badge-name">Hot Streak</div><div class="badge-tier tier-platinum">Platinum</div></div>
-    <div class="badge-card bronze-badge earned"><span class="badge-icon">&#127757;</span><div class="badge-name">Globe Trotter</div><div class="badge-tier tier-bronze">Bronze</div></div>
-    <div class="badge-card silver-badge earned"><span class="badge-icon">&#9889;</span><div class="badge-name">Speed Demon</div><div class="badge-tier tier-silver">Silver</div></div>
-    <div class="badge-card gold-badge earned"><span class="badge-icon">&#127775;</span><div class="badge-name">Daily Legend</div><div class="badge-tier tier-gold">Gold</div></div>
-    <div class="badge-card bronze-badge earned"><span class="badge-icon">&#128293;</span><div class="badge-name">First Flag</div><div class="badge-tier tier-bronze">Bronze</div></div>
-    <div class="badge-card locked"><span class="badge-icon">&#128274;</span><div class="badge-name">???</div><div class="badge-tier" style="color:#8A8494">Locked</div></div>
-    <div class="badge-card locked"><span class="badge-icon">&#128274;</span><div class="badge-name">???</div><div class="badge-tier" style="color:#8A8494">Locked</div></div>
+    <div class="badge-card gold-badge earned">
+      <div class="badge-icon gold-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9A5C0A" stroke-width="1.5"><polyline points="4 12 10 18 20 6"/><circle cx="12" cy="12" r="10"/></svg></div>
+      <div class="badge-name">Perfect 10</div>
+      <div class="badge-tier tier-gold">Gold</div>
+    </div>
+    <div class="badge-card platinum-badge earned">
+      <div class="badge-icon platinum-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="#A47FD4"><path d="M13.5 0.67C13.5 0.67 14.24 3.32 14.24 5.47C14.24 7.53 12.89 9.2 10.83 9.2C8.76 9.2 7.2 7.53 7.2 5.47L7.23 5.11C5.21 7.51 4 10.62 4 14C4 18.42 7.58 22 12 22C16.42 22 20 18.42 20 14C20 8.61 17.41 3.8 13.5 0.67Z"/></svg></div>
+      <div class="badge-name">Hot Streak</div>
+      <div class="badge-tier tier-platinum">Platinum</div>
+    </div>
+    <div class="badge-card bronze-badge earned">
+      <div class="badge-icon bronze-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C4884A" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3 C8 7 8 17 12 21 C16 17 16 7 12 3Z"/></svg></div>
+      <div class="badge-name">Globe Trotter</div>
+      <div class="badge-tier tier-bronze">Bronze</div>
+    </div>
+    <div class="badge-card silver-badge earned">
+      <div class="badge-icon silver-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg></div>
+      <div class="badge-name">Speed Demon</div>
+      <div class="badge-tier tier-silver">Silver</div>
+    </div>
+    <div class="badge-card gold-badge earned">
+      <div class="badge-icon gold-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9A5C0A" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div class="badge-name">Daily Legend</div>
+      <div class="badge-tier tier-gold">Gold</div>
+    </div>
+    <div class="badge-card bronze-badge earned">
+      <div class="badge-icon bronze-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C4884A" stroke-width="1.5"><path d="M4 21V4"/><path d="M4 4 C4 4 7 2 10 4 C13 6 16 4 20 4 L20 15 C20 15 17 17 14 15 C11 13 8 15 4 15"/></svg></div>
+      <div class="badge-name">First Flag</div>
+      <div class="badge-tier tier-bronze">Bronze</div>
+    </div>
+    <div class="badge-card locked">
+      <div class="badge-icon" style="background: rgba(0,0,0,0.04)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <div class="badge-name">???</div>
+      <div class="badge-tier" style="color:#8A8494">Locked</div>
+    </div>
+    <div class="badge-card locked">
+      <div class="badge-icon" style="background: rgba(0,0,0,0.04)"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <div class="badge-name">???</div>
+      <div class="badge-tier" style="color:#8A8494">Locked</div>
+    </div>
   </div>
 </div>
 
@@ -381,9 +414,9 @@
   </div>
   <div class="level-bar"><div class="level-bar-fill"></div></div>
   <div class="level-ranks">
-    <div class="rank-dot"><span class="rank-label">Novice</span></div>
-    <div class="rank-dot"><span class="rank-label current">Expert</span></div>
-    <div class="rank-dot"><span class="rank-label">Master</span></div>
+    <div><span class="rank-label">Novice</span></div>
+    <div><span class="rank-label current">Expert</span></div>
+    <div><span class="rank-label">Master</span></div>
   </div>
 </div>
 

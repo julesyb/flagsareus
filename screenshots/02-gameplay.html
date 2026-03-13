@@ -59,7 +59,6 @@
     background: #2A2930;
     border-radius: 64px;
     padding: 18px;
-    box-shadow: 0 40px 120px rgba(0,0,0,0.5);
     position: relative;
   }
 
@@ -83,9 +82,14 @@
   }
 
   .game-exit {
-    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
     font-weight: 600;
     color: #8A8494;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .game-progress {
@@ -123,6 +127,9 @@
     border-radius: 12px;
     font-size: 14px;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
 
   /* Flag display */
@@ -139,13 +146,22 @@
     font-size: 18px;
     font-weight: 600;
     color: #5C5764;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
 
   .flag-display {
-    font-size: 160px;
+    width: 420px;
+    height: 280px;
+    border-radius: 14px;
+    overflow: hidden;
     margin-bottom: 36px;
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.08));
+    background: #EDE7DE;
+  }
+
+  .flag-display img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   /* Answer options */
@@ -164,6 +180,9 @@
     font-weight: 600;
     text-align: left;
     border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .answer-btn.default {
@@ -173,58 +192,14 @@
   }
 
   .answer-btn.correct {
-    background: #E8F8EF;
+    background: rgba(30, 143, 86, 0.10);
     color: #1E8F56;
     border-color: #1E8F56;
-    position: relative;
   }
 
-  .answer-btn.correct::after {
-    content: '✓';
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 22px;
-    font-weight: 800;
-  }
-
-  .answer-btn.wrong {
-    background: #FDECEC;
-    color: #C43030;
-    border-color: #C43030;
-    position: relative;
-  }
-
-  .answer-btn.wrong::after {
-    content: '✗';
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 22px;
-    font-weight: 800;
-  }
-
-  /* Decorative elements */
-  .glow-left {
-    position: absolute;
-    top: 600px;
-    left: -200px;
-    width: 600px;
-    height: 600px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(233,186,76,0.15) 0%, transparent 70%);
-  }
-
-  .glow-right {
-    position: absolute;
-    top: 1200px;
-    right: -200px;
-    width: 600px;
-    height: 600px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(30,143,86,0.12) 0%, transparent 70%);
+  .answer-btn .check-icon {
+    display: flex;
+    align-items: center;
   }
 
   /* Bottom features */
@@ -245,14 +220,12 @@
   .feature .icon {
     width: 64px;
     height: 64px;
-    border-radius: 16px;
-    background: rgba(233,186,76,0.15);
+    border-radius: 14px;
+    background: rgba(233,186,76,0.12);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 12px;
-    font-size: 28px;
-    color: #E9BA4C;
   }
 
   .feature .label {
@@ -266,12 +239,13 @@
     color: #6E6878;
     font-weight: 500;
   }
+
+  .diff-easy { color: #3DBF80; }
+  .diff-medium { color: #E9BA4C; }
+  .diff-hard { color: #EC6666; }
 </style>
 </head>
 <body>
-
-<div class="glow-left"></div>
-<div class="glow-right"></div>
 
 <div class="headline">
   <h1>Guess the Flag.<br/><span class="gold">Beat Your Best.</span></h1>
@@ -282,21 +256,32 @@
   <div class="phone">
     <div class="phone-screen">
       <div class="game-header">
-        <span class="game-exit">Exit</span>
+        <span class="game-exit">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A8494" stroke-width="2.5"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+          Exit
+        </span>
         <div class="game-progress">
           <span class="game-score">6 / 10</span>
           <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
         </div>
-        <span class="game-streak-pill">&#9733; 4</span>
+        <span class="game-streak-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="#130F00"><path d="M13.5 0.67C13.5 0.67 14.24 3.32 14.24 5.47C14.24 7.53 12.89 9.2 10.83 9.2C8.76 9.2 7.2 7.53 7.2 5.47L7.23 5.11C5.21 7.51 4 10.62 4 14C4 18.42 7.58 22 12 22C16.42 22 20 18.42 20 14C20 8.61 17.41 3.8 13.5 0.67Z"/></svg>
+          4
+        </span>
       </div>
 
       <div class="flag-area">
         <div class="flag-question">Which country does this flag belong to?</div>
-        <div class="flag-display">🇧🇷</div>
+        <div class="flag-display">
+          <img src="https://flagcdn.com/w640/br.png" alt="Brazil flag">
+        </div>
       </div>
 
       <div class="answers">
-        <div class="answer-btn correct">Brazil</div>
+        <div class="answer-btn correct">
+          <span>Brazil</span>
+          <span class="check-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E8F56" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg></span>
+        </div>
         <div class="answer-btn default">Bolivia</div>
         <div class="answer-btn default">Colombia</div>
         <div class="answer-btn default">Venezuela</div>
@@ -307,18 +292,24 @@
 
 <div class="features">
   <div class="feature">
-    <div class="icon">&#9650;</div>
-    <div class="label">Easy</div>
+    <div class="icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3DBF80" stroke-width="2"><polyline points="4 12 10 18 20 6"/></svg>
+    </div>
+    <div class="label diff-easy">Easy</div>
     <div class="sub">2 choices</div>
   </div>
   <div class="feature">
-    <div class="icon">&#9670;</div>
-    <div class="label">Medium</div>
+    <div class="icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E9BA4C" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+    </div>
+    <div class="label diff-medium">Medium</div>
     <div class="sub">4 choices</div>
   </div>
   <div class="feature">
-    <div class="icon">&#9733;</div>
-    <div class="label">Hard</div>
+    <div class="icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#EC6666" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+    </div>
+    <div class="label diff-hard">Hard</div>
     <div class="sub">Type it</div>
   </div>
 </div>

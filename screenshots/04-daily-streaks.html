@@ -13,7 +13,7 @@
     width: 1290px;
     height: 2796px;
     overflow: hidden;
-    background: linear-gradient(180deg, #1A1820 0%, #25242D 100%);
+    background: #15141A;
     font-family: 'Barlow', sans-serif;
     position: relative;
   }
@@ -26,7 +26,7 @@
   }
 
   .headline .eyebrow {
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 700;
     color: #E9BA4C;
     text-transform: uppercase;
@@ -63,7 +63,6 @@
     font-weight: 700;
     color: #E9BA4C;
     line-height: 1;
-    text-shadow: 0 8px 40px rgba(233,186,76,0.3);
   }
 
   .streak-label {
@@ -74,8 +73,8 @@
     margin-top: -10px;
   }
 
-  /* Streak calendar */
-  .streak-calendar {
+  /* Streak pip row */
+  .streak-pips {
     display: flex;
     justify-content: center;
     gap: 18px;
@@ -98,24 +97,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 26px;
-    font-weight: 700;
   }
 
   .day-dot.active {
     background: #E9BA4C;
-    color: #130F00;
   }
 
   .day-dot.today {
     background: #E9BA4C;
-    color: #130F00;
-    box-shadow: 0 0 0 4px rgba(233,186,76,0.3), 0 0 20px rgba(233,186,76,0.3);
+    box-shadow: 0 0 0 4px rgba(233,186,76,0.25);
   }
 
   .day-dot.empty {
     background: #3D3A4A;
-    color: #6E6878;
   }
 
   .day-label {
@@ -140,10 +134,9 @@
   .phone {
     width: 600px;
     height: 1050px;
-    background: #2A2930;
+    background: #25242D;
     border-radius: 60px;
     padding: 16px;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.5);
   }
 
   .phone-screen {
@@ -194,7 +187,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #E8F8EF;
+    background: rgba(30, 143, 86, 0.10);
   }
 
   .ring-inner {
@@ -219,7 +212,7 @@
   .stats-row {
     display: flex;
     justify-content: center;
-    gap: 24px;
+    gap: 12px;
     margin: 16px 0 20px;
   }
 
@@ -274,24 +267,9 @@
 
   .share-cell.g { background: #3DBF80; }
   .share-cell.r { background: #EC6666; }
-  .share-cell.y { background: #E9BA4C; }
-
-  /* Gold glow */
-  .glow {
-    position: absolute;
-    top: 350px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 800px;
-    height: 800px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(233,186,76,0.1) 0%, transparent 70%);
-  }
 </style>
 </head>
 <body>
-
-<div class="glow"></div>
 
 <div class="headline">
   <div class="eyebrow">Come Back Every Day</div>
@@ -304,20 +282,46 @@
   <div class="streak-label">Day Streak</div>
 </div>
 
-<div class="streak-calendar">
-  <div class="day-col"><div class="day-dot active">&#10003;</div><div class="day-label active-label">Mon</div></div>
-  <div class="day-col"><div class="day-dot active">&#10003;</div><div class="day-label active-label">Tue</div></div>
-  <div class="day-col"><div class="day-dot active">&#10003;</div><div class="day-label active-label">Wed</div></div>
-  <div class="day-col"><div class="day-dot active">&#10003;</div><div class="day-label active-label">Thu</div></div>
-  <div class="day-col"><div class="day-dot today">&#10003;</div><div class="day-label active-label">Fri</div></div>
-  <div class="day-col"><div class="day-dot empty">&#8212;</div><div class="day-label">Sat</div></div>
-  <div class="day-col"><div class="day-dot empty">&#8212;</div><div class="day-label">Sun</div></div>
+<div class="streak-pips">
+  <div class="day-col">
+    <div class="day-dot active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#130F00" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg></div>
+    <div class="day-label active-label">Mon</div>
+  </div>
+  <div class="day-col">
+    <div class="day-dot active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#130F00" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg></div>
+    <div class="day-label active-label">Tue</div>
+  </div>
+  <div class="day-col">
+    <div class="day-dot active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#130F00" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg></div>
+    <div class="day-label active-label">Wed</div>
+  </div>
+  <div class="day-col">
+    <div class="day-dot active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#130F00" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg></div>
+    <div class="day-label active-label">Thu</div>
+  </div>
+  <div class="day-col">
+    <div class="day-dot today"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#130F00" stroke-width="2.5"><polyline points="4 12 10 18 20 6"/></svg></div>
+    <div class="day-label active-label">Fri</div>
+  </div>
+  <div class="day-col">
+    <div class="day-dot empty"></div>
+    <div class="day-label">Sat</div>
+  </div>
+  <div class="day-col">
+    <div class="day-dot empty"></div>
+    <div class="day-label">Sun</div>
+  </div>
 </div>
 
 <div class="phone-wrap">
   <div class="phone">
     <div class="phone-screen">
-      <div class="phone-status"><span>9:41</span><span>&#9679;&#9679;&#9679;</span></div>
+      <div class="phone-status">
+        <span>9:41</span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#1A1820"><rect x="1" y="14" width="4" height="8" rx="1"/><rect x="7" y="10" width="4" height="12" rx="1"/><rect x="13" y="6" width="4" height="16" rx="1"/><rect x="19" y="2" width="4" height="20" rx="1"/></svg>
+        </span>
+      </div>
       <div class="results-content">
         <div class="results-title">Daily Challenge Complete!</div>
         <div class="results-sub">March 13, 2026</div>
