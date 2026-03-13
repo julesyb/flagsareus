@@ -800,8 +800,8 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   modeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm + spacing.xs,
-    paddingVertical: spacing.sm + spacing.xs,
+    gap: 12,
+    paddingVertical: 12,
     paddingHorizontal: spacing.xxs,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
@@ -809,7 +809,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   modeBar: {
     width: 3,
     height: 18,
-    borderRadius: spacing.xxs,
+    borderRadius: borderRadius.xs,
   },
   modeTitle: {
     flex: 1,
