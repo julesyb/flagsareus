@@ -14,21 +14,41 @@ import { fontFamily, fontSize, spacing, borderRadius, shadows, typography, Theme
 import { useTheme } from '../contexts/ThemeContext';
 import { skipOnboarding, saveSkillLevel, SkillLevel } from '../utils/storage';
 import { hapticTap } from '../utils/feedback';
-import { FlagIcon, GlobeIcon, TrophyIcon, CompassIcon, ChevronRightIcon } from '../components/Icons';
+import { FlagIcon, GlobeIcon, TrophyIcon, CompassIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import { RootStackParamList } from '../types/navigation';
+import { GameConfig } from '../types';
 import { t } from '../utils/i18n';
 import ScreenContainer from '../components/ScreenContainer';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
 
-// Pick 4 recognizable flags for the hero mosaic
+// Recognizable flags for the hero mosaic
 const HERO_FLAGS = ['jp', 'br', 'gb', 'za'];
+
+// Each skill level maps to a specific first-game experience
+function buildGameConfig(level: SkillLevel): GameConfig {
+  switch (level) {
+    case 'beginner':
+      // 10 easy questions from famous/popular flags only
+      return { mode: 'easy', category: 'easy_flags', questionCount: 10, displayMode: 'flag' };
+    case 'intermediate':
+      // 10 medium questions (4 choices) from all flags
+      return { mode: 'medium', category: 'all', questionCount: 10, displayMode: 'flag' };
+    case 'advanced':
+      // 10 hard questions with autocomplete hints enabled
+      return { mode: 'hard', category: 'all', questionCount: 10, displayMode: 'flag', autocomplete: true };
+    case 'expert':
+      // Map display with 4 flag choices, the real challenge
+      return { mode: 'medium', category: 'all', questionCount: 10, displayMode: 'map' };
+  }
+}
 
 interface SkillOption {
   level: SkillLevel;
   titleKey: string;
   descKey: string;
+  tagKey: string;
   icon: (size: number, color: string) => React.ReactNode;
   colorKey: 'diffEasy' | 'diffMedium' | 'diffHard' | 'modePurple';
   bgKey: 'diffEasyBg' | 'diffMediumBg' | 'diffHardBg' | 'expertBg';
@@ -40,6 +60,7 @@ const SKILL_OPTIONS: SkillOption[] = [
     level: 'beginner',
     titleKey: 'onboarding.skillBeginner',
     descKey: 'onboarding.skillBeginnerDesc',
+    tagKey: 'onboarding.skillBeginnerTag',
     icon: (size, color) => <FlagIcon size={size} color={color} />,
     colorKey: 'diffEasy',
     bgKey: 'diffEasyBg',
@@ -49,6 +70,7 @@ const SKILL_OPTIONS: SkillOption[] = [
     level: 'intermediate',
     titleKey: 'onboarding.skillIntermediate',
     descKey: 'onboarding.skillIntermediateDesc',
+    tagKey: 'onboarding.skillIntermediateTag',
     icon: (size, color) => <GlobeIcon size={size} color={color} />,
     colorKey: 'diffMedium',
     bgKey: 'diffMediumBg',
@@ -58,6 +80,7 @@ const SKILL_OPTIONS: SkillOption[] = [
     level: 'advanced',
     titleKey: 'onboarding.skillAdvanced',
     descKey: 'onboarding.skillAdvancedDesc',
+    tagKey: 'onboarding.skillAdvancedTag',
     icon: (size, color) => <TrophyIcon size={size} color={color} />,
     colorKey: 'diffHard',
     bgKey: 'diffHardBg',
@@ -67,6 +90,7 @@ const SKILL_OPTIONS: SkillOption[] = [
     level: 'expert',
     titleKey: 'onboarding.skillExpert',
     descKey: 'onboarding.skillExpertDesc',
+    tagKey: 'onboarding.skillExpertTag',
     icon: (size, color) => <CompassIcon size={size} color={color} />,
     colorKey: 'modePurple',
     bgKey: 'expertBg',
@@ -83,6 +107,7 @@ export default function OnboardingScreen({ navigation }: Props) {
   const heroSlide = useRef(new Animated.Value(20)).current;
   const promptFade = useRef(new Animated.Value(0)).current;
   const cardAnims = useRef(SKILL_OPTIONS.map(() => new Animated.Value(0))).current;
+  const flagAnims = useRef(HERO_FLAGS.map(() => new Animated.Value(0))).current;
 
   useEffect(() => {
     // Phase 1: Hero slides in
@@ -91,27 +116,48 @@ export default function OnboardingScreen({ navigation }: Props) {
       Animated.spring(heroSlide, { toValue: 0, friction: 8, tension: 60, useNativeDriver: true }),
     ]).start();
 
-    // Phase 2: Prompt text fades in
-    setTimeout(() => {
-      Animated.timing(promptFade, { toValue: 1, duration: 400, useNativeDriver: true }).start();
-    }, 350);
-
-    // Phase 3: Skill cards stagger in
+    // Phase 2: Flag mosaic stagger in
     setTimeout(() => {
       Animated.stagger(
-        100,
+        120,
+        flagAnims.map((a) =>
+          Animated.spring(a, { toValue: 1, friction: 6, tension: 80, useNativeDriver: true }),
+        ),
+      ).start();
+    }, 300);
+
+    // Phase 3: Prompt text fades in
+    setTimeout(() => {
+      Animated.timing(promptFade, { toValue: 1, duration: 400, useNativeDriver: true }).start();
+    }, 450);
+
+    // Phase 4: Skill cards stagger in
+    setTimeout(() => {
+      Animated.stagger(
+        120,
         cardAnims.map((a) =>
           Animated.spring(a, { toValue: 1, friction: 7, tension: 70, useNativeDriver: true }),
         ),
       ).start();
-    }, 500);
+    }, 600);
   }, []);
 
   const handleSkillSelect = async (level: SkillLevel) => {
     hapticTap();
     await saveSkillLevel(level);
     await skipOnboarding();
-    navigation.replace('Home');
+
+    // Launch a 10-question game immediately at their chosen level.
+    // Reset the nav stack so Home is the root and Game is on top.
+    // When Game -> Results -> popToTop or goBack, user lands on Home.
+    const config = buildGameConfig(level);
+    navigation.reset({
+      index: 1,
+      routes: [
+        { name: 'Home' },
+        { name: 'Game', params: { config } },
+      ],
+    });
   };
 
   return (
@@ -123,23 +169,36 @@ export default function OnboardingScreen({ navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         <ScreenContainer>
-          {/* Hero section */}
+          {/* Hero section with flag mosaic */}
           <Animated.View style={[styles.hero, { opacity: heroFade, transform: [{ translateY: heroSlide }] }]}>
             <View>
               <Text style={styles.welcomeText}>{t('onboarding.welcome')}</Text>
-              <View style={styles.wordmark}>
+              <View style={styles.wordmarkRow}>
                 <Text style={styles.wmFlag}>Flag</Text>
                 <Text style={styles.wmThat}>That</Text>
               </View>
               <Text style={styles.tagline}>{t('onboarding.tagline')}</Text>
             </View>
 
-            {/* Flag mosaic */}
+            {/* Flag mosaic - 4 small flags fanned */}
             <View style={styles.flagMosaic}>
               {HERO_FLAGS.map((code, i) => (
-                <View key={code} style={[styles.flagThumb, { transform: [{ rotate: `${-8 + i * 5}deg` }, { translateX: i * 6 }] }]}>
+                <Animated.View
+                  key={code}
+                  style={[
+                    styles.flagThumb,
+                    {
+                      opacity: flagAnims[i],
+                      transform: [
+                        { scale: flagAnims[i].interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] }) },
+                        { rotate: `${-8 + i * 5}deg` },
+                        { translateX: i * 6 },
+                      ],
+                    },
+                  ]}
+                >
                   <FlagImage countryCode={code} size="small" />
-                </View>
+                </Animated.View>
               ))}
             </View>
           </Animated.View>
@@ -147,6 +206,7 @@ export default function OnboardingScreen({ navigation }: Props) {
           {/* Prompt */}
           <Animated.View style={[styles.promptWrap, { opacity: promptFade }]}>
             <Text style={styles.promptText}>{t('onboarding.tellUsAboutYou')}</Text>
+            <Text style={styles.promptSubtext}>{t('onboarding.wellStartYouOff')}</Text>
           </Animated.View>
 
           {/* Skill level cards */}
@@ -178,7 +238,7 @@ export default function OnboardingScreen({ navigation }: Props) {
                     accessibilityHint={t(option.descKey)}
                   >
                     <View style={[styles.skillIcon, { backgroundColor: accentColor }]}>
-                      {option.icon(18, colors.white)}
+                      {option.icon(20, colors.white)}
                     </View>
                     <View style={styles.skillTextWrap}>
                       <Text style={[styles.skillTitle, { color: accentColor }]}>
@@ -186,7 +246,9 @@ export default function OnboardingScreen({ navigation }: Props) {
                       </Text>
                       <Text style={styles.skillDesc}>{t(option.descKey)}</Text>
                     </View>
-                    <ChevronRightIcon size={18} color={accentColor} />
+                    <View style={[styles.skillTag, { backgroundColor: accentColor }]}>
+                      <Text style={styles.skillTagText}>{t(option.tagKey)}</Text>
+                    </View>
                   </TouchableOpacity>
                 </Animated.View>
               );
@@ -207,7 +269,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: spacing.xxl,
+    paddingBottom: spacing.xxl + spacing.lg,
   },
 
   // ── Hero section
@@ -241,7 +303,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     color: colors.whiteAlpha60,
     marginBottom: spacing.xs,
   },
-  wordmark: {
+  wordmarkRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
     gap: spacing.xs,
@@ -276,6 +338,11 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     fontFamily: fontFamily.bodyBold,
     fontSize: fontSize.lg,
     color: colors.ink,
+    marginBottom: spacing.xxs,
+  },
+  promptSubtext: {
+    ...typography.body,
+    color: colors.textTertiary,
   },
 
   // ── Skill cards
@@ -289,13 +356,13 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderWidth: 2,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
-    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.lg,
     gap: spacing.md,
     ...shadows.small,
   },
   skillIcon: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     borderRadius: borderRadius.md,
     justifyContent: 'center',
     alignItems: 'center',
@@ -307,11 +374,23 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     fontFamily: fontFamily.uiLabel,
     fontSize: fontSize.body,
     letterSpacing: 0.3,
-    marginBottom: 2,
+    marginBottom: 3,
   },
   skillDesc: {
     ...typography.caption,
     color: colors.textTertiary,
     lineHeight: 18,
+  },
+  skillTag: {
+    borderRadius: borderRadius.full,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xxs,
+  },
+  skillTagText: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.xs,
+    color: colors.white,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
 });
