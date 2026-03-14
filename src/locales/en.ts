@@ -541,7 +541,7 @@ const en = {
     regionsComplete: '{count}/{total} regions',
     tellUsAboutYou: 'Tell us about yourself',
     wellStartYouOff: "Pick your level and we'll jump right in",
-    skillBeginner: "I'm not great with flags",
+    skillBeginner: "I'm new to flags",
     skillBeginnerDesc: 'Famous flags, nice and easy',
     skillBeginnerTag: 'Easy',
     skillIntermediate: 'I know a good amount',
