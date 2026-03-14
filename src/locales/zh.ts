@@ -435,7 +435,7 @@ const zh: DeepPartial<TranslationStrings> = {
     regionsComplete: '{count}/{total}\u4e2a\u5730\u533a',
     tellUsAboutYou: '\u544a\u8bc9\u6211\u4eec\u4f60\u7684\u60c5\u51b5',
     wellStartYouOff: '\u9009\u62e9\u4f60\u7684\u7b49\u7ea7\uff0c\u7acb\u523b\u5f00\u59cb',
-    skillBeginner: '\u6211\u4e0d\u592a\u719f\u6089\u56fd\u65d7',
+    skillBeginner: '\u6211\u521a\u5f00\u59cb\u5b66\u56fd\u65d7',
     skillBeginnerDesc: '\u8457\u540d\u56fd\u65d7\uff0c\u8f7b\u677e\u5165\u95e8',
     skillBeginnerTag: '\u7b80\u5355',
     skillIntermediate: '\u6211\u6709\u4e00\u5b9a\u4e86\u89e3',

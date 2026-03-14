@@ -436,7 +436,7 @@ const ptBR: DeepPartial<TranslationStrings> = {
     regionsComplete: '{count}/{total} regioes',
     tellUsAboutYou: 'Conte-nos sobre voc\u00ea',
     wellStartYouOff: 'Escolha seu n\u00edvel e vamos come\u00e7ar',
-    skillBeginner: 'N\u00e3o sou muito bom com bandeiras',
+    skillBeginner: 'Sou novo com bandeiras',
     skillBeginnerDesc: 'Bandeiras famosas, bem tranquilo',
     skillBeginnerTag: 'F\u00e1cil',
     skillIntermediate: 'Tenho bons conhecimentos',

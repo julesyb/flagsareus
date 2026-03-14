@@ -436,7 +436,7 @@ const fr: DeepPartial<TranslationStrings> = {
     regionsComplete: '{count}/{total} r\u00e9gions',
     tellUsAboutYou: 'Parlez-nous de vous',
     wellStartYouOff: 'Choisissez votre niveau et on commence',
-    skillBeginner: 'Je ne suis pas fort en drapeaux',
+    skillBeginner: 'Je débute avec les drapeaux',
     skillBeginnerDesc: 'Drapeaux c\u00e9l\u00e8bres, tout en douceur',
     skillBeginnerTag: 'Facile',
     skillIntermediate: "J'ai de bonnes connaissances",
