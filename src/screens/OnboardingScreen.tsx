@@ -50,9 +50,9 @@ interface SkillOption {
   descKey: string;
   tagKey: string;
   icon: (size: number, color: string) => React.ReactNode;
-  colorKey: 'diffEasy' | 'diffMedium' | 'diffHard' | 'modePurple';
-  bgKey: 'diffEasyBg' | 'diffMediumBg' | 'diffHardBg' | 'expertBg';
-  borderKey: 'diffEasyBorder' | 'diffMediumBorder' | 'diffHardBorder' | 'expertBorder';
+  colorKey: keyof ThemeColors;
+  bgKey: keyof ThemeColors;
+  borderKey: keyof ThemeColors;
 }
 
 const SKILL_OPTIONS: SkillOption[] = [
@@ -212,9 +212,9 @@ export default function OnboardingScreen({ navigation }: Props) {
           {/* Skill level cards */}
           <View style={styles.cardList}>
             {SKILL_OPTIONS.map((option, index) => {
-              const accentColor = (colors as Record<string, string>)[option.colorKey];
-              const bgColor = (colors as Record<string, string>)[option.bgKey] || 'transparent';
-              const borderColor = (colors as Record<string, string>)[option.borderKey] || accentColor;
+              const accentColor = colors[option.colorKey];
+              const bgColor = colors[option.bgKey] || 'transparent';
+              const borderColor = colors[option.borderKey] || accentColor;
 
               return (
                 <Animated.View
