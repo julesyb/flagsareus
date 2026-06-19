@@ -56,6 +56,8 @@ const ptBR: DeepPartial<TranslationStrings> = {
     dayStreak: 'dias seguidos',
     countries: 'pa\u00edses',
     nameThisFlag: 'Qual \u00e9 esta bandeira?',
+    factOfDay: 'Curiosidade do dia',
+    factDidYouKnow: 'Voc\u00ea sabia?',
     keepPlaying: 'Continuar jogando',
     daily: 'Desafio Di\u00e1rio',
     comeBackTomorrow: 'Volte amanh\u00e3',

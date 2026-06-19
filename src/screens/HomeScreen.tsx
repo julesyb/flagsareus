@@ -26,6 +26,7 @@ import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import SegBtn from '../components/SegBtn';
 import ConfigRow, { ConfigCard } from '../components/ConfigRow';
+import FactOfDay from '../components/FactOfDay';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { computeLevelProgress, LevelProgress } from '../utils/levels';
 import { t } from '../utils/i18n';
@@ -318,6 +319,11 @@ export default function HomeScreen({ navigation }: Props) {
               </ConfigRow>
             )}
           </ConfigCard>
+        </View>
+
+        {/* ── FACT OF THE DAY ── */}
+        <View style={{ marginHorizontal: spacing.md, marginTop: spacing.md }}>
+          <FactOfDay />
         </View>
 
         {/* ── GAME MODES ── */}

@@ -56,6 +56,8 @@ const fr: DeepPartial<TranslationStrings> = {
     dayStreak: 'jours cons\u00e9cutifs',
     countries: 'pays',
     nameThisFlag: 'Quel est ce drapeau ?',
+    factOfDay: 'Le fait du jour',
+    factDidYouKnow: 'Le saviez-vous ?',
     keepPlaying: 'Continuer',
     daily: 'D\u00e9fi Quotidien',
     comeBackTomorrow: 'Revenez demain',

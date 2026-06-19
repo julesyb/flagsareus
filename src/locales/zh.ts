@@ -56,6 +56,8 @@ const zh: DeepPartial<TranslationStrings> = {
     dayStreak: '\u5929\u8fde\u7eed',
     countries: '\u4e2a\u56fd\u5bb6',
     nameThisFlag: '\u8fd9\u662f\u54ea\u56fd\u56fd\u65d7\uff1f',
+    factOfDay: '\u6bcf\u65e5\u51b7\u77e5\u8bc6',
+    factDidYouKnow: '\u4f60\u77e5\u9053\u5417\uff1f',
     keepPlaying: '\u7ee7\u7eed\u73a9',
     daily: '\u6bcf\u65e5\u6311\u6218',
     comeBackTomorrow: '\u660e\u5929\u518d\u6765',

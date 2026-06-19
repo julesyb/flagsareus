@@ -56,6 +56,8 @@ const de: DeepPartial<TranslationStrings> = {
     dayStreak: 'Tage in Folge',
     countries: 'L\u00e4nder',
     nameThisFlag: 'Welche Flagge ist das?',
+    factOfDay: 'Fakt des Tages',
+    factDidYouKnow: 'Schon gewusst?',
     keepPlaying: 'Weiterspielen',
     daily: 'T\u00e4gliche Herausforderung',
     comeBackTomorrow: 'Komm morgen wieder',

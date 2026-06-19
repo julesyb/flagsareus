@@ -58,6 +58,8 @@ const en = {
     dayStreak: 'day streak',
     countries: 'countries',
     nameThisFlag: 'Name this flag',
+    factOfDay: 'Fact of the day',
+    factDidYouKnow: 'Did you know?',
     keepPlaying: 'Keep Playing',
     daily: 'Daily Challenge',
     comeBackTomorrow: 'Come back tomorrow',
