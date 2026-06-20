@@ -29,6 +29,26 @@ const LANDLOCKED = new Set<string>([
   'tj', 'tm', 'ug', 'uz', 'zm', 'zw', 'ad', 'xk',
 ]);
 
+// "X is in region Y" facts are only generated for this curated set of
+// well-known countries whose continental placement is clear and
+// uncontroversial. Transcontinental or commonly-debated cases (Russia,
+// Turkey, Egypt, Kazakhstan, the Caucasus, Cyprus) and obscure micro-states
+// are intentionally left out, since a flat "located in" claim is either
+// misleading or too obscure there. This keeps the Browse list focused on
+// richer trivia instead of a long run of repetitive region lines.
+const REGION_FACT_COUNTRIES = new Set<string>([
+  // Africa
+  'dz', 'et', 'gh', 'ke', 'ma', 'ng', 'sn', 'tz', 'ug', 'za',
+  // Asia
+  'cn', 'id', 'in', 'jp', 'kr', 'mn', 'np', 'pk', 'ph', 'sa', 'th', 'vn',
+  // Europe
+  'de', 'es', 'fr', 'gb', 'gr', 'ie', 'it', 'nl', 'no', 'pl', 'pt', 'se',
+  // Americas
+  'ar', 'br', 'ca', 'cl', 'co', 'cu', 'jm', 'mx', 'pe', 'us', 'uy', 've',
+  // Oceania
+  'au', 'fj', 'nz', 'pg',
+]);
+
 export type GeoFactType =
   | 'capital'
   | 'region'
@@ -108,7 +128,9 @@ export function getGeoFacts(): GeoFact[] {
       facts.push({ id: `cap-${flag.id}`, flagId: flag.id, region: flag.region, type: 'capital', capital });
     }
 
-    facts.push({ id: `reg-${flag.id}`, flagId: flag.id, region: flag.region, type: 'region' });
+    if (REGION_FACT_COUNTRIES.has(flag.id)) {
+      facts.push({ id: `reg-${flag.id}`, flagId: flag.id, region: flag.region, type: 'region' });
+    }
 
     if (LANDLOCKED.has(flag.id)) {
       facts.push({ id: `land-${flag.id}`, flagId: flag.id, region: flag.region, type: 'landlocked' });
