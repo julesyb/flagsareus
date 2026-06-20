@@ -1226,7 +1226,7 @@ export const DAILY_FACTS: DailyFact[] = [
       de: {
         question: 'Welches ist das einzige nach einer realen Frau benannte Land?',
         options: ['St. Lucia', 'Kolumbien', 'Bolivien', 'Mauritius'],
-        fact: 'St. Lucia ist das einzige Land, das nach einer realen Frau benannt ist, der Maertyrerin Lucia von Syrakus.',
+        fact: 'St. Lucia ist das einzige Land, das nach einer realen Frau benannt ist, der heiligen Maertyrerin Lucia von Syrakus.',
       },
       'pt-BR': {
         question: 'Qual e o unico pais que tem o nome de uma mulher real?',
@@ -1534,7 +1534,7 @@ export const DAILY_FACTS: DailyFact[] = [
       'pt-BR': {
         question: 'Qual e a republica mais antiga ainda existente no mundo?',
         options: ['San Marino', 'Grecia', 'Islandia', 'Suica'],
-        fact: 'San Marino remonta sua fundacao ao ano 301, sendo a republica mais antiga ainda existente no mundo.',
+        fact: 'A fundacao de San Marino remonta ao ano 301, o que faz dela a republica mais antiga ainda existente no mundo.',
       },
       zh: {
         question: '世界上仍然存在的最古老的共和国是哪个？',
