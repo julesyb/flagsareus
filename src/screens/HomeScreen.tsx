@@ -20,12 +20,13 @@ import { getStats, getSettings, getMissedFlagIds, getBaselineData, isDailyComple
 import { generateQuestions, getDailyConfig, getDailyVariant } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, UserStats, GameQuestion, CategoryId, BASELINE_REGIONS } from '../types';
-import { PlayIcon, ChevronRightIcon, CheckIcon, LinkIcon, CalendarIcon } from '../components/Icons';
+import { PlayIcon, ChevronRightIcon, CheckIcon, LinkIcon, CalendarIcon, GlobeIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import SegBtn from '../components/SegBtn';
 import ConfigRow, { ConfigCard } from '../components/ConfigRow';
+import FactOfDay from '../components/FactOfDay';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { computeLevelProgress, LevelProgress } from '../utils/levels';
 import { t } from '../utils/i18n';
@@ -320,6 +321,11 @@ export default function HomeScreen({ navigation }: Props) {
           </ConfigCard>
         </View>
 
+        {/* ── FACT OF THE DAY ── */}
+        <View style={{ marginHorizontal: spacing.md, marginTop: spacing.md }}>
+          <FactOfDay />
+        </View>
+
         {/* ── GAME MODES ── */}
         <View style={styles.sectionWrap}>
           <View style={styles.sectionHead}>
@@ -415,6 +421,24 @@ export default function HomeScreen({ navigation }: Props) {
               <View style={[styles.modeBar, { backgroundColor: colors.modePurple }]} />
               <Text style={styles.modeTitle}>{t('setup.flagPuzzle')}</Text>
               <Text style={styles.modeTag}>{t('setup.flagPuzzleDesc')}</Text>
+              <ChevronRightIcon size={14} color={colors.dim} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.modeRow}
+              activeOpacity={0.85}
+              onPress={() => {
+                hapticTap();
+                navigation.navigate('GeoFacts');
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={t('a11y.playMode', { mode: t('home.geoFacts') })}
+              accessibilityHint={t('a11y.opensMode')}
+            >
+              <View style={[styles.modeBar, { backgroundColor: colors.modeBlue }]} />
+              <GlobeIcon size={15} color={colors.modeBlue} />
+              <Text style={styles.modeTitle}>{t('home.geoFacts')}</Text>
+              <Text style={styles.modeTag}>{t('home.geoFactsDesc')}</Text>
               <ChevronRightIcon size={14} color={colors.dim} />
             </TouchableOpacity>
 

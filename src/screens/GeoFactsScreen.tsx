@@ -1,0 +1,507 @@
+import React, { useMemo, useState, useCallback } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
+  FlatList,
+  ScrollView,
+} from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { fontFamily, fontSize, spacing, borderRadius, typography, buildButtons, ThemeColors } from '../utils/theme';
+import { useTheme } from '../contexts/ThemeContext';
+import { t } from '../utils/i18n';
+import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
+import { getGeoFacts, getGeoFactCount, generateGeoQuiz, renderGeoFact, GeoFact, GeoQuizQuestion } from '../data/geoFacts';
+import { RootStackParamList } from '../types/navigation';
+import { FlagImageSmall } from '../components/FlagImage';
+import FlagImage from '../components/FlagImage';
+import BottomNav from '../components/BottomNav';
+import ScreenContainer from '../components/ScreenContainer';
+import { useNavTabs } from '../hooks/useNavTabs';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'GeoFacts'>;
+
+type Tab = 'browse' | 'quiz';
+type QuizPhase = 'intro' | 'playing' | 'done';
+
+const GEO_QUIZ_COUNT = 10;
+
+const REGION_FILTERS: { id: string; region: string }[] = [
+  { id: 'all', region: 'all' },
+  { id: 'africa', region: 'Africa' },
+  { id: 'asia', region: 'Asia' },
+  { id: 'europe', region: 'Europe' },
+  { id: 'americas', region: 'Americas' },
+  { id: 'oceania', region: 'Oceania' },
+];
+
+export default function GeoFactsScreen({ navigation }: Props) {
+  const { colors, isDark } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const onNavigate = useNavTabs();
+
+  const [tab, setTab] = useState<Tab>('browse');
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
+
+      <View style={styles.header}>
+        <ScreenContainer>
+          <Text style={styles.title}>{t('geofacts.title')}</Text>
+          <Text style={styles.subtitle}>{t('geofacts.subtitle')}</Text>
+          <View style={styles.toggleRow}>
+            <ToggleBtn label={t('geofacts.browse')} active={tab === 'browse'} onPress={() => setTab('browse')} colors={colors} />
+            <ToggleBtn label={t('geofacts.quiz')} active={tab === 'quiz'} onPress={() => setTab('quiz')} colors={colors} />
+          </View>
+        </ScreenContainer>
+      </View>
+
+      {tab === 'browse' ? <BrowseView colors={colors} /> : <QuizView colors={colors} navigation={navigation} />}
+
+      <BottomNav activeTab="Modes" onNavigate={onNavigate} />
+    </SafeAreaView>
+  );
+}
+
+// ─── Toggle button ───────────────────────────────────────────
+function ToggleBtn({ label, active, onPress, colors }: { label: string; active: boolean; onPress: () => void; colors: ThemeColors }) {
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  return (
+    <TouchableOpacity
+      style={[styles.toggleBtn, active && styles.toggleBtnOn]}
+      onPress={() => { hapticTap(); onPress(); }}
+      activeOpacity={0.8}
+      accessibilityRole="tab"
+      accessibilityState={{ selected: active }}
+      accessibilityLabel={label}
+    >
+      <Text style={[styles.toggleText, active && styles.toggleTextOn]}>{label}</Text>
+    </TouchableOpacity>
+  );
+}
+
+// ─── Browse view ─────────────────────────────────────────────
+function BrowseView({ colors }: { colors: ThemeColors }) {
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const allFacts = useMemo(() => getGeoFacts(), []);
+  const [region, setRegion] = useState('all');
+
+  const facts = useMemo(
+    () => (region === 'all' ? allFacts : allFacts.filter((f) => f.region === region)),
+    [allFacts, region],
+  );
+
+  const renderItem = useCallback(
+    ({ item }: { item: GeoFact }) => (
+      <View style={styles.factCard}>
+        {item.flagId ? (
+          <FlagImageSmall countryCode={item.flagId} />
+        ) : (
+          <View style={styles.factNoFlag} />
+        )}
+        <Text style={styles.factText}>{renderGeoFact(item)}</Text>
+      </View>
+    ),
+    [styles],
+  );
+
+  return (
+    <FlatList
+      data={facts}
+      keyExtractor={(item) => item.id}
+      renderItem={renderItem}
+      style={styles.list}
+      contentContainerStyle={styles.listContent}
+      showsVerticalScrollIndicator={false}
+      ListHeaderComponent={
+        <ScreenContainer>
+          <View style={styles.chipsRow}>
+            {REGION_FILTERS.map((r) => {
+              const active = region === r.region;
+              return (
+                <TouchableOpacity
+                  key={r.id}
+                  style={[styles.chip, active && styles.chipOn]}
+                  onPress={() => { hapticTap(); setRegion(r.region); }}
+                  activeOpacity={0.7}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: active }}
+                  accessibilityLabel={r.id === 'all' ? t('common.all') : t(`categories.${r.id}`)}
+                >
+                  <Text style={[styles.chipText, active && styles.chipTextOn]}>
+                    {r.id === 'all' ? t('common.all') : t(`categories.${r.id}`)}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+          <Text style={styles.countLabel}>{t('geofacts.factCount', { count: getGeoFactCount() })}</Text>
+        </ScreenContainer>
+      }
+      ListFooterComponent={<View style={{ height: spacing.xl }} />}
+    />
+  );
+}
+
+// ─── Quiz view ───────────────────────────────────────────────
+function QuizView({ colors, navigation }: { colors: ThemeColors; navigation: Props['navigation'] }) {
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const [phase, setPhase] = useState<QuizPhase>('intro');
+  const [questions, setQuestions] = useState<GeoQuizQuestion[]>([]);
+  const [index, setIndex] = useState(0);
+  const [picked, setPicked] = useState<number | null>(null);
+  const [score, setScore] = useState(0);
+
+  const start = () => {
+    hapticTap();
+    setQuestions(generateGeoQuiz(GEO_QUIZ_COUNT));
+    setIndex(0);
+    setPicked(null);
+    setScore(0);
+    setPhase('playing');
+  };
+
+  const pick = (i: number) => {
+    if (picked !== null) return;
+    setPicked(i);
+    const q = questions[index];
+    if (i === q.answerIndex) {
+      hapticCorrect();
+      setScore((s) => s + 1);
+    } else {
+      hapticWrong();
+      playWrongSound();
+    }
+  };
+
+  const next = () => {
+    hapticTap();
+    if (index + 1 >= questions.length) {
+      setPhase('done');
+    } else {
+      setIndex((n) => n + 1);
+      setPicked(null);
+    }
+  };
+
+  if (phase === 'intro') {
+    return (
+      <ScrollView contentContainerStyle={styles.centerContent}>
+        <ScreenContainer>
+          <View style={styles.introCard}>
+            <Text style={styles.introText}>{t('geofacts.quizIntro', { count: GEO_QUIZ_COUNT })}</Text>
+            <TouchableOpacity style={styles.primaryBtn} onPress={start} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={t('geofacts.startQuiz')}>
+              <Text style={styles.primaryBtnText}>{t('geofacts.startQuiz')}</Text>
+            </TouchableOpacity>
+          </View>
+        </ScreenContainer>
+      </ScrollView>
+    );
+  }
+
+  if (phase === 'done') {
+    return (
+      <ScrollView contentContainerStyle={styles.centerContent}>
+        <ScreenContainer>
+          <View style={styles.introCard}>
+            <Text style={styles.doneTitle}>{t('geofacts.quizComplete')}</Text>
+            <Text style={styles.doneScore}>{t('geofacts.scoreLine', { correct: score, total: questions.length })}</Text>
+            <TouchableOpacity style={styles.primaryBtn} onPress={start} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={t('geofacts.playAgain')}>
+              <Text style={styles.primaryBtnText}>{t('geofacts.playAgain')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.secondaryBtn} onPress={() => { hapticTap(); navigation.goBack(); }} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={t('common.home')}>
+              <Text style={styles.secondaryBtnText}>{t('common.home')}</Text>
+            </TouchableOpacity>
+          </View>
+        </ScreenContainer>
+      </ScrollView>
+    );
+  }
+
+  const q = questions[index];
+  const answered = picked !== null;
+
+  return (
+    <ScrollView contentContainerStyle={styles.quizContent} showsVerticalScrollIndicator={false}>
+      <ScreenContainer>
+        <Text style={styles.progress}>{t('geofacts.questionOf', { current: index + 1, total: questions.length })}</Text>
+
+        {q.flagId && (
+          <View style={styles.quizFlagWrap}>
+            <FlagImage countryCode={q.flagId} size="medium" fill style={styles.quizFlag} />
+          </View>
+        )}
+
+        <Text style={styles.prompt}>{q.prompt}</Text>
+
+        <View style={styles.optsGrid}>
+          <View style={styles.optsRow}>{q.options.slice(0, 2).map((opt, i) => renderOpt(opt, i))}</View>
+          <View style={styles.optsRow}>{q.options.slice(2, 4).map((opt, i) => renderOpt(opt, i + 2))}</View>
+        </View>
+
+        {answered && (
+          <TouchableOpacity style={styles.primaryBtn} onPress={next} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={index + 1 >= questions.length ? t('geofacts.seeResult') : t('geofacts.next')}>
+            <Text style={styles.primaryBtnText}>{index + 1 >= questions.length ? t('geofacts.seeResult') : t('geofacts.next')}</Text>
+          </TouchableOpacity>
+        )}
+      </ScreenContainer>
+    </ScrollView>
+  );
+
+  function renderOpt(label: string, i: number) {
+    const isCorrect = i === q.answerIndex;
+    const isSelected = picked === i;
+    const showCorrect = answered && isCorrect;
+    const showWrong = isSelected && !isCorrect;
+    return (
+      <View key={i} style={styles.optWrap}>
+        <TouchableOpacity
+          style={[styles.optBtn, showCorrect && styles.optCorrect, showWrong && styles.optWrong]}
+          onPress={() => pick(i)}
+          activeOpacity={0.8}
+          disabled={answered}
+          accessibilityRole="button"
+          accessibilityLabel={label}
+          accessibilityState={{ disabled: answered, selected: isSelected }}
+        >
+          <Text style={[styles.optText, showCorrect && styles.optTextCorrect, showWrong && styles.optTextWrong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7}>
+            {label}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+}
+
+const createStyles = (colors: ThemeColors) => {
+  const btn = buildButtons(colors);
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      paddingHorizontal: spacing.md,
+      paddingTop: spacing.sm,
+      paddingBottom: spacing.sm,
+    },
+    title: {
+      ...typography.title,
+      color: colors.ink,
+    },
+    subtitle: {
+      ...typography.caption,
+      color: colors.textTertiary,
+      marginTop: spacing.xxs,
+      marginBottom: spacing.md,
+    },
+
+    // Toggle
+    toggleRow: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+    },
+    toggleBtn: {
+      flex: 1,
+      paddingVertical: spacing.sm + 2,
+      borderRadius: borderRadius.md,
+      borderWidth: 1.5,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+      alignItems: 'center',
+    },
+    toggleBtnOn: {
+      backgroundColor: colors.goldBright,
+      borderColor: colors.goldBright,
+    },
+    toggleText: {
+      ...typography.label,
+      color: colors.textTertiary,
+    },
+    toggleTextOn: {
+      color: colors.playText,
+    },
+
+    // Browse list
+    list: {
+      flex: 1,
+    },
+    listContent: {
+      paddingHorizontal: spacing.md,
+      paddingTop: spacing.xs,
+    },
+    chipsRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.xs,
+      marginBottom: spacing.sm,
+    },
+    chip: {
+      paddingVertical: spacing.xs,
+      paddingHorizontal: spacing.sm + 2,
+      borderRadius: borderRadius.full,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+    },
+    chipOn: {
+      backgroundColor: colors.goldBright,
+      borderColor: colors.goldBright,
+    },
+    chipText: {
+      ...typography.microMedium,
+      color: colors.textTertiary,
+    },
+    chipTextOn: {
+      color: colors.playText,
+    },
+    countLabel: {
+      ...typography.micro,
+      color: colors.textTertiary,
+      marginBottom: spacing.sm,
+    },
+    factCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.sm,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: borderRadius.md,
+      padding: spacing.sm,
+      marginBottom: spacing.sm,
+    },
+    factNoFlag: {
+      width: 56,
+      height: 37,
+      borderRadius: borderRadius.xs,
+      backgroundColor: colors.surfaceSecondary,
+    },
+    factText: {
+      ...typography.caption,
+      color: colors.ink,
+      flex: 1,
+      lineHeight: 18,
+    },
+
+    // Quiz
+    centerContent: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      padding: spacing.md,
+    },
+    quizContent: {
+      padding: spacing.md,
+      paddingBottom: spacing.xl,
+    },
+    introCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 2,
+      borderColor: colors.rule,
+      borderRadius: borderRadius.lg,
+      padding: spacing.lg,
+      gap: spacing.md,
+      alignItems: 'center',
+    },
+    introText: {
+      ...typography.body,
+      color: colors.ink,
+      textAlign: 'center',
+    },
+    progress: {
+      ...typography.eyebrow,
+      color: colors.textTertiary,
+      marginBottom: spacing.sm,
+    },
+    quizFlagWrap: {
+      alignSelf: 'center',
+      width: 140,
+      aspectRatio: 3 / 2,
+      borderRadius: borderRadius.sm,
+      overflow: 'hidden',
+      marginBottom: spacing.md,
+    },
+    quizFlag: {
+      borderRadius: borderRadius.sm,
+    },
+    prompt: {
+      ...typography.bodyBold,
+      fontSize: fontSize.lg,
+      color: colors.ink,
+      marginBottom: spacing.md,
+    },
+    optsGrid: {
+      gap: spacing.sm,
+    },
+    optsRow: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+    },
+    optWrap: {
+      flex: 1,
+    },
+    optBtn: {
+      backgroundColor: colors.surface,
+      borderWidth: 1.5,
+      borderColor: colors.border,
+      borderRadius: borderRadius.md,
+      minHeight: 56,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: spacing.xs,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    optCorrect: {
+      backgroundColor: colors.successBg,
+      borderColor: colors.success,
+    },
+    optWrong: {
+      backgroundColor: colors.errorBg,
+      borderColor: colors.error,
+    },
+    optText: {
+      ...typography.label,
+      color: colors.ink,
+      textAlign: 'center',
+    },
+    optTextCorrect: {
+      color: colors.success,
+    },
+    optTextWrong: {
+      color: colors.error,
+    },
+
+    doneTitle: {
+      ...typography.heading,
+      color: colors.ink,
+    },
+    doneScore: {
+      ...typography.body,
+      color: colors.textSecondary,
+      textAlign: 'center',
+    },
+
+    // Buttons
+    primaryBtn: {
+      ...btn.primary,
+      alignSelf: 'stretch',
+      marginTop: spacing.md,
+    },
+    primaryBtnText: {
+      ...btn.primaryText,
+      textAlign: 'center',
+    },
+    secondaryBtn: {
+      ...btn.secondary,
+      alignSelf: 'stretch',
+    },
+    secondaryBtnText: {
+      ...btn.secondaryText,
+      textAlign: 'center',
+    },
+  });
+};

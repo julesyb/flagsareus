@@ -11,7 +11,7 @@ A mobile flag quiz app built with React Native and Expo. Test your knowledge of 
 - **Neighbors** - Name all bordering countries of a given flag
 - **Flag Impostor** - Spot the fake flag among real ones
 - **Capital Connection** - Match flags to their capital cities
-- **Flash Flag** - Party mode with device tilt-to-answer
+- **GeoFacts** - Browse flag and country facts or test your knowledge
 - **Daily Challenge** - Same 10 flags for everyone, play once per day
 - **Practice** - Review your weak flags for targeted improvement
 
@@ -86,7 +86,7 @@ src/
     NeighborsScreen.tsx   # Find bordering countries
     FlagImpostorScreen.tsx # Spot the fake flag
     CapitalConnectionScreen.tsx # Match flags to capitals
-    FlashFlagScreen.tsx   # Party tilt-to-answer mode (hidden)
+    GeoFactsScreen.tsx    # Browse facts or quiz on flag/country trivia
     OnboardingScreen.tsx  # First-time user onboarding
     SettingsScreen.tsx    # User preferences and settings
     JoinChallengeScreen.tsx      # Join shared challenges via code

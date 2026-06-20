@@ -76,7 +76,7 @@ export const BADGES: Badge[] = [
 ];
 
 // ── Shared constants ──────────────────────────────────────────
-const PLAYABLE_MODES = ['easy', 'medium', 'hard', 'flashflag', 'flagpuzzle', 'timeattack', 'neighbors', 'impostor', 'capitalconnection'] as const;
+const PLAYABLE_MODES = ['easy', 'medium', 'hard', 'flagpuzzle', 'timeattack', 'neighbors', 'impostor', 'capitalconnection'] as const;
 const REGION_IDS = ['africa', 'asia', 'europe', 'americas', 'oceania'] as const;
 
 // ── Badge context (only live cumulative data, no sticky flags) ──

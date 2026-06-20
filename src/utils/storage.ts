@@ -22,6 +22,7 @@ const DAILY_LEADERBOARD_KEY = '@flagsareus_daily_leaderboard';
 const SKILL_LEVEL_KEY = '@flagsareus_skill_level';
 const PERFECT_STREAK_KEY = '@flagsareus_perfect_streak';
 const FLAG_LAST_SHOWN_KEY = '@flagsareus_flag_last_shown';
+const DAILY_FACT_KEY = '@flagsareus_daily_fact';
 
 // ─── Challenge Name ─────────────────────────────────────────
 export async function getChallengeName(): Promise<string> {
@@ -189,7 +190,6 @@ const DEFAULT_STATS: UserStats = {
     easy: { correct: 0, total: 0 },
     medium: { correct: 0, total: 0 },
     hard: { correct: 0, total: 0 },
-    flashflag: { correct: 0, total: 0 },
     flagpuzzle: { correct: 0, total: 0 },
     timeattack: { correct: 0, total: 0 },
     neighbors: { correct: 0, total: 0 },
@@ -208,16 +208,6 @@ export async function getStats(): Promise<UserStats> {
     if (json) {
       const parsed = JSON.parse(json);
       const mergedModeStats = { ...DEFAULT_STATS.modeStats, ...(parsed.modeStats || {}) };
-
-      // Migrate renamed mode: flagflash -> flashflag (v1.1)
-      const old = (parsed.modeStats || {}) as Record<string, { correct: number; total: number }>;
-      if (old.flagflash && old.flagflash.total > 0) {
-        mergedModeStats.flashflag = {
-          correct: (mergedModeStats.flashflag?.correct || 0) + old.flagflash.correct,
-          total: (mergedModeStats.flashflag?.total || 0) + old.flagflash.total,
-        };
-        delete (mergedModeStats as Record<string, unknown>).flagflash;
-      }
 
       return {
         ...DEFAULT_STATS,
@@ -290,6 +280,7 @@ export async function resetStats(): Promise<void> {
     await AsyncStorage.removeItem(SKILL_LEVEL_KEY);
     await AsyncStorage.removeItem(PERFECT_STREAK_KEY);
     await AsyncStorage.removeItem(FLAG_LAST_SHOWN_KEY);
+    await AsyncStorage.removeItem(DAILY_FACT_KEY);
     cachedLastShown = {};
     cachedFlagStats = {};
   } catch {
@@ -387,6 +378,36 @@ export async function saveDailyChallenge(results: GameResult[]): Promise<void> {
     };
     await AsyncStorage.setItem(DAILY_CHALLENGE_KEY, JSON.stringify(data));
     await appendDailyLog(today, score, results);
+  } catch {
+    // Silently fail
+  }
+}
+
+// ─── Fact of the Day ──────────────────────────────────────
+// Records the player's answer to today's fact so the card stays revealed
+// when they return to the home screen later in the day.
+export interface DailyFactState {
+  date: string;
+  factId: string;
+  pickedIndex: number;
+}
+
+export async function getDailyFactState(): Promise<DailyFactState | null> {
+  try {
+    const json = await AsyncStorage.getItem(DAILY_FACT_KEY);
+    if (!json) return null;
+    const data: DailyFactState = JSON.parse(json);
+    // Only valid for today; a new day resets the card.
+    return data.date === getTodayDate() ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveDailyFactAnswer(factId: string, pickedIndex: number): Promise<void> {
+  try {
+    const data: DailyFactState = { date: getTodayDate(), factId, pickedIndex };
+    await AsyncStorage.setItem(DAILY_FACT_KEY, JSON.stringify(data));
   } catch {
     // Silently fail
   }

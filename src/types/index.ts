@@ -1,4 +1,4 @@
-export type GameMode = 'easy' | 'medium' | 'hard' | 'flashflag' | 'flagpuzzle' | 'timeattack' | 'neighbors' | 'impostor' | 'capitalconnection' | 'daily' | 'practice' | 'baseline';
+export type GameMode = 'easy' | 'medium' | 'hard' | 'flagpuzzle' | 'timeattack' | 'neighbors' | 'impostor' | 'capitalconnection' | 'daily' | 'practice' | 'baseline';
 
 export type BaselineRegionId = 'africa' | 'asia' | 'europe' | 'americas' | 'oceania';
 
@@ -78,7 +78,6 @@ export const GAME_MODES: Record<GameMode, { label: string; description: string; 
   easy: { label: 'Easy', description: '2 multiple choice options', icon: '2' },
   medium: { label: 'Medium', description: '4 multiple choice options', icon: '4' },
   hard: { label: 'Hard', description: 'Free-form, type the answer', icon: 'Aa' },
-  flashflag: { label: 'Flash Flag', description: 'Party mode, tilt to play', icon: '!!' },
   flagpuzzle: { label: 'Flag Puzzle', description: 'Flag reveals over time', icon: '??' },
   timeattack: { label: 'Timed Quiz', description: 'Race the clock', icon: '00' },
   neighbors: { label: 'Neighbors', description: 'Find all bordering countries', icon: 'NB' },
