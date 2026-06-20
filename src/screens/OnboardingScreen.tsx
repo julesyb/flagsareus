@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -10,11 +10,11 @@ import {
   Animated,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { fontFamily, fontSize, spacing, borderRadius, shadows, typography, ThemeColors } from '../utils/theme';
+import { fontFamily, fontSize, spacing, borderRadius, shadows, typography, buildButtons, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { skipOnboarding, saveSkillLevel, SkillLevel } from '../utils/storage';
 import { hapticTap } from '../utils/feedback';
-import { FlagIcon, GlobeIcon, TrophyIcon, CompassIcon } from '../components/Icons';
+import { FlagIcon, GlobeIcon, TrophyIcon, CompassIcon, PlayIcon, ChevronDownIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import { RootStackParamList } from '../types/navigation';
 import { GameConfig } from '../types';
@@ -102,12 +102,17 @@ export default function OnboardingScreen({ navigation }: Props) {
   const { colors, isDark } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
+  // Whether the optional "pick your own level" section is expanded
+  const [showLevels, setShowLevels] = useState(false);
+
   // Animations
   const heroFade = useRef(new Animated.Value(0)).current;
   const heroSlide = useRef(new Animated.Value(20)).current;
-  const promptFade = useRef(new Animated.Value(0)).current;
+  const ctaFade = useRef(new Animated.Value(0)).current;
+  const ctaSlide = useRef(new Animated.Value(16)).current;
   const cardAnims = useRef(SKILL_OPTIONS.map(() => new Animated.Value(0))).current;
   const flagAnims = useRef(HERO_FLAGS.map(() => new Animated.Value(0))).current;
+  const chevronRot = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     // Phase 1: Hero slides in
@@ -126,28 +131,20 @@ export default function OnboardingScreen({ navigation }: Props) {
       ).start();
     }, 300);
 
-    // Phase 3: Prompt text fades in
+    // Phase 3: Primary play CTA fades up into focus
     setTimeout(() => {
-      Animated.timing(promptFade, { toValue: 1, duration: 400, useNativeDriver: true }).start();
+      Animated.parallel([
+        Animated.timing(ctaFade, { toValue: 1, duration: 450, useNativeDriver: true }),
+        Animated.spring(ctaSlide, { toValue: 0, friction: 7, tension: 70, useNativeDriver: true }),
+      ]).start();
     }, 450);
-
-    // Phase 4: Skill cards stagger in
-    setTimeout(() => {
-      Animated.stagger(
-        120,
-        cardAnims.map((a) =>
-          Animated.spring(a, { toValue: 1, friction: 7, tension: 70, useNativeDriver: true }),
-        ),
-      ).start();
-    }, 600);
   }, []);
 
-  const handleSkillSelect = async (level: SkillLevel) => {
-    hapticTap();
+  const startGame = async (level: SkillLevel) => {
     await saveSkillLevel(level);
     await skipOnboarding();
 
-    // Launch a 10-question game immediately at their chosen level.
+    // Launch a 10-question game immediately at the chosen level.
     // Reset the nav stack so Home is the root and Game is on top.
     // When Game -> Results -> popToTop or goBack, user lands on Home.
     const config = buildGameConfig(level);
@@ -160,10 +157,37 @@ export default function OnboardingScreen({ navigation }: Props) {
     });
   };
 
-  const handleSkip = async () => {
+  // Primary path: one tap to start playing, kept nice and easy.
+  const handlePlay = () => {
     hapticTap();
-    await skipOnboarding();
-    navigation.replace('Home');
+    startGame('beginner');
+  };
+
+  // Optional path: player picks a specific level.
+  const handleSkillSelect = (level: SkillLevel) => {
+    hapticTap();
+    startGame(level);
+  };
+
+  const handleToggleLevels = () => {
+    hapticTap();
+    const next = !showLevels;
+    setShowLevels(next);
+    Animated.timing(chevronRot, {
+      toValue: next ? 1 : 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+    if (next) {
+      // Reset and stagger the cards in each time the section opens
+      cardAnims.forEach((a) => a.setValue(0));
+      Animated.stagger(
+        90,
+        cardAnims.map((a) =>
+          Animated.spring(a, { toValue: 1, friction: 7, tension: 70, useNativeDriver: true }),
+        ),
+      ).start();
+    }
   };
 
   return (
@@ -209,68 +233,89 @@ export default function OnboardingScreen({ navigation }: Props) {
             </View>
           </Animated.View>
 
-          {/* Prompt */}
-          <Animated.View style={[styles.promptWrap, { opacity: promptFade }]}>
-            <Text style={styles.promptText}>{t('onboarding.tellUsAboutYou')}</Text>
-            <Text style={styles.promptSubtext}>{t('onboarding.wellStartYouOff')}</Text>
+          {/* Primary action: one tap to start playing */}
+          <Animated.View style={[styles.ctaWrap, { opacity: ctaFade, transform: [{ translateY: ctaSlide }] }]}>
+            <TouchableOpacity
+              style={styles.playBtn}
+              onPress={handlePlay}
+              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel={t('onboarding.playCta')}
+            >
+              <Text style={styles.playBtnText}>{t('onboarding.playCta')}</Text>
+              <PlayIcon size={14} color={colors.playText} />
+            </TouchableOpacity>
+            <Text style={styles.ctaSub}>{t('onboarding.playCtaSub')}</Text>
           </Animated.View>
 
-          {/* Skill level cards */}
-          <View style={styles.cardList}>
-            {SKILL_OPTIONS.map((option, index) => {
-              const accentColor = colors[option.colorKey];
-              const bgColor = colors[option.bgKey] || 'transparent';
-              const borderColor = colors[option.borderKey] || accentColor;
-
-              return (
-                <Animated.View
-                  key={option.level}
-                  style={{
-                    opacity: cardAnims[index],
-                    transform: [{
-                      translateY: cardAnims[index].interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [24, 0],
-                      }),
-                    }],
-                  }}
-                >
-                  <TouchableOpacity
-                    style={[styles.skillCard, { backgroundColor: bgColor, borderColor }]}
-                    onPress={() => handleSkillSelect(option.level)}
-                    activeOpacity={0.8}
-                    accessibilityRole="button"
-                    accessibilityLabel={t(option.titleKey)}
-                    accessibilityHint={t(option.descKey)}
-                  >
-                    <View style={[styles.skillIcon, { backgroundColor: accentColor }]}>
-                      {option.icon(20, colors.white)}
-                    </View>
-                    <View style={styles.skillTextWrap}>
-                      <Text style={[styles.skillTitle, { color: accentColor }]}>
-                        {t(option.titleKey)}
-                      </Text>
-                      <Text style={styles.skillDesc}>{t(option.descKey)}</Text>
-                    </View>
-                    <View style={[styles.skillTag, { backgroundColor: accentColor }]}>
-                      <Text style={styles.skillTagText}>{t(option.tagKey)}</Text>
-                    </View>
-                  </TouchableOpacity>
-                </Animated.View>
-              );
-            })}
-          </View>
-
-          {/* Skip link */}
-          <Animated.View style={[styles.skipWrap, { opacity: promptFade }]}>
+          {/* Optional: pick your own level */}
+          <Animated.View style={[styles.levelsSection, { opacity: ctaFade }]}>
             <TouchableOpacity
-              onPress={handleSkip}
-              activeOpacity={0.6}
+              style={styles.toggleRow}
+              onPress={handleToggleLevels}
+              activeOpacity={0.7}
               accessibilityRole="button"
-              accessibilityLabel={t('onboarding.skipToHome')}
+              accessibilityLabel={t('onboarding.orPickLevel')}
+              accessibilityState={{ expanded: showLevels }}
             >
-              <Text style={styles.skipText}>{t('onboarding.skipToHome')}</Text>
+              <Text style={styles.toggleText}>{t('onboarding.orPickLevel')}</Text>
+              <Animated.View
+                style={{
+                  transform: [{
+                    rotate: chevronRot.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '180deg'] }),
+                  }],
+                }}
+              >
+                <ChevronDownIcon size={18} color={colors.textTertiary} />
+              </Animated.View>
             </TouchableOpacity>
+
+            {showLevels && (
+              <View style={styles.cardList}>
+                {SKILL_OPTIONS.map((option, index) => {
+                  const accentColor = colors[option.colorKey];
+                  const bgColor = colors[option.bgKey] || 'transparent';
+                  const borderColor = colors[option.borderKey] || accentColor;
+
+                  return (
+                    <Animated.View
+                      key={option.level}
+                      style={{
+                        opacity: cardAnims[index],
+                        transform: [{
+                          translateY: cardAnims[index].interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [24, 0],
+                          }),
+                        }],
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={[styles.skillCard, { backgroundColor: bgColor, borderColor }]}
+                        onPress={() => handleSkillSelect(option.level)}
+                        activeOpacity={0.8}
+                        accessibilityRole="button"
+                        accessibilityLabel={t(option.titleKey)}
+                        accessibilityHint={t(option.descKey)}
+                      >
+                        <View style={[styles.skillIcon, { backgroundColor: accentColor }]}>
+                          {option.icon(20, colors.white)}
+                        </View>
+                        <View style={styles.skillTextWrap}>
+                          <Text style={[styles.skillTitle, { color: accentColor }]}>
+                            {t(option.titleKey)}
+                          </Text>
+                          <Text style={styles.skillDesc}>{t(option.descKey)}</Text>
+                        </View>
+                        <View style={[styles.skillTag, { backgroundColor: accentColor }]}>
+                          <Text style={styles.skillTagText}>{t(option.tagKey)}</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </Animated.View>
+                  );
+                })}
+              </View>
+            )}
           </Animated.View>
         </ScreenContainer>
       </ScrollView>
@@ -278,149 +323,163 @@ export default function OnboardingScreen({ navigation }: Props) {
   );
 }
 
-const createStyles = (colors: ThemeColors) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: spacing.xxl + spacing.lg,
-  },
+const createStyles = (colors: ThemeColors) => {
+  const btn = buildButtons(colors);
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingBottom: spacing.xxl + spacing.lg,
+    },
 
-  // ── Hero section
-  hero: {
-    backgroundColor: colors.surface,
-    marginHorizontal: spacing.md,
-    marginTop: spacing.xl,
-    borderRadius: borderRadius.xl,
-    padding: spacing.xl,
-    paddingVertical: spacing.xxl,
-    overflow: 'hidden',
-    ...shadows.large,
-  },
-  flagMosaic: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    alignSelf: 'flex-end',
-    marginTop: spacing.md,
-  },
-  flagThumb: {
-    width: 48,
-    height: 32,
-    borderRadius: 4,
-    overflow: 'hidden',
-    marginLeft: -12,
-    borderWidth: 1.5,
-    borderColor: colors.whiteAlpha20,
-  },
-  welcomeText: {
-    ...typography.body,
-    color: colors.whiteAlpha60,
-    marginBottom: spacing.xs,
-  },
-  wordmarkRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: spacing.xs,
-    marginBottom: spacing.md,
-  },
-  wmFlag: {
-    fontFamily: fontFamily.display,
-    fontSize: fontSize.display,
-    lineHeight: 44,
-    color: colors.text,
-    letterSpacing: -0.5,
-  },
-  wmThat: {
-    fontFamily: fontFamily.displayItalic,
-    fontSize: fontSize.display,
-    lineHeight: 44,
-    color: colors.accentLight,
-  },
-  tagline: {
-    ...typography.label,
-    color: colors.whiteAlpha70,
-    lineHeight: 24,
-  },
+    // ── Hero section
+    hero: {
+      backgroundColor: colors.surface,
+      marginHorizontal: spacing.md,
+      marginTop: spacing.xl,
+      borderRadius: borderRadius.xl,
+      padding: spacing.xl,
+      paddingVertical: spacing.xxl,
+      overflow: 'hidden',
+      ...shadows.large,
+    },
+    flagMosaic: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      alignSelf: 'flex-end',
+      marginTop: spacing.md,
+    },
+    flagThumb: {
+      width: 48,
+      height: 32,
+      borderRadius: 4,
+      overflow: 'hidden',
+      marginLeft: -12,
+      borderWidth: 1.5,
+      borderColor: colors.whiteAlpha20,
+    },
+    welcomeText: {
+      ...typography.body,
+      color: colors.whiteAlpha60,
+      marginBottom: spacing.xs,
+    },
+    wordmarkRow: {
+      flexDirection: 'row',
+      alignItems: 'baseline',
+      gap: spacing.xs,
+      marginBottom: spacing.md,
+    },
+    wmFlag: {
+      fontFamily: fontFamily.display,
+      fontSize: fontSize.display,
+      lineHeight: 44,
+      color: colors.text,
+      letterSpacing: -0.5,
+    },
+    wmThat: {
+      fontFamily: fontFamily.displayItalic,
+      fontSize: fontSize.display,
+      lineHeight: 44,
+      color: colors.accentLight,
+    },
+    tagline: {
+      ...typography.label,
+      color: colors.whiteAlpha70,
+      lineHeight: 24,
+    },
 
-  // ── Prompt
-  promptWrap: {
-    paddingHorizontal: spacing.lg,
-    marginTop: spacing.xl,
-    marginBottom: spacing.md,
-  },
-  promptText: {
-    fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.lg,
-    color: colors.ink,
-    marginBottom: spacing.xxs,
-  },
-  promptSubtext: {
-    ...typography.body,
-    color: colors.textTertiary,
-  },
+    // ── Primary play CTA
+    ctaWrap: {
+      paddingHorizontal: spacing.md,
+      marginTop: spacing.xl,
+    },
+    playBtn: {
+      ...btn.primary,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      gap: spacing.sm,
+      paddingVertical: 16,
+    },
+    playBtnText: {
+      ...btn.primaryText,
+    },
+    ctaSub: {
+      ...typography.caption,
+      color: colors.textTertiary,
+      textAlign: 'center',
+      marginTop: spacing.sm,
+    },
 
-  // ── Skill cards
-  cardList: {
-    paddingHorizontal: spacing.md,
-    gap: spacing.sm,
-  },
-  skillCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    paddingVertical: spacing.lg,
-    gap: spacing.md,
-    ...shadows.small,
-  },
-  skillIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: borderRadius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  skillTextWrap: {
-    flex: 1,
-  },
-  skillTitle: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.body,
-    letterSpacing: 0.3,
-    marginBottom: 3,
-  },
-  skillDesc: {
-    ...typography.caption,
-    color: colors.textTertiary,
-    lineHeight: 18,
-  },
-  skillTag: {
-    borderRadius: borderRadius.full,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xxs,
-  },
-  skillTagText: {
-    fontFamily: fontFamily.uiLabel,
-    fontSize: fontSize.xs,
-    color: colors.white,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
+    // ── Optional level picker
+    levelsSection: {
+      marginTop: spacing.lg,
+      paddingHorizontal: spacing.md,
+    },
+    toggleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing.xs,
+      paddingVertical: spacing.sm,
+    },
+    toggleText: {
+      fontFamily: fontFamily.bodyMedium,
+      fontSize: fontSize.sm,
+      color: colors.textTertiary,
+    },
 
-  // ── Skip
-  skipWrap: {
-    alignItems: 'center',
-    marginTop: spacing.lg,
-  },
-  skipText: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: fontSize.sm,
-    color: colors.textTertiary,
-    paddingVertical: spacing.sm,
-  },
-});
+    // ── Skill cards
+    cardList: {
+      gap: spacing.sm,
+      marginTop: spacing.sm,
+    },
+    skillCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderWidth: 2,
+      borderRadius: borderRadius.lg,
+      padding: spacing.md,
+      paddingVertical: spacing.lg,
+      gap: spacing.md,
+      ...shadows.small,
+    },
+    skillIcon: {
+      width: 44,
+      height: 44,
+      borderRadius: borderRadius.md,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    skillTextWrap: {
+      flex: 1,
+    },
+    skillTitle: {
+      fontFamily: fontFamily.uiLabel,
+      fontSize: fontSize.body,
+      letterSpacing: 0.3,
+      marginBottom: 3,
+    },
+    skillDesc: {
+      ...typography.caption,
+      color: colors.textTertiary,
+      lineHeight: 18,
+    },
+    skillTag: {
+      borderRadius: borderRadius.full,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: spacing.xxs,
+    },
+    skillTagText: {
+      fontFamily: fontFamily.uiLabel,
+      fontSize: fontSize.xs,
+      color: colors.white,
+      letterSpacing: 0.5,
+      textTransform: 'uppercase',
+    },
+  });
+};
