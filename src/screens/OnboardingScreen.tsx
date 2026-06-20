@@ -14,7 +14,7 @@ import { fontFamily, fontSize, spacing, borderRadius, shadows, typography, build
 import { useTheme } from '../contexts/ThemeContext';
 import { skipOnboarding, saveSkillLevel, SkillLevel } from '../utils/storage';
 import { hapticTap, hapticCorrect, hapticWrong } from '../utils/feedback';
-import { FlagIcon, GlobeIcon, TrophyIcon, CompassIcon, PlayIcon, ChevronDownIcon } from '../components/Icons';
+import { FlagIcon, GlobeIcon, TrophyIcon, CompassIcon, PlayIcon, ChevronDownIcon, ChevronRightIcon } from '../components/Icons';
 import FlagImage from '../components/FlagImage';
 import { RootStackParamList } from '../types/navigation';
 import { GameConfig, GameQuestion } from '../types';
@@ -175,6 +175,13 @@ export default function OnboardingScreen({ navigation }: Props) {
     startGame('beginner');
   };
 
+  // Always-available escape hatch: leave onboarding and go straight to Home.
+  const handleSkip = async () => {
+    hapticTap();
+    await skipOnboarding();
+    navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
+  };
+
   // Optional path: player picks a specific level.
   const handleSkillSelect = (level: SkillLevel) => {
     hapticTap();
@@ -210,6 +217,20 @@ export default function OnboardingScreen({ navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         <ScreenContainer>
+          {/* Always-visible skip: make it obvious you can leave onboarding */}
+          <View style={styles.skipBar}>
+            <TouchableOpacity
+              style={styles.skipBtn}
+              onPress={handleSkip}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={t('onboarding.skipToHome')}
+            >
+              <Text style={styles.skipText}>{t('onboarding.skipToHome')}</Text>
+              <ChevronRightIcon size={14} color={colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
+
           {/* Compact header */}
           <Animated.View style={[styles.header, { opacity: headerFade }]}>
             <View style={styles.wordmarkRow}>
@@ -392,10 +413,35 @@ const createStyles = (colors: ThemeColors) => {
       paddingBottom: spacing.xxl + spacing.lg,
     },
 
+    // ── Skip bar
+    skipBar: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      paddingHorizontal: spacing.md,
+      marginTop: spacing.md,
+    },
+    skipBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xxs,
+      paddingVertical: spacing.xs,
+      paddingLeft: spacing.md,
+      paddingRight: spacing.sm,
+      borderRadius: borderRadius.full,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    skipText: {
+      fontFamily: fontFamily.bodyMedium,
+      fontSize: fontSize.sm,
+      color: colors.textSecondary,
+    },
+
     // ── Header
     header: {
       paddingHorizontal: spacing.lg,
-      marginTop: spacing.xl,
+      marginTop: spacing.md,
       marginBottom: spacing.lg,
     },
     wordmarkRow: {
