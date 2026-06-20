@@ -48,7 +48,7 @@ export interface LevelProgress {
 
 // ─── Playable modes (excludes hidden modes) ───────────────────
 const PLAYABLE_MODES: GameMode[] = [
-  'easy', 'medium', 'hard', 'flashflag', 'flagpuzzle',
+  'easy', 'medium', 'hard', 'flagpuzzle',
   'timeattack', 'neighbors', 'impostor', 'capitalconnection',
 ];
 
@@ -232,14 +232,14 @@ export const LEVELS: LevelDef[] = [
   { level: 3, requirement: { type: 'mode_correct', mode: 'hard', count: 197 } },
 
   // ── Mode Exploration (4-8) ──
-  { level: 4, requirement: { type: 'mode_correct', mode: 'flashflag', count: 100 } },
+  { level: 4, requirement: { type: 'mode_correct', mode: 'timeattack', count: 100 } },
   { level: 5, requirement: { type: 'mode_correct', mode: 'neighbors', count: 100 } },
   { level: 6, requirement: { type: 'mode_correct', mode: 'flagpuzzle', count: 100 } },
   { level: 7, requirement: { type: 'mode_correct', mode: 'capitalconnection', count: 100 } },
   { level: 8, requirement: { type: 'mode_correct', mode: 'impostor', count: 100 } },
 
   // ── Full Mastery (9-10) ──
-  { level: 9, requirement: { type: 'modes_played', count: 9 } },
+  { level: 9, requirement: { type: 'modes_played', count: 8 } },
   { level: 10, requirement: { type: 'flags_correct_all', times: 10 } },
 ];
 

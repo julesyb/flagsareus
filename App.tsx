@@ -21,11 +21,11 @@ import ResultsScreen from './src/screens/ResultsScreen';
 import StatsScreen from './src/screens/StatsScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import BrowseScreen from './src/screens/BrowseScreen';
-import FlashFlagScreen from './src/screens/FlashFlagScreen';
 import FlagPuzzleScreen from './src/screens/FlagPuzzleScreen';
 import NeighborsScreen from './src/screens/NeighborsScreen';
 import FlagImpostorScreen from './src/screens/FlagImpostorScreen';
 import CapitalConnectionScreen from './src/screens/CapitalConnectionScreen';
+import GeoFactsScreen from './src/screens/GeoFactsScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import JoinChallengeScreen from './src/screens/JoinChallengeScreen';
 import ChallengeResponseScreen from './src/screens/ChallengeResponseScreen';
@@ -85,11 +85,11 @@ const linking = {
         parse: { code: (code: string) => decodeURIComponent(code) },
       },
       Game: { path: 'Game', ...gameScreenConfig },
-      FlashFlag: { path: 'FlashFlag', ...gameScreenConfig },
       FlagPuzzle: { path: 'FlagPuzzle', ...gameScreenConfig },
       Neighbors: { path: 'Neighbors', ...gameScreenConfig },
       FlagImpostor: { path: 'FlagImpostor', ...gameScreenConfig },
       CapitalConnection: { path: 'CapitalConnection', ...gameScreenConfig },
+      GeoFacts: { path: 'GeoFacts' },
     },
   },
 };
@@ -129,7 +129,6 @@ function useScreenOptions() {
 configureNotificationHandler();
 
 const GuardedGame = withConfigGuard(GameScreen);
-const GuardedFlashFlag = withConfigGuard(FlashFlagScreen);
 const GuardedFlagPuzzle = withConfigGuard(FlagPuzzleScreen);
 const GuardedNeighbors = withConfigGuard(NeighborsScreen);
 const GuardedFlagImpostor = withConfigGuard(FlagImpostorScreen);
@@ -188,11 +187,6 @@ function AppContent() {
           options={{ headerShown: false, gestureEnabled: false }}
         />
         <Stack.Screen
-          name="FlashFlag"
-          component={GuardedFlashFlag}
-          options={{ headerShown: false, gestureEnabled: false }}
-        />
-        <Stack.Screen
           name="FlagPuzzle"
           component={GuardedFlagPuzzle}
           options={{ headerShown: false, gestureEnabled: false }}
@@ -211,6 +205,13 @@ function AppContent() {
           name="CapitalConnection"
           component={GuardedCapitalConnection}
           options={{ headerShown: false, gestureEnabled: false }}
+        />
+        <Stack.Screen
+          name="GeoFacts"
+          component={GeoFactsScreen}
+          options={({ navigation }) => ({
+            headerLeft: () => <BackButton onPress={() => navigation.goBack()} />,
+          })}
         />
         <Stack.Screen
           name="JoinChallenge"

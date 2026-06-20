@@ -6,11 +6,11 @@ export type RootStackParamList = {
   Home: undefined;
   GameSetup: { initialMode?: GameMode; initialDifficulty?: 'easy' | 'medium' | 'hard' } | undefined;
   Game: { config: GameConfig; challenge?: ChallengeData; playerName?: string };
-  FlashFlag: { config: GameConfig };
   FlagPuzzle: { config: GameConfig; challenge?: ChallengeData; playerName?: string };
   Neighbors: { config: GameConfig; challenge?: ChallengeData; playerName?: string };
   FlagImpostor: { config: GameConfig };
   CapitalConnection: { config: GameConfig; challenge?: ChallengeData; playerName?: string };
+  GeoFacts: undefined;
   Results: { results: GameResult[]; config: GameConfig; reviewOnly?: boolean; challenge?: ChallengeData; playerName?: string };
   Stats: { highlightChallenge?: string } | undefined;
   Settings: undefined;
