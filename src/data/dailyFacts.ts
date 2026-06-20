@@ -785,6 +785,840 @@ export const DAILY_FACTS: DailyFact[] = [
       },
     },
   },
+  {
+    id: 'brazil_largest_samerica',
+    flagId: 'br',
+    answer: 0,
+    note: 'Brazil is the largest country in South America by area.',
+    content: {
+      en: {
+        question: 'What is the largest country in South America by area?',
+        options: ['Brazil', 'Argentina', 'Peru', 'Colombia'],
+        fact: 'Brazil covers almost half of South America and borders every country on the continent except Chile and Ecuador.',
+      },
+      fr: {
+        question: "Quel est le plus grand pays d'Amerique du Sud par sa superficie ?",
+        options: ['Bresil', 'Argentine', 'Perou', 'Colombie'],
+        fact: "Le Bresil couvre presque la moitie de l'Amerique du Sud et touche tous les pays du continent sauf le Chili et l'Equateur.",
+      },
+      es: {
+        question: 'Cual es el pais mas grande de America del Sur por superficie?',
+        options: ['Brasil', 'Argentina', 'Peru', 'Colombia'],
+        fact: 'Brasil ocupa casi la mitad de America del Sur y limita con todos los paises del continente salvo Chile y Ecuador.',
+      },
+      de: {
+        question: 'Welches ist das flaechengroesste Land Suedamerikas?',
+        options: ['Brasilien', 'Argentinien', 'Peru', 'Kolumbien'],
+        fact: 'Brasilien bedeckt fast die Haelfte Suedamerikas und grenzt an jedes Land des Kontinents ausser Chile und Ecuador.',
+      },
+      'pt-BR': {
+        question: 'Qual e o maior pais da America do Sul em area?',
+        options: ['Brasil', 'Argentina', 'Peru', 'Colombia'],
+        fact: 'O Brasil ocupa quase metade da America do Sul e faz fronteira com todos os paises do continente, exceto Chile e Equador.',
+      },
+      zh: {
+        question: '南美洲面积最大的国家是哪个？',
+        options: ['巴西', '阿根廷', '秘鲁', '哥伦比亚'],
+        fact: '巴西占据了南美洲近一半的面积，与除智利和厄瓜多尔之外的所有南美国家接壤。',
+      },
+    },
+  },
+  {
+    id: 'china_largest_asia',
+    flagId: 'cn',
+    answer: 0,
+    note: 'China is the largest country lying entirely within Asia.',
+    content: {
+      en: {
+        question: 'What is the largest country located entirely in Asia?',
+        options: ['China', 'India', 'Kazakhstan', 'Saudi Arabia'],
+        fact: 'China is the largest country lying wholly within Asia, about 9.6 million square kilometres. Russia is bigger but spans Europe and Asia.',
+      },
+      fr: {
+        question: 'Quel est le plus grand pays situe entierement en Asie ?',
+        options: ['Chine', 'Inde', 'Kazakhstan', 'Arabie saoudite'],
+        fact: "La Chine est le plus grand pays entierement situe en Asie, environ 9,6 millions de kilometres carres. La Russie est plus vaste mais s'etend sur l'Europe et l'Asie.",
+      },
+      es: {
+        question: 'Cual es el pais mas grande situado enteramente en Asia?',
+        options: ['China', 'India', 'Kazajistan', 'Arabia Saudita'],
+        fact: 'China es el pais mas grande situado por completo en Asia, unos 9,6 millones de kilometros cuadrados. Rusia es mayor, pero abarca Europa y Asia.',
+      },
+      de: {
+        question: 'Welches ist das groesste Land, das vollstaendig in Asien liegt?',
+        options: ['China', 'Indien', 'Kasachstan', 'Saudi-Arabien'],
+        fact: 'China ist das groesste vollstaendig in Asien liegende Land mit etwa 9,6 Millionen Quadratkilometern. Russland ist groesser, erstreckt sich aber ueber Europa und Asien.',
+      },
+      'pt-BR': {
+        question: 'Qual e o maior pais situado inteiramente na Asia?',
+        options: ['China', 'India', 'Cazaquistao', 'Arabia Saudita'],
+        fact: 'A China e o maior pais totalmente situado na Asia, cerca de 9,6 milhoes de quilometros quadrados. A Russia e maior, mas fica na Europa e na Asia.',
+      },
+      zh: {
+        question: '完全位于亚洲境内、面积最大的国家是哪个？',
+        options: ['中国', '印度', '哈萨克斯坦', '沙特阿拉伯'],
+        fact: '中国是完全位于亚洲、面积最大的国家，约960万平方公里。俄罗斯更大，但横跨欧亚两洲。',
+      },
+    },
+  },
+  {
+    id: 'ukraine_largest_europe',
+    flagId: 'ua',
+    answer: 0,
+    note: 'Ukraine is the largest country lying entirely within Europe.',
+    content: {
+      en: {
+        question: 'What is the largest country lying entirely within Europe?',
+        options: ['Ukraine', 'France', 'Spain', 'Sweden'],
+        fact: 'Ukraine is the largest country located completely within Europe. Russia is bigger but stretches across both Europe and Asia.',
+      },
+      fr: {
+        question: 'Quel est le plus grand pays situe entierement en Europe ?',
+        options: ['Ukraine', 'France', 'Espagne', 'Suede'],
+        fact: "L'Ukraine est le plus grand pays entierement situe en Europe. La Russie est plus vaste mais s'etend sur l'Europe et l'Asie.",
+      },
+      es: {
+        question: 'Cual es el pais mas grande situado enteramente en Europa?',
+        options: ['Ucrania', 'Francia', 'Espana', 'Suecia'],
+        fact: 'Ucrania es el pais mas grande situado por completo en Europa. Rusia es mayor, pero se extiende por Europa y Asia.',
+      },
+      de: {
+        question: 'Welches ist das groesste Land, das vollstaendig in Europa liegt?',
+        options: ['Ukraine', 'Frankreich', 'Spanien', 'Schweden'],
+        fact: 'Die Ukraine ist das groesste vollstaendig in Europa liegende Land. Russland ist groesser, erstreckt sich aber ueber Europa und Asien.',
+      },
+      'pt-BR': {
+        question: 'Qual e o maior pais situado inteiramente na Europa?',
+        options: ['Ucrania', 'Franca', 'Espanha', 'Suecia'],
+        fact: 'A Ucrania e o maior pais totalmente situado na Europa. A Russia e maior, mas se estende pela Europa e pela Asia.',
+      },
+      zh: {
+        question: '完全位于欧洲境内、面积最大的国家是哪个？',
+        options: ['乌克兰', '法国', '西班牙', '瑞典'],
+        fact: '乌克兰是完全位于欧洲、面积最大的国家。俄罗斯更大，但横跨欧亚两洲。',
+      },
+    },
+  },
+  {
+    id: 'australia_continent_country',
+    flagId: 'au',
+    answer: 0,
+    note: 'Australia is the only country that is also a continent.',
+    content: {
+      en: {
+        question: 'Which country is also a continent of its own?',
+        options: ['Australia', 'Russia', 'India', 'Brazil'],
+        fact: 'Australia is the only country that is also a continent, sitting alone on its own tectonic plate in the Southern Hemisphere.',
+      },
+      fr: {
+        question: 'Quel pays constitue aussi un continent a lui seul ?',
+        options: ['Australie', 'Russie', 'Inde', 'Bresil'],
+        fact: "L'Australie est le seul pays qui constitue aussi un continent a lui seul, sur sa propre plaque tectonique dans l'hemisphere sud.",
+      },
+      es: {
+        question: 'Que pais es ademas un continente por si solo?',
+        options: ['Australia', 'Rusia', 'India', 'Brasil'],
+        fact: 'Australia es el unico pais que es a la vez un continente, sobre su propia placa tectonica en el hemisferio sur.',
+      },
+      de: {
+        question: 'Welches Land ist zugleich ein eigener Kontinent?',
+        options: ['Australien', 'Russland', 'Indien', 'Brasilien'],
+        fact: 'Australien ist das einzige Land, das zugleich ein eigener Kontinent ist, auf seiner eigenen tektonischen Platte auf der Suedhalbkugel.',
+      },
+      'pt-BR': {
+        question: 'Qual pais e tambem um continente inteiro?',
+        options: ['Australia', 'Russia', 'India', 'Brasil'],
+        fact: 'A Australia e o unico pais que tambem e um continente inteiro, sobre sua propria placa tectonica no hemisferio sul.',
+      },
+      zh: {
+        question: '哪个国家本身就是一整块大陆？',
+        options: ['澳大利亚', '俄罗斯', '印度', '巴西'],
+        fact: '澳大利亚是唯一一个本身就是一整块大陆的国家，独占一块构造板块，位于南半球。',
+      },
+    },
+  },
+  {
+    id: 'vatican_smallest',
+    flagId: 'va',
+    answer: 0,
+    note: 'Vatican City is the smallest country in the world (~0.49 km2).',
+    content: {
+      en: {
+        question: 'What is the smallest country in the world?',
+        options: ['Vatican City', 'Monaco', 'Nauru', 'San Marino'],
+        fact: 'Vatican City covers just 0.49 square kilometres, small enough to fit many times over inside a single large city park.',
+      },
+      fr: {
+        question: 'Quel est le plus petit pays du monde ?',
+        options: ['Vatican', 'Monaco', 'Nauru', 'Saint-Marin'],
+        fact: 'Le Vatican ne couvre que 0,49 kilometre carre, assez petit pour tenir plusieurs fois dans un grand parc urbain.',
+      },
+      es: {
+        question: 'Cual es el pais mas pequeno del mundo?',
+        options: ['Ciudad del Vaticano', 'Monaco', 'Nauru', 'San Marino'],
+        fact: 'La Ciudad del Vaticano abarca solo 0,49 kilometros cuadrados, lo bastante pequena para caber varias veces en un gran parque urbano.',
+      },
+      de: {
+        question: 'Welches ist das kleinste Land der Welt?',
+        options: ['Vatikanstadt', 'Monaco', 'Nauru', 'San Marino'],
+        fact: 'Die Vatikanstadt umfasst nur 0,49 Quadratkilometer und wuerde mehrfach in einen grossen Stadtpark passen.',
+      },
+      'pt-BR': {
+        question: 'Qual e o menor pais do mundo?',
+        options: ['Vaticano', 'Monaco', 'Nauru', 'San Marino'],
+        fact: 'O Vaticano ocupa apenas 0,49 quilometro quadrado, pequeno o bastante para caber varias vezes em um grande parque urbano.',
+      },
+      zh: {
+        question: '世界上最小的国家是哪个？',
+        options: ['梵蒂冈', '摩纳哥', '瑙鲁', '圣马力诺'],
+        fact: '梵蒂冈面积仅0.49平方公里，小到可以在一座大型城市公园里放下好几个。',
+      },
+    },
+  },
+  {
+    id: 'cuba_largest_caribbean',
+    flagId: 'cu',
+    answer: 0,
+    note: 'Cuba is the largest country and island in the Caribbean.',
+    content: {
+      en: {
+        question: 'What is the largest country in the Caribbean?',
+        options: ['Cuba', 'Haiti', 'Dominican Republic', 'Jamaica'],
+        fact: 'Cuba is the largest country and island in the Caribbean, stretching about 1,250 kilometres from end to end.',
+      },
+      fr: {
+        question: 'Quel est le plus grand pays des Caraibes ?',
+        options: ['Cuba', 'Haiti', 'Republique dominicaine', 'Jamaique'],
+        fact: "Cuba est le plus grand pays et la plus grande ile des Caraibes, s'etirant sur environ 1 250 kilometres.",
+      },
+      es: {
+        question: 'Cual es el pais mas grande del Caribe?',
+        options: ['Cuba', 'Haiti', 'Republica Dominicana', 'Jamaica'],
+        fact: 'Cuba es el pais y la isla mas grande del Caribe, con unos 1.250 kilometros de extremo a extremo.',
+      },
+      de: {
+        question: 'Welches ist das groesste Land der Karibik?',
+        options: ['Kuba', 'Haiti', 'Dominikanische Republik', 'Jamaika'],
+        fact: 'Kuba ist das groesste Land und die groesste Insel der Karibik und erstreckt sich ueber etwa 1.250 Kilometer.',
+      },
+      'pt-BR': {
+        question: 'Qual e o maior pais do Caribe?',
+        options: ['Cuba', 'Haiti', 'Republica Dominicana', 'Jamaica'],
+        fact: 'Cuba e o maior pais e a maior ilha do Caribe, com cerca de 1.250 quilometros de ponta a ponta.',
+      },
+      zh: {
+        question: '加勒比地区最大的国家是哪个？',
+        options: ['古巴', '海地', '多米尼加共和国', '牙买加'],
+        fact: '古巴是加勒比地区最大的国家和岛屿，全长约1250公里。',
+      },
+    },
+  },
+  {
+    id: 'kazakhstan_largest_landlocked',
+    flagId: 'kz',
+    answer: 0,
+    note: 'Kazakhstan is the largest landlocked country in the world.',
+    content: {
+      en: {
+        question: 'What is the largest landlocked country in the world?',
+        options: ['Kazakhstan', 'Mongolia', 'Chad', 'Bolivia'],
+        fact: "Kazakhstan is the world's largest landlocked country, bigger than all of Western Europe, yet it touches no ocean.",
+      },
+      fr: {
+        question: 'Quel est le plus grand pays sans acces a la mer ?',
+        options: ['Kazakhstan', 'Mongolie', 'Tchad', 'Bolivie'],
+        fact: "Le Kazakhstan est le plus grand pays enclave du monde, plus vaste que toute l'Europe de l'Ouest, sans le moindre acces a l'ocean.",
+      },
+      es: {
+        question: 'Cual es el pais sin salida al mar mas grande del mundo?',
+        options: ['Kazajistan', 'Mongolia', 'Chad', 'Bolivia'],
+        fact: 'Kazajistan es el mayor pais sin litoral del mundo, mas grande que toda Europa Occidental, y no toca ningun oceano.',
+      },
+      de: {
+        question: 'Welches ist das groesste Binnenland der Welt?',
+        options: ['Kasachstan', 'Mongolei', 'Tschad', 'Bolivien'],
+        fact: 'Kasachstan ist das groesste Binnenland der Welt, groesser als ganz Westeuropa, und hat dennoch keinen Zugang zum Meer.',
+      },
+      'pt-BR': {
+        question: 'Qual e o maior pais sem saida para o mar do mundo?',
+        options: ['Cazaquistao', 'Mongolia', 'Chade', 'Bolivia'],
+        fact: 'O Cazaquistao e o maior pais sem litoral do mundo, maior que toda a Europa Ocidental, e nao toca nenhum oceano.',
+      },
+      zh: {
+        question: '世界上面积最大的内陆国家是哪个？',
+        options: ['哈萨克斯坦', '蒙古', '乍得', '玻利维亚'],
+        fact: '哈萨克斯坦是世界上面积最大的内陆国家，比整个西欧还大，却不临任何海洋。',
+      },
+    },
+  },
+  {
+    id: 'indonesia_most_volcanoes',
+    flagId: 'id',
+    answer: 0,
+    note: 'Indonesia has the most active volcanoes of any country.',
+    content: {
+      en: {
+        question: 'Which country has the most active volcanoes?',
+        options: ['Indonesia', 'Japan', 'United States', 'Chile'],
+        fact: 'Indonesia has around 130 active volcanoes, more than any other country, because it sits along the Pacific Ring of Fire.',
+      },
+      fr: {
+        question: 'Quel pays compte le plus de volcans actifs ?',
+        options: ['Indonesie', 'Japon', 'Etats-Unis', 'Chili'],
+        fact: "L'Indonesie compte environ 130 volcans actifs, plus que tout autre pays, car elle se trouve sur la ceinture de feu du Pacifique.",
+      },
+      es: {
+        question: 'Que pais tiene la mayor cantidad de volcanes activos?',
+        options: ['Indonesia', 'Japon', 'Estados Unidos', 'Chile'],
+        fact: 'Indonesia tiene unos 130 volcanes activos, mas que cualquier otro pais, porque se encuentra en el Cinturon de Fuego del Pacifico.',
+      },
+      de: {
+        question: 'Welches Land hat die meisten aktiven Vulkane?',
+        options: ['Indonesien', 'Japan', 'Vereinigte Staaten', 'Chile'],
+        fact: 'Indonesien hat rund 130 aktive Vulkane, mehr als jedes andere Land, weil es am Pazifischen Feuerring liegt.',
+      },
+      'pt-BR': {
+        question: 'Qual pais tem o maior numero de vulcoes ativos?',
+        options: ['Indonesia', 'Japao', 'Estados Unidos', 'Chile'],
+        fact: 'A Indonesia tem cerca de 130 vulcoes ativos, mais que qualquer outro pais, por ficar no Circulo de Fogo do Pacifico.',
+      },
+      zh: {
+        question: '哪个国家拥有最多的活火山？',
+        options: ['印度尼西亚', '日本', '美国', '智利'],
+        fact: '印度尼西亚约有130座活火山，数量居世界之首，因为它位于太平洋火环带上。',
+      },
+    },
+  },
+  {
+    id: 'sweden_most_islands',
+    flagId: 'se',
+    answer: 0,
+    note: 'Sweden has the most islands of any country (~267,000).',
+    content: {
+      en: {
+        question: 'Which country has the most islands in the world?',
+        options: ['Sweden', 'Indonesia', 'Canada', 'Philippines'],
+        fact: 'Sweden has more than 260,000 islands, the most of any country, though only a small fraction are inhabited.',
+      },
+      fr: {
+        question: "Quel pays possede le plus grand nombre d'iles au monde ?",
+        options: ['Suede', 'Indonesie', 'Canada', 'Philippines'],
+        fact: 'La Suede compte plus de 260 000 iles, le plus grand nombre au monde, mais seules quelques-unes sont habitees.',
+      },
+      es: {
+        question: 'Que pais tiene la mayor cantidad de islas del mundo?',
+        options: ['Suecia', 'Indonesia', 'Canada', 'Filipinas'],
+        fact: 'Suecia tiene mas de 260.000 islas, mas que cualquier otro pais, aunque solo una pequena parte esta habitada.',
+      },
+      de: {
+        question: 'Welches Land hat die meisten Inseln der Welt?',
+        options: ['Schweden', 'Indonesien', 'Kanada', 'Philippinen'],
+        fact: 'Schweden hat mehr als 260.000 Inseln, mehr als jedes andere Land, doch nur ein kleiner Teil ist bewohnt.',
+      },
+      'pt-BR': {
+        question: 'Qual pais tem o maior numero de ilhas do mundo?',
+        options: ['Suecia', 'Indonesia', 'Canada', 'Filipinas'],
+        fact: 'A Suecia tem mais de 260.000 ilhas, mais que qualquer outro pais, embora so uma pequena parte seja habitada.',
+      },
+      zh: {
+        question: '世界上岛屿最多的国家是哪个？',
+        options: ['瑞典', '印度尼西亚', '加拿大', '菲律宾'],
+        fact: '瑞典拥有超过26万座岛屿，数量居世界第一，但只有极少数有人居住。',
+      },
+    },
+  },
+  {
+    id: 'africa_most_countries',
+    answer: 0,
+    note: 'Africa has 54 sovereign countries, the most of any continent.',
+    content: {
+      en: {
+        question: 'Which continent is made up of the most countries?',
+        options: ['Africa', 'Asia', 'Europe', 'The Americas'],
+        fact: 'Africa is home to 54 sovereign countries, more than any other continent.',
+      },
+      fr: {
+        question: 'Quel continent compte le plus grand nombre de pays ?',
+        options: ["L'Afrique", "L'Asie", "L'Europe", 'Les Ameriques'],
+        fact: "L'Afrique compte 54 pays souverains, plus que tout autre continent.",
+      },
+      es: {
+        question: 'Que continente esta formado por la mayor cantidad de paises?',
+        options: ['Africa', 'Asia', 'Europa', 'America'],
+        fact: 'Africa alberga 54 paises soberanos, mas que cualquier otro continente.',
+      },
+      de: {
+        question: 'Welcher Kontinent besteht aus den meisten Laendern?',
+        options: ['Afrika', 'Asien', 'Europa', 'Amerika'],
+        fact: 'Afrika umfasst 54 souveraene Staaten, mehr als jeder andere Kontinent.',
+      },
+      'pt-BR': {
+        question: 'Qual continente e formado pelo maior numero de paises?',
+        options: ['Africa', 'Asia', 'Europa', 'America'],
+        fact: 'A Africa abriga 54 paises soberanos, mais do que qualquer outro continente.',
+      },
+      zh: {
+        question: '由最多国家组成的大洲是哪个？',
+        options: ['非洲', '亚洲', '欧洲', '美洲'],
+        fact: '非洲共有54个主权国家，数量居各大洲之首。',
+      },
+    },
+  },
+  {
+    id: 'kiribati_four_hemispheres',
+    flagId: 'ki',
+    answer: 0,
+    note: 'Kiribati is the only country in all four hemispheres.',
+    content: {
+      en: {
+        question: 'Which country lies in all four hemispheres at once?',
+        options: ['Kiribati', 'Brazil', 'Indonesia', 'Ecuador'],
+        fact: 'Kiribati is the only country to sit in all four hemispheres, straddling both the equator and the 180th meridian.',
+      },
+      fr: {
+        question: 'Quel pays se trouve a la fois dans les quatre hemispheres ?',
+        options: ['Kiribati', 'Bresil', 'Indonesie', 'Equateur'],
+        fact: "Kiribati est le seul pays a se situer dans les quatre hemispheres, a cheval sur l'equateur et le 180e meridien.",
+      },
+      es: {
+        question: 'Que pais se encuentra a la vez en los cuatro hemisferios?',
+        options: ['Kiribati', 'Brasil', 'Indonesia', 'Ecuador'],
+        fact: 'Kiribati es el unico pais situado en los cuatro hemisferios, sobre el ecuador y el meridiano 180.',
+      },
+      de: {
+        question: 'Welches Land liegt zugleich in allen vier Hemisphaeren?',
+        options: ['Kiribati', 'Brasilien', 'Indonesien', 'Ecuador'],
+        fact: 'Kiribati ist das einzige Land in allen vier Hemisphaeren, am Aequator und am 180. Laengengrad zugleich.',
+      },
+      'pt-BR': {
+        question: 'Qual pais fica ao mesmo tempo nos quatro hemisferios?',
+        options: ['Kiribati', 'Brasil', 'Indonesia', 'Equador'],
+        fact: 'Kiribati e o unico pais situado nos quatro hemisferios, sobre o equador e o meridiano 180.',
+      },
+      zh: {
+        question: '哪个国家同时位于四个半球？',
+        options: ['基里巴斯', '巴西', '印度尼西亚', '厄瓜多尔'],
+        fact: '基里巴斯是唯一同时位于四个半球的国家，横跨赤道和180度经线。',
+      },
+    },
+  },
+  {
+    id: 'saint_lucia_named_woman',
+    flagId: 'lc',
+    answer: 0,
+    note: 'Saint Lucia is the only country named after a real woman.',
+    content: {
+      en: {
+        question: 'Which is the only country named after a real woman?',
+        options: ['Saint Lucia', 'Colombia', 'Bolivia', 'Mauritius'],
+        fact: 'Saint Lucia is the only country named after a real woman, the martyr Saint Lucy of Syracuse.',
+      },
+      fr: {
+        question: "Quel est le seul pays nomme d'apres une femme reelle ?",
+        options: ['Sainte-Lucie', 'Colombie', 'Bolivie', 'Maurice'],
+        fact: "Sainte-Lucie est le seul pays nomme d'apres une femme ayant reellement existe, la martyre sainte Lucie de Syracuse.",
+      },
+      es: {
+        question: 'Cual es el unico pais que lleva el nombre de una mujer real?',
+        options: ['Santa Lucia', 'Colombia', 'Bolivia', 'Mauricio'],
+        fact: 'Santa Lucia es el unico pais que lleva el nombre de una mujer real, la martir santa Lucia de Siracusa.',
+      },
+      de: {
+        question: 'Welches ist das einzige nach einer realen Frau benannte Land?',
+        options: ['St. Lucia', 'Kolumbien', 'Bolivien', 'Mauritius'],
+        fact: 'St. Lucia ist das einzige Land, das nach einer realen Frau benannt ist, der heiligen Maertyrerin Lucia von Syrakus.',
+      },
+      'pt-BR': {
+        question: 'Qual e o unico pais que tem o nome de uma mulher real?',
+        options: ['Santa Lucia', 'Colombia', 'Bolivia', 'Mauricio'],
+        fact: 'Santa Lucia e o unico pais batizado em homenagem a uma mulher real, a martir Santa Luzia de Siracusa.',
+      },
+      zh: {
+        question: '哪个国家是唯一以真实女性命名的国家？',
+        options: ['圣卢西亚', '哥伦比亚', '玻利维亚', '毛里求斯'],
+        fact: '圣卢西亚是唯一以真实女性命名的国家，得名于殉道者锡拉库扎的圣露西亚。',
+      },
+    },
+  },
+  {
+    id: 'nauru_no_capital',
+    flagId: 'nr',
+    answer: 0,
+    note: 'Nauru is the only country with no official capital city.',
+    content: {
+      en: {
+        question: 'Which is the only country with no official capital city?',
+        options: ['Nauru', 'Switzerland', 'Monaco', 'Tuvalu'],
+        fact: 'Nauru is the only country without an official capital. Its government offices sit in the district of Yaren.',
+      },
+      fr: {
+        question: 'Quel est le seul pays sans capitale officielle ?',
+        options: ['Nauru', 'Suisse', 'Monaco', 'Tuvalu'],
+        fact: 'Nauru est le seul pays sans capitale officielle. Les bureaux du gouvernement se trouvent dans le district de Yaren.',
+      },
+      es: {
+        question: 'Cual es el unico pais sin capital oficial?',
+        options: ['Nauru', 'Suiza', 'Monaco', 'Tuvalu'],
+        fact: 'Nauru es el unico pais sin capital oficial. Las oficinas del gobierno estan en el distrito de Yaren.',
+      },
+      de: {
+        question: 'Welches ist das einzige Land ohne offizielle Hauptstadt?',
+        options: ['Nauru', 'Schweiz', 'Monaco', 'Tuvalu'],
+        fact: 'Nauru ist das einzige Land ohne offizielle Hauptstadt. Die Regierungsbueros liegen im Distrikt Yaren.',
+      },
+      'pt-BR': {
+        question: 'Qual e o unico pais sem capital oficial?',
+        options: ['Nauru', 'Suica', 'Monaco', 'Tuvalu'],
+        fact: 'Nauru e o unico pais sem capital oficial. Os orgaos do governo ficam no distrito de Yaren.',
+      },
+      zh: {
+        question: '哪个国家是唯一没有官方首都的国家？',
+        options: ['瑙鲁', '瑞士', '摩纳哥', '图瓦卢'],
+        fact: '瑙鲁是唯一没有官方首都的国家，政府机构设在亚伦区。',
+      },
+    },
+  },
+  {
+    id: 'bolivia_highest_capital',
+    flagId: 'bo',
+    answer: 0,
+    note: 'La Paz, Bolivia is the highest capital city in the world (~3,640 m).',
+    content: {
+      en: {
+        question: 'Which country has the highest capital city in the world?',
+        options: ['Bolivia', 'Nepal', 'Ecuador', 'Peru'],
+        fact: "Bolivia's seat of government, La Paz, sits about 3,640 metres above sea level, the highest capital in the world.",
+      },
+      fr: {
+        question: 'Quel pays possede la capitale la plus haute du monde ?',
+        options: ['Bolivie', 'Nepal', 'Equateur', 'Perou'],
+        fact: "Le siege du gouvernement bolivien, La Paz, se trouve a environ 3 640 metres d'altitude, la capitale la plus haute du monde.",
+      },
+      es: {
+        question: 'Que pais tiene la capital mas alta del mundo?',
+        options: ['Bolivia', 'Nepal', 'Ecuador', 'Peru'],
+        fact: 'La sede del gobierno de Bolivia, La Paz, esta a unos 3.640 metros de altitud, la capital mas alta del mundo.',
+      },
+      de: {
+        question: 'Welches Land hat die hoechstgelegene Hauptstadt der Welt?',
+        options: ['Bolivien', 'Nepal', 'Ecuador', 'Peru'],
+        fact: 'Boliviens Regierungssitz La Paz liegt etwa 3.640 Meter ueber dem Meer, die hoechste Hauptstadt der Welt.',
+      },
+      'pt-BR': {
+        question: 'Qual pais tem a capital mais alta do mundo?',
+        options: ['Bolivia', 'Nepal', 'Equador', 'Peru'],
+        fact: 'A sede do governo da Bolivia, La Paz, fica a cerca de 3.640 metros de altitude, a capital mais alta do mundo.',
+      },
+      zh: {
+        question: '哪个国家拥有世界上海拔最高的首都？',
+        options: ['玻利维亚', '尼泊尔', '厄瓜多尔', '秘鲁'],
+        fact: '玻利维亚的政府所在地拉巴斯海拔约3640米，是世界上海拔最高的首都。',
+      },
+    },
+  },
+  {
+    id: 'liechtenstein_double_landlocked',
+    flagId: 'li',
+    answer: 0,
+    note: 'Liechtenstein and Uzbekistan are the only two doubly landlocked countries.',
+    content: {
+      en: {
+        question: 'Which country is one of only two that are doubly landlocked?',
+        options: ['Liechtenstein', 'Austria', 'Switzerland', 'Nepal'],
+        fact: 'Liechtenstein is one of just two doubly landlocked countries, surrounded only by other landlocked countries. The other is Uzbekistan.',
+      },
+      fr: {
+        question: "Quel pays est l'un des deux seuls a etre doublement enclaves ?",
+        options: ['Liechtenstein', 'Autriche', 'Suisse', 'Nepal'],
+        fact: "Le Liechtenstein est l'un des deux seuls pays doublement enclaves, entoure uniquement de pays sans acces a la mer. L'autre est l'Ouzbekistan.",
+      },
+      es: {
+        question: 'Que pais es uno de los dos unicos doblemente sin litoral?',
+        options: ['Liechtenstein', 'Austria', 'Suiza', 'Nepal'],
+        fact: 'Liechtenstein es uno de los dos unicos paises doblemente sin litoral, rodeado solo por paises sin salida al mar. El otro es Uzbekistan.',
+      },
+      de: {
+        question: 'Welches Land ist einer von nur zwei doppelten Binnenstaaten?',
+        options: ['Liechtenstein', 'Oesterreich', 'Schweiz', 'Nepal'],
+        fact: 'Liechtenstein ist einer von nur zwei doppelten Binnenstaaten, umgeben allein von Binnenlaendern. Der andere ist Usbekistan.',
+      },
+      'pt-BR': {
+        question: 'Qual pais e um dos dois unicos duplamente sem litoral?',
+        options: ['Liechtenstein', 'Austria', 'Suica', 'Nepal'],
+        fact: 'Liechtenstein e um dos dois unicos paises duplamente sem litoral, cercado apenas por paises sem saida para o mar. O outro e o Uzbequistao.',
+      },
+      zh: {
+        question: '哪个国家是仅有的两个双重内陆国之一？',
+        options: ['列支敦士登', '奥地利', '瑞士', '尼泊尔'],
+        fact: '列支敦士登是仅有的两个双重内陆国之一，四周都是内陆国家。另一个是乌兹别克斯坦。',
+      },
+    },
+  },
+  {
+    id: 'caspian_largest_lake',
+    answer: 0,
+    note: 'The Caspian Sea is the largest lake in the world by area.',
+    content: {
+      en: {
+        question: 'What is the largest lake in the world by area?',
+        options: ['The Caspian Sea', 'Lake Superior', 'Lake Victoria', 'Lake Baikal'],
+        fact: "Despite its name, the Caspian Sea is the world's largest lake, bordered by five countries and filled with salty water.",
+      },
+      fr: {
+        question: 'Quel est le plus grand lac du monde par sa superficie ?',
+        options: ['La mer Caspienne', 'Le lac Superieur', 'Le lac Victoria', 'Le lac Baikal'],
+        fact: "Malgre son nom, la mer Caspienne est le plus grand lac du monde, bordee par cinq pays et remplie d'eau salee.",
+      },
+      es: {
+        question: 'Cual es el lago mas grande del mundo por superficie?',
+        options: ['El mar Caspio', 'El lago Superior', 'El lago Victoria', 'El lago Baikal'],
+        fact: 'A pesar de su nombre, el mar Caspio es el lago mas grande del mundo, rodeado por cinco paises y de agua salada.',
+      },
+      de: {
+        question: 'Welches ist der flaechengroesste See der Welt?',
+        options: ['Das Kaspische Meer', 'Der Obere See', 'Der Victoriasee', 'Der Baikalsee'],
+        fact: 'Trotz seines Namens ist das Kaspische Meer der groesste See der Welt, von fuenf Laendern umgeben und mit salzigem Wasser.',
+      },
+      'pt-BR': {
+        question: 'Qual e o maior lago do mundo em area?',
+        options: ['O mar Caspio', 'O lago Superior', 'O lago Vitoria', 'O lago Baikal'],
+        fact: 'Apesar do nome, o mar Caspio e o maior lago do mundo, cercado por cinco paises e de agua salgada.',
+      },
+      zh: {
+        question: '世界上面积最大的湖泊是哪个？',
+        options: ['里海', '苏必利尔湖', '维多利亚湖', '贝加尔湖'],
+        fact: '里海虽名为海，却是世界上面积最大的湖泊，被五个国家环绕，湖水为咸水。',
+      },
+    },
+  },
+  {
+    id: 'chile_longest_country',
+    flagId: 'cl',
+    answer: 0,
+    note: 'Chile is the world\'s longest country from north to south (~4,300 km).',
+    content: {
+      en: {
+        question: "Which is the world's longest country from north to south?",
+        options: ['Chile', 'Brazil', 'Russia', 'Norway'],
+        fact: 'Chile stretches more than 4,300 kilometres down the Pacific coast, yet averages only about 180 kilometres wide.',
+      },
+      fr: {
+        question: 'Quel est le pays le plus long du nord au sud ?',
+        options: ['Chili', 'Bresil', 'Russie', 'Norvege'],
+        fact: "Le Chili s'etire sur plus de 4 300 kilometres le long du Pacifique, pour une largeur moyenne d'environ 180 kilometres.",
+      },
+      es: {
+        question: 'Cual es el pais mas largo de norte a sur?',
+        options: ['Chile', 'Brasil', 'Rusia', 'Noruega'],
+        fact: 'Chile se extiende mas de 4.300 kilometros por la costa del Pacifico, con una anchura media de solo unos 180 kilometros.',
+      },
+      de: {
+        question: 'Welches ist das von Nord nach Sued laengste Land der Welt?',
+        options: ['Chile', 'Brasilien', 'Russland', 'Norwegen'],
+        fact: 'Chile erstreckt sich ueber mehr als 4.300 Kilometer entlang der Pazifikkueste, ist aber im Schnitt nur etwa 180 Kilometer breit.',
+      },
+      'pt-BR': {
+        question: 'Qual e o pais mais longo de norte a sul?',
+        options: ['Chile', 'Brasil', 'Russia', 'Noruega'],
+        fact: 'O Chile se estende por mais de 4.300 quilometros ao longo do Pacifico, mas tem em media so cerca de 180 quilometros de largura.',
+      },
+      zh: {
+        question: '世界上从北到南最长的国家是哪个？',
+        options: ['智利', '巴西', '俄罗斯', '挪威'],
+        fact: '智利沿太平洋海岸绵延4300多公里，平均宽度却只有约180公里。',
+      },
+    },
+  },
+  {
+    id: 'denmark_oldest_flag',
+    flagId: 'dk',
+    answer: 0,
+    note: 'Denmark has the oldest continuously used national flag (Dannebrog).',
+    content: {
+      en: {
+        question: 'Which country has the oldest continuously used national flag?',
+        options: ['Denmark', 'United Kingdom', 'Austria', 'Netherlands'],
+        fact: "Denmark's red and white Dannebrog has been in use since the 13th century, the oldest national flag still flown today.",
+      },
+      fr: {
+        question: 'Quel pays possede le plus ancien drapeau national encore utilise ?',
+        options: ['Danemark', 'Royaume-Uni', 'Autriche', 'Pays-Bas'],
+        fact: 'Le Dannebrog rouge et blanc du Danemark est utilise depuis le 13e siecle, le plus ancien drapeau national encore en usage.',
+      },
+      es: {
+        question: 'Que pais tiene la bandera nacional en uso continuo mas antigua?',
+        options: ['Dinamarca', 'Reino Unido', 'Austria', 'Paises Bajos'],
+        fact: 'El Dannebrog rojo y blanco de Dinamarca se usa desde el siglo XIII, la bandera nacional mas antigua que aun ondea.',
+      },
+      de: {
+        question: 'Welches Land hat die aelteste durchgehend genutzte Nationalflagge?',
+        options: ['Daenemark', 'Vereinigtes Koenigreich', 'Oesterreich', 'Niederlande'],
+        fact: 'Daenemarks rot-weisser Dannebrog ist seit dem 13. Jahrhundert in Gebrauch, die aelteste noch gefuehrte Nationalflagge.',
+      },
+      'pt-BR': {
+        question: 'Qual pais tem a bandeira nacional em uso continuo mais antiga?',
+        options: ['Dinamarca', 'Reino Unido', 'Austria', 'Paises Baixos'],
+        fact: 'O Dannebrog vermelho e branco da Dinamarca e usado desde o seculo 13, a bandeira nacional mais antiga ainda hasteada.',
+      },
+      zh: {
+        question: '哪个国家拥有持续使用至今、历史最悠久的国旗？',
+        options: ['丹麦', '英国', '奥地利', '荷兰'],
+        fact: '丹麦的红白「丹尼布洛」国旗自13世纪起一直沿用，是至今仍在使用的最古老国旗。',
+      },
+    },
+  },
+  {
+    id: 'canada_us_longest_border',
+    flagId: 'ca',
+    answer: 0,
+    note: 'The US-Canada border is the longest international land border (~8,900 km).',
+    content: {
+      en: {
+        question: "The world's longest land border lies between the United States and which country?",
+        options: ['Canada', 'Mexico', 'Russia', 'Brazil'],
+        fact: 'The border between Canada and the United States runs about 8,900 kilometres, the longest international land border in the world.',
+      },
+      fr: {
+        question: 'La plus longue frontiere terrestre du monde separe les Etats-Unis de quel pays ?',
+        options: ['Canada', 'Mexique', 'Russie', 'Bresil'],
+        fact: "La frontiere entre le Canada et les Etats-Unis s'etend sur environ 8 900 kilometres, la plus longue frontiere terrestre du monde.",
+      },
+      es: {
+        question: 'La frontera terrestre mas larga del mundo esta entre Estados Unidos y que pais?',
+        options: ['Canada', 'Mexico', 'Rusia', 'Brasil'],
+        fact: 'La frontera entre Canada y Estados Unidos mide unos 8.900 kilometros, la frontera terrestre internacional mas larga del mundo.',
+      },
+      de: {
+        question: 'Die laengste Landgrenze der Welt verlaeuft zwischen den USA und welchem Land?',
+        options: ['Kanada', 'Mexiko', 'Russland', 'Brasilien'],
+        fact: 'Die Grenze zwischen Kanada und den USA ist rund 8.900 Kilometer lang, die laengste internationale Landgrenze der Welt.',
+      },
+      'pt-BR': {
+        question: 'A maior fronteira terrestre do mundo fica entre os Estados Unidos e qual pais?',
+        options: ['Canada', 'Mexico', 'Russia', 'Brasil'],
+        fact: 'A fronteira entre o Canada e os Estados Unidos tem cerca de 8.900 quilometros, a maior fronteira terrestre internacional do mundo.',
+      },
+      zh: {
+        question: '世界上最长的陆地边界位于美国与哪个国家之间？',
+        options: ['加拿大', '墨西哥', '俄罗斯', '巴西'],
+        fact: '加拿大与美国之间的边界长约8900公里，是世界上最长的国际陆地边界。',
+      },
+    },
+  },
+  {
+    id: 'san_marino_oldest_republic',
+    flagId: 'sm',
+    answer: 0,
+    note: 'San Marino is the oldest surviving republic, founded in 301.',
+    content: {
+      en: {
+        question: "Which is the world's oldest surviving republic?",
+        options: ['San Marino', 'Greece', 'Iceland', 'Switzerland'],
+        fact: "San Marino traces its founding to the year 301, making it the world's oldest surviving republic.",
+      },
+      fr: {
+        question: 'Quelle est la plus ancienne republique encore existante au monde ?',
+        options: ['Saint-Marin', 'Grece', 'Islande', 'Suisse'],
+        fact: "Saint-Marin fait remonter sa fondation a l'an 301, ce qui en fait la plus ancienne republique encore existante.",
+      },
+      es: {
+        question: 'Cual es la republica mas antigua que aun existe en el mundo?',
+        options: ['San Marino', 'Grecia', 'Islandia', 'Suiza'],
+        fact: 'San Marino remonta su fundacion al ano 301, lo que la convierte en la republica mas antigua que sigue existiendo.',
+      },
+      de: {
+        question: 'Welches ist die aelteste noch bestehende Republik der Welt?',
+        options: ['San Marino', 'Griechenland', 'Island', 'Schweiz'],
+        fact: 'San Marino fuehrt seine Gruendung auf das Jahr 301 zurueck und ist damit die aelteste noch bestehende Republik der Welt.',
+      },
+      'pt-BR': {
+        question: 'Qual e a republica mais antiga ainda existente no mundo?',
+        options: ['San Marino', 'Grecia', 'Islandia', 'Suica'],
+        fact: 'A fundacao de San Marino remonta ao ano 301, o que faz dela a republica mais antiga ainda existente no mundo.',
+      },
+      zh: {
+        question: '世界上仍然存在的最古老的共和国是哪个？',
+        options: ['圣马力诺', '希腊', '冰岛', '瑞士'],
+        fact: '圣马力诺的建国可追溯到公元301年，是世界上仍然存续的最古老共和国。',
+      },
+    },
+  },
+  {
+    id: 'saudi_no_rivers',
+    flagId: 'sa',
+    answer: 0,
+    note: 'Saudi Arabia is the largest country with no permanent rivers.',
+    content: {
+      en: {
+        question: 'What is the largest country with no permanent rivers?',
+        options: ['Saudi Arabia', 'Egypt', 'Libya', 'Mongolia'],
+        fact: 'Saudi Arabia is the largest country on Earth without a single permanent river, relying on aquifers and desalinated seawater.',
+      },
+      fr: {
+        question: "Quel est le plus grand pays sans cours d'eau permanent ?",
+        options: ['Arabie saoudite', 'Egypte', 'Libye', 'Mongolie'],
+        fact: "L'Arabie saoudite est le plus grand pays du monde sans aucun cours d'eau permanent, dependant des nappes et de l'eau de mer dessalee.",
+      },
+      es: {
+        question: 'Cual es el pais mas grande sin rios permanentes?',
+        options: ['Arabia Saudita', 'Egipto', 'Libia', 'Mongolia'],
+        fact: 'Arabia Saudita es el pais mas grande del mundo sin un solo rio permanente, y depende de acuiferos y agua de mar desalada.',
+      },
+      de: {
+        question: 'Welches ist das groesste Land ohne dauerhafte Fluesse?',
+        options: ['Saudi-Arabien', 'Aegypten', 'Libyen', 'Mongolei'],
+        fact: 'Saudi-Arabien ist das groesste Land der Erde ohne einen einzigen staendigen Fluss und ist auf Grundwasser und entsalztes Meerwasser angewiesen.',
+      },
+      'pt-BR': {
+        question: 'Qual e o maior pais sem rios permanentes?',
+        options: ['Arabia Saudita', 'Egito', 'Libia', 'Mongolia'],
+        fact: 'A Arabia Saudita e o maior pais do mundo sem nenhum rio permanente, dependendo de aquiferos e de agua do mar dessalinizada.',
+      },
+      zh: {
+        question: '世界上没有常流河的最大国家是哪个？',
+        options: ['沙特阿拉伯', '埃及', '利比亚', '蒙古'],
+        fact: '沙特阿拉伯是世界上最大的没有一条常流河的国家，依靠地下含水层和海水淡化供水。',
+      },
+    },
+  },
+  {
+    id: 'tanzania_kilimanjaro',
+    flagId: 'tz',
+    answer: 0,
+    note: "Mount Kilimanjaro, Africa's highest peak, is in Tanzania.",
+    content: {
+      en: {
+        question: "Mount Kilimanjaro, Africa's highest peak, rises in which country?",
+        options: ['Tanzania', 'Kenya', 'Uganda', 'Ethiopia'],
+        fact: 'Mount Kilimanjaro stands about 5,895 metres in Tanzania, the highest mountain in Africa and the tallest free-standing mountain on land.',
+      },
+      fr: {
+        question: "Le Kilimandjaro, plus haut sommet d'Afrique, se dresse dans quel pays ?",
+        options: ['Tanzanie', 'Kenya', 'Ouganda', 'Ethiopie'],
+        fact: "Le Kilimandjaro culmine a environ 5 895 metres en Tanzanie, plus haute montagne d'Afrique et plus haute montagne isolee sur terre.",
+      },
+      es: {
+        question: 'El Kilimanjaro, el pico mas alto de Africa, se eleva en que pais?',
+        options: ['Tanzania', 'Kenia', 'Uganda', 'Etiopia'],
+        fact: 'El Kilimanjaro alcanza unos 5.895 metros en Tanzania, la montana mas alta de Africa y la mayor montana aislada sobre tierra firme.',
+      },
+      de: {
+        question: 'Der Kilimandscharo, Afrikas hoechster Gipfel, erhebt sich in welchem Land?',
+        options: ['Tansania', 'Kenia', 'Uganda', 'Aethiopien'],
+        fact: 'Der Kilimandscharo ragt in Tansania etwa 5.895 Meter empor, der hoechste Berg Afrikas und der hoechste freistehende Berg an Land.',
+      },
+      'pt-BR': {
+        question: 'O Monte Kilimanjaro, o pico mais alto da Africa, fica em qual pais?',
+        options: ['Tanzania', 'Quenia', 'Uganda', 'Etiopia'],
+        fact: 'O Kilimanjaro atinge cerca de 5.895 metros na Tanzania, a montanha mais alta da Africa e a maior montanha isolada em terra firme.',
+      },
+      zh: {
+        question: '非洲最高峰乞力马扎罗山位于哪个国家？',
+        options: ['坦桑尼亚', '肯尼亚', '乌干达', '埃塞俄比亚'],
+        fact: '乞力马扎罗山在坦桑尼亚境内，海拔约5895米，是非洲最高峰，也是陆地上最高的独立山峰。',
+      },
+    },
+  },
 ];
 
 // Returns a numeric seed from a date string like "2026-06-19".
