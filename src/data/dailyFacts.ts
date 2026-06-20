@@ -1338,9 +1338,9 @@ export const DAILY_FACTS: DailyFact[] = [
         fact: 'Liechtenstein es uno de los dos unicos paises doblemente sin litoral, rodeado solo por paises sin salida al mar. El otro es Uzbekistan.',
       },
       de: {
-        question: 'Welches Land ist eines von nur zwei doppelt binnenlaendischen Laendern?',
+        question: 'Welches Land ist einer von nur zwei doppelten Binnenstaaten?',
         options: ['Liechtenstein', 'Oesterreich', 'Schweiz', 'Nepal'],
-        fact: 'Liechtenstein ist eines von nur zwei doppelt binnenlaendischen Laendern, umgeben allein von Binnenstaaten. Das andere ist Usbekistan.',
+        fact: 'Liechtenstein ist einer von nur zwei doppelten Binnenstaaten, umgeben allein von Binnenlaendern. Der andere ist Usbekistan.',
       },
       'pt-BR': {
         question: 'Qual pais e um dos dois unicos duplamente sem litoral?',
