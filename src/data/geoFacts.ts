@@ -3,25 +3,57 @@ import { countryCapitals } from './countryCapitals';
 import { countryNeighbors } from './countryNeighbors';
 import { twinPairs } from './countryAliases';
 import { DAILY_FACTS } from './dailyFacts';
+import { t, getLocale } from '../utils/i18n';
+import { flagName, translateName } from './countryNames';
+import type { FlagItem } from '../types';
 
 // ─── GeoFacts ────────────────────────────────────────────────
-// A large pool of flag and country facts powering the GeoFacts game mode.
-// Facts are generated from the app's own verified datasets (capitals,
-// regions, land borders) plus the curated trivia pool, so accuracy is
-// grounded in existing data rather than hand-typed prose. The pool yields
-// 600+ browse facts and a comparable bank of quiz questions.
+// A large pool of stable, verifiable flag and country facts powering the
+// GeoFacts game mode. Facts are generated from the app's own datasets
+// (capitals, regions, land borders) plus a curated trivia pool and a
+// verified landlocked set, so accuracy is grounded in existing data.
 //
-// Note: fact text is authored in English. Country names elsewhere in the app
-// are localized via countryNames, but these generated sentences are not yet
-// translated - a deliberate, documented gap given the volume.
+// Facts are stored as structured records (a type plus ids), not prose. The
+// display sentence is built at render time from localized templates and
+// localized country/region names, so every fact is fully translated in all
+// six locales without hand-translating thousands of sentences. Only fact
+// types chosen to be time-stable are included (no population, GDP, leaders,
+// or other figures that change).
+
+// The 44 landlocked countries (ISO-2). Stable and well established; only
+// those present in the dataset produce facts.
+const LANDLOCKED = new Set<string>([
+  'af', 'am', 'at', 'az', 'by', 'bt', 'bo', 'bw', 'bf', 'bi', 'cf', 'td',
+  'cz', 'sz', 'et', 'hu', 'kz', 'kg', 'la', 'ls', 'li', 'lu', 'mw', 'ml',
+  'md', 'mn', 'np', 'ne', 'mk', 'py', 'rw', 'sm', 'rs', 'sk', 'ss', 'ch',
+  'tj', 'tm', 'ug', 'uz', 'zm', 'zw', 'ad', 'xk',
+]);
+
+export type GeoFactType =
+  | 'capital'
+  | 'region'
+  | 'borders'
+  | 'borderWith'
+  | 'island'
+  | 'landlocked'
+  | 'twin'
+  | 'trivia';
 
 export interface GeoFact {
   id: string;
   /** Country code for the flag shown beside the fact (empty = no flag). */
   flagId: string;
-  /** Region the fact belongs to, used for filtering ('' = unfiled). */
+  /** Canonical English region for filtering ('' = unfiled). */
   region: string;
-  text: string;
+  type: GeoFactType;
+  capital?: string;
+  count?: number;
+  /** Flag id of a related country (border neighbor / twin). */
+  otherId?: string;
+  /** Related country name when no id is available (twin). */
+  otherName?: string;
+  /** Daily-fact id backing a curated trivia entry. */
+  triviaId?: string;
 }
 
 export interface GeoQuizQuestion {
@@ -31,6 +63,17 @@ export interface GeoQuizQuestion {
   options: string[];
   /** Index of the correct option within `options`. */
   answerIndex: number;
+}
+
+const flagsById = new Map<string, FlagItem>(getAllFlags().map((f) => [f.id, f]));
+
+function countryLabel(id: string): string {
+  const f = flagsById.get(id);
+  return f ? flagName(f) : id;
+}
+
+function regionLabel(region: string): string {
+  return region ? t(`categories.${region.toLowerCase()}`) : region;
 }
 
 function shuffle<T>(array: T[]): T[] {
@@ -51,15 +94,10 @@ export function getGeoFacts(): GeoFact[] {
   const flags = getAllFlags();
   const facts: GeoFact[] = [];
 
-  // 1. Curated, high-interest trivia (reused from the daily fact pool).
+  // 1. Curated, high-interest trivia (localized via the daily fact pool).
   for (const f of DAILY_FACTS) {
-    const flag = f.flagId ? flags.find((x) => x.id === f.flagId) : undefined;
-    facts.push({
-      id: `trivia-${f.id}`,
-      flagId: f.flagId ?? '',
-      region: flag?.region ?? '',
-      text: f.content.en.fact,
-    });
+    const flag = f.flagId ? flagsById.get(f.flagId) : undefined;
+    facts.push({ id: `trivia-${f.id}`, flagId: f.flagId ?? '', region: flag?.region ?? '', type: 'trivia', triviaId: f.id });
   }
 
   // 2. Generated facts per country, grouped and ordered by country name.
@@ -67,47 +105,30 @@ export function getGeoFacts(): GeoFact[] {
   for (const flag of sorted) {
     const capital = countryCapitals[flag.id];
     if (capital) {
-      facts.push({
-        id: `cap-${flag.id}`,
-        flagId: flag.id,
-        region: flag.region,
-        text: `The capital of ${flag.name} is ${capital}.`,
-      });
+      facts.push({ id: `cap-${flag.id}`, flagId: flag.id, region: flag.region, type: 'capital', capital });
     }
 
-    facts.push({
-      id: `reg-${flag.id}`,
-      flagId: flag.id,
-      region: flag.region,
-      text: `${flag.name} is located in ${flag.region}.`,
-    });
+    facts.push({ id: `reg-${flag.id}`, flagId: flag.id, region: flag.region, type: 'region' });
+
+    if (LANDLOCKED.has(flag.id)) {
+      facts.push({ id: `land-${flag.id}`, flagId: flag.id, region: flag.region, type: 'landlocked' });
+    }
 
     const neighbors = countryNeighbors[flag.id];
     if (neighbors && neighbors.length > 0) {
-      const n = neighbors.length;
-      facts.push({
-        id: `bor-${flag.id}`,
-        flagId: flag.id,
-        region: flag.region,
-        text: `${flag.name} shares a land border with ${n} ${n === 1 ? 'country' : 'countries'}.`,
-      });
+      facts.push({ id: `bor-${flag.id}`, flagId: flag.id, region: flag.region, type: 'borders', count: neighbors.length });
+      // One fact per specific border - stable and drawn from the same data
+      // that powers the Neighbors mode.
+      for (const otherId of neighbors) {
+        facts.push({ id: `borw-${flag.id}-${otherId}`, flagId: flag.id, region: flag.region, type: 'borderWith', otherId });
+      }
     } else if (flag.tags.includes('island_nations')) {
-      facts.push({
-        id: `isl-${flag.id}`,
-        flagId: flag.id,
-        region: flag.region,
-        text: `${flag.name} is an island nation with no land borders.`,
-      });
+      facts.push({ id: `isl-${flag.id}`, flagId: flag.id, region: flag.region, type: 'island' });
     }
 
     const twins = twinPairs[flag.name];
     if (twins && twins.length > 0) {
-      facts.push({
-        id: `twin-${flag.id}`,
-        flagId: flag.id,
-        region: flag.region,
-        text: `${flag.name}'s flag looks very similar to that of ${twins[0]}.`,
-      });
+      facts.push({ id: `twin-${flag.id}`, flagId: flag.id, region: flag.region, type: 'twin', otherName: twins[0] });
     }
   }
 
@@ -119,13 +140,45 @@ export function getGeoFactCount(): number {
   return getGeoFacts().length;
 }
 
+/** Build the localized display sentence for a fact in the current locale. */
+export function renderGeoFact(fact: GeoFact): string {
+  switch (fact.type) {
+    case 'capital':
+      return t('geofacts.tplCapital', { country: countryLabel(fact.flagId), capital: fact.capital ?? '' });
+    case 'region':
+      return t('geofacts.tplRegion', { country: countryLabel(fact.flagId), region: regionLabel(fact.region) });
+    case 'borders':
+      return t(fact.count === 1 ? 'geofacts.tplBordersOne' : 'geofacts.tplBorders', {
+        country: countryLabel(fact.flagId),
+        count: fact.count ?? 0,
+      });
+    case 'borderWith':
+      return t('geofacts.tplBorderWith', { country: countryLabel(fact.flagId), other: countryLabel(fact.otherId ?? '') });
+    case 'island':
+      return t('geofacts.tplIsland', { country: countryLabel(fact.flagId) });
+    case 'landlocked':
+      return t('geofacts.tplLandlocked', { country: countryLabel(fact.flagId) });
+    case 'twin':
+      return t('geofacts.tplTwin', {
+        country: countryLabel(fact.flagId),
+        other: fact.otherId ? countryLabel(fact.otherId) : translateName(fact.otherName ?? ''),
+      });
+    case 'trivia': {
+      const tf = DAILY_FACTS.find((x) => x.id === fact.triviaId);
+      if (!tf) return '';
+      const c = tf.content[getLocale()] ?? tf.content.en;
+      return c.fact;
+    }
+  }
+}
+
 // ─── Quiz questions ──────────────────────────────────────────
-/** Build the full bank of possible quiz questions (distractors fixed per call). */
+// Built fresh per session in the current locale (prompt and options
+// localized; capital names stay as proper nouns).
 function buildQuizBank(): GeoQuizQuestion[] {
   const flags = getAllFlags();
   const withCapital = flags.filter((f) => countryCapitals[f.id]);
   const allCapitals = Array.from(new Set(withCapital.map((f) => countryCapitals[f.id])));
-  const allNames = flags.map((f) => f.name);
   const regions = Array.from(new Set(flags.map((f) => f.region)));
 
   const bank: GeoQuizQuestion[] = [];
@@ -138,7 +191,7 @@ function buildQuizBank(): GeoQuizQuestion[] {
     bank.push({
       id: `q-cap-${f.id}`,
       flagId: f.id,
-      prompt: `What is the capital of ${f.name}?`,
+      prompt: t('geofacts.qCapital', { country: flagName(f) }),
       options,
       answerIndex: options.indexOf(correct),
     });
@@ -146,14 +199,15 @@ function buildQuizBank(): GeoQuizQuestion[] {
 
   // Which country has this capital
   for (const f of withCapital) {
-    const correct = f.name;
-    const distractors = shuffle(allNames.filter((n) => n !== correct)).slice(0, 3);
-    const options = shuffle([correct, ...distractors]);
+    const correctId = f.id;
+    const distractorIds = shuffle(flags.filter((x) => x.id !== correctId)).slice(0, 3).map((x) => x.id);
+    const ids = shuffle([correctId, ...distractorIds]);
+    const options = ids.map((id) => countryLabel(id));
     bank.push({
       id: `q-rcap-${f.id}`,
-      prompt: `${countryCapitals[f.id]} is the capital of which country?`,
+      prompt: t('geofacts.qReverseCapital', { capital: countryCapitals[f.id] }),
       options,
-      answerIndex: options.indexOf(correct),
+      answerIndex: ids.indexOf(correctId),
     });
   }
 
@@ -161,26 +215,21 @@ function buildQuizBank(): GeoQuizQuestion[] {
   for (const f of flags) {
     const correct = f.region;
     const distractors = shuffle(regions.filter((r) => r !== correct)).slice(0, 3);
-    const options = shuffle([correct, ...distractors]);
+    const regionList = shuffle([correct, ...distractors]);
+    const options = regionList.map((r) => regionLabel(r));
     bank.push({
       id: `q-reg-${f.id}`,
       flagId: f.id,
-      prompt: `Which region is ${f.name} in?`,
+      prompt: t('geofacts.qRegion', { country: flagName(f) }),
       options,
-      answerIndex: options.indexOf(correct),
+      answerIndex: regionList.indexOf(correct),
     });
   }
 
-  // Curated trivia questions
+  // Curated trivia questions (already localized in the daily fact pool)
   for (const tf of DAILY_FACTS) {
-    const en = tf.content.en;
-    bank.push({
-      id: `q-tr-${tf.id}`,
-      flagId: tf.flagId,
-      prompt: en.question,
-      options: en.options,
-      answerIndex: tf.answer,
-    });
+    const c = tf.content[getLocale()] ?? tf.content.en;
+    bank.push({ id: `q-tr-${tf.id}`, flagId: tf.flagId, prompt: c.question, options: c.options, answerIndex: tf.answer });
   }
 
   return bank;

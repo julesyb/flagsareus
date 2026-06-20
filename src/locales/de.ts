@@ -365,6 +365,17 @@ const de: DeepPartial<TranslationStrings> = {
     scoreLine: 'Du hast {correct} von {total} richtig',
     questionOf: 'Frage {current} von {total}',
     factCount: '{count} Fakten',
+    tplCapital: 'Die Hauptstadt von {country} ist {capital}.',
+    tplRegion: '{country} liegt in der Region {region}.',
+    tplBorders: '{country} hat eine Landgrenze mit {count} Ländern.',
+    tplBordersOne: '{country} hat eine Landgrenze mit einem Land.',
+    tplBorderWith: '{country} hat eine Landgrenze mit {other}.',
+    tplIsland: '{country} ist ein Inselstaat ohne Landgrenzen.',
+    tplLandlocked: '{country} ist ein Binnenstaat.',
+    tplTwin: 'Die Flagge von {country} ähnelt stark der von {other}.',
+    qCapital: 'Was ist die Hauptstadt von {country}?',
+    qReverseCapital: '{capital} ist die Hauptstadt welches Landes?',
+    qRegion: 'In welcher Region liegt {country}?',
   },
 
   impostor: {

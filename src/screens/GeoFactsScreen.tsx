@@ -14,7 +14,7 @@ import { fontFamily, fontSize, spacing, borderRadius, typography, buildButtons, 
 import { useTheme } from '../contexts/ThemeContext';
 import { t } from '../utils/i18n';
 import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
-import { getGeoFacts, getGeoFactCount, generateGeoQuiz, GeoFact, GeoQuizQuestion } from '../data/geoFacts';
+import { getGeoFacts, getGeoFactCount, generateGeoQuiz, renderGeoFact, GeoFact, GeoQuizQuestion } from '../data/geoFacts';
 import { RootStackParamList } from '../types/navigation';
 import { FlagImageSmall } from '../components/FlagImage';
 import FlagImage from '../components/FlagImage';
@@ -103,7 +103,7 @@ function BrowseView({ colors }: { colors: ThemeColors }) {
         ) : (
           <View style={styles.factNoFlag} />
         )}
-        <Text style={styles.factText}>{item.text}</Text>
+        <Text style={styles.factText}>{renderGeoFact(item)}</Text>
       </View>
     ),
     [styles],

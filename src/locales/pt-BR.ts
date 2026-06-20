@@ -365,6 +365,17 @@ const ptBR: DeepPartial<TranslationStrings> = {
     scoreLine: 'Voc\u00ea acertou {correct} de {total}',
     questionOf: 'Pergunta {current} de {total}',
     factCount: '{count} curiosidades',
+    tplCapital: 'A capital de {country} é {capital}.',
+    tplRegion: '{country} fica na região {region}.',
+    tplBorders: '{country} faz fronteira terrestre com {count} países.',
+    tplBordersOne: '{country} faz fronteira terrestre com um país.',
+    tplBorderWith: '{country} faz fronteira terrestre com {other}.',
+    tplIsland: '{country} é um país insular sem fronteiras terrestres.',
+    tplLandlocked: '{country} é um país sem litoral.',
+    tplTwin: 'A bandeira de {country} é muito parecida com a de {other}.',
+    qCapital: 'Qual é a capital de {country}?',
+    qReverseCapital: '{capital} é a capital de qual país?',
+    qRegion: 'Em que região fica {country}?',
   },
 
   impostor: {

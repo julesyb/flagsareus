@@ -365,6 +365,17 @@ const zh: DeepPartial<TranslationStrings> = {
     scoreLine: '你答对了 {total} 题中的 {correct} 题',
     questionOf: '第 {current} 题，共 {total} 题',
     factCount: '{count} 条冷知识',
+    tplCapital: '{country}的首都是{capital}。',
+    tplRegion: '{country}位于{region}地区。',
+    tplBorders: '{country}与 {count} 个国家接壤。',
+    tplBordersOne: '{country}与一个国家接壤。',
+    tplBorderWith: '{country}与{other}接壤。',
+    tplIsland: '{country}是一个没有陆地边界的岛国。',
+    tplLandlocked: '{country}是一个内陆国家。',
+    tplTwin: '{country}的国旗与{other}的国旗非常相似。',
+    qCapital: '{country}的首都是哪里？',
+    qReverseCapital: '{capital}是哪个国家的首都？',
+    qRegion: '{country}位于哪个地区？',
   },
 
   impostor: {

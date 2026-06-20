@@ -377,6 +377,17 @@ const en = {
     scoreLine: 'You scored {correct} out of {total}',
     questionOf: 'Question {current} of {total}',
     factCount: '{count} facts',
+    tplCapital: 'The capital of {country} is {capital}.',
+    tplRegion: '{country} is located in {region}.',
+    tplBorders: '{country} shares a land border with {count} countries.',
+    tplBordersOne: '{country} shares a land border with one country.',
+    tplBorderWith: '{country} shares a land border with {other}.',
+    tplIsland: '{country} is an island nation with no land borders.',
+    tplLandlocked: '{country} is a landlocked country.',
+    tplTwin: "{country}'s flag looks very similar to that of {other}.",
+    qCapital: 'What is the capital of {country}?',
+    qReverseCapital: '{capital} is the capital of which country?',
+    qRegion: 'Which region is {country} in?',
   },
 
   // ─── Flag Impostor Screen ───────────────────────────────
