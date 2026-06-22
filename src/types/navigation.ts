@@ -2,7 +2,6 @@ import { GameConfig, GameResult, GameMode } from './index';
 import { ChallengeData } from '../utils/challengeCode';
 
 export type RootStackParamList = {
-  Onboarding: undefined;
   Home: undefined;
   GameSetup: { initialMode?: GameMode; initialDifficulty?: 'easy' | 'medium' | 'hard' } | undefined;
   Game: { config: GameConfig; challenge?: ChallengeData; playerName?: string };

@@ -85,6 +85,13 @@ const ptBR: DeepPartial<TranslationStrings> = {
     flagsToReview: '{count} bandeira para revisar',
     flagsToReviewPlural: '{count} bandeiras para revisar',
     onboardingScores: 'Pontua\u00e7\u00f5es',
+    test: 'Teste',
+    testSub: 'De 10, M\u00e9dio',
+    baselineOverall: '{pct}% no total',
+    chooseYourGame: 'Escolha seu jogo',
+    chooseYourGameDesc: 'Escolha um modo e dificuldade',
+    practice: 'Praticar',
+    practiceDesc: 'Explore todas as bandeiras',
   },
 
   setup: {
