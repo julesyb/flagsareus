@@ -1,9 +1,7 @@
 import { getAllFlags } from './index';
 import { countryCapitals } from './countryCapitals';
-import { countryNeighbors } from './countryNeighbors';
-import { twinPairs } from './countryAliases';
 import { t, getLocale, type LocaleCode } from '../utils/i18n';
-import { flagName, translateName } from './countryNames';
+import { flagName } from './countryNames';
 import type { FlagItem } from '../types';
 
 // ─── Fact library ────────────────────────────────────────────
@@ -1633,6 +1631,462 @@ export const DAILY_FACTS: DailyFact[] = [
       },
     },
   },
+  {
+    id: 'monaco_central_park',
+    flagId: 'mc',
+    answer: 2,
+    note: 'Monaco is the second smallest country, smaller than NYC Central Park (~2 km2 vs ~3.4 km2).',
+    content: {
+      en: {
+        question: "Which country is smaller than New York City's Central Park?",
+        options: ['Malta', 'Liechtenstein', 'Monaco', 'Andorra'],
+        fact: "Monaco is the second smallest country in the world, covering an area smaller than New York City's Central Park.",
+      },
+      fr: {
+        question: 'Quel pays est plus petit que Central Park a New York ?',
+        options: ['Malte', 'Liechtenstein', 'Monaco', 'Andorre'],
+        fact: 'Monaco est le deuxieme plus petit pays du monde, avec une superficie inferieure a celle de Central Park a New York.',
+      },
+      es: {
+        question: 'Que pais es mas pequeno que el Central Park de Nueva York?',
+        options: ['Malta', 'Liechtenstein', 'Monaco', 'Andorra'],
+        fact: 'Monaco es el segundo pais mas pequeno del mundo, con una superficie menor que la del Central Park de Nueva York.',
+      },
+      de: {
+        question: 'Welches Land ist kleiner als der Central Park in New York?',
+        options: ['Malta', 'Liechtenstein', 'Monaco', 'Andorra'],
+        fact: 'Monaco ist das zweitkleinste Land der Welt und kleiner als der Central Park in New York.',
+      },
+      'pt-BR': {
+        question: 'Qual pais e menor que o Central Park de Nova York?',
+        options: ['Malta', 'Liechtenstein', 'Monaco', 'Andorra'],
+        fact: 'Monaco e o segundo menor pais do mundo, com area menor que a do Central Park, em Nova York.',
+      },
+      zh: {
+        question: '哪个国家比纽约中央公园还要小？',
+        options: ['马耳他', '列支敦士登', '摩纳哥', '安道尔'],
+        fact: '摩纳哥是世界第二小的国家，面积比纽约中央公园还要小。',
+      },
+    },
+  },
+  {
+    id: 'australia_kangaroos',
+    flagId: 'au',
+    answer: 1,
+    note: 'Australia has more kangaroos than people (tens of millions).',
+    content: {
+      en: {
+        question: 'In which country do kangaroos outnumber people?',
+        options: ['New Zealand', 'Australia', 'South Africa', 'Argentina'],
+        fact: 'Australia is home to more kangaroos than people, with tens of millions hopping across the country.',
+      },
+      fr: {
+        question: 'Dans quel pays les kangourous sont-ils plus nombreux que les habitants ?',
+        options: ['Nouvelle-Zelande', 'Australie', 'Afrique du Sud', 'Argentine'],
+        fact: "L'Australie compte plus de kangourous que d'habitants, avec des dizaines de millions a travers le pays.",
+      },
+      es: {
+        question: 'En que pais hay mas canguros que personas?',
+        options: ['Nueva Zelanda', 'Australia', 'Sudafrica', 'Argentina'],
+        fact: 'En Australia hay mas canguros que personas, con decenas de millones repartidos por todo el pais.',
+      },
+      de: {
+        question: 'In welchem Land gibt es mehr Kaengurus als Menschen?',
+        options: ['Neuseeland', 'Australien', 'Suedafrika', 'Argentinien'],
+        fact: 'In Australien leben mehr Kaengurus als Menschen, viele Millionen verteilt ueber das ganze Land.',
+      },
+      'pt-BR': {
+        question: 'Em qual pais ha mais cangurus do que pessoas?',
+        options: ['Nova Zelandia', 'Australia', 'Africa do Sul', 'Argentina'],
+        fact: 'Na Australia ha mais cangurus do que pessoas, dezenas de milhoes espalhados pelo pais.',
+      },
+      zh: {
+        question: '在哪个国家袋鼠的数量比人还多？',
+        options: ['新西兰', '澳大利亚', '南非', '阿根廷'],
+        fact: '澳大利亚的袋鼠数量比人口还多，全国有数千万只。',
+      },
+    },
+  },
+  {
+    id: 'iceland_mosquitoes',
+    flagId: 'is',
+    answer: 3,
+    note: 'Iceland is one of the only countries with virtually no mosquitoes.',
+    content: {
+      en: {
+        question: 'Which country has almost no mosquitoes?',
+        options: ['Norway', 'Finland', 'Ireland', 'Iceland'],
+        fact: 'Iceland is one of the only places on Earth with virtually no mosquitoes, despite its many lakes and ponds.',
+      },
+      fr: {
+        question: "Quel pays n'a presque pas de moustiques ?",
+        options: ['Norvege', 'Finlande', 'Irlande', 'Islande'],
+        fact: "L'Islande est l'un des seuls endroits sur Terre presque sans moustiques, malgre ses nombreux lacs et etangs.",
+      },
+      es: {
+        question: 'Que pais casi no tiene mosquitos?',
+        options: ['Noruega', 'Finlandia', 'Irlanda', 'Islandia'],
+        fact: 'Islandia es uno de los pocos lugares del mundo practicamente sin mosquitos, a pesar de sus muchos lagos y estanques.',
+      },
+      de: {
+        question: 'Welches Land hat fast keine Muecken?',
+        options: ['Norwegen', 'Finnland', 'Irland', 'Island'],
+        fact: 'Island ist einer der wenigen Orte der Welt fast ohne Muecken, trotz seiner vielen Seen und Teiche.',
+      },
+      'pt-BR': {
+        question: 'Qual pais quase nao tem mosquitos?',
+        options: ['Noruega', 'Finlandia', 'Irlanda', 'Islandia'],
+        fact: 'A Islandia e um dos unicos lugares do mundo praticamente sem mosquitos, apesar de seus muitos lagos e lagoas.',
+      },
+      zh: {
+        question: '哪个国家几乎没有蚊子？',
+        options: ['挪威', '芬兰', '爱尔兰', '冰岛'],
+        fact: '尽管湖泊众多，冰岛却是地球上极少数几乎没有蚊子的地方之一。',
+      },
+    },
+  },
+  {
+    id: 'new_zealand_snakes',
+    flagId: 'nz',
+    answer: 0,
+    note: 'New Zealand has no native land snakes.',
+    content: {
+      en: {
+        question: 'New Zealand has no native species of which animal?',
+        options: ['Snakes', 'Birds', 'Spiders', 'Fish'],
+        fact: 'New Zealand has no native land snakes, one of the few countries in the world where none are found.',
+      },
+      fr: {
+        question: "La Nouvelle-Zelande n'a aucune espece native de quel animal ?",
+        options: ['Serpents', 'Oiseaux', 'Araignees', 'Poissons'],
+        fact: "La Nouvelle-Zelande n'a aucun serpent terrestre indigene, l'un des rares pays au monde dans ce cas.",
+      },
+      es: {
+        question: 'Nueva Zelanda no tiene ninguna especie nativa de que animal?',
+        options: ['Serpientes', 'Aves', 'Aranas', 'Peces'],
+        fact: 'Nueva Zelanda no tiene serpientes terrestres nativas, uno de los pocos paises del mundo donde no hay ninguna.',
+      },
+      de: {
+        question: 'Von welchem Tier gibt es in Neuseeland keine heimische Art?',
+        options: ['Schlangen', 'Voegel', 'Spinnen', 'Fische'],
+        fact: 'In Neuseeland gibt es keine heimischen Landschlangen, eines der wenigen Laender der Welt ganz ohne sie.',
+      },
+      'pt-BR': {
+        question: 'A Nova Zelandia nao tem nenhuma especie nativa de qual animal?',
+        options: ['Serpentes', 'Aves', 'Aranhas', 'Peixes'],
+        fact: 'A Nova Zelandia nao tem serpentes terrestres nativas, um dos poucos paises do mundo onde nao existe nenhuma.',
+      },
+      zh: {
+        question: '新西兰没有以下哪种动物的本土物种？',
+        options: ['蛇', '鸟', '蜘蛛', '鱼'],
+        fact: '新西兰没有本土陆生蛇类，是世界上极少数完全没有蛇的国家之一。',
+      },
+    },
+  },
+  {
+    id: 'mongolia_density',
+    flagId: 'mn',
+    answer: 2,
+    note: 'Mongolia is the most sparsely populated sovereign country.',
+    content: {
+      en: {
+        question: 'Which is the most sparsely populated sovereign country?',
+        options: ['Australia', 'Canada', 'Mongolia', 'Namibia'],
+        fact: 'Mongolia is the most sparsely populated sovereign country, with vast stretches of empty steppe between its few cities.',
+      },
+      fr: {
+        question: 'Quel est le pays souverain le moins densement peuple ?',
+        options: ['Australie', 'Canada', 'Mongolie', 'Namibie'],
+        fact: "La Mongolie est le pays souverain le moins densement peuple, avec d'immenses etendues de steppe vide entre ses rares villes.",
+      },
+      es: {
+        question: 'Cual es el pais soberano menos densamente poblado?',
+        options: ['Australia', 'Canada', 'Mongolia', 'Namibia'],
+        fact: 'Mongolia es el pais soberano con menor densidad de poblacion, con enormes extensiones de estepa vacia entre sus pocas ciudades.',
+      },
+      de: {
+        question: 'Welches ist das am duennsten besiedelte souveraene Land?',
+        options: ['Australien', 'Kanada', 'Mongolei', 'Namibia'],
+        fact: 'Die Mongolei ist das am duennsten besiedelte souveraene Land, mit weiten leeren Steppen zwischen ihren wenigen Staedten.',
+      },
+      'pt-BR': {
+        question: 'Qual e o pais soberano menos densamente povoado?',
+        options: ['Australia', 'Canada', 'Mongolia', 'Namibia'],
+        fact: 'A Mongolia e o pais soberano menos densamente povoado, com vastas estepes vazias entre suas poucas cidades.',
+      },
+      zh: {
+        question: '哪个是人口密度最低的主权国家？',
+        options: ['澳大利亚', '加拿大', '蒙古', '纳米比亚'],
+        fact: '蒙古是世界上人口密度最低的主权国家，少数城市之间是广袤空旷的草原。',
+      },
+    },
+  },
+  {
+    id: 'philippines_islands',
+    flagId: 'ph',
+    answer: 1,
+    note: 'The Philippines has more than 7,000 islands.',
+    content: {
+      en: {
+        question: 'How many islands make up the Philippines?',
+        options: ['About 500', 'More than 7,000', 'About 1,500', 'More than 20,000'],
+        fact: 'The Philippines is an archipelago of more than 7,000 islands, only about 2,000 of which are inhabited.',
+      },
+      fr: {
+        question: "De combien d'iles est compose l'archipel des Philippines ?",
+        options: ['Environ 500', 'Plus de 7 000', 'Environ 1 500', 'Plus de 20 000'],
+        fact: 'Les Philippines forment un archipel de plus de 7 000 iles, dont environ 2 000 seulement sont habitees.',
+      },
+      es: {
+        question: 'Por cuantas islas esta formado Filipinas?',
+        options: ['Unas 500', 'Mas de 7000', 'Unas 1500', 'Mas de 20000'],
+        fact: 'Filipinas es un archipielago de mas de 7000 islas, de las cuales solo unas 2000 estan habitadas.',
+      },
+      de: {
+        question: 'Aus wie vielen Inseln bestehen die Philippinen?',
+        options: ['Etwa 500', 'Mehr als 7.000', 'Etwa 1.500', 'Mehr als 20.000'],
+        fact: 'Die Philippinen sind ein Archipel aus mehr als 7.000 Inseln, von denen nur etwa 2.000 bewohnt sind.',
+      },
+      'pt-BR': {
+        question: 'Por quantas ilhas as Filipinas sao formadas?',
+        options: ['Cerca de 500', 'Mais de 7.000', 'Cerca de 1.500', 'Mais de 20.000'],
+        fact: 'As Filipinas sao um arquipelago de mais de 7.000 ilhas, das quais apenas cerca de 2.000 sao habitadas.',
+      },
+      zh: {
+        question: '菲律宾由多少个岛屿组成？',
+        options: ['约500个', '超过7000个', '约1500个', '超过20000个'],
+        fact: '菲律宾是一个由7000多个岛屿组成的群岛，其中只有约2000个有人居住。',
+      },
+    },
+  },
+  {
+    id: 'china_borders',
+    flagId: 'cn',
+    answer: 3,
+    note: 'China shares land borders with 14 countries, tied with Russia for the most.',
+    content: {
+      en: {
+        question: 'How many countries share a land border with China?',
+        options: ['6', '9', '20', '14'],
+        fact: 'China shares its land borders with 14 different countries, tied with Russia for the most in the world.',
+      },
+      fr: {
+        question: 'Combien de pays partagent une frontiere terrestre avec la Chine ?',
+        options: ['6', '9', '20', '14'],
+        fact: 'La Chine partage ses frontieres terrestres avec 14 pays, a egalite avec la Russie pour le record mondial.',
+      },
+      es: {
+        question: 'Cuantos paises comparten frontera terrestre con China?',
+        options: ['6', '9', '20', '14'],
+        fact: 'China comparte frontera terrestre con 14 paises, empatada con Rusia como la mayor cantidad del mundo.',
+      },
+      de: {
+        question: 'Mit wie vielen Laendern teilt sich China eine Landgrenze?',
+        options: ['6', '9', '20', '14'],
+        fact: 'China teilt sich mit 14 Laendern eine Landgrenze, zusammen mit Russland die meisten der Welt.',
+      },
+      'pt-BR': {
+        question: 'Quantos paises fazem fronteira terrestre com a China?',
+        options: ['6', '9', '20', '14'],
+        fact: 'A China faz fronteira terrestre com 14 paises, empatada com a Russia como o maior numero do mundo.',
+      },
+      zh: {
+        question: '有多少个国家与中国接壤（陆地边界）？',
+        options: ['6', '9', '20', '14'],
+        fact: '中国与14个国家接壤，与俄罗斯并列为世界上邻国最多的国家。',
+      },
+    },
+  },
+  {
+    id: 'bolivia_uyuni',
+    flagId: 'bo',
+    answer: 0,
+    note: 'Bolivia has the largest salt flat in the world (Salar de Uyuni).',
+    content: {
+      en: {
+        question: "Which country has the world's largest salt flat?",
+        options: ['Bolivia', 'Chile', 'Argentina', 'Peru'],
+        fact: "Bolivia's Salar de Uyuni is the largest salt flat on Earth, turning into a vast natural mirror when covered by a thin layer of water.",
+      },
+      fr: {
+        question: 'Quel pays abrite le plus grand desert de sel du monde ?',
+        options: ['Bolivie', 'Chili', 'Argentine', 'Perou'],
+        fact: "Le Salar d'Uyuni, en Bolivie, est le plus grand desert de sel du monde et se transforme en immense miroir naturel apres la pluie.",
+      },
+      es: {
+        question: 'Que pais tiene el salar mas grande del mundo?',
+        options: ['Bolivia', 'Chile', 'Argentina', 'Peru'],
+        fact: 'El Salar de Uyuni, en Bolivia, es el mayor desierto de sal del mundo y se convierte en un enorme espejo natural cuando se cubre de agua.',
+      },
+      de: {
+        question: 'Welches Land hat die groesste Salzflaeche der Welt?',
+        options: ['Bolivien', 'Chile', 'Argentinien', 'Peru'],
+        fact: 'Der Salar de Uyuni in Bolivien ist die groesste Salzflaeche der Erde und wird nach Regen zu einem riesigen natuerlichen Spiegel.',
+      },
+      'pt-BR': {
+        question: 'Qual pais tem o maior deserto de sal do mundo?',
+        options: ['Bolivia', 'Chile', 'Argentina', 'Peru'],
+        fact: 'O Salar de Uyuni, na Bolivia, e o maior deserto de sal do mundo e vira um imenso espelho natural quando coberto por agua.',
+      },
+      zh: {
+        question: '世界上最大的盐滩位于哪个国家？',
+        options: ['玻利维亚', '智利', '阿根廷', '秘鲁'],
+        fact: '玻利维亚的乌尤尼盐沼是地球上最大的盐滩，被薄薄一层水覆盖时会变成巨大的天然镜面。',
+      },
+    },
+  },
+  {
+    id: 'lesotho_elevation',
+    flagId: 'ls',
+    answer: 2,
+    note: 'Lesotho is the only country entirely above 1,000 m elevation.',
+    content: {
+      en: {
+        question: 'Which country lies entirely above 1,000 metres in elevation?',
+        options: ['Nepal', 'Switzerland', 'Lesotho', 'Bhutan'],
+        fact: 'Lesotho is the only country on Earth whose entire territory sits above 1,000 metres in elevation.',
+      },
+      fr: {
+        question: "Quel pays se situe entierement au-dessus de 1 000 metres d'altitude ?",
+        options: ['Nepal', 'Suisse', 'Lesotho', 'Bhoutan'],
+        fact: "Le Lesotho est le seul pays au monde dont l'integralite du territoire se trouve au-dessus de 1 000 metres d'altitude.",
+      },
+      es: {
+        question: 'Que pais se encuentra por completo a mas de 1000 metros de altitud?',
+        options: ['Nepal', 'Suiza', 'Lesoto', 'Butan'],
+        fact: 'Lesoto es el unico pais del mundo cuyo territorio se encuentra por completo a mas de 1000 metros de altitud.',
+      },
+      de: {
+        question: 'Welches Land liegt vollstaendig ueber 1.000 Metern Hoehe?',
+        options: ['Nepal', 'Schweiz', 'Lesotho', 'Bhutan'],
+        fact: 'Lesotho ist das einzige Land der Welt, dessen gesamtes Staatsgebiet ueber 1.000 Metern Hoehe liegt.',
+      },
+      'pt-BR': {
+        question: 'Qual pais esta inteiramente acima de 1.000 metros de altitude?',
+        options: ['Nepal', 'Suica', 'Lesoto', 'Butao'],
+        fact: 'Lesoto e o unico pais do mundo cujo territorio esta inteiramente acima de 1.000 metros de altitude.',
+      },
+      zh: {
+        question: '哪个国家的全部国土都在海拔1000米以上？',
+        options: ['尼泊尔', '瑞士', '莱索托', '不丹'],
+        fact: '莱索托是世界上唯一一个全部国土都位于海拔1000米以上的国家。',
+      },
+    },
+  },
+  {
+    id: 'paraguay_flag',
+    flagId: 'py',
+    answer: 1,
+    note: 'Paraguay has a different emblem on each side of its flag.',
+    content: {
+      en: {
+        question: "Which country's flag shows a different emblem on each side?",
+        options: ['Moldova', 'Paraguay', 'Saudi Arabia', 'Sri Lanka'],
+        fact: "Paraguay's flag is one of the only national flags with a different emblem on the front and the back.",
+      },
+      fr: {
+        question: 'Le drapeau de quel pays porte un embleme different sur chaque face ?',
+        options: ['Moldavie', 'Paraguay', 'Arabie saoudite', 'Sri Lanka'],
+        fact: "Le drapeau du Paraguay est l'un des seuls drapeaux nationaux a porter un embleme different a l'avant et a l'arriere.",
+      },
+      es: {
+        question: 'La bandera de que pais muestra un emblema diferente en cada cara?',
+        options: ['Moldavia', 'Paraguay', 'Arabia Saudita', 'Sri Lanka'],
+        fact: 'La bandera de Paraguay es una de las pocas banderas nacionales con un emblema diferente en el anverso y el reverso.',
+      },
+      de: {
+        question: 'Welche Landesflagge zeigt auf jeder Seite ein anderes Wappen?',
+        options: ['Moldau', 'Paraguay', 'Saudi-Arabien', 'Sri Lanka'],
+        fact: 'Die Flagge Paraguays ist eine der wenigen Nationalflaggen mit einem anderen Wappen auf Vorder- und Rueckseite.',
+      },
+      'pt-BR': {
+        question: 'A bandeira de qual pais mostra um emblema diferente em cada lado?',
+        options: ['Moldova', 'Paraguai', 'Arabia Saudita', 'Sri Lanka'],
+        fact: 'A bandeira do Paraguai e uma das poucas bandeiras nacionais com um emblema diferente na frente e no verso.',
+      },
+      zh: {
+        question: '哪个国家的国旗正反两面图案不同？',
+        options: ['摩尔多瓦', '巴拉圭', '沙特阿拉伯', '斯里兰卡'],
+        fact: '巴拉圭国旗是世界上极少数正反两面图案不同的国旗之一。',
+      },
+    },
+  },
+  {
+    id: 'mozambique_flag',
+    flagId: 'mz',
+    answer: 0,
+    note: "Mozambique's flag is the only national flag with a modern rifle (AK-47).",
+    content: {
+      en: {
+        question: 'Which national flag features a modern rifle?',
+        options: ['Mozambique', 'Angola', 'Zimbabwe', 'Kenya'],
+        fact: "Mozambique's flag is the only national flag in the world to feature a modern rifle, an AK-47, crossed with a hoe over an open book.",
+      },
+      fr: {
+        question: 'Quel drapeau national represente un fusil moderne ?',
+        options: ['Mozambique', 'Angola', 'Zimbabwe', 'Kenya'],
+        fact: "Le drapeau du Mozambique est le seul drapeau national au monde a representer un fusil moderne, une AK-47, croisee avec une houe sur un livre ouvert.",
+      },
+      es: {
+        question: 'Que bandera nacional incluye un fusil moderno?',
+        options: ['Mozambique', 'Angola', 'Zimbabue', 'Kenia'],
+        fact: 'La bandera de Mozambique es la unica bandera nacional del mundo que incluye un fusil moderno, un AK-47, cruzado con una azada sobre un libro abierto.',
+      },
+      de: {
+        question: 'Welche Nationalflagge zeigt ein modernes Gewehr?',
+        options: ['Mosambik', 'Angola', 'Simbabwe', 'Kenia'],
+        fact: 'Die Flagge Mosambiks ist die einzige Nationalflagge der Welt mit einem modernen Gewehr, einer AK-47, gekreuzt mit einer Hacke ueber einem offenen Buch.',
+      },
+      'pt-BR': {
+        question: 'Qual bandeira nacional traz um fuzil moderno?',
+        options: ['Mocambique', 'Angola', 'Zimbabue', 'Quenia'],
+        fact: 'A bandeira de Mocambique e a unica bandeira nacional do mundo a trazer um fuzil moderno, um AK-47, cruzado com uma enxada sobre um livro aberto.',
+      },
+      zh: {
+        question: '哪个国家的国旗上有一支现代步枪？',
+        options: ['莫桑比克', '安哥拉', '津巴布韦', '肯尼亚'],
+        fact: '莫桑比克国旗是世界上唯一一面绘有现代步枪（AK-47）的国旗，步枪与锄头交叉，置于一本翻开的书上。',
+      },
+    },
+  },
+  {
+    id: 'bhutan_carbon',
+    flagId: 'bt',
+    answer: 3,
+    note: 'Bhutan is carbon negative, absorbing more CO2 than it emits.',
+    content: {
+      en: {
+        question: 'Which country absorbs more carbon dioxide than it produces?',
+        options: ['Norway', 'Costa Rica', 'Iceland', 'Bhutan'],
+        fact: 'Bhutan is one of the only carbon negative countries on Earth, its vast forests absorbing more carbon dioxide than the whole country emits.',
+      },
+      fr: {
+        question: "Quel pays absorbe plus de dioxyde de carbone qu'il n'en produit ?",
+        options: ['Norvege', 'Costa Rica', 'Islande', 'Bhoutan'],
+        fact: "Le Bhoutan est l'un des seuls pays a bilan carbone negatif au monde, ses vastes forets absorbant plus de dioxyde de carbone que le pays n'en emet.",
+      },
+      es: {
+        question: 'Que pais absorbe mas dioxido de carbono del que produce?',
+        options: ['Noruega', 'Costa Rica', 'Islandia', 'Butan'],
+        fact: 'Butan es uno de los unicos paises del mundo con balance de carbono negativo, ya que sus enormes bosques absorben mas dioxido de carbono del que emite todo el pais.',
+      },
+      de: {
+        question: 'Welches Land nimmt mehr Kohlendioxid auf, als es ausstoesst?',
+        options: ['Norwegen', 'Costa Rica', 'Island', 'Bhutan'],
+        fact: 'Bhutan ist eines der wenigen klimanegativen Laender der Welt, da seine ausgedehnten Waelder mehr Kohlendioxid aufnehmen, als das ganze Land ausstoesst.',
+      },
+      'pt-BR': {
+        question: 'Qual pais absorve mais dioxido de carbono do que produz?',
+        options: ['Noruega', 'Costa Rica', 'Islandia', 'Butao'],
+        fact: 'O Butao e um dos unicos paises do mundo com balanco de carbono negativo, pois suas vastas florestas absorvem mais dioxido de carbono do que todo o pais emite.',
+      },
+      zh: {
+        question: '哪个国家吸收的二氧化碳比它排放的还多？',
+        options: ['挪威', '哥斯达黎加', '冰岛', '不丹'],
+        fact: '不丹是地球上极少数实现碳负排放的国家之一，其广袤的森林吸收的二氧化碳超过全国的排放量。',
+      },
+    },
+  },
 ];
 
 // Returns a numeric seed from a date string like "2026-06-19".
@@ -1669,67 +2123,83 @@ export function getFactContent(fact: DailyFact, locale?: LocaleCode): FactConten
 // The browse/quiz layer (see the file header for how it relates to the
 // trivia pool above).
 //
-// Generated facts are stored as structured records (a type plus ids), not
-// prose. The display sentence is built at render time from localized
-// templates and localized country/region names, so every fact is fully
-// translated in all six locales without hand-translating thousands of
-// sentences. Only fact types chosen to be time-stable are included (no
-// population, GDP, leaders, or other figures that change).
+// Browse surfaces the curated trivia pool above as a feed of genuinely
+// interesting facts. Each fact is tagged with a category so the feed can be
+// filtered and each card can show a colored badge. Categories are data, not
+// hardcoded in the screen, so adding a fact only means adding it here.
 
-// The 44 landlocked countries (ISO-2). Stable and well established; only
-// those present in the dataset produce facts.
-const LANDLOCKED = new Set<string>([
-  'af', 'am', 'at', 'az', 'by', 'bt', 'bo', 'bw', 'bf', 'bi', 'cf', 'td',
-  'cz', 'sz', 'et', 'hu', 'kz', 'kg', 'la', 'ls', 'li', 'lu', 'mw', 'ml',
-  'md', 'mn', 'np', 'ne', 'mk', 'py', 'rw', 'sm', 'rs', 'sk', 'ss', 'ch',
-  'tj', 'tm', 'ug', 'uz', 'zm', 'zw', 'ad', 'xk',
-]);
+export type FactCategory = 'flags' | 'records' | 'nature' | 'geography' | 'history';
 
-// "X is in region Y" facts are only generated for this curated set of
-// well-known countries whose continental placement is clear and
-// uncontroversial. Transcontinental or commonly-debated cases (Russia,
-// Turkey, Egypt, Kazakhstan, the Caucasus, Cyprus) and obscure micro-states
-// are intentionally left out, since a flat "located in" claim is either
-// misleading or too obscure there. This keeps the Browse list focused on
-// richer trivia instead of a long run of repetitive region lines.
-const REGION_FACT_COUNTRIES = new Set<string>([
-  // Africa
-  'dz', 'et', 'gh', 'ke', 'ma', 'ng', 'sn', 'tz', 'ug', 'za',
-  // Asia
-  'cn', 'id', 'in', 'jp', 'kr', 'mn', 'np', 'pk', 'ph', 'sa', 'th', 'vn',
-  // Europe
-  'de', 'es', 'fr', 'gb', 'gr', 'ie', 'it', 'nl', 'no', 'pl', 'pt', 'se',
-  // Americas
-  'ar', 'br', 'ca', 'cl', 'co', 'cu', 'jm', 'mx', 'pe', 'us', 'uy', 've',
-  // Oceania
-  'au', 'fj', 'nz', 'pg',
-]);
+export const FACT_CATEGORIES: FactCategory[] = ['flags', 'records', 'nature', 'geography', 'history'];
 
-export type GeoFactType =
-  | 'capital'
-  | 'region'
-  | 'borders'
-  | 'borderWith'
-  | 'island'
-  | 'landlocked'
-  | 'twin'
-  | 'trivia';
+// Category per curated fact id. Anything missing falls back to 'geography'.
+const FACT_CATEGORY: Record<string, FactCategory> = {
+  nepal_flag_shape: 'flags',
+  canada_lakes: 'nature',
+  largest_country: 'records',
+  south_africa_capitals: 'geography',
+  bhutan_dragon: 'flags',
+  angel_falls: 'nature',
+  everest_border: 'nature',
+  longest_coastline: 'records',
+  largest_africa: 'records',
+  indonesia_monaco: 'flags',
+  argentina_silver: 'history',
+  cambodia_building: 'flags',
+  france_timezones: 'records',
+  ethiopia_uncolonized: 'history',
+  ecuador_equator: 'geography',
+  istanbul_two_continents: 'geography',
+  largest_desert: 'nature',
+  sudan_pyramids: 'history',
+  brazil_motto: 'flags',
+  largest_island: 'geography',
+  brazil_largest_samerica: 'records',
+  china_largest_asia: 'records',
+  ukraine_largest_europe: 'records',
+  australia_continent_country: 'geography',
+  vatican_smallest: 'records',
+  cuba_largest_caribbean: 'records',
+  kazakhstan_largest_landlocked: 'records',
+  indonesia_most_volcanoes: 'nature',
+  sweden_most_islands: 'nature',
+  africa_most_countries: 'geography',
+  kiribati_four_hemispheres: 'geography',
+  saint_lucia_named_woman: 'history',
+  nauru_no_capital: 'geography',
+  bolivia_highest_capital: 'records',
+  liechtenstein_double_landlocked: 'geography',
+  caspian_largest_lake: 'nature',
+  chile_longest_country: 'records',
+  denmark_oldest_flag: 'flags',
+  canada_us_longest_border: 'geography',
+  san_marino_oldest_republic: 'history',
+  saudi_no_rivers: 'nature',
+  tanzania_kilimanjaro: 'nature',
+  monaco_central_park: 'records',
+  australia_kangaroos: 'nature',
+  iceland_mosquitoes: 'nature',
+  new_zealand_snakes: 'nature',
+  mongolia_density: 'records',
+  philippines_islands: 'geography',
+  china_borders: 'geography',
+  bolivia_uyuni: 'nature',
+  lesotho_elevation: 'geography',
+  paraguay_flag: 'flags',
+  mozambique_flag: 'flags',
+  bhutan_carbon: 'nature',
+};
 
 export interface GeoFact {
   id: string;
   /** Country code for the flag shown beside the fact (empty = no flag). */
   flagId: string;
-  /** Canonical English region for filtering ('' = unfiled). */
+  /** Canonical English region of the country, '' when not tied to one. */
   region: string;
-  type: GeoFactType;
-  capital?: string;
-  count?: number;
-  /** Flag id of a related country (border neighbor / twin). */
-  otherId?: string;
-  /** Related country name when no id is available (twin). */
-  otherName?: string;
-  /** Daily-fact id backing a curated trivia entry. */
-  triviaId?: string;
+  /** Topic tag used for filtering and the card badge. */
+  category: FactCategory;
+  /** Daily-fact id backing this curated trivia entry. */
+  triviaId: string;
 }
 
 export interface GeoQuizQuestion {
@@ -1767,87 +2237,33 @@ let cachedFacts: GeoFact[] | null = null;
 export function getGeoFacts(): GeoFact[] {
   if (cachedFacts) return cachedFacts;
 
-  const flags = getAllFlags();
-  const facts: GeoFact[] = [];
-
-  // 1. Curated, high-interest trivia (localized via the daily fact pool).
-  for (const f of DAILY_FACTS) {
+  // Browse is a feed of the curated, high-interest trivia (localized via the
+  // daily fact pool). Generated capital/border facts that used to pad this
+  // list were repetitive, so the feed now leads with the genuinely surprising
+  // facts and tags each with a category.
+  cachedFacts = DAILY_FACTS.map((f) => {
     const flag = f.flagId ? flagsById.get(f.flagId) : undefined;
-    facts.push({ id: `trivia-${f.id}`, flagId: f.flagId ?? '', region: flag?.region ?? '', type: 'trivia', triviaId: f.id });
-  }
-
-  // 2. Generated facts per country, grouped and ordered by country name.
-  const sorted = [...flags].sort((a, b) => a.name.localeCompare(b.name));
-  for (const flag of sorted) {
-    const capital = countryCapitals[flag.id];
-    if (capital) {
-      facts.push({ id: `cap-${flag.id}`, flagId: flag.id, region: flag.region, type: 'capital', capital });
-    }
-
-    if (REGION_FACT_COUNTRIES.has(flag.id)) {
-      facts.push({ id: `reg-${flag.id}`, flagId: flag.id, region: flag.region, type: 'region' });
-    }
-
-    if (LANDLOCKED.has(flag.id)) {
-      facts.push({ id: `land-${flag.id}`, flagId: flag.id, region: flag.region, type: 'landlocked' });
-    }
-
-    const neighbors = countryNeighbors[flag.id];
-    if (neighbors && neighbors.length > 0) {
-      facts.push({ id: `bor-${flag.id}`, flagId: flag.id, region: flag.region, type: 'borders', count: neighbors.length });
-      // One fact per specific border - stable and drawn from the same data
-      // that powers the Neighbors mode.
-      for (const otherId of neighbors) {
-        facts.push({ id: `borw-${flag.id}-${otherId}`, flagId: flag.id, region: flag.region, type: 'borderWith', otherId });
-      }
-    } else if (flag.tags.includes('island_nations')) {
-      facts.push({ id: `isl-${flag.id}`, flagId: flag.id, region: flag.region, type: 'island' });
-    }
-
-    const twins = twinPairs[flag.name];
-    if (twins && twins.length > 0) {
-      facts.push({ id: `twin-${flag.id}`, flagId: flag.id, region: flag.region, type: 'twin', otherName: twins[0] });
-    }
-  }
-
-  cachedFacts = facts;
-  return facts;
+    return {
+      id: `trivia-${f.id}`,
+      flagId: f.flagId ?? '',
+      region: flag?.region ?? '',
+      category: FACT_CATEGORY[f.id] ?? 'geography',
+      triviaId: f.id,
+    };
+  });
+  return cachedFacts;
 }
 
 export function getGeoFactCount(): number {
   return getGeoFacts().length;
 }
 
-/** Build the localized display sentence for a fact in the current locale. */
+/** The interesting takeaway sentence for a curated fact in the current locale. */
 export function renderGeoFact(fact: GeoFact): string {
-  switch (fact.type) {
-    case 'capital':
-      return t('geofacts.tplCapital', { country: countryLabel(fact.flagId), capital: fact.capital ?? '' });
-    case 'region':
-      return t('geofacts.tplRegion', { country: countryLabel(fact.flagId), region: regionLabel(fact.region) });
-    case 'borders':
-      return t(fact.count === 1 ? 'geofacts.tplBordersOne' : 'geofacts.tplBorders', {
-        country: countryLabel(fact.flagId),
-        count: fact.count ?? 0,
-      });
-    case 'borderWith':
-      return t('geofacts.tplBorderWith', { country: countryLabel(fact.flagId), other: countryLabel(fact.otherId ?? '') });
-    case 'island':
-      return t('geofacts.tplIsland', { country: countryLabel(fact.flagId) });
-    case 'landlocked':
-      return t('geofacts.tplLandlocked', { country: countryLabel(fact.flagId) });
-    case 'twin':
-      return t('geofacts.tplTwin', {
-        country: countryLabel(fact.flagId),
-        other: fact.otherId ? countryLabel(fact.otherId) : translateName(fact.otherName ?? ''),
-      });
-    case 'trivia': {
-      const tf = DAILY_FACTS.find((x) => x.id === fact.triviaId);
-      if (!tf) return '';
-      const c = tf.content[getLocale()] ?? tf.content.en;
-      return c.fact;
-    }
-  }
+  const tf = DAILY_FACTS.find((x) => x.id === fact.triviaId);
+  if (!tf) return '';
+  const c = tf.content[getLocale()] ?? tf.content.en;
+  return c.fact;
 }
 
 // ─── Quiz questions ──────────────────────────────────────────
@@ -1917,7 +2333,21 @@ export function getGeoQuizBankSize(): number {
   return buildQuizBank().length;
 }
 
-/** A fresh, shuffled set of quiz questions for one play session. */
+/**
+ * A fresh, shuffled set of quiz questions for one play session. The bank is
+ * dominated by generated capital/region questions, so we guarantee a healthy
+ * share of the curated trivia questions (the genuinely interesting ones)
+ * rather than leaving them to chance.
+ */
 export function generateGeoQuiz(count = 10): GeoQuizQuestion[] {
-  return shuffle(buildQuizBank()).slice(0, count);
+  const bank = buildQuizBank();
+  const trivia = bank.filter((q) => q.id.startsWith('q-tr-'));
+  const other = bank.filter((q) => !q.id.startsWith('q-tr-'));
+
+  const triviaTarget = Math.min(trivia.length, Math.round(count * 0.4));
+  const picked = [
+    ...shuffle(trivia).slice(0, triviaTarget),
+    ...shuffle(other).slice(0, Math.max(0, count - triviaTarget)),
+  ];
+  return shuffle(picked);
 }

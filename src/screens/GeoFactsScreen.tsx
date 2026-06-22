@@ -14,10 +14,11 @@ import { fontFamily, fontSize, spacing, borderRadius, typography, buildButtons, 
 import { useTheme } from '../contexts/ThemeContext';
 import { t } from '../utils/i18n';
 import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
-import { getGeoFacts, getGeoFactCount, generateGeoQuiz, renderGeoFact, GeoFact, GeoQuizQuestion } from '../data/facts';
+import { getGeoFacts, generateGeoQuiz, renderGeoFact, GeoFact, GeoQuizQuestion, FactCategory } from '../data/facts';
 import { RootStackParamList } from '../types/navigation';
 import { FlagImageSmall } from '../components/FlagImage';
 import FlagImage from '../components/FlagImage';
+import { FlagIcon, TrophyIcon, CompassIcon, GlobeIcon, CalendarIcon } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
 import { useNavTabs } from '../hooks/useNavTabs';
@@ -29,13 +30,27 @@ type QuizPhase = 'intro' | 'playing' | 'done';
 
 const GEO_QUIZ_COUNT = 10;
 
-const REGION_FILTERS: { id: string; region: string }[] = [
-  { id: 'all', region: 'all' },
-  { id: 'africa', region: 'Africa' },
-  { id: 'asia', region: 'Asia' },
-  { id: 'europe', region: 'Europe' },
-  { id: 'americas', region: 'Americas' },
-  { id: 'oceania', region: 'Oceania' },
+// Category metadata drives both the filter chips and each card's badge, so
+// adding a fact category only means extending this list (and the locale keys).
+type IconCmp = (props: { size?: number; color: string }) => React.ReactElement;
+type CategoryMeta = { id: FactCategory; labelKey: string; color: (c: ThemeColors) => string; Icon: IconCmp };
+
+const CATEGORY_META: CategoryMeta[] = [
+  { id: 'flags', labelKey: 'geofacts.catFlags', color: (c) => c.modeRed, Icon: FlagIcon },
+  { id: 'records', labelKey: 'geofacts.catRecords', color: (c) => c.goldBright, Icon: TrophyIcon },
+  { id: 'nature', labelKey: 'geofacts.catNature', color: (c) => c.modeGreen, Icon: CompassIcon },
+  { id: 'geography', labelKey: 'geofacts.catGeography', color: (c) => c.modeBlue, Icon: GlobeIcon },
+  { id: 'history', labelKey: 'geofacts.catHistory', color: (c) => c.modePurple, Icon: CalendarIcon },
+];
+
+const CATEGORY_BY_ID = CATEGORY_META.reduce(
+  (acc, m) => { acc[m.id] = m; return acc; },
+  {} as Record<FactCategory, CategoryMeta>,
+);
+
+const FILTERS: { id: string; labelKey: string }[] = [
+  { id: 'all', labelKey: 'common.all' },
+  ...CATEGORY_META.map((m) => ({ id: m.id, labelKey: m.labelKey })),
 ];
 
 export default function GeoFactsScreen({ navigation }: Props) {
@@ -85,28 +100,45 @@ function ToggleBtn({ label, active, onPress, colors }: { label: string; active: 
 }
 
 // ─── Browse view ─────────────────────────────────────────────
+function FactCard({ item, colors }: { item: GeoFact; colors: ThemeColors }) {
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const meta = CATEGORY_BY_ID[item.category];
+  const accent = meta.color(colors);
+  const Icon = meta.Icon;
+  return (
+    <View style={styles.factCard}>
+      <View style={[styles.factBar, { backgroundColor: accent }]} />
+      <View style={styles.factBody}>
+        <View style={styles.factTop}>
+          <View style={styles.factTag}>
+            <Icon size={13} color={accent} />
+            <Text style={[styles.factTagText, { color: accent }]}>{t(meta.labelKey)}</Text>
+          </View>
+          {item.flagId ? (
+            <View style={styles.factFlag}>
+              <FlagImageSmall countryCode={item.flagId} />
+            </View>
+          ) : null}
+        </View>
+        <Text style={styles.factText}>{renderGeoFact(item)}</Text>
+      </View>
+    </View>
+  );
+}
+
 function BrowseView({ colors }: { colors: ThemeColors }) {
   const styles = useMemo(() => createStyles(colors), [colors]);
   const allFacts = useMemo(() => getGeoFacts(), []);
-  const [region, setRegion] = useState('all');
+  const [filter, setFilter] = useState('all');
 
   const facts = useMemo(
-    () => (region === 'all' ? allFacts : allFacts.filter((f) => f.region === region)),
-    [allFacts, region],
+    () => (filter === 'all' ? allFacts : allFacts.filter((f) => f.category === filter)),
+    [allFacts, filter],
   );
 
   const renderItem = useCallback(
-    ({ item }: { item: GeoFact }) => (
-      <View style={styles.factCard}>
-        {item.flagId ? (
-          <FlagImageSmall countryCode={item.flagId} />
-        ) : (
-          <View style={styles.factNoFlag} />
-        )}
-        <Text style={styles.factText}>{renderGeoFact(item)}</Text>
-      </View>
-    ),
-    [styles],
+    ({ item }: { item: GeoFact }) => <FactCard item={item} colors={colors} />,
+    [colors],
   );
 
   return (
@@ -120,26 +152,24 @@ function BrowseView({ colors }: { colors: ThemeColors }) {
       ListHeaderComponent={
         <ScreenContainer>
           <View style={styles.chipsRow}>
-            {REGION_FILTERS.map((r) => {
-              const active = region === r.region;
+            {FILTERS.map((f) => {
+              const active = filter === f.id;
               return (
                 <TouchableOpacity
-                  key={r.id}
+                  key={f.id}
                   style={[styles.chip, active && styles.chipOn]}
-                  onPress={() => { hapticTap(); setRegion(r.region); }}
+                  onPress={() => { hapticTap(); setFilter(f.id); }}
                   activeOpacity={0.7}
                   accessibilityRole="button"
                   accessibilityState={{ selected: active }}
-                  accessibilityLabel={r.id === 'all' ? t('common.all') : t(`categories.${r.id}`)}
+                  accessibilityLabel={t(f.labelKey)}
                 >
-                  <Text style={[styles.chipText, active && styles.chipTextOn]}>
-                    {r.id === 'all' ? t('common.all') : t(`categories.${r.id}`)}
-                  </Text>
+                  <Text style={[styles.chipText, active && styles.chipTextOn]}>{t(f.labelKey)}</Text>
                 </TouchableOpacity>
               );
             })}
           </View>
-          <Text style={styles.countLabel}>{t('geofacts.factCount', { count: getGeoFactCount() })}</Text>
+          <Text style={styles.countLabel}>{t('geofacts.factCount', { count: facts.length })}</Text>
         </ScreenContainer>
       }
       ListFooterComponent={<View style={{ height: spacing.xl }} />}
@@ -366,26 +396,46 @@ const createStyles = (colors: ThemeColors) => {
     },
     factCard: {
       flexDirection: 'row',
-      alignItems: 'center',
-      gap: spacing.sm,
       backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: colors.border,
-      borderRadius: borderRadius.md,
-      padding: spacing.sm,
+      borderRadius: borderRadius.lg,
+      overflow: 'hidden',
       marginBottom: spacing.sm,
     },
-    factNoFlag: {
-      width: 56,
-      height: 37,
+    factBar: {
+      width: 4,
+    },
+    factBody: {
+      flex: 1,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.md,
+      gap: spacing.sm,
+    },
+    factTop: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: spacing.sm,
+    },
+    factTag: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+      flexShrink: 1,
+    },
+    factTagText: {
+      ...typography.eyebrow,
+    },
+    factFlag: {
       borderRadius: borderRadius.xs,
-      backgroundColor: colors.surfaceSecondary,
+      overflow: 'hidden',
     },
     factText: {
-      ...typography.caption,
+      fontSize: fontSize.body,
+      fontFamily: fontFamily.body,
       color: colors.ink,
-      flex: 1,
-      lineHeight: 18,
+      lineHeight: 23,
     },
 
     // Quiz
