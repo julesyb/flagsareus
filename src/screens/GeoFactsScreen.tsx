@@ -14,7 +14,7 @@ import { fontFamily, fontSize, spacing, borderRadius, typography, buildButtons, 
 import { useTheme } from '../contexts/ThemeContext';
 import { t } from '../utils/i18n';
 import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
-import { getGeoFacts, getGeoFactCount, generateGeoQuiz, renderGeoFact, GeoFact, GeoQuizQuestion } from '../data/geoFacts';
+import { getGeoFacts, getGeoFactCount, generateGeoQuiz, renderGeoFact, GeoFact, GeoQuizQuestion } from '../data/facts';
 import { RootStackParamList } from '../types/navigation';
 import { FlagImageSmall } from '../components/FlagImage';
 import FlagImage from '../components/FlagImage';
