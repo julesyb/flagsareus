@@ -16,7 +16,6 @@ import { t } from '../utils/i18n';
 import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
 import { getGeoFacts, generateGeoQuiz, renderGeoFact, GeoFact, GeoQuizQuestion, FactCategory } from '../data/facts';
 import { RootStackParamList } from '../types/navigation';
-import { FlagImageSmall } from '../components/FlagImage';
 import FlagImage from '../components/FlagImage';
 import { FlagIcon, TrophyIcon, CompassIcon, GlobeIcon, CalendarIcon } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
@@ -106,19 +105,22 @@ function FactCard({ item, colors }: { item: GeoFact; colors: ThemeColors }) {
   const accent = meta.color(colors);
   const Icon = meta.Icon;
   return (
-    <View style={styles.factCard}>
-      <View style={[styles.factBar, { backgroundColor: accent }]} />
-      <View style={styles.factBody}>
-        <View style={styles.factTop}>
-          <View style={styles.factTag}>
-            <Icon size={13} color={accent} />
-            <Text style={[styles.factTagText, { color: accent }]}>{t(meta.labelKey)}</Text>
-          </View>
-          {item.flagId ? (
-            <View style={styles.factFlag}>
-              <FlagImageSmall countryCode={item.flagId} />
-            </View>
-          ) : null}
+    <View style={[styles.factCard, { borderColor: colors.border }]}>
+      {/* Visual anchor: the country flag, or a category-tinted tile with the
+          category icon when the fact is not tied to a single country. */}
+      {item.flagId ? (
+        <View style={styles.factMedia}>
+          <FlagImage countryCode={item.flagId} size="small" fill accessibilityLabel={t(meta.labelKey)} />
+        </View>
+      ) : (
+        <View style={[styles.factMedia, styles.factMediaTile, { backgroundColor: `${accent}1A` }]}>
+          <Icon size={30} color={accent} />
+        </View>
+      )}
+      <View style={styles.factContent}>
+        <View style={styles.factEyebrow}>
+          <Icon size={13} color={accent} />
+          <Text style={[styles.factEyebrowText, { color: accent }]}>{t(meta.labelKey)}</Text>
         </View>
         <Text style={styles.factText}>{renderGeoFact(item)}</Text>
       </View>
@@ -403,40 +405,40 @@ const createStyles = (colors: ThemeColors) => {
     },
     factCard: {
       flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: spacing.md,
       backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: borderRadius.lg,
-      overflow: 'hidden',
+      padding: spacing.md,
       marginBottom: spacing.sm,
     },
-    factBar: {
-      width: 4,
+    factMedia: {
+      width: 104,
+      aspectRatio: 3 / 2,
+      borderRadius: borderRadius.sm,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: colors.ruleDark,
     },
-    factBody: {
-      flex: 1,
-      paddingVertical: spacing.md,
-      paddingHorizontal: spacing.md,
-      gap: spacing.sm,
-    },
-    factTop: {
-      flexDirection: 'row',
+    factMediaTile: {
       alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: spacing.sm,
+      justifyContent: 'center',
+      borderColor: 'transparent',
     },
-    factTag: {
+    factContent: {
+      flex: 1,
+      gap: spacing.xs,
+      paddingTop: spacing.xxs,
+    },
+    factEyebrow: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: spacing.xs,
-      flexShrink: 1,
     },
-    factTagText: {
+    factEyebrowText: {
       ...typography.eyebrow,
-    },
-    factFlag: {
-      borderRadius: borderRadius.xs,
-      overflow: 'hidden',
     },
     factText: {
       fontSize: fontSize.body,
