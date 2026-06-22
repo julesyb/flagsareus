@@ -179,8 +179,10 @@ export default function OnboardingScreen({ navigation }: Props) {
                 <View style={[styles.squareIcon, { backgroundColor: sq.accent + '22' }]}>
                   {sq.icon}
                 </View>
-                <Text style={styles.squareTitle} numberOfLines={2}>{sq.title}</Text>
-                <Text style={styles.squareSub} numberOfLines={2}>{sq.subtitle}</Text>
+                <View style={styles.squareText}>
+                  <Text style={styles.squareTitle} numberOfLines={2}>{sq.title}</Text>
+                  <Text style={styles.squareSub} numberOfLines={2}>{sq.subtitle}</Text>
+                </View>
               </TouchableOpacity>
             ))}
           </View>
@@ -273,13 +275,13 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   square: {
     flexGrow: 1,
     flexBasis: '47%',
-    minHeight: 116,
+    minHeight: 132,
     backgroundColor: colors.surface,
     borderWidth: 1.5,
     borderColor: colors.border,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
   },
   squareIcon: {
     width: 40,
@@ -288,6 +290,9 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.sm,
+  },
+  squareText: {
+    gap: spacing.xxs,
   },
   squareTitle: {
     fontFamily: fontFamily.bodyBold,
@@ -298,6 +303,5 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   squareSub: {
     ...typography.micro,
     color: colors.textTertiary,
-    marginTop: spacing.xxs,
   },
 }); };
