@@ -4,7 +4,7 @@ import { fontFamily, fontSize, spacing, borderRadius, typography, ThemeColors } 
 import { useTheme } from '../contexts/ThemeContext';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
-import { getFactForDate, getFactContent } from '../data/dailyFacts';
+import { getFactForDate, getFactContent } from '../data/facts';
 import { getDailyFactState, saveDailyFactAnswer } from '../utils/storage';
 import { GlobeIcon, CheckIcon } from './Icons';
 import FlagImage from './FlagImage';
