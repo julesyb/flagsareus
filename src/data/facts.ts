@@ -2207,11 +2207,34 @@ export interface GeoQuizQuestion {
   flagId?: string;
   prompt: string;
   options: string[];
+  /**
+   * When set, the four options are countries and should be answered by their
+   * flag rather than their name. Parallel to `options` (so `optionFlags[i]` is
+   * the flag for the country named in `options[i]`). The player must know both
+   * the fact and the flag. Absent for plain name-answer questions.
+   */
+  optionFlags?: string[];
   /** Index of the correct option within `options`. */
   answerIndex: number;
 }
 
 const flagsById = new Map<string, FlagItem>(getAllFlags().map((f) => [f.id, f]));
+
+// English-name lookup, used to detect trivia whose four options are all
+// countries. Trivia content is authored with English option strings that match
+// the canonical flag names, so this stays locale-independent.
+const idByEnglishName = new Map<string, string>(getAllFlags().map((f) => [f.name, f.id]));
+
+/**
+ * The country codes behind a trivia fact's four options, or null when the
+ * options are not all countries (e.g. numbers, mottoes, place names). Derived
+ * from the locale-independent English options so the mapping never drifts with
+ * the active language.
+ */
+function triviaOptionCountries(tf: DailyFact): string[] | null {
+  const codes = tf.content.en.options.map((o) => idByEnglishName.get(o));
+  return codes.every((c): c is string => c !== undefined) ? (codes as string[]) : null;
+}
 
 function countryLabel(id: string): string {
   const f = flagsById.get(id);
@@ -2323,7 +2346,25 @@ function buildQuizBank(): GeoQuizQuestion[] {
   // Curated trivia questions (already localized in the daily fact pool)
   for (const tf of DAILY_FACTS) {
     const c = tf.content[getLocale()] ?? tf.content.en;
-    bank.push({ id: `q-tr-${tf.id}`, flagId: tf.flagId, prompt: c.question, options: c.options, answerIndex: tf.answer });
+    const optionCountries = triviaOptionCountries(tf);
+    // The prompt flag gives the answer away when it is simply the correct
+    // country's own flag (e.g. showing Bolivia's flag beside "which country has
+    // the highest capital?"). Strip it in that case so knowing the flag no
+    // longer hands over the answer.
+    const isGiveaway = optionCountries !== null && tf.flagId !== undefined && optionCountries[tf.answer] === tf.flagId;
+    // Flag-answer eligibility: the options are all countries, so the quiz can
+    // render them as flags instead of names. We skip flag-design trivia
+    // (category 'flags'), where showing the flags would itself reveal the
+    // answer (e.g. "which flag is not rectangular?").
+    const flagAnswerable = optionCountries !== null && FACT_CATEGORY[tf.id] !== 'flags';
+    bank.push({
+      id: `q-tr-${tf.id}`,
+      flagId: isGiveaway ? undefined : tf.flagId,
+      prompt: c.question,
+      options: c.options,
+      optionFlags: flagAnswerable ? optionCountries : undefined,
+      answerIndex: tf.answer,
+    });
   }
 
   return bank;
@@ -2333,11 +2374,19 @@ export function getGeoQuizBankSize(): number {
   return buildQuizBank().length;
 }
 
+// Share of flag-answerable trivia that is shown as flags (rather than names) in
+// a session. A mix keeps some questions purely about the fact while others also
+// test whether you can recognize the country's flag.
+const FLAG_ANSWER_RATIO = 0.55;
+
 /**
  * A fresh, shuffled set of quiz questions for one play session. The bank is
  * dominated by generated capital/region questions, so we guarantee a healthy
  * share of the curated trivia questions (the genuinely interesting ones)
  * rather than leaving them to chance.
+ *
+ * Flag-answerable trivia is randomly split: some questions present the four
+ * countries as flags (you must know the fact and the flag), the rest as names.
  */
 export function generateGeoQuiz(count = 10): GeoQuizQuestion[] {
   const bank = buildQuizBank();
@@ -2349,5 +2398,11 @@ export function generateGeoQuiz(count = 10): GeoQuizQuestion[] {
     ...shuffle(trivia).slice(0, triviaTarget),
     ...shuffle(other).slice(0, Math.max(0, count - triviaTarget)),
   ];
-  return shuffle(picked);
+  return shuffle(picked).map((q) => {
+    if (!q.optionFlags) return q;
+    // Roll per question: flag-answer (hide any prompt flag) or name-answer.
+    return Math.random() < FLAG_ANSWER_RATIO
+      ? { ...q, flagId: undefined }
+      : { ...q, optionFlags: undefined };
+  });
 }

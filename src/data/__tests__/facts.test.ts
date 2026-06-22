@@ -176,4 +176,22 @@ describe('generateGeoQuiz', () => {
     const b = generateGeoQuiz(10).map((q) => q.id);
     expect(a.join() === b.join()).toBe(false);
   });
+
+  it('keeps flag-answer questions well formed', () => {
+    const flagIds = new Set(getAllFlags().map((f) => f.id));
+    let sawFlagAnswer = false;
+    // Run many sessions so the random flag/name split is well sampled.
+    for (let s = 0; s < 40; s++) {
+      for (const q of generateGeoQuiz(10)) {
+        if (!q.optionFlags) continue;
+        sawFlagAnswer = true;
+        // Parallel to options, all real codes, and no giveaway prompt flag.
+        expect(q.optionFlags).toHaveLength(q.options.length);
+        for (const code of q.optionFlags) expect(flagIds.has(code)).toBe(true);
+        expect(new Set(q.optionFlags).size).toBe(q.optionFlags.length);
+        expect(q.flagId).toBeUndefined();
+      }
+    }
+    expect(sawFlagAnswer).toBe(true);
+  });
 });

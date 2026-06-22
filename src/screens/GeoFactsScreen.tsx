@@ -287,10 +287,11 @@ function QuizView({ colors, navigation }: { colors: ThemeColors; navigation: Pro
     const isSelected = picked === i;
     const showCorrect = answered && isCorrect;
     const showWrong = isSelected && !isCorrect;
+    const flagCode = q.optionFlags?.[i];
     return (
       <View key={i} style={styles.optWrap}>
         <TouchableOpacity
-          style={[styles.optBtn, showCorrect && styles.optCorrect, showWrong && styles.optWrong]}
+          style={[styles.optBtn, flagCode && styles.optBtnFlag, showCorrect && styles.optCorrect, showWrong && styles.optWrong]}
           onPress={() => pick(i)}
           activeOpacity={0.8}
           disabled={answered}
@@ -298,9 +299,15 @@ function QuizView({ colors, navigation }: { colors: ThemeColors; navigation: Pro
           accessibilityLabel={label}
           accessibilityState={{ disabled: answered, selected: isSelected }}
         >
-          <Text style={[styles.optText, showCorrect && styles.optTextCorrect, showWrong && styles.optTextWrong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7}>
-            {label}
-          </Text>
+          {flagCode ? (
+            <View style={styles.optFlagWrap}>
+              <FlagImage countryCode={flagCode} size="small" fill accessibilityLabel={label} />
+            </View>
+          ) : (
+            <Text style={[styles.optText, showCorrect && styles.optTextCorrect, showWrong && styles.optTextWrong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7}>
+              {label}
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
     );
@@ -504,6 +511,15 @@ const createStyles = (colors: ThemeColors) => {
       paddingVertical: spacing.xs,
       alignItems: 'center',
       justifyContent: 'center',
+    },
+    optBtnFlag: {
+      padding: spacing.xs,
+    },
+    optFlagWrap: {
+      width: '100%',
+      aspectRatio: 3 / 2,
+      borderRadius: borderRadius.xs,
+      overflow: 'hidden',
     },
     optCorrect: {
       backgroundColor: colors.successBg,
