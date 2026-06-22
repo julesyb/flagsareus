@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
+  Animated,
   ScrollView,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -13,43 +14,157 @@ import { useFocusEffect } from '@react-navigation/native';
 import { fontFamily, fontSize, spacing, borderRadius, buildButtons, typography } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { ThemeColors } from '../utils/theme';
-import { getCategoryCount } from '../data';
-import { initAudio, hapticTap, setSoundsEnabled, setHapticsEnabled } from '../utils/feedback';
+import { getTotalFlagCount, getCategoryCount } from '../data';
+import { initAudio, hapticTap, hapticCorrect, hapticWrong, playWrongSound, setSoundsEnabled, setHapticsEnabled } from '../utils/feedback';
 import { getStats, getSettings, getMissedFlagIds, getBaselineData, isDailyCompleteToday, BaselineData, getFlagStats, getBadgeData, getDayStreakInfo, getPersistedLevel, persistLevel, getSkillLevel, getDefaultDifficulty } from '../utils/storage';
-import { getDailyConfig, getDailyVariant } from '../utils/gameEngine';
+import { generateQuestions, getDailyConfig, getDailyVariant } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
-import { GameMode, CategoryId, BASELINE_REGIONS } from '../types';
-import { PlayIcon, ChevronRightIcon, CheckIcon, LinkIcon, CalendarIcon, GlobeIcon, CrosshairIcon, CompassIcon, FlagIcon, ClockIcon } from '../components/Icons';
+import { GameMode, UserStats, GameQuestion, CategoryId, BASELINE_REGIONS } from '../types';
+import { PlayIcon, ChevronRightIcon, CheckIcon, LinkIcon, CalendarIcon, GlobeIcon, ClockIcon, PuzzleIcon, EyeIcon, CrosshairIcon } from '../components/Icons';
+import FlagImage from '../components/FlagImage';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
+import SegBtn from '../components/SegBtn';
+import ConfigRow, { ConfigCard } from '../components/ConfigRow';
 import FactOfDay from '../components/FactOfDay';
 import { useNavTabs } from '../hooks/useNavTabs';
 import { computeLevelProgress, LevelProgress } from '../utils/levels';
 import { t } from '../utils/i18n';
-import { UNLIMITED_QUESTIONS, TIMEATTACK_DEFAULT_TIME } from '../utils/config';
+import { translateName, flagName } from '../data/countryNames';
+import { HOME_QUESTION_COUNTS, UNLIMITED_QUESTIONS, TIMEATTACK_DEFAULT_TIME } from '../utils/config';
 
-// The "Test" quick-play launches 10 flags at the player's default difficulty
-// (medium for new players, or whatever their skill level maps to).
-const TEST_COUNT = 10;
+const MODE_KEYS: GameMode[] = ['easy', 'medium', 'hard'];
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-// One of the four primary action squares on the home grid.
-interface ActionSquare {
+// A single row in the "Game modes" list.
+interface ModeItem {
   key: string;
   title: string;
-  subtitle: string;
+  tag: string;
   icon: React.ReactNode;
   accent: string;
   onPress: () => void;
+  titleColor?: string;
+  disabled?: boolean;
+  done?: boolean;
   a11yLabel: string;
   a11yHint?: string;
+}
+
+// ─── Flag Teaser (inline mini-quiz) ─────────────────────────
+function FlagTeaser({ onAnswer }: { onAnswer?: () => void }) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const question = useMemo<GameQuestion | null>(() => {
+    const qs = generateQuestions({ mode: 'medium', category: 'all', questionCount: 1, displayMode: 'flag' });
+    return qs[0] ?? null;
+  }, []);
+
+  const [picked, setPicked] = useState<string | null>(null);
+  const optAnims = useRef([0, 1, 2, 3].map(() => new Animated.Value(0))).current;
+
+  useEffect(() => {
+    // Pop in options after a short delay
+    const timer = setTimeout(() => {
+      Animated.stagger(
+        100,
+        optAnims.map((a) =>
+          Animated.spring(a, { toValue: 1, useNativeDriver: true, tension: 120, friction: 10 }),
+        ),
+      ).start();
+    }, 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!question) return null;
+
+  const handlePick = (opt: string) => {
+    if (picked) return;
+    setPicked(opt);
+    if (opt === question.flag.name) {
+      hapticCorrect();
+    } else {
+      hapticWrong();
+      playWrongSound();
+    }
+    onAnswer?.();
+  };
+
+  const renderOption = (opt: string, idx: number) => {
+    const isCorrect = opt === question.flag.name;
+    const isSelected = picked === opt;
+    const showCorrect = picked !== null && isCorrect;
+    const showWrong = isSelected && !isCorrect;
+    return (
+      <Animated.View
+        key={opt}
+        style={[
+          styles.optWrap,
+          { opacity: optAnims[idx], transform: [{ scale: optAnims[idx].interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) }] },
+        ]}
+      >
+        <TouchableOpacity
+          style={[styles.optBtn, showCorrect && styles.optCorrect, showWrong && styles.optWrong]}
+          onPress={() => handlePick(opt)}
+          activeOpacity={0.8}
+          disabled={picked !== null}
+          accessibilityRole="button"
+          accessibilityLabel={translateName(opt)}
+          accessibilityState={{ disabled: picked !== null }}
+        >
+          <Text style={[styles.optText, showCorrect && styles.optTextCorrect, showWrong && styles.optTextWrong]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{translateName(opt)}</Text>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
+
+  return (
+    <View style={styles.heroCard}>
+      <Text style={styles.heroLabel}>{t('home.nameThisFlag')}</Text>
+      <View style={styles.flagWrap}>
+        <FlagImage
+          countryCode={question.flag.id}
+          size="hero"
+          style={{ width: '100%' }}
+        />
+      </View>
+
+      {/* Options 2x2 — stay visible after pick to show correct/wrong highlights */}
+      <View style={styles.optsGrid}>
+        <View style={styles.optsRow}>
+          {question.options.slice(0, 2).map((opt, i) => renderOption(opt, i))}
+        </View>
+        <View style={styles.optsRow}>
+          {question.options.slice(2, 4).map((opt, i) => renderOption(opt, i + 2))}
+        </View>
+      </View>
+
+      {/* Result label appears after pick */}
+      {picked && (
+        <View style={styles.teaserResult}>
+          <Text
+            style={[styles.teaserResultText, picked === question.flag.name ? styles.teaserResultCorrect : styles.teaserResultWrong]}
+            accessibilityLiveRegion="polite"
+          >
+            {picked === question.flag.name ? t('common.correct') : flagName(question.flag)}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
 }
 
 export default function HomeScreen({ navigation }: Props) {
   const { colors, isDark } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const onNavigate = useNavTabs();
+  const totalFlags = getTotalFlagCount();
+  const [mode, setMode] = useState<GameMode>('medium');
+  const [questionCount, setQuestionCount] = useState(10);
+  const [questionCountAll, setQuestionCountAll] = useState(false);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [teaserKey, setTeaserKey] = useState(0);
   const [weakFlagCount, setWeakFlagCount] = useState(0);
   const [dailyDone, setDailyDone] = useState(false);
   const dailyVariant = useMemo(() => getDailyVariant(), []);
@@ -66,9 +181,19 @@ export default function HomeScreen({ navigation }: Props) {
       : diffLabel;
     return t('home.dailyVariant', { mode: modeStr });
   }, [dailyVariant]);
+  const [autocomplete, setAutocomplete] = useState(false);
   const [baseline, setBaseline] = useState<BaselineData | null>(null);
   const [levelProgress, setLevelProgress] = useState<LevelProgress | null>(null);
-  const [testMode, setTestMode] = useState<GameMode>('medium');
+  const playBtnScale = useRef(new Animated.Value(1)).current;
+
+  const pulsePlayBtn = useCallback(() => {
+    setTimeout(() => {
+      Animated.sequence([
+        Animated.timing(playBtnScale, { toValue: 1.05, duration: 200, useNativeDriver: true }),
+        Animated.spring(playBtnScale, { toValue: 1, useNativeDriver: true, tension: 200, friction: 10 }),
+      ]).start();
+    }, 600);
+  }, [playBtnScale]);
 
   useEffect(() => {
     initAudio();
@@ -78,14 +203,26 @@ export default function HomeScreen({ navigation }: Props) {
     }).catch(() => {});
   }, []);
 
+  // Track known skill level so we only update difficulty on actual promotions
+  const lastSkillRef = useRef<string | null>(null);
+
   useFocusEffect(
     useCallback(() => {
+      getStats().then(setStats).catch(() => {});
       getMissedFlagIds().then((ids) => setWeakFlagCount(ids.length)).catch(() => {});
       isDailyCompleteToday().then(setDailyDone).catch(() => {});
       getBaselineData().then(setBaseline).catch(() => {});
-      getSkillLevel().then((skill) => setTestMode(skill ? getDefaultDifficulty(skill) : 'medium')).catch(() => {});
+      setTeaserKey((k) => k + 1);
+      // Sync difficulty when skill level changes (initial load or auto-promotion)
+      getSkillLevel().then((skill) => {
+        if (skill && skill !== lastSkillRef.current) {
+          setMode(getDefaultDifficulty(skill));
+          lastSkillRef.current = skill;
+        }
+      }).catch(() => {});
       Promise.all([getStats(), getFlagStats(), getBadgeData(), getDayStreakInfo(), getPersistedLevel()]).then(
         ([s, fs, bd, dsi, pl]) => {
+          setStats(s);
           const lp = computeLevelProgress({ stats: s, flagStats: fs, badgeData: bd, dayStreakInfo: dsi }, pl);
           setLevelProgress(lp);
           persistLevel(lp.currentLevel);
@@ -94,92 +231,47 @@ export default function HomeScreen({ navigation }: Props) {
     }, []),
   );
 
-  // ── "Test" quick-play: straight into 10 flags at the default difficulty ──
-  const testSubText = t('home.testSub', { count: TEST_COUNT, difficulty: t(`common.${testMode}`) });
-  const playTest = () => {
+  const play = () => {
     hapticTap();
     navigation.navigate('Game', {
-      config: { mode: testMode, category: 'all', questionCount: TEST_COUNT, displayMode: 'flag' },
+      config: { mode, category: 'all', questionCount: questionCountAll ? totalFlags : questionCount, displayMode: 'flag', ...(mode === 'hard' && { autocomplete }) },
     });
   };
 
-  // ── Baseline ("See Where You Stand") state ──
-  const baselineComplete = baseline?.completedAt != null;
-  const baselineDoneCount = baseline ? BASELINE_REGIONS.filter((r) => baseline.regions[r]).length : 0;
-  const nextRegion = baseline
-    ? BASELINE_REGIONS.find((r) => !baseline.regions[r]) ?? BASELINE_REGIONS[0]
-    : BASELINE_REGIONS[0];
-  const baselineOverallPct = useMemo(() => {
-    if (!baseline) return 0;
-    let correct = 0;
-    let total = 0;
-    for (const r of BASELINE_REGIONS) {
-      const result = baseline.regions[r];
-      if (result) {
-        correct += result.correct;
-        total += result.total;
-      }
-    }
-    return total > 0 ? Math.round((correct / total) * 100) : 0;
-  }, [baseline]);
+  const onboardingComplete = baseline ? baseline.completedAt !== null : true;
+  const onboardingCount = baseline ? BASELINE_REGIONS.filter((r) => baseline.regions[r]).length : 0;
+  const nextRegion = baseline ? BASELINE_REGIONS.find((r) => !baseline.regions[r]) ?? BASELINE_REGIONS[0] : BASELINE_REGIONS[0];
 
-  const startBaseline = () => {
-    hapticTap();
-    if (baselineComplete) {
-      navigation.navigate('Stats');
-      return;
-    }
-    const count = getCategoryCount(nextRegion as CategoryId);
-    navigation.navigate('Game', {
-      config: { mode: 'baseline', category: nextRegion as CategoryId, questionCount: count, displayMode: 'flag' },
-    });
-  };
-
-  // ── Primary action squares (data-driven) ──
-  const squares: ActionSquare[] = [
+  // ── Game modes (data-driven, uniform cards) ──
+  const modes: ModeItem[] = [
     {
-      key: 'baseline',
-      title: t('onboarding.baselineProgress'),
-      subtitle: baselineComplete
-        ? t('home.baselineOverall', { pct: baselineOverallPct })
-        : t('onboarding.regionsComplete', { count: baselineDoneCount, total: BASELINE_REGIONS.length }),
-      icon: <CrosshairIcon size={22} color={colors.modeBlue} />,
-      accent: colors.modeBlue,
-      onPress: startBaseline,
-      a11yLabel: t('onboarding.baselineProgress'),
-      a11yHint: baselineComplete ? t('a11y.opensStats') : t('a11y.beginsBaseline'),
-    },
-    {
-      key: 'choose',
-      title: t('home.chooseYourGame'),
-      subtitle: t('home.chooseYourGameDesc'),
-      icon: <CompassIcon size={22} color={colors.modePurple} />,
-      accent: colors.modePurple,
+      key: 'daily',
+      title: t('home.daily'),
+      tag: dailyDone ? t('home.comeBackTomorrow') : dailyTagText,
+      icon: <CalendarIcon size={18} color={dailyDone ? colors.textTertiary : colors.modeGold} />,
+      accent: colors.modeGold,
+      titleColor: dailyDone ? colors.textTertiary : colors.goldBright,
+      disabled: dailyDone,
+      done: dailyDone,
       onPress: () => {
         hapticTap();
-        navigation.navigate('GameSetup');
+        const config = getDailyConfig();
+        if (dailyVariant.gameType === 'flagpuzzle') {
+          navigation.navigate('FlagPuzzle', { config });
+        } else if (dailyVariant.gameType === 'capitalconnection') {
+          navigation.navigate('CapitalConnection', { config });
+        } else {
+          navigation.navigate('Game', { config });
+        }
       },
-      a11yLabel: t('home.chooseYourGame'),
-      a11yHint: t('a11y.opensMode'),
+      a11yLabel: dailyDone ? t('home.comeBackTomorrow') : t('home.daily'),
+      a11yHint: dailyDone ? undefined : t('a11y.opensMode'),
     },
     {
-      key: 'practice',
-      title: t('home.practice'),
-      subtitle: t('home.practiceDesc'),
-      icon: <FlagIcon size={22} color={colors.modeGreen} />,
-      accent: colors.modeGreen,
-      onPress: () => {
-        hapticTap();
-        navigation.navigate('Browse');
-      },
-      a11yLabel: t('home.practice'),
-      a11yHint: t('home.practiceDesc'),
-    },
-    {
-      key: 'timed',
+      key: 'timeattack',
       title: t('home.timedQuiz'),
-      subtitle: t('home.timedQuizTag'),
-      icon: <ClockIcon size={22} color={colors.modeRed} />,
+      tag: t('home.timedQuizTag'),
+      icon: <ClockIcon size={18} color={colors.modeRed} />,
       accent: colors.modeRed,
       onPress: () => {
         hapticTap();
@@ -189,6 +281,79 @@ export default function HomeScreen({ navigation }: Props) {
       },
       a11yLabel: t('a11y.playMode', { mode: t('home.timedQuiz') }),
       a11yHint: t('a11y.opensMode'),
+    },
+    {
+      key: 'impostor',
+      title: t('home.flagImpostor'),
+      tag: t('home.flagImpostorDesc'),
+      icon: <EyeIcon size={18} color={colors.modeGreen} />,
+      accent: colors.modeGreen,
+      onPress: () => {
+        hapticTap();
+        navigation.navigate('FlagImpostor', {
+          config: { mode: 'impostor', category: 'all', questionCount: 10, displayMode: 'flag' },
+        });
+      },
+      a11yLabel: t('a11y.playMode', { mode: t('home.flagImpostor') }),
+      a11yHint: t('a11y.opensMode'),
+    },
+    {
+      key: 'flagpuzzle',
+      title: t('setup.flagPuzzle'),
+      tag: t('setup.flagPuzzleDesc'),
+      icon: <PuzzleIcon size={18} color={colors.modePurple} />,
+      accent: colors.modePurple,
+      onPress: () => {
+        hapticTap();
+        navigation.navigate('FlagPuzzle', {
+          config: { mode: 'flagpuzzle', category: 'all', questionCount: 10, timeLimit: 15, displayMode: 'flag' },
+        });
+      },
+      a11yLabel: t('a11y.playMode', { mode: t('setup.flagPuzzle') }),
+      a11yHint: t('a11y.opensMode'),
+    },
+    {
+      key: 'geofacts',
+      title: t('home.geoFacts'),
+      tag: t('home.geoFactsDesc'),
+      icon: <GlobeIcon size={18} color={colors.modeBlue} />,
+      accent: colors.modeBlue,
+      onPress: () => {
+        hapticTap();
+        navigation.navigate('GeoFacts');
+      },
+      a11yLabel: t('a11y.playMode', { mode: t('home.geoFacts') }),
+      a11yHint: t('a11y.opensMode'),
+    },
+    ...(weakFlagCount > 0 ? [{
+      key: 'practiceWeak',
+      title: t('home.practiceWeak'),
+      tag: weakFlagCount === 1 ? t('home.flagsToReview', { count: weakFlagCount }) : t('home.flagsToReviewPlural', { count: weakFlagCount }),
+      icon: <CrosshairIcon size={18} color={colors.modeRed} />,
+      accent: colors.modeRed,
+      titleColor: colors.red,
+      onPress: () => {
+        hapticTap();
+        navigation.navigate('Game', {
+          config: { mode: 'practice', category: 'all', questionCount: weakFlagCount, displayMode: 'flag' },
+        });
+      },
+      a11yLabel: t('a11y.playMode', { mode: t('home.practiceWeak') }),
+      a11yHint: t('a11y.opensPractice'),
+    } as ModeItem] : []),
+    {
+      key: 'join',
+      title: t('challenge.joinTitle'),
+      tag: t('challenge.codeHint'),
+      icon: <LinkIcon size={18} color={colors.modeGold} />,
+      accent: colors.modeGold,
+      titleColor: colors.goldBright,
+      onPress: () => {
+        hapticTap();
+        navigation.navigate('JoinChallenge');
+      },
+      a11yLabel: t('challenge.joinTitle'),
+      a11yHint: t('challenge.codeHint'),
     },
   ];
 
@@ -219,45 +384,74 @@ export default function HomeScreen({ navigation }: Props) {
           )}
         </View>
 
-        {/* ── TEST (primary quick-play) ── */}
-        <View style={styles.testWrap}>
-          <TouchableOpacity
-            style={styles.testBtn}
-            onPress={playTest}
-            activeOpacity={0.85}
-            accessibilityRole="button"
-            accessibilityLabel={t('home.test')}
-            accessibilityHint={testSubText}
-          >
-            <Text style={styles.testBtnText}>{t('home.test')}</Text>
-            <PlayIcon size={15} color={colors.playText} />
-          </TouchableOpacity>
-          <Text style={styles.testSub}>{testSubText}</Text>
-        </View>
+        {/* ── FLAG TEASER ── */}
+        <FlagTeaser key={teaserKey} onAnswer={pulsePlayBtn} />
 
-        {/* ── ACTION SQUARES ── */}
-        <View style={styles.grid}>
-          {squares.map((sq) => (
-            <TouchableOpacity
-              key={sq.key}
-              style={styles.square}
-              onPress={sq.onPress}
-              activeOpacity={0.85}
-              accessibilityRole="button"
-              accessibilityLabel={sq.a11yLabel}
-              accessibilityHint={sq.a11yHint}
-            >
-              <View style={[styles.squareIcon, { backgroundColor: sq.accent + '22' }]}>
-                {sq.icon}
-              </View>
-              <Text style={styles.squareTitle} numberOfLines={2}>{sq.title}</Text>
-              <Text style={styles.squareSub} numberOfLines={2}>{sq.subtitle}</Text>
-            </TouchableOpacity>
-          ))}
+        {/* ── PLAY NOW ── */}
+        <Animated.View style={[styles.playWrap, { transform: [{ scale: playBtnScale }] }]}>
+          <TouchableOpacity style={styles.playBtn} onPress={play} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={t('home.playNow')}>
+            <Text style={styles.playBtnText}>{t('home.playNow')}</Text>
+            <PlayIcon size={14} color={colors.playText} />
+          </TouchableOpacity>
+        </Animated.View>
+
+        {/* ── CONFIG ── */}
+        <View style={{ marginHorizontal: spacing.md, marginTop: spacing.sm }}>
+          <ConfigCard>
+            <ConfigRow label={t('home.cards')} showDivider={false}>
+              {HOME_QUESTION_COUNTS.map((c) => (
+                <SegBtn
+                  key={c}
+                  label={String(c)}
+                  active={!questionCountAll && questionCount === c}
+                  onPress={() => { setQuestionCount(c); setQuestionCountAll(false); }}
+                  maxWidth={54}
+                  accessibilityLabel={t('common.nCards', { n: c })}
+                />
+              ))}
+              <SegBtn
+                label={t('common.all')}
+                active={questionCountAll}
+                onPress={() => setQuestionCountAll(true)}
+                maxWidth={54}
+                accessibilityLabel={t('common.allCards')}
+              />
+            </ConfigRow>
+            <ConfigRow label={t('home.difficulty')}>
+              {MODE_KEYS.map((m) => (
+                <SegBtn
+                  key={m}
+                  label={t(`common.${m}`)}
+                  active={mode === m}
+                  onPress={() => setMode(m)}
+                  maxWidth={54}
+                  accessibilityLabel={`${t('home.difficulty')}: ${t(`common.${m}`)}`}
+                />
+              ))}
+            </ConfigRow>
+            {mode === 'hard' && (
+              <ConfigRow label={t('home.hints')}>
+                <SegBtn
+                  label={t('common.off')}
+                  active={!autocomplete}
+                  onPress={() => setAutocomplete(false)}
+                  maxWidth={54}
+                  accessibilityLabel={`${t('home.hints')}: ${t('common.off')}`}
+                />
+                <SegBtn
+                  label={t('common.on')}
+                  active={autocomplete}
+                  onPress={() => setAutocomplete(true)}
+                  maxWidth={54}
+                  accessibilityLabel={`${t('home.hints')}: ${t('common.on')}`}
+                />
+              </ConfigRow>
+            )}
+          </ConfigCard>
         </View>
 
         {/* ── FACT OF THE DAY ── */}
-        <View style={{ marginHorizontal: spacing.md, marginTop: spacing.lg }}>
+        <View style={{ marginHorizontal: spacing.md, marginTop: spacing.md }}>
           <FactOfDay />
         </View>
 
@@ -271,134 +465,113 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
 
           <View style={styles.modeList}>
-            <TouchableOpacity
-              style={[styles.modeRow, dailyDone && styles.modeRowDisabled]}
-              activeOpacity={dailyDone ? 1 : 0.85}
-              disabled={dailyDone}
-              onPress={() => {
-                hapticTap();
-                const config = getDailyConfig();
-                if (dailyVariant.gameType === 'flagpuzzle') {
-                  navigation.navigate('FlagPuzzle', { config });
-                } else if (dailyVariant.gameType === 'capitalconnection') {
-                  navigation.navigate('CapitalConnection', { config });
-                } else {
-                  navigation.navigate('Game', { config });
-                }
-              }}
-              accessibilityRole="button"
-              accessibilityLabel={dailyDone ? t('home.comeBackTomorrow') : t('home.daily')}
-              accessibilityHint={dailyDone ? undefined : t('a11y.opensMode')}
-              accessibilityState={{ disabled: dailyDone }}
-            >
-              <View style={[styles.modeBar, { backgroundColor: dailyDone ? colors.dim : colors.modeGold }]} />
-              <CalendarIcon size={15} color={dailyDone ? colors.textTertiary : colors.goldBright} />
-              <Text style={[styles.modeTitle, dailyDone ? styles.modeTitleDisabled : { color: colors.goldBright }]}>
-                {t('home.daily')}
-              </Text>
-              <Text style={styles.modeTag}>
-                {dailyDone ? t('home.comeBackTomorrow') : dailyTagText}
-              </Text>
-              {dailyDone ? <CheckIcon size={14} color={colors.success} /> : <ChevronRightIcon size={14} color={colors.dim} />}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.modeRow}
-              activeOpacity={0.85}
-              onPress={() => {
-                hapticTap();
-                navigation.navigate('FlagImpostor', {
-                  config: { mode: 'impostor', category: 'all', questionCount: 10, displayMode: 'flag' },
-                });
-              }}
-              accessibilityRole="button"
-              accessibilityLabel={t('a11y.playMode', { mode: t('home.flagImpostor') })}
-              accessibilityHint={t('a11y.opensMode')}
-            >
-              <View style={[styles.modeBar, { backgroundColor: colors.modeGreen }]} />
-              <Text style={styles.modeTitle}>{t('home.flagImpostor')}</Text>
-              <Text style={styles.modeTag}>{t('home.flagImpostorDesc')}</Text>
-              <ChevronRightIcon size={14} color={colors.dim} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.modeRow}
-              activeOpacity={0.85}
-              onPress={() => {
-                hapticTap();
-                navigation.navigate('FlagPuzzle', {
-                  config: { mode: 'flagpuzzle', category: 'all', questionCount: 10, timeLimit: 15, displayMode: 'flag' },
-                });
-              }}
-              accessibilityRole="button"
-              accessibilityLabel={t('a11y.playMode', { mode: t('setup.flagPuzzle') })}
-              accessibilityHint={t('a11y.opensMode')}
-            >
-              <View style={[styles.modeBar, { backgroundColor: colors.modePurple }]} />
-              <Text style={styles.modeTitle}>{t('setup.flagPuzzle')}</Text>
-              <Text style={styles.modeTag}>{t('setup.flagPuzzleDesc')}</Text>
-              <ChevronRightIcon size={14} color={colors.dim} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.modeRow}
-              activeOpacity={0.85}
-              onPress={() => {
-                hapticTap();
-                navigation.navigate('GeoFacts');
-              }}
-              accessibilityRole="button"
-              accessibilityLabel={t('a11y.playMode', { mode: t('home.geoFacts') })}
-              accessibilityHint={t('a11y.opensMode')}
-            >
-              <View style={[styles.modeBar, { backgroundColor: colors.modeBlue }]} />
-              <GlobeIcon size={15} color={colors.modeBlue} />
-              <Text style={styles.modeTitle}>{t('home.geoFacts')}</Text>
-              <Text style={styles.modeTag}>{t('home.geoFactsDesc')}</Text>
-              <ChevronRightIcon size={14} color={colors.dim} />
-            </TouchableOpacity>
-
-            {weakFlagCount > 0 && (
+            {modes.map((m) => (
               <TouchableOpacity
-                style={styles.modeRow}
+                key={m.key}
+                style={[styles.modeCard, m.disabled && styles.modeCardDisabled]}
+                activeOpacity={m.disabled ? 1 : 0.85}
+                disabled={m.disabled}
+                onPress={m.onPress}
+                accessibilityRole="button"
+                accessibilityLabel={m.a11yLabel}
+                accessibilityHint={m.a11yHint}
+                accessibilityState={{ disabled: !!m.disabled }}
+              >
+                <View style={[styles.modeIcon, { backgroundColor: m.accent + '22' }]}>
+                  {m.icon}
+                </View>
+                <View style={styles.modeTextWrap}>
+                  <Text style={[styles.modeTitle, m.titleColor ? { color: m.titleColor } : null]} numberOfLines={1}>
+                    {m.title}
+                  </Text>
+                  <Text style={styles.modeTag} numberOfLines={1}>{m.tag}</Text>
+                </View>
+                {m.done
+                  ? <CheckIcon size={16} color={colors.success} />
+                  : <ChevronRightIcon size={16} color={colors.dim} />}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* ── ONBOARDING PROGRESS (at bottom until complete) ── */}
+        {!onboardingComplete && (
+          <View style={styles.onboardingWrap}>
+            <View style={styles.onboardingTop}>
+              <View style={styles.onboardingTopLeft}>
+                <Text style={styles.onboardingTitle}>{t('onboarding.baselineProgress')}</Text>
+                <Text style={styles.onboardingCount}>
+                  {t('onboarding.regionsComplete', { count: onboardingCount, total: BASELINE_REGIONS.length })}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.onboardingCta}
                 activeOpacity={0.85}
                 onPress={() => {
                   hapticTap();
+                  const count = getCategoryCount(nextRegion as CategoryId);
                   navigation.navigate('Game', {
-                    config: { mode: 'practice', category: 'all', questionCount: weakFlagCount, displayMode: 'flag' },
+                    config: { mode: 'baseline', category: nextRegion as CategoryId, questionCount: count, displayMode: 'flag' },
                   });
                 }}
                 accessibilityRole="button"
-                accessibilityLabel={t('a11y.playMode', { mode: t('home.practiceWeak') })}
-                accessibilityHint={t('a11y.opensPractice')}
+                accessibilityLabel={t('a11y.startBaseline', { region: t(`categories.${nextRegion}`) })}
+                accessibilityHint={t('a11y.beginsBaseline')}
               >
-                <View style={[styles.modeBar, { backgroundColor: colors.modeRed }]} />
-                <Text style={[styles.modeTitle, { color: colors.red }]}>{t('home.practiceWeak')}</Text>
-                <Text style={styles.modeTag}>{weakFlagCount === 1 ? t('home.flagsToReview', { count: weakFlagCount }) : t('home.flagsToReviewPlural', { count: weakFlagCount })}</Text>
-                <ChevronRightIcon size={14} color={colors.dim} />
+                <Text style={styles.onboardingCtaText}>{t(`categories.${nextRegion}`)}</Text>
+                <ChevronRightIcon size={14} color={colors.playText} />
               </TouchableOpacity>
-            )}
-
-            {/* ── JOIN A CHALLENGE ── */}
-            <TouchableOpacity
-              style={styles.modeRow}
-              activeOpacity={0.85}
-              onPress={() => {
-                hapticTap();
-                navigation.navigate('JoinChallenge');
-              }}
-              accessibilityRole="button"
-              accessibilityLabel={t('challenge.joinTitle')}
-              accessibilityHint={t('challenge.codeHint')}
-            >
-              <View style={[styles.modeBar, { backgroundColor: colors.modeGold }]} />
-              <LinkIcon size={15} color={colors.goldBright} />
-              <Text style={[styles.modeTitle, { color: colors.goldBright }]}>{t('challenge.joinTitle')}</Text>
-              <Text style={styles.modeTag}>{t('challenge.codeHint')}</Text>
-              <ChevronRightIcon size={14} color={colors.dim} />
-            </TouchableOpacity>
+            </View>
+            <View style={styles.onboardingBarRow}>
+              <View style={styles.onboardingBar}>
+                <Animated.View
+                  style={[
+                    styles.onboardingBarFill,
+                    { width: `${(onboardingCount / BASELINE_REGIONS.length) * 100}%` },
+                  ]}
+                />
+              </View>
+              <Text style={styles.onboardingMotivation}>{t('onboarding.baselineMotivation')}</Text>
+            </View>
+            {/* Region chips */}
+            <View style={styles.onboardingChips}>
+              {BASELINE_REGIONS.map((r) => {
+                const result = baseline?.regions[r];
+                const isDone = !!result;
+                return (
+                  <TouchableOpacity
+                    key={r}
+                    style={[
+                      styles.onboardingChip,
+                      isDone ? styles.onboardingChipDone : styles.onboardingChipPending,
+                    ]}
+                    activeOpacity={isDone ? 1 : 0.7}
+                    disabled={isDone}
+                    onPress={() => {
+                      hapticTap();
+                      const count = getCategoryCount(r as CategoryId);
+                      navigation.navigate('Game', {
+                        config: { mode: 'baseline', category: r as CategoryId, questionCount: count, displayMode: 'flag' },
+                      });
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel={isDone ? t('a11y.regionCompleted', { region: t(`categories.${r}`), accuracy: result!.accuracy }) : t('a11y.startBaseline', { region: t(`categories.${r}`) })}
+                    accessibilityState={{ disabled: isDone }}
+                  >
+                    {isDone && <CheckIcon size={10} color={colors.success} />}
+                    <Text style={[
+                      styles.onboardingChipText,
+                      isDone ? styles.onboardingChipTextDone : styles.onboardingChipTextPending,
+                    ]}>
+                      {t(`categories.${r}`)}
+                    </Text>
+                    {isDone && <Text style={styles.onboardingChipPct}>{result!.accuracy}%</Text>}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
-        </View>
+        )}
 
         <View style={{ height: spacing.md }} />
         </ScreenContainer>
@@ -469,68 +642,202 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     letterSpacing: -0.5,
   },
 
-  // ── Test (primary quick-play)
-  testWrap: {
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.sm,
-    alignItems: 'center',
-  },
-  testBtn: {
-    ...btn.primary,
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    paddingVertical: 16,
-  },
-  testBtnText: {
-    ...btn.primaryText,
-  },
-  testSub: {
-    ...typography.micro,
-    color: colors.textTertiary,
-    marginTop: spacing.sm,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-
-  // ── Action squares grid
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.lg,
-  },
-  square: {
-    flexGrow: 1,
-    flexBasis: '47%',
-    minHeight: 116,
+  // ── Onboarding progress
+  onboardingWrap: {
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md,
     backgroundColor: colors.surface,
-    borderWidth: 1.5,
+    borderWidth: 2,
     borderColor: colors.border,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
-    justifyContent: 'flex-start',
+    gap: spacing.sm,
   },
-  squareIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.md,
+  onboardingTop: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.sm,
+    justifyContent: 'space-between',
   },
-  squareTitle: {
-    fontFamily: fontFamily.bodyBold,
-    fontSize: fontSize.body,
+  onboardingTopLeft: {
+    flex: 1,
+  },
+  onboardingTitle: {
+    ...typography.bodyBold,
     color: colors.ink,
-    letterSpacing: -0.2,
+    marginBottom: spacing.xxs,
   },
-  squareSub: {
+  onboardingCount: {
     ...typography.micro,
     color: colors.textTertiary,
-    marginTop: spacing.xxs,
+  },
+  onboardingCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    backgroundColor: colors.goldBright,
+    borderRadius: borderRadius.sm,
+    paddingVertical: spacing.xs + 2,
+    paddingHorizontal: spacing.sm + 2,
+  },
+  onboardingCtaText: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.xs,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    color: colors.playText,
+  },
+  onboardingBarRow: {
+    gap: spacing.xs,
+  },
+  onboardingBar: {
+    height: 6,
+    backgroundColor: colors.rule,
+    borderRadius: borderRadius.full,
+    overflow: 'hidden',
+  },
+  onboardingBarFill: {
+    height: 6,
+    backgroundColor: colors.success,
+    borderRadius: borderRadius.full,
+  },
+  onboardingMotivation: {
+    ...typography.micro,
+    color: colors.textTertiary,
+    fontStyle: 'italic',
+  },
+  onboardingChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
+  },
+  onboardingChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    backgroundColor: colors.surfaceSecondary,
+    borderWidth: 1,
+    borderColor: colors.rule,
+    borderRadius: borderRadius.sm,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+  },
+  onboardingChipDone: {
+    backgroundColor: colors.successBg,
+    borderColor: colors.success,
+  },
+  onboardingChipPending: {
+    backgroundColor: colors.goldAlpha15,
+    borderColor: colors.goldBright,
+  },
+  onboardingChipText: {
+    ...typography.microMedium,
+    color: colors.textTertiary,
+  },
+  onboardingChipTextDone: {
+    color: colors.success,
+  },
+  onboardingChipTextPending: {
+    color: colors.goldBright,
+  },
+  onboardingChipPct: {
+    ...typography.tag,
+    color: colors.success,
+  },
+
+  // ── Hero flag teaser (light mode - no dark background)
+  heroCard: {
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md,
+  },
+  heroLabel: {
+    ...typography.eyebrow,
+    color: colors.textTertiary,
+    marginBottom: spacing.sm,
+  },
+  flagWrap: {
+    width: '100%',
+    aspectRatio: 3 / 2,
+    overflow: 'hidden',
+    borderRadius: borderRadius.lg,
+    position: 'relative',
+  },
+
+  // Options 2x2
+  optsGrid: {
+    marginTop: spacing.md,
+    gap: spacing.sm,
+  },
+  optsRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  optWrap: {
+    flex: 1,
+  },
+  optBtn: {
+    backgroundColor: colors.surface,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    borderRadius: borderRadius.md,
+    height: 52,
+    paddingHorizontal: spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  optCorrect: {
+    backgroundColor: colors.successBg,
+    borderColor: colors.success,
+  },
+  optWrong: {
+    backgroundColor: colors.errorBg,
+    borderColor: colors.error,
+  },
+  optText: {
+    ...typography.label,
+    color: colors.ink,
+    textAlign: 'center',
+  },
+  optTextCorrect: {
+    color: colors.success,
+  },
+  optTextWrong: {
+    color: colors.error,
+  },
+
+  // ── Teaser result
+  teaserResult: {
+    marginTop: spacing.md,
+    alignItems: 'center',
+  },
+  teaserResultText: {
+    fontFamily: fontFamily.uiLabel,
+    fontSize: fontSize.lg,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: colors.ink,
+  },
+  teaserResultCorrect: {
+    color: colors.success,
+  },
+  teaserResultWrong: {
+    color: colors.error,
+    fontSize: fontSize.lg,
+  },
+  // ── Play button
+  playWrap: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xs,
+  },
+  playBtn: {
+    ...btn.primary,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingVertical: 15,
+  },
+  playBtnText: {
+    ...btn.primaryText,
   },
 
   // ── Game modes
@@ -552,37 +859,43 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     ...typography.microMedium,
     color: colors.textTertiary,
   },
-  modeList: {},
-  modeRow: {
+  modeList: {
+    gap: spacing.sm,
+  },
+  modeCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 12,
-    paddingHorizontal: spacing.xxs,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    gap: spacing.md,
+    backgroundColor: colors.surface,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    borderRadius: borderRadius.lg,
+    paddingVertical: spacing.sm + 2,
+    paddingHorizontal: spacing.md,
   },
-  modeBar: {
-    width: 3,
-    height: 18,
-    borderRadius: borderRadius.xs,
+  modeCardDisabled: {
+    opacity: 0.6,
+  },
+  modeIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: borderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modeTextWrap: {
+    flex: 1,
   },
   modeTitle: {
-    flex: 1,
     fontFamily: fontFamily.bodyBold,
     fontSize: fontSize.sm,
     color: colors.ink,
     letterSpacing: -0.1,
   },
-  modeRowDisabled: {
-    opacity: 0.6,
-  },
-  modeTitleDisabled: {
-    color: colors.textTertiary,
-  },
   modeTag: {
     ...typography.micro,
     color: colors.textTertiary,
+    marginTop: 2,
   },
 
 }); };
