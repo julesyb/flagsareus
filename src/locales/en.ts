@@ -88,7 +88,7 @@ const en = {
     flagsToReviewPlural: '{count} flags to review',
     onboardingScores: 'Scores',
     test: 'Test',
-    testSub: 'Out of 10, Medium',
+    testSub: 'Out of {count}, {difficulty}',
     baselineOverall: '{pct}% overall',
     chooseYourGame: 'Choose Your Own Game',
     chooseYourGameDesc: 'Pick a mode and difficulty',

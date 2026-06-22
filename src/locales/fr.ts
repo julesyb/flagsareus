@@ -86,7 +86,7 @@ const fr: DeepPartial<TranslationStrings> = {
     flagsToReviewPlural: '{count} drapeaux \u00e0 r\u00e9viser',
     onboardingScores: 'Scores',
     test: 'Tester',
-    testSub: 'Sur 10, Moyen',
+    testSub: 'Sur {count}, {difficulty}',
     baselineOverall: '{pct}% au total',
     chooseYourGame: 'Choisis ton jeu',
     chooseYourGameDesc: 'Choisis un mode et une difficulté',

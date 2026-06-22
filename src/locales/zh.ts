@@ -86,7 +86,7 @@ const zh: DeepPartial<TranslationStrings> = {
     flagsToReviewPlural: '{count}\u9762\u56fd\u65d7\u5f85\u590d\u4e60',
     onboardingScores: '\u5f97\u5206',
     test: '\u6d4b\u8bd5',
-    testSub: '10 \u9898\uff0c\u4e2d\u7b49',
+    testSub: '{count} \u9898\uff0c{difficulty}',
     baselineOverall: '\u603b\u4f53 {pct}%',
     chooseYourGame: '\u81ea\u5b9a\u4e49\u6e38\u620f',
     chooseYourGameDesc: '\u9009\u62e9\u6a21\u5f0f\u548c\u96be\u5ea6',

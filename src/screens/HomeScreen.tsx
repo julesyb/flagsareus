@@ -15,7 +15,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { ThemeColors } from '../utils/theme';
 import { getCategoryCount } from '../data';
 import { initAudio, hapticTap, setSoundsEnabled, setHapticsEnabled } from '../utils/feedback';
-import { getStats, getSettings, getMissedFlagIds, getBaselineData, isDailyCompleteToday, BaselineData, getFlagStats, getBadgeData, getDayStreakInfo, getPersistedLevel, persistLevel } from '../utils/storage';
+import { getStats, getSettings, getMissedFlagIds, getBaselineData, isDailyCompleteToday, BaselineData, getFlagStats, getBadgeData, getDayStreakInfo, getPersistedLevel, persistLevel, getSkillLevel, getDefaultDifficulty } from '../utils/storage';
 import { getDailyConfig, getDailyVariant } from '../utils/gameEngine';
 import { RootStackParamList } from '../types/navigation';
 import { GameMode, CategoryId, BASELINE_REGIONS } from '../types';
@@ -28,8 +28,8 @@ import { computeLevelProgress, LevelProgress } from '../utils/levels';
 import { t } from '../utils/i18n';
 import { UNLIMITED_QUESTIONS, TIMEATTACK_DEFAULT_TIME } from '../utils/config';
 
-// The "Test" quick-play always launches the same friendly default: 10 flags, medium.
-const TEST_MODE: GameMode = 'medium';
+// The "Test" quick-play launches 10 flags at the player's default difficulty
+// (medium for new players, or whatever their skill level maps to).
 const TEST_COUNT = 10;
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
@@ -68,6 +68,7 @@ export default function HomeScreen({ navigation }: Props) {
   }, [dailyVariant]);
   const [baseline, setBaseline] = useState<BaselineData | null>(null);
   const [levelProgress, setLevelProgress] = useState<LevelProgress | null>(null);
+  const [testMode, setTestMode] = useState<GameMode>('medium');
 
   useEffect(() => {
     initAudio();
@@ -82,6 +83,7 @@ export default function HomeScreen({ navigation }: Props) {
       getMissedFlagIds().then((ids) => setWeakFlagCount(ids.length)).catch(() => {});
       isDailyCompleteToday().then(setDailyDone).catch(() => {});
       getBaselineData().then(setBaseline).catch(() => {});
+      getSkillLevel().then((skill) => setTestMode(skill ? getDefaultDifficulty(skill) : 'medium')).catch(() => {});
       Promise.all([getStats(), getFlagStats(), getBadgeData(), getDayStreakInfo(), getPersistedLevel()]).then(
         ([s, fs, bd, dsi, pl]) => {
           const lp = computeLevelProgress({ stats: s, flagStats: fs, badgeData: bd, dayStreakInfo: dsi }, pl);
@@ -92,11 +94,12 @@ export default function HomeScreen({ navigation }: Props) {
     }, []),
   );
 
-  // ── "Test" quick-play: straight into 10 medium flags ──
+  // ── "Test" quick-play: straight into 10 flags at the default difficulty ──
+  const testSubText = t('home.testSub', { count: TEST_COUNT, difficulty: t(`common.${testMode}`) });
   const playTest = () => {
     hapticTap();
     navigation.navigate('Game', {
-      config: { mode: TEST_MODE, category: 'all', questionCount: TEST_COUNT, displayMode: 'flag' },
+      config: { mode: testMode, category: 'all', questionCount: TEST_COUNT, displayMode: 'flag' },
     });
   };
 
@@ -224,12 +227,12 @@ export default function HomeScreen({ navigation }: Props) {
             activeOpacity={0.85}
             accessibilityRole="button"
             accessibilityLabel={t('home.test')}
-            accessibilityHint={t('home.testSub')}
+            accessibilityHint={testSubText}
           >
             <Text style={styles.testBtnText}>{t('home.test')}</Text>
             <PlayIcon size={15} color={colors.playText} />
           </TouchableOpacity>
-          <Text style={styles.testSub}>{t('home.testSub')}</Text>
+          <Text style={styles.testSub}>{testSubText}</Text>
         </View>
 
         {/* ── ACTION SQUARES ── */}
