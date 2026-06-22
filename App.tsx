@@ -26,6 +26,7 @@ import NeighborsScreen from './src/screens/NeighborsScreen';
 import FlagImpostorScreen from './src/screens/FlagImpostorScreen';
 import CapitalConnectionScreen from './src/screens/CapitalConnectionScreen';
 import GeoFactsScreen from './src/screens/GeoFactsScreen';
+import OnboardingScreen from './src/screens/OnboardingScreen';
 import JoinChallengeScreen from './src/screens/JoinChallengeScreen';
 import ChallengeResponseScreen from './src/screens/ChallengeResponseScreen';
 import DailyShareReceiveScreen from './src/screens/DailyShareReceiveScreen';
@@ -36,7 +37,7 @@ import { colors, fontSize, APP_URL } from './src/utils/theme';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 import { configureNotificationHandler, syncNotificationSchedule } from './src/utils/notifications';
 import { initLocale, t } from './src/utils/i18n';
-import { primeFlagLastShownCache, primeFlagStatsCache } from './src/utils/storage';
+import { hasCompletedOnboarding, primeFlagLastShownCache, primeFlagStatsCache } from './src/utils/storage';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -135,6 +136,7 @@ const GuardedCapitalConnection = withConfigGuard(CapitalConnectionScreen);
 
 function AppContent() {
   const [localeReady, setLocaleReady] = useState(false);
+  const [initialRoute, setInitialRoute] = useState<keyof RootStackParamList>('Home');
   const screenOptions = useScreenOptions();
 
   useEffect(() => {
@@ -143,10 +145,12 @@ function AppContent() {
     }
     initLocale()
       .then(async () => {
-        await Promise.all([
+        const [onboarded] = await Promise.all([
+          hasCompletedOnboarding(),
           primeFlagLastShownCache(),
           primeFlagStatsCache(),
         ]);
+        setInitialRoute(onboarded ? 'Home' : 'Onboarding');
         setLocaleReady(true);
         syncNotificationSchedule();
       })
@@ -159,7 +163,12 @@ function AppContent() {
 
   return (
     <NavigationContainer linking={linking}>
-      <Stack.Navigator screenOptions={screenOptions} initialRouteName="Home">
+      <Stack.Navigator screenOptions={screenOptions} initialRouteName={initialRoute}>
+        <Stack.Screen
+          name="Onboarding"
+          component={OnboardingScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Home"
           component={HomeScreen}
