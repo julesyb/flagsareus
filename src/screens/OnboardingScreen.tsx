@@ -147,7 +147,7 @@ export default function OnboardingScreen({ navigation }: Props) {
           {/* ── WELCOME ── */}
           <View style={styles.welcomeWrap}>
             <Text style={styles.welcomeTitle}>{t('onboarding.welcomeTitle')}</Text>
-            <Text style={styles.welcomeSub}>{t('onboarding.tagline')}</Text>
+            <Text style={styles.welcomeSub}>{t('onboarding.welcomeSub')}</Text>
           </View>
 
           {/* ── GIVE IT A TRY (primary quick-play) ── */}

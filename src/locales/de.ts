@@ -472,6 +472,7 @@ const de: DeepPartial<TranslationStrings> = {
     baselineMotivation: 'Schliesse alle 5 ab, um deine Verbesserung zu verfolgen',
     baselineProgress: 'Zeig, was du weisst',
     welcomeTitle: 'Willkommen zu deinem Flaggenwissen',
+    welcomeSub: 'Flaggen, Hauptstädte, Karten und Geografie. Finde heraus, wie gut du die Welt wirklich kennst.',
     giveItATry: 'Probier es aus',
     regionsComplete: '{count}/{total} Regionen',
     playCta: 'Spielen',

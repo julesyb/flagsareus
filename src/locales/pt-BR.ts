@@ -472,6 +472,7 @@ const ptBR: DeepPartial<TranslationStrings> = {
     baselineMotivation: 'Complete todos os 5 para acompanhar sua melhora',
     baselineProgress: 'Descubra seu nível',
     welcomeTitle: 'Bem-vindo ao seu conhecimento de bandeiras',
+    welcomeSub: 'Bandeiras, capitais, mapas e geografia. Veja o quanto você realmente conhece o mundo.',
     giveItATry: 'Experimente',
     regionsComplete: '{count}/{total} regiões',
     playCta: 'Jogar',

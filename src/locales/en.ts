@@ -544,6 +544,7 @@ const en = {
     tagline: 'How well do you know the world?',
     baselineProgress: 'See Where You Stand',
     welcomeTitle: 'Welcome to your flag knowledge',
+    welcomeSub: 'Flags, capitals, maps and geography. See how well you really know the world.',
     giveItATry: 'Give it a try',
     baselineMotivation: 'Finish all 5 to track your improvement',
     regionsComplete: '{count}/{total} regions',
