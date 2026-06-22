@@ -6,6 +6,7 @@
  */
 import {
   DAILY_FACTS,
+  FACT_CATEGORIES,
   getFactForDate,
   getFactContent,
   getGeoFacts,
@@ -112,14 +113,14 @@ describe('getFactContent', () => {
 });
 
 // ─── GeoFacts: browse fact pool and quiz generation ──────────
-// Facts are structured + rendered via localized templates, so we assert on
-// the rendered (default-locale) output.
+// Browse is a curated feed: one entry per trivia fact, rendered to its
+// localized takeaway sentence and tagged with a category.
 describe('getGeoFacts (browse pool)', () => {
   const facts = getGeoFacts();
   const flagIds = new Set(getAllFlags().map((f) => f.id));
 
-  it('provides at least 1200 stable facts', () => {
-    expect(facts.length).toBeGreaterThanOrEqual(1200);
+  it('surfaces one entry per curated fact', () => {
+    expect(facts.length).toBe(DAILY_FACTS.length);
     expect(getGeoFactCount()).toBe(facts.length);
   });
 
@@ -131,10 +132,15 @@ describe('getGeoFacts (browse pool)', () => {
     }
   });
 
+  it('tags every fact with a known category', () => {
+    for (const f of facts) {
+      expect(FACT_CATEGORIES).toContain(f.category);
+    }
+  });
+
   it('references only real flag codes (or none)', () => {
     for (const f of facts) {
       if (f.flagId) expect(flagIds.has(f.flagId)).toBe(true);
-      if (f.otherId) expect(flagIds.has(f.otherId)).toBe(true);
     }
   });
 
