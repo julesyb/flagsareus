@@ -14,9 +14,8 @@ import { fontFamily, fontSize, spacing, borderRadius, typography, buildButtons, 
 import { useTheme } from '../contexts/ThemeContext';
 import { t } from '../utils/i18n';
 import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
-import { getGeoFacts, generateGeoQuiz, renderGeoFact, GeoFact, GeoQuizQuestion, FactCategory } from '../data/facts';
+import { getGeoFacts, generateGeoQuiz, renderGeoFact, getQuizTakeaway, GeoFact, GeoQuizQuestion, FactCategory } from '../data/facts';
 import { RootStackParamList } from '../types/navigation';
-import { FlagImageSmall } from '../components/FlagImage';
 import FlagImage from '../components/FlagImage';
 import { FlagIcon, TrophyIcon, CompassIcon, GlobeIcon, CalendarIcon } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
@@ -106,19 +105,22 @@ function FactCard({ item, colors }: { item: GeoFact; colors: ThemeColors }) {
   const accent = meta.color(colors);
   const Icon = meta.Icon;
   return (
-    <View style={styles.factCard}>
-      <View style={[styles.factBar, { backgroundColor: accent }]} />
-      <View style={styles.factBody}>
-        <View style={styles.factTop}>
-          <View style={styles.factTag}>
-            <Icon size={13} color={accent} />
-            <Text style={[styles.factTagText, { color: accent }]}>{t(meta.labelKey)}</Text>
-          </View>
-          {item.flagId ? (
-            <View style={styles.factFlag}>
-              <FlagImageSmall countryCode={item.flagId} />
-            </View>
-          ) : null}
+    <View style={[styles.factCard, { borderColor: colors.border }]}>
+      {/* Visual anchor: the country flag, or a category-tinted tile with the
+          category icon when the fact is not tied to a single country. */}
+      {item.flagId ? (
+        <View style={styles.factMedia}>
+          <FlagImage countryCode={item.flagId} size="small" fill accessibilityLabel={t(meta.labelKey)} />
+        </View>
+      ) : (
+        <View style={[styles.factMedia, styles.factMediaTile, { backgroundColor: `${accent}1A` }]}>
+          <Icon size={30} color={accent} />
+        </View>
+      )}
+      <View style={styles.factContent}>
+        <View style={styles.factEyebrow}>
+          <Icon size={13} color={accent} />
+          <Text style={[styles.factEyebrowText, { color: accent }]}>{t(meta.labelKey)}</Text>
         </View>
         <Text style={styles.factText}>{renderGeoFact(item)}</Text>
       </View>
@@ -254,6 +256,7 @@ function QuizView({ colors, navigation }: { colors: ThemeColors; navigation: Pro
 
   const q = questions[index];
   const answered = picked !== null;
+  const takeaway = answered ? getQuizTakeaway(q.id) : null;
 
   return (
     <ScrollView contentContainerStyle={styles.quizContent} showsVerticalScrollIndicator={false}>
@@ -273,6 +276,12 @@ function QuizView({ colors, navigation }: { colors: ThemeColors; navigation: Pro
           <View style={styles.optsRow}>{q.options.slice(2, 4).map((opt, i) => renderOpt(opt, i + 2))}</View>
         </View>
 
+        {takeaway && (
+          <View style={styles.takeaway}>
+            <Text style={styles.takeawayText}>{takeaway}</Text>
+          </View>
+        )}
+
         {answered && (
           <TouchableOpacity style={styles.primaryBtn} onPress={next} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={index + 1 >= questions.length ? t('geofacts.seeResult') : t('geofacts.next')}>
             <Text style={styles.primaryBtnText}>{index + 1 >= questions.length ? t('geofacts.seeResult') : t('geofacts.next')}</Text>
@@ -287,10 +296,11 @@ function QuizView({ colors, navigation }: { colors: ThemeColors; navigation: Pro
     const isSelected = picked === i;
     const showCorrect = answered && isCorrect;
     const showWrong = isSelected && !isCorrect;
+    const flagCode = q.optionFlags?.[i];
     return (
       <View key={i} style={styles.optWrap}>
         <TouchableOpacity
-          style={[styles.optBtn, showCorrect && styles.optCorrect, showWrong && styles.optWrong]}
+          style={[styles.optBtn, flagCode && styles.optBtnFlag, showCorrect && styles.optCorrect, showWrong && styles.optWrong]}
           onPress={() => pick(i)}
           activeOpacity={0.8}
           disabled={answered}
@@ -298,9 +308,22 @@ function QuizView({ colors, navigation }: { colors: ThemeColors; navigation: Pro
           accessibilityLabel={label}
           accessibilityState={{ disabled: answered, selected: isSelected }}
         >
-          <Text style={[styles.optText, showCorrect && styles.optTextCorrect, showWrong && styles.optTextWrong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7}>
-            {label}
-          </Text>
+          {flagCode ? (
+            <View style={styles.optFlagContent}>
+              <View style={styles.optFlagWrap}>
+                <FlagImage countryCode={flagCode} size="small" fill accessibilityLabel={label} />
+              </View>
+              {answered && (
+                <Text style={[styles.optFlagLabel, showCorrect && styles.optTextCorrect, showWrong && styles.optTextWrong]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+                  {label}
+                </Text>
+              )}
+            </View>
+          ) : (
+            <Text style={[styles.optText, showCorrect && styles.optTextCorrect, showWrong && styles.optTextWrong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7}>
+              {label}
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
     );
@@ -396,40 +419,40 @@ const createStyles = (colors: ThemeColors) => {
     },
     factCard: {
       flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: spacing.md,
       backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: borderRadius.lg,
-      overflow: 'hidden',
+      padding: spacing.md,
       marginBottom: spacing.sm,
     },
-    factBar: {
-      width: 4,
+    factMedia: {
+      width: 104,
+      aspectRatio: 3 / 2,
+      borderRadius: borderRadius.sm,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: colors.ruleDark,
     },
-    factBody: {
-      flex: 1,
-      paddingVertical: spacing.md,
-      paddingHorizontal: spacing.md,
-      gap: spacing.sm,
-    },
-    factTop: {
-      flexDirection: 'row',
+    factMediaTile: {
       alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: spacing.sm,
+      justifyContent: 'center',
+      borderColor: 'transparent',
     },
-    factTag: {
+    factContent: {
+      flex: 1,
+      gap: spacing.xs,
+      paddingTop: spacing.xxs,
+    },
+    factEyebrow: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: spacing.xs,
-      flexShrink: 1,
     },
-    factTagText: {
+    factEyebrowText: {
       ...typography.eyebrow,
-    },
-    factFlag: {
-      borderRadius: borderRadius.xs,
-      overflow: 'hidden',
     },
     factText: {
       fontSize: fontSize.body,
@@ -504,6 +527,36 @@ const createStyles = (colors: ThemeColors) => {
       paddingVertical: spacing.xs,
       alignItems: 'center',
       justifyContent: 'center',
+    },
+    optBtnFlag: {
+      padding: spacing.xs,
+    },
+    optFlagContent: {
+      width: '100%',
+      alignItems: 'center',
+      gap: spacing.xs,
+    },
+    optFlagWrap: {
+      width: '100%',
+      aspectRatio: 3 / 2,
+      borderRadius: borderRadius.xs,
+      overflow: 'hidden',
+    },
+    optFlagLabel: {
+      ...typography.microMedium,
+      color: colors.ink,
+      textAlign: 'center',
+    },
+    takeaway: {
+      backgroundColor: colors.surfaceSecondary,
+      borderRadius: borderRadius.md,
+      padding: spacing.md,
+      marginTop: spacing.md,
+    },
+    takeawayText: {
+      ...typography.body,
+      color: colors.textSecondary,
+      lineHeight: 22,
     },
     optCorrect: {
       backgroundColor: colors.successBg,
