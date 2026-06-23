@@ -2289,6 +2289,19 @@ export function renderGeoFact(fact: GeoFact): string {
   return c.fact;
 }
 
+/**
+ * The takeaway sentence behind a quiz question, or null when the question is a
+ * generated capital/region one with no curated trivia. Used to reveal the
+ * "why" once a player has answered.
+ */
+export function getQuizTakeaway(questionId: string): string | null {
+  const prefix = 'q-tr-';
+  if (!questionId.startsWith(prefix)) return null;
+  const tf = DAILY_FACTS.find((x) => x.id === questionId.slice(prefix.length));
+  if (!tf) return null;
+  return (tf.content[getLocale()] ?? tf.content.en).fact;
+}
+
 // ─── Quiz questions ──────────────────────────────────────────
 // Built fresh per session in the current locale (prompt and options
 // localized; capital names stay as proper nouns).

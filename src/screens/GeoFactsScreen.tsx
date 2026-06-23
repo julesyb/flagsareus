@@ -14,7 +14,7 @@ import { fontFamily, fontSize, spacing, borderRadius, typography, buildButtons, 
 import { useTheme } from '../contexts/ThemeContext';
 import { t } from '../utils/i18n';
 import { hapticTap, hapticCorrect, hapticWrong, playWrongSound } from '../utils/feedback';
-import { getGeoFacts, generateGeoQuiz, renderGeoFact, GeoFact, GeoQuizQuestion, FactCategory } from '../data/facts';
+import { getGeoFacts, generateGeoQuiz, renderGeoFact, getQuizTakeaway, GeoFact, GeoQuizQuestion, FactCategory } from '../data/facts';
 import { RootStackParamList } from '../types/navigation';
 import FlagImage from '../components/FlagImage';
 import { FlagIcon, TrophyIcon, CompassIcon, GlobeIcon, CalendarIcon } from '../components/Icons';
@@ -256,6 +256,7 @@ function QuizView({ colors, navigation }: { colors: ThemeColors; navigation: Pro
 
   const q = questions[index];
   const answered = picked !== null;
+  const takeaway = answered ? getQuizTakeaway(q.id) : null;
 
   return (
     <ScrollView contentContainerStyle={styles.quizContent} showsVerticalScrollIndicator={false}>
@@ -274,6 +275,12 @@ function QuizView({ colors, navigation }: { colors: ThemeColors; navigation: Pro
           <View style={styles.optsRow}>{q.options.slice(0, 2).map((opt, i) => renderOpt(opt, i))}</View>
           <View style={styles.optsRow}>{q.options.slice(2, 4).map((opt, i) => renderOpt(opt, i + 2))}</View>
         </View>
+
+        {takeaway && (
+          <View style={styles.takeaway}>
+            <Text style={styles.takeawayText}>{takeaway}</Text>
+          </View>
+        )}
 
         {answered && (
           <TouchableOpacity style={styles.primaryBtn} onPress={next} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={index + 1 >= questions.length ? t('geofacts.seeResult') : t('geofacts.next')}>
@@ -302,8 +309,15 @@ function QuizView({ colors, navigation }: { colors: ThemeColors; navigation: Pro
           accessibilityState={{ disabled: answered, selected: isSelected }}
         >
           {flagCode ? (
-            <View style={styles.optFlagWrap}>
-              <FlagImage countryCode={flagCode} size="small" fill accessibilityLabel={label} />
+            <View style={styles.optFlagContent}>
+              <View style={styles.optFlagWrap}>
+                <FlagImage countryCode={flagCode} size="small" fill accessibilityLabel={label} />
+              </View>
+              {answered && (
+                <Text style={[styles.optFlagLabel, showCorrect && styles.optTextCorrect, showWrong && styles.optTextWrong]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+                  {label}
+                </Text>
+              )}
             </View>
           ) : (
             <Text style={[styles.optText, showCorrect && styles.optTextCorrect, showWrong && styles.optTextWrong]} numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7}>
@@ -517,11 +531,32 @@ const createStyles = (colors: ThemeColors) => {
     optBtnFlag: {
       padding: spacing.xs,
     },
+    optFlagContent: {
+      width: '100%',
+      alignItems: 'center',
+      gap: spacing.xs,
+    },
     optFlagWrap: {
       width: '100%',
       aspectRatio: 3 / 2,
       borderRadius: borderRadius.xs,
       overflow: 'hidden',
+    },
+    optFlagLabel: {
+      ...typography.microMedium,
+      color: colors.ink,
+      textAlign: 'center',
+    },
+    takeaway: {
+      backgroundColor: colors.surfaceSecondary,
+      borderRadius: borderRadius.md,
+      padding: spacing.md,
+      marginTop: spacing.md,
+    },
+    takeawayText: {
+      ...typography.body,
+      color: colors.textSecondary,
+      lineHeight: 22,
     },
     optCorrect: {
       backgroundColor: colors.successBg,

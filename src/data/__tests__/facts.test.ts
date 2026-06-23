@@ -12,6 +12,7 @@ import {
   getGeoFacts,
   getGeoFactCount,
   renderGeoFact,
+  getQuizTakeaway,
   generateGeoQuiz,
   getGeoQuizBankSize,
 } from '../facts';
@@ -193,5 +194,21 @@ describe('generateGeoQuiz', () => {
       }
     }
     expect(sawFlagAnswer).toBe(true);
+  });
+});
+
+describe('getQuizTakeaway', () => {
+  it('returns the curated takeaway for a trivia question', () => {
+    const takeaway = getQuizTakeaway(`q-tr-${DAILY_FACTS[0].id}`);
+    expect(takeaway).toBe(DAILY_FACTS[0].content.en.fact);
+  });
+
+  it('returns null for generated capital/region questions', () => {
+    expect(getQuizTakeaway('q-cap-fr')).toBeNull();
+    expect(getQuizTakeaway('q-reg-fr')).toBeNull();
+  });
+
+  it('returns null for an unknown trivia id', () => {
+    expect(getQuizTakeaway('q-tr-not_a_real_fact')).toBeNull();
   });
 });
