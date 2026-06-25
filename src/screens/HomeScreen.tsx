@@ -384,18 +384,7 @@ export default function HomeScreen({ navigation }: Props) {
           )}
         </View>
 
-        {/* ── FLAG TEASER ── */}
-        <FlagTeaser key={teaserKey} onAnswer={pulsePlayBtn} />
-
-        {/* ── PLAY NOW ── */}
-        <Animated.View style={[styles.playWrap, { transform: [{ scale: playBtnScale }] }]}>
-          <TouchableOpacity style={styles.playBtn} onPress={play} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={t('home.playNow')}>
-            <Text style={styles.playBtnText}>{t('home.playNow')}</Text>
-            <PlayIcon size={14} color={colors.playText} />
-          </TouchableOpacity>
-        </Animated.View>
-
-        {/* ── CONFIG ── */}
+        {/* ── CONFIG (above the flag so players notice they can change the mode) ── */}
         <View style={{ marginHorizontal: spacing.md, marginTop: spacing.sm }}>
           <ConfigCard>
             <ConfigRow label={t('home.cards')} showDivider={false}>
@@ -449,6 +438,17 @@ export default function HomeScreen({ navigation }: Props) {
             )}
           </ConfigCard>
         </View>
+
+        {/* ── FLAG TEASER ── */}
+        <FlagTeaser key={teaserKey} onAnswer={pulsePlayBtn} />
+
+        {/* ── PLAY NOW ── */}
+        <Animated.View style={[styles.playWrap, { transform: [{ scale: playBtnScale }] }]}>
+          <TouchableOpacity style={styles.playBtn} onPress={play} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={t('home.playNow')}>
+            <Text style={styles.playBtnText}>{t('home.playNow')}</Text>
+            <PlayIcon size={14} color={colors.playText} />
+          </TouchableOpacity>
+        </Animated.View>
 
         {/* ── FACT OF THE DAY ── */}
         <View style={{ marginHorizontal: spacing.md, marginTop: spacing.md }}>
