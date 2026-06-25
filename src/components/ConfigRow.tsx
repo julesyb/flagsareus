@@ -72,7 +72,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     flexShrink: 0,
   },
   labelCompact: {
-    fontSize: fontSize.xs,
+    fontSize: fontSize.sm,
     minWidth: 48,
   },
   controls: {
