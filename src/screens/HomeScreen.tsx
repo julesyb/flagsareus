@@ -439,9 +439,6 @@ export default function HomeScreen({ navigation }: Props) {
           </ConfigCard>
         </View>
 
-        {/* ── FLAG TEASER ── */}
-        <FlagTeaser key={teaserKey} onAnswer={pulsePlayBtn} />
-
         {/* ── PLAY NOW ── */}
         <Animated.View style={[styles.playWrap, { transform: [{ scale: playBtnScale }] }]}>
           <TouchableOpacity style={styles.playBtn} onPress={play} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={t('home.playNow')}>
@@ -449,6 +446,9 @@ export default function HomeScreen({ navigation }: Props) {
             <PlayIcon size={14} color={colors.playText} />
           </TouchableOpacity>
         </Animated.View>
+
+        {/* ── FLAG TEASER ── */}
+        <FlagTeaser key={teaserKey} onAnswer={pulsePlayBtn} />
 
         {/* ── FACT OF THE DAY ── */}
         <View style={{ marginHorizontal: spacing.md, marginTop: spacing.md }}>
@@ -747,15 +747,18 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   // ── Hero flag teaser (light mode - no dark background)
   heroCard: {
     marginHorizontal: spacing.md,
-    marginTop: spacing.md,
+    marginTop: spacing.sm,
   },
   heroLabel: {
     ...typography.eyebrow,
     color: colors.textTertiary,
     marginBottom: spacing.sm,
+    textAlign: 'center',
   },
   flagWrap: {
     width: '100%',
+    maxWidth: 260,
+    alignSelf: 'center',
     aspectRatio: 3 / 2,
     overflow: 'hidden',
     borderRadius: borderRadius.lg,
