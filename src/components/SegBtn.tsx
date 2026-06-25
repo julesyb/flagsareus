@@ -45,6 +45,9 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
   segBtnCompact: {
     paddingVertical: spacing.xs - 1,
     borderWidth: 1,
+    // Keep the visual size tight, but guarantee a comfortable tap target.
+    minHeight: 40,
+    justifyContent: 'center',
   },
   segBtnOn: {
     backgroundColor: colors.goldBright,
