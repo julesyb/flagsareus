@@ -135,7 +135,6 @@ const fr: DeepPartial<TranslationStrings> = {
     typePrompt: 'Tapez le nom de ce drapeau :',
     nameCountry: 'Nommez ce pays :',
     typePlaceholder: 'Votre r\u00e9ponse...',
-    youSaid: 'Votre r\u00e9ponse : {answer}',
   },
 
   results: {

@@ -135,7 +135,6 @@ const es: DeepPartial<TranslationStrings> = {
     typePrompt: 'Escribe el nombre de esta bandera:',
     nameCountry: 'Nombra este pa\u00eds:',
     typePlaceholder: 'Escribe tu respuesta...',
-    youSaid: 'Tu respuesta: {answer}',
   },
 
   results: {

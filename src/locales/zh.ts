@@ -135,7 +135,6 @@ const zh: DeepPartial<TranslationStrings> = {
     typePrompt: '\u8f93\u5165\u8fd9\u9762\u56fd\u65d7\u7684\u540d\u79f0\uff1a',
     nameCountry: '\u8bf4\u51fa\u8fd9\u4e2a\u56fd\u5bb6\uff1a',
     typePlaceholder: '\u8f93\u5165\u7b54\u6848...',
-    youSaid: '\u4f60\u7684\u7b54\u6848\uff1a{answer}',
   },
 
   results: {

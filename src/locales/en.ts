@@ -139,7 +139,6 @@ const en = {
     typePrompt: 'Type the name of this flag:',
     nameCountry: 'Name this country:',
     typePlaceholder: 'Type your answer...',
-    youSaid: 'You said: {answer}',
   },
 
   // ─── Results Screen ──────────────────────────────────────

@@ -239,14 +239,6 @@ export default function GameScreen({ route, navigation }: Props) {
     );
   }
 
-  // When the answer is wrong in flag mode, surface the flag of the country the
-  // player actually picked so they can compare it against the correct flag above.
-  // Map mode already shows flags on the answer buttons, so only flag mode needs this.
-  const wrongFlag =
-    showFeedback && !lastAnswerCorrect && !isMapMode && selectedAnswer
-      ? getFlagByName(selectedAnswer)
-      : null;
-
   return (
     <SafeAreaView style={styles.container}>
       {isTimeAttack ? (
@@ -457,23 +449,9 @@ export default function GameScreen({ route, navigation }: Props) {
                 )}
               </View>
             ) : (
-              <View style={styles.feedbackWrongContainer}>
-                <Text style={styles.feedbackWrong} accessibilityLiveRegion="polite">
-                  {flagName(currentQuestion.flag)}
-                </Text>
-                {wrongFlag && (
-                  <View style={styles.feedbackYouSaidRow}>
-                    <FlagImage
-                      countryCode={wrongFlag.id}
-                      size="small"
-                      accessibilityLabel={t('common.flagOf', { country: flagName(wrongFlag) })}
-                    />
-                    <Text style={styles.feedbackYouSaid}>
-                      {t('game.youSaid', { answer: flagName(wrongFlag) })}
-                    </Text>
-                  </View>
-                )}
-              </View>
+              <Text style={styles.feedbackWrong} accessibilityLiveRegion="polite">
+                {flagName(currentQuestion.flag)}
+              </Text>
             )}
           </View>
         )}
@@ -715,21 +693,8 @@ const createStyles = (colors: ThemeColors) => {
     ...typography.bodyBold,
     color: colors.textSecondary,
   },
-  feedbackWrongContainer: {
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
   feedbackWrong: {
     ...typography.heading,
-    color: colors.error,
-  },
-  feedbackYouSaidRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  feedbackYouSaid: {
-    ...typography.bodyBold,
     color: colors.error,
   },
   });
