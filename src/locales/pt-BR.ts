@@ -23,6 +23,7 @@ const ptBR: DeepPartial<TranslationStrings> = {
     review: 'Revisar',
     seeResults: 'Ver resultados',
     flagOf: 'Bandeira de {country}',
+    tapToRetry: 'Toque para tentar de novo',
     vs: 'vs',
     flags: 'Bandeiras',
     perFlag: 'Por bandeira',

@@ -22,6 +22,7 @@ const en = {
     review: 'Review',
     seeResults: 'See Results',
     flagOf: 'Flag of {country}',
+    tapToRetry: 'Tap to retry',
     vs: 'vs',
     flags: 'Flags',
     perFlag: 'Per flag',
