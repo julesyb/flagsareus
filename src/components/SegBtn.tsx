@@ -9,23 +9,25 @@ interface SegBtnProps {
   active: boolean;
   onPress: () => void;
   maxWidth?: number;
+  /** Tighter padding + smaller text for dense layouts (e.g. the Home config). */
+  compact?: boolean;
   accessibilityLabel?: string;
 }
 
-export default function SegBtn({ label, active, onPress, maxWidth = 80, accessibilityLabel }: SegBtnProps) {
+export default function SegBtn({ label, active, onPress, maxWidth = 80, compact = false, accessibilityLabel }: SegBtnProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
   return (
     <TouchableOpacity
-      style={[styles.segBtn, { maxWidth }, active && styles.segBtnOn]}
+      style={[styles.segBtn, compact && styles.segBtnCompact, { maxWidth }, active && styles.segBtnOn]}
       onPress={() => { hapticTap(); onPress(); }}
       activeOpacity={0.7}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityState={{ selected: active }}
     >
-      <Text style={[styles.segBtnText, active && styles.segBtnTextOn]}>{label}</Text>
+      <Text style={[styles.segBtnText, compact && styles.segBtnTextCompact, active && styles.segBtnTextOn]}>{label}</Text>
     </TouchableOpacity>
   );
 }
@@ -40,6 +42,10 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderRadius: borderRadius.sm,
     alignItems: 'center',
   },
+  segBtnCompact: {
+    paddingVertical: spacing.xs - 1,
+    borderWidth: 1,
+  },
   segBtnOn: {
     backgroundColor: colors.goldBright,
     borderColor: colors.goldBright,
@@ -48,6 +54,9 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     ...typography.actionLabel,
     letterSpacing: 0,
     color: colors.textTertiary,
+  },
+  segBtnTextCompact: {
+    fontSize: fontSize.xs,
   },
   segBtnTextOn: {
     color: colors.playText,

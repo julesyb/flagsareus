@@ -7,21 +7,23 @@ interface ConfigRowProps {
   label: string;
   children: React.ReactNode;
   showDivider?: boolean;
+  /** Tighter vertical padding for dense layouts (e.g. the Home config). */
+  compact?: boolean;
 }
 
 /**
  * Compact config row for settings-style controls.
  * Shared between HomeScreen and GameSetupScreen.
  */
-export default function ConfigRow({ label, children, showDivider = true }: ConfigRowProps) {
+export default function ConfigRow({ label, children, showDivider = true, compact = false }: ConfigRowProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
   return (
     <>
       {showDivider && <View style={styles.divider} />}
-      <View style={styles.row}>
-        <Text style={styles.label}>{label}</Text>
+      <View style={[styles.row, compact && styles.rowCompact]}>
+        <Text style={[styles.label, compact && styles.labelCompact]}>{label}</Text>
         <View style={styles.controls}>{children}</View>
       </View>
     </>
@@ -29,11 +31,11 @@ export default function ConfigRow({ label, children, showDivider = true }: Confi
 }
 
 /** Card wrapper for groups of ConfigRows. */
-export function ConfigCard({ children }: { children: React.ReactNode }) {
+export function ConfigCard({ children, compact = false }: { children: React.ReactNode; compact?: boolean }) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
 
-  return <View style={styles.card}>{children}</View>;
+  return <View style={[styles.card, compact && styles.cardCompact]}>{children}</View>;
 }
 
 const createStyles = (colors: ThemeColors) => StyleSheet.create({
@@ -43,6 +45,10 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.rule,
     overflow: 'hidden',
+  },
+  cardCompact: {
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
   },
   divider: {
     height: 1,
@@ -55,11 +61,19 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     paddingHorizontal: spacing.md,
     gap: spacing.sm,
   },
+  rowCompact: {
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+  },
   label: {
     ...typography.label,
     color: colors.ink,
     minWidth: 58,
     flexShrink: 0,
+  },
+  labelCompact: {
+    fontSize: fontSize.xs,
+    minWidth: 48,
   },
   controls: {
     flexDirection: 'row',

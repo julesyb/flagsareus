@@ -386,8 +386,8 @@ export default function HomeScreen({ navigation }: Props) {
 
         {/* ── CONFIG (above the flag so players notice they can change the mode) ── */}
         <View style={{ marginHorizontal: spacing.md, marginTop: spacing.sm }}>
-          <ConfigCard>
-            <ConfigRow label={t('home.cards')} showDivider={false}>
+          <ConfigCard compact>
+            <ConfigRow label={t('home.cards')} showDivider={false} compact>
               {HOME_QUESTION_COUNTS.map((c) => (
                 <SegBtn
                   key={c}
@@ -395,6 +395,7 @@ export default function HomeScreen({ navigation }: Props) {
                   active={!questionCountAll && questionCount === c}
                   onPress={() => { setQuestionCount(c); setQuestionCountAll(false); }}
                   maxWidth={54}
+                  compact
                   accessibilityLabel={t('common.nCards', { n: c })}
                 />
               ))}
@@ -403,10 +404,11 @@ export default function HomeScreen({ navigation }: Props) {
                 active={questionCountAll}
                 onPress={() => setQuestionCountAll(true)}
                 maxWidth={54}
+                compact
                 accessibilityLabel={t('common.allCards')}
               />
             </ConfigRow>
-            <ConfigRow label={t('home.difficulty')}>
+            <ConfigRow label={t('home.difficulty')} compact>
               {MODE_KEYS.map((m) => (
                 <SegBtn
                   key={m}
@@ -414,17 +416,19 @@ export default function HomeScreen({ navigation }: Props) {
                   active={mode === m}
                   onPress={() => setMode(m)}
                   maxWidth={54}
+                  compact
                   accessibilityLabel={`${t('home.difficulty')}: ${t(`common.${m}`)}`}
                 />
               ))}
             </ConfigRow>
             {mode === 'hard' && (
-              <ConfigRow label={t('home.hints')}>
+              <ConfigRow label={t('home.hints')} compact>
                 <SegBtn
                   label={t('common.off')}
                   active={!autocomplete}
                   onPress={() => setAutocomplete(false)}
                   maxWidth={54}
+                  compact
                   accessibilityLabel={`${t('home.hints')}: ${t('common.off')}`}
                 />
                 <SegBtn
@@ -432,12 +436,16 @@ export default function HomeScreen({ navigation }: Props) {
                   active={autocomplete}
                   onPress={() => setAutocomplete(true)}
                   maxWidth={54}
+                  compact
                   accessibilityLabel={`${t('home.hints')}: ${t('common.on')}`}
                 />
               </ConfigRow>
             )}
           </ConfigCard>
         </View>
+
+        {/* ── FLAG TEASER ── */}
+        <FlagTeaser key={teaserKey} onAnswer={pulsePlayBtn} />
 
         {/* ── PLAY NOW ── */}
         <Animated.View style={[styles.playWrap, { transform: [{ scale: playBtnScale }] }]}>
@@ -446,9 +454,6 @@ export default function HomeScreen({ navigation }: Props) {
             <PlayIcon size={14} color={colors.playText} />
           </TouchableOpacity>
         </Animated.View>
-
-        {/* ── FLAG TEASER ── */}
-        <FlagTeaser key={teaserKey} onAnswer={pulsePlayBtn} />
 
         {/* ── FACT OF THE DAY ── */}
         <View style={{ marginHorizontal: spacing.md, marginTop: spacing.md }}>
@@ -753,12 +758,9 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     ...typography.eyebrow,
     color: colors.textTertiary,
     marginBottom: spacing.sm,
-    textAlign: 'center',
   },
   flagWrap: {
     width: '100%',
-    maxWidth: 260,
-    alignSelf: 'center',
     aspectRatio: 3 / 2,
     overflow: 'hidden',
     borderRadius: borderRadius.lg,
@@ -767,12 +769,12 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
 
   // Options 2x2
   optsGrid: {
-    marginTop: spacing.md,
-    gap: spacing.sm,
+    marginTop: spacing.sm,
+    gap: spacing.xs,
   },
   optsRow: {
     flexDirection: 'row',
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
   optWrap: {
     flex: 1,
@@ -782,7 +784,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     borderWidth: 1.5,
     borderColor: colors.border,
     borderRadius: borderRadius.md,
-    height: 52,
+    height: 42,
     paddingHorizontal: spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
@@ -797,6 +799,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   },
   optText: {
     ...typography.label,
+    fontSize: fontSize.sm,
     color: colors.ink,
     textAlign: 'center',
   },
