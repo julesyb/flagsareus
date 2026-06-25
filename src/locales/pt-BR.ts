@@ -135,6 +135,7 @@ const ptBR: DeepPartial<TranslationStrings> = {
     typePrompt: 'Digite o nome desta bandeira:',
     nameCountry: 'Nomeie este pa\u00eds:',
     typePlaceholder: 'Sua resposta...',
+    youSaid: 'Sua resposta: {answer}',
   },
 
   results: {
