@@ -72,7 +72,6 @@ export default function GameSetupScreen({ route, navigation }: Props) {
   const styles = useMemo(() => createStyles(colors), [colors]);
   const onNavigate = useNavTabs();
   const initialMode = route.params?.initialMode;
-  const initialDifficulty = route.params?.initialDifficulty;
 
   const [displayMode, setDisplayMode] = useState<DisplayMode>('flag');
   const [setupMode, setSetupMode] = useState<SetupMode>(() => {
@@ -85,15 +84,10 @@ export default function GameSetupScreen({ route, navigation }: Props) {
       default: return 'quiz';
     }
   });
-  const [difficulty, setDifficulty] = useState<QuizDifficulty>(() => {
-    if (initialDifficulty) return initialDifficulty;
-    switch (initialMode) {
-      case 'easy': return 'easy';
-      case 'hard': return 'hard';
-      default: return 'medium';
-    }
-  });
+  // Default is always medium difficulty, regardless of how setup was entered.
+  const [difficulty, setDifficulty] = useState<QuizDifficulty>('medium');
   const [selectedCategory, setSelectedCategory] = useState<CategoryId>('all');
+  // Default is always 10 cards.
   const [questionCount, setQuestionCount] = useState(10);
   const [questionCountAll, setQuestionCountAll] = useState(false);
   const [timeLimit, setTimeLimit] = useState(60);

@@ -316,6 +316,7 @@ export default function GameScreen({ route, navigation }: Props) {
               countryCode={currentQuestion.flag.id}
               size="hero"
               transition={0}
+              hideLabel
             />
           )}
         </View>

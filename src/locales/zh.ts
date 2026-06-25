@@ -23,6 +23,7 @@ const zh: DeepPartial<TranslationStrings> = {
     review: '\u56de\u987e',
     seeResults: '\u67e5\u770b\u7ed3\u679c',
     flagOf: '{country}\u7684\u65d7\u5e1c',
+    tapToRetry: '\u70b9\u51fb\u91cd\u8bd5',
     vs: 'vs',
     flags: '\u65d7\u5e1c',
     perFlag: '\u6bcf\u9762\u65d7',

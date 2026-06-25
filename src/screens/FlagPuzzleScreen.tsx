@@ -342,6 +342,7 @@ export default function FlagPuzzleScreen({ route, navigation }: Props) {
               countryCode={currentQuestion.flag.id}
               size="hero"
               transition={0}
+              hideLabel
             />
             {!showFeedback && (
               <View style={[styles.tileGrid, { width: flagWidth, height: flagHeight }]} pointerEvents="none">

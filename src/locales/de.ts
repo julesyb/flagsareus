@@ -23,6 +23,7 @@ const de: DeepPartial<TranslationStrings> = {
     review: '\u00dcberpr\u00fcfen',
     seeResults: 'Ergebnisse ansehen',
     flagOf: 'Flagge von {country}',
+    tapToRetry: 'Zum Wiederholen tippen',
     vs: 'vs',
     flags: 'Flaggen',
     perFlag: 'Pro Flagge',

@@ -1,9 +1,10 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, useWindowDimensions, StyleProp, ViewStyle } from 'react-native';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { StyleSheet, View, Text, ActivityIndicator, Pressable, useWindowDimensions, StyleProp, ViewStyle, TextStyle, ImageStyle } from 'react-native';
 import { Image } from 'expo-image';
 import { fontFamily, fontSize, borderRadius, ThemeColors } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { t } from '../utils/i18n';
+import { hapticTap } from '../utils/feedback';
 
 interface FlagImageProps {
   countryCode: string;
@@ -14,6 +15,12 @@ interface FlagImageProps {
   accessibilityLabel?: string;
   /** Image crossfade duration in ms. Set to 0 when parent handles fade animation. */
   transition?: number;
+  /**
+   * Hide the country-code text on a failed load. Use for gameplay question flags
+   * where showing the code would reveal the answer; the placeholder shows a neutral
+   * retry prompt instead.
+   */
+  hideLabel?: boolean;
 }
 
 const SIZE_MAP = {
@@ -25,134 +32,183 @@ const SIZE_MAP = {
 // flagcdn.com serves PNGs at these fixed widths
 const CDN_WIDTHS = [20, 40, 80, 160, 320, 640, 1280, 2560];
 
+// Number of automatic retries before falling back to a manual retry prompt.
+const MAX_RETRIES = 3;
+
 function nearestCdnWidth(desired: number): number {
   return CDN_WIDTHS.find((w) => w >= desired) ?? 2560;
 }
 
-function getFlagUrl(code: string, width: number): string {
-  return `https://flagcdn.com/w${nearestCdnWidth(width)}/${code.toLowerCase()}.png`;
+function getFlagUrl(code: string, width: number, attempt: number): string {
+  const base = `https://flagcdn.com/w${nearestCdnWidth(width)}/${code.toLowerCase()}.png`;
+  // Cache-bust on retries so expo-image and the CDN re-fetch instead of replaying the failure.
+  return attempt > 0 ? `${base}?retry=${attempt}` : base;
 }
 
-export default function FlagImage({ countryCode, size = 'large', fill, style, accessibilityLabel, transition: transitionProp }: FlagImageProps) {
-  const { colors } = useTheme();
-  const styles = useMemo(() => createStyles(colors), [colors]);
-  const { width: screenWidth } = useWindowDimensions();
+/**
+ * Manages flag image loading with automatic backoff retries for transient
+ * network failures, plus a manual retry escape hatch once retries are exhausted.
+ */
+function useFlagLoader(countryCode: string) {
   const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(false);
-  const transitionMs = transitionProp ?? 200;
+  const [attempt, setAttempt] = useState(0);
+  const [errored, setErrored] = useState(false);
 
-  // Reset loading state when the flag changes so stale images don't linger
+  // Reset loading state when the flag changes so stale images don't linger.
   useEffect(() => {
     setLoaded(false);
-    setError(false);
+    setAttempt(0);
+    setErrored(false);
   }, [countryCode]);
 
-  const a11yLabel = accessibilityLabel || t('common.flagOf', { country: countryCode.toUpperCase() });
+  // Auto-retry transient failures with a short backoff before giving up.
+  useEffect(() => {
+    if (!errored || attempt >= MAX_RETRIES) return;
+    const id = setTimeout(() => {
+      setErrored(false);
+      setAttempt((a) => a + 1);
+    }, 400 * (attempt + 1));
+    return () => clearTimeout(id);
+  }, [errored, attempt]);
 
-  if (size === 'hero') {
-    // Hero fills parent width — use aspectRatio instead of fixed pixels
-    const requestWidth = Math.min(screenWidth, 500) * 2;
-    return (
-      <View
-        style={[styles.container, { width: '100%', aspectRatio: 3 / 2 }, style]}
-        accessible
-        accessibilityRole="image"
-        accessibilityLabel={a11yLabel}
-      >
-        {!loaded && (
-          <View style={[styles.placeholder, { width: '100%', height: '100%' }]}>
-            {error ? (
-              <Text style={styles.errorText}>{countryCode.toUpperCase()}</Text>
-            ) : (
-              <ActivityIndicator size="small" color={colors.textTertiary} />
-            )}
-          </View>
-        )}
-        {!error && (
-          <Image
-            source={{ uri: getFlagUrl(countryCode, requestWidth) }}
-            style={[styles.image, { width: '100%', height: '100%' }]}
-            contentFit="contain"
-            transition={transitionMs}
-            priority="high"
-            cachePolicy="memory-disk"
-            onLoad={() => setLoaded(true)}
-            onError={() => { setError(true); setLoaded(false); }}
-          />
-        )}
-      </View>
-    );
-  }
+  const handleLoad = useCallback(() => {
+    setErrored(false);
+    setLoaded(true);
+  }, []);
 
-  const dimensions = SIZE_MAP[size];
-  const requestWidth = dimensions.width * 2;
-  const fillStyle = fill ? { width: '100%' as const, height: '100%' as const } : dimensions;
+  const handleError = useCallback(() => {
+    setLoaded(false);
+    setErrored(true);
+  }, []);
+
+  const retry = useCallback(() => {
+    setLoaded(false);
+    setErrored(false);
+    setAttempt((a) => a + 1);
+  }, []);
+
+  const exhausted = errored && attempt >= MAX_RETRIES;
+  return { loaded, attempt, exhausted, handleLoad, handleError, retry };
+}
+
+interface FlagPictureProps {
+  countryCode: string;
+  requestWidth: number;
+  containerStyle: StyleProp<ViewStyle>;
+  imageStyle: StyleProp<ImageStyle>;
+  placeholderStyle: StyleProp<ViewStyle>;
+  transition: number;
+  priority?: 'low' | 'normal' | 'high';
+  hideLabel?: boolean;
+  labelStyle?: StyleProp<TextStyle>;
+  accessibilityLabel: string;
+}
+
+/** Shared flag renderer: placeholder + image with loading/retry handling. */
+function FlagPicture({
+  countryCode,
+  requestWidth,
+  containerStyle,
+  imageStyle,
+  placeholderStyle,
+  transition,
+  priority,
+  hideLabel,
+  labelStyle,
+  accessibilityLabel,
+}: FlagPictureProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { loaded, attempt, exhausted, handleLoad, handleError, retry } = useFlagLoader(countryCode);
+
+  const onRetryPress = useCallback(() => {
+    hapticTap();
+    retry();
+  }, [retry]);
+
+  const fallbackText = hideLabel ? t('common.tapToRetry') : countryCode.toUpperCase();
 
   return (
     <View
-      style={[styles.container, fillStyle, style]}
+      style={containerStyle}
       accessible
       accessibilityRole="image"
-      accessibilityLabel={a11yLabel}
+      accessibilityLabel={accessibilityLabel}
     >
       {!loaded && (
-        <View style={[styles.placeholder, fillStyle]}>
-          {error ? (
-            <Text style={styles.errorText}>{countryCode.toUpperCase()}</Text>
-          ) : (
+        exhausted ? (
+          <Pressable
+            style={placeholderStyle}
+            onPress={onRetryPress}
+            accessibilityRole="button"
+            accessibilityLabel={t('common.tapToRetry')}
+          >
+            <Text style={[styles.errorText, labelStyle]} numberOfLines={1}>{fallbackText}</Text>
+          </Pressable>
+        ) : (
+          <View style={placeholderStyle}>
             <ActivityIndicator size="small" color={colors.textTertiary} />
-          )}
-        </View>
+          </View>
+        )
       )}
-      {!error && (
-        <Image
-          source={{ uri: getFlagUrl(countryCode, requestWidth) }}
-          style={[styles.image, fillStyle]}
-          contentFit="contain"
-          transition={transitionMs}
-          cachePolicy="memory-disk"
-          onLoad={() => setLoaded(true)}
-          onError={() => { setError(true); setLoaded(false); }}
-        />
-      )}
+      <Image
+        source={{ uri: getFlagUrl(countryCode, requestWidth, attempt) }}
+        style={imageStyle}
+        contentFit="contain"
+        transition={transition}
+        priority={priority}
+        cachePolicy="memory-disk"
+        onLoad={handleLoad}
+        onError={handleError}
+      />
     </View>
+  );
+}
+
+export default function FlagImage({ countryCode, size = 'large', fill, style, accessibilityLabel, transition: transitionProp, hideLabel }: FlagImageProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const { width: screenWidth } = useWindowDimensions();
+  const transitionMs = transitionProp ?? 200;
+
+  const a11yLabel = accessibilityLabel || t('common.flagOf', { country: countryCode.toUpperCase() });
+
+  const fill100 = { width: '100%' as const, height: '100%' as const };
+  // Hero fills parent width via aspectRatio; sized uses fixed pixels (or fills when `fill`).
+  const innerSize = size === 'hero' ? fill100 : fill ? fill100 : SIZE_MAP[size];
+  const containerSize = size === 'hero' ? { width: '100%' as const, aspectRatio: 3 / 2 } : innerSize;
+  const requestWidth = (size === 'hero' ? Math.min(screenWidth, 500) : SIZE_MAP[size].width) * 2;
+
+  return (
+    <FlagPicture
+      countryCode={countryCode}
+      requestWidth={requestWidth}
+      containerStyle={[styles.container, containerSize, style]}
+      imageStyle={[styles.image, innerSize]}
+      placeholderStyle={[styles.placeholder, innerSize]}
+      transition={transitionMs}
+      priority={size === 'hero' ? 'high' : undefined}
+      hideLabel={hideLabel}
+      accessibilityLabel={a11yLabel}
+    />
   );
 }
 
 export function FlagImageSmall({ countryCode }: { countryCode: string }) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(false);
 
   return (
-    <View
-      style={styles.smallContainer}
-      accessible
-      accessibilityRole="image"
+    <FlagPicture
+      countryCode={countryCode}
+      requestWidth={112}
+      containerStyle={styles.smallContainer}
+      imageStyle={styles.smallImage}
+      placeholderStyle={[styles.placeholder, { width: 56, height: 37 }]}
+      transition={150}
+      labelStyle={{ fontSize: fontSize.xs }}
       accessibilityLabel={t('common.flagOf', { country: countryCode.toUpperCase() })}
-    >
-      {!loaded && (
-        <View style={[styles.placeholder, { width: 56, height: 37 }]}>
-          {error ? (
-            <Text style={[styles.errorText, { fontSize: fontSize.xs }]}>{countryCode.toUpperCase()}</Text>
-          ) : (
-            <ActivityIndicator size="small" color={colors.textTertiary} />
-          )}
-        </View>
-      )}
-      {!error && (
-        <Image
-          source={{ uri: getFlagUrl(countryCode, 112) }}
-          style={styles.smallImage}
-          contentFit="contain"
-          transition={150}
-          cachePolicy="memory-disk"
-          onLoad={() => setLoaded(true)}
-          onError={() => { setError(true); setLoaded(false); }}
-        />
-      )}
-    </View>
+    />
   );
 }
 
@@ -178,6 +234,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     letterSpacing: 1,
     color: colors.textTertiary,
     textAlign: 'center',
+    paddingHorizontal: 4,
   },
   smallContainer: {
     width: 56,
@@ -193,4 +250,3 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     backgroundColor: 'transparent',
   },
 });
-

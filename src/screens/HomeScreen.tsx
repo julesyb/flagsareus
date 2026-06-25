@@ -127,6 +127,7 @@ function FlagTeaser({ onAnswer }: { onAnswer?: () => void }) {
           countryCode={question.flag.id}
           size="hero"
           style={{ width: '100%' }}
+          hideLabel
         />
       </View>
 

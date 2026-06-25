@@ -23,6 +23,7 @@ const fr: DeepPartial<TranslationStrings> = {
     review: 'Revoir',
     seeResults: 'Voir les r\u00e9sultats',
     flagOf: 'Drapeau de {country}',
+    tapToRetry: 'Toucher pour reessayer',
     vs: 'vs',
     flags: 'Drapeaux',
     perFlag: 'Par drapeau',
