@@ -156,7 +156,7 @@ function FlagPicture({
         style={imageStyle}
         contentFit="contain"
         transition={transition}
-        {...(priority ? { priority } : {})}
+        priority={priority}
         cachePolicy="memory-disk"
         onLoad={handleLoad}
         onError={handleError}
@@ -173,36 +173,21 @@ export default function FlagImage({ countryCode, size = 'large', fill, style, ac
 
   const a11yLabel = accessibilityLabel || t('common.flagOf', { country: countryCode.toUpperCase() });
 
-  if (size === 'hero') {
-    // Hero fills parent width — use aspectRatio instead of fixed pixels
-    const requestWidth = Math.min(screenWidth, 500) * 2;
-    return (
-      <FlagPicture
-        countryCode={countryCode}
-        requestWidth={requestWidth}
-        containerStyle={[styles.container, { width: '100%', aspectRatio: 3 / 2 }, style]}
-        imageStyle={[styles.image, { width: '100%', height: '100%' }]}
-        placeholderStyle={[styles.placeholder, { width: '100%', height: '100%' }]}
-        transition={transitionMs}
-        priority="high"
-        hideLabel={hideLabel}
-        accessibilityLabel={a11yLabel}
-      />
-    );
-  }
-
-  const dimensions = SIZE_MAP[size];
-  const requestWidth = dimensions.width * 2;
-  const fillStyle = fill ? { width: '100%' as const, height: '100%' as const } : dimensions;
+  const fill100 = { width: '100%' as const, height: '100%' as const };
+  // Hero fills parent width via aspectRatio; sized uses fixed pixels (or fills when `fill`).
+  const innerSize = size === 'hero' ? fill100 : fill ? fill100 : SIZE_MAP[size];
+  const containerSize = size === 'hero' ? { width: '100%' as const, aspectRatio: 3 / 2 } : innerSize;
+  const requestWidth = (size === 'hero' ? Math.min(screenWidth, 500) : SIZE_MAP[size].width) * 2;
 
   return (
     <FlagPicture
       countryCode={countryCode}
       requestWidth={requestWidth}
-      containerStyle={[styles.container, fillStyle, style]}
-      imageStyle={[styles.image, fillStyle]}
-      placeholderStyle={[styles.placeholder, fillStyle]}
+      containerStyle={[styles.container, containerSize, style]}
+      imageStyle={[styles.image, innerSize]}
+      placeholderStyle={[styles.placeholder, innerSize]}
       transition={transitionMs}
+      priority={size === 'hero' ? 'high' : undefined}
       hideLabel={hideLabel}
       accessibilityLabel={a11yLabel}
     />
