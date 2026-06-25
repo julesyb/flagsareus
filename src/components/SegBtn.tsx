@@ -59,7 +59,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     color: colors.textTertiary,
   },
   segBtnTextCompact: {
-    fontSize: fontSize.xs,
+    fontSize: fontSize.sm,
   },
   segBtnTextOn: {
     color: colors.playText,

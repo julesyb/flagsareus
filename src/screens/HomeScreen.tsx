@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { fontFamily, fontSize, spacing, borderRadius, buildButtons, typography } from '../utils/theme';
+import { fontFamily, fontSize, spacing, borderRadius, buildButtons, typography, layout } from '../utils/theme';
 import { useTheme } from '../contexts/ThemeContext';
 import { ThemeColors } from '../utils/theme';
 import { getTotalFlagCount, getCategoryCount } from '../data';
@@ -756,11 +756,14 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   },
   heroLabel: {
     ...typography.eyebrow,
+    fontSize: fontSize.sm,
     color: colors.textTertiary,
     marginBottom: spacing.xs,
   },
   flagWrap: {
     width: '100%',
+    maxWidth: layout.maxFlagWidth,
+    alignSelf: 'center',
     aspectRatio: 3 / 2,
     overflow: 'hidden',
     borderRadius: borderRadius.lg,
@@ -771,6 +774,9 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   optsGrid: {
     marginTop: spacing.sm,
     gap: spacing.xs,
+    width: '100%',
+    maxWidth: layout.maxFlagWidth,
+    alignSelf: 'center',
   },
   optsRow: {
     flexDirection: 'row',
