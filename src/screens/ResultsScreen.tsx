@@ -23,7 +23,7 @@ import { updateStats, updateFlagResults, saveDailyChallenge, incrementDailyChall
 import { BaselineRegionId, UserStats, GameMode, CategoryId, BASELINE_REGIONS } from '../types';
 import { t } from '../utils/i18n';
 import { hapticCorrect, hapticTap, playCelebrationSound } from '../utils/feedback';
-import { FlagImageSmall } from '../components/FlagImage';
+import FlagImage, { FlagImageSmall } from '../components/FlagImage';
 import { CheckIcon, CrossIcon, ChevronRightIcon, GlobeIcon, UsersIcon, BadgeIconView } from '../components/Icons';
 import BottomNav from '../components/BottomNav';
 import ScreenContainer from '../components/ScreenContainer';
@@ -32,7 +32,7 @@ import { UNLIMITED_QUESTIONS, SHARE_GRID_ROW_SIZE, DAILY_QUESTION_COUNT } from '
 import { countCorrect } from '../utils/gameHelpers';
 import { RootStackParamList } from '../types/navigation';
 import { getAllEarnedBadges, detectPerGameBadges, buildBadgeContext, BADGES, TIER_COLORS, EarnedBadge, getBadgeName, getBadgeDescription } from '../utils/badges';
-import { getTotalFlagCount, getCategoryCount } from '../data';
+import { getTotalFlagCount, getCategoryCount, getFlagByName } from '../data';
 import { computeLevelProgress, getTierLabel, getLevelTier } from '../utils/levels';
 import { encodeChallenge, ChallengeData, CHALLENGE_MODES, generateShortCode, generateChallengeShareCard, encodeResponse, encodeDailyShare } from '../utils/challengeCode';
 import { DailyLeaderboardEntry, getDailyLeaderboardForDate, addDailyLeaderboardEntry } from '../utils/storage';
@@ -923,9 +923,22 @@ export default function ResultsScreen({ route, navigation }: Props) {
               <FlagImageSmall countryCode={result.question.flag.id} />
               <View style={styles.reviewContent}>
                 <Text style={styles.reviewName}>{result.question.flag.name}</Text>
-                {!result.correct && result.userAnswer !== 'SKIPPED' && (
-                  <Text style={styles.reviewAnswer}>{t('results.youSaid', { answer: result.userAnswer })}</Text>
-                )}
+                {!result.correct && result.userAnswer !== 'SKIPPED' && (() => {
+                  const wrongFlag = getFlagByName(result.userAnswer);
+                  return (
+                    <View style={styles.reviewAnswerRow}>
+                      {wrongFlag && (
+                        <FlagImage
+                          countryCode={wrongFlag.id}
+                          fill
+                          style={styles.reviewWrongFlag}
+                          accessibilityLabel={t('common.flagOf', { country: wrongFlag.name })}
+                        />
+                      )}
+                      <Text style={styles.reviewAnswer}>{t('results.youSaid', { answer: result.userAnswer })}</Text>
+                    </View>
+                  );
+                })()}
                 {result.userAnswer === 'SKIPPED' && (
                   <Text style={styles.reviewAnswer}>{t('results.skipped')}</Text>
                 )}
@@ -1164,7 +1177,9 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   reviewIndexWrong: { color: colors.error },
   reviewContent: { flex: 1 },
   reviewName: { ...typography.bodyBold, color: colors.text },
-  reviewAnswer: { ...typography.micro, color: colors.error, marginTop: spacing.xxs },
+  reviewAnswerRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  reviewWrongFlag: { width: 28, height: 19, borderWidth: 1, borderColor: colors.ruleDark },
+  reviewAnswer: { ...typography.micro, color: colors.error, marginTop: spacing.xxs, flexShrink: 1 },
   reviewRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   reviewTime: { ...typography.microMedium, color: colors.textTertiary },
   reviewTimeFastest: { color: colors.success },
