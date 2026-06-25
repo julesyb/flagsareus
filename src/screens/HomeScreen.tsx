@@ -756,6 +756,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   },
   heroLabel: {
     ...typography.eyebrow,
+    fontSize: fontSize.sm,
     color: colors.textTertiary,
     marginBottom: spacing.xs,
   },
