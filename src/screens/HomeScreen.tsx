@@ -752,12 +752,12 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   // ── Hero flag teaser (light mode - no dark background)
   heroCard: {
     marginHorizontal: spacing.md,
-    marginTop: spacing.sm,
+    marginTop: spacing.xs,
   },
   heroLabel: {
     ...typography.eyebrow,
     color: colors.textTertiary,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
   },
   flagWrap: {
     width: '100%',
@@ -832,7 +832,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
   // ── Play button
   playWrap: {
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.md,
+    paddingTop: spacing.sm,
     paddingBottom: spacing.xs,
   },
   playBtn: {
@@ -840,7 +840,7 @@ const createStyles = (colors: ThemeColors) => { const btn = buildButtons(colors)
     flexDirection: 'row',
     justifyContent: 'center',
     gap: spacing.sm,
-    paddingVertical: 15,
+    paddingVertical: 13,
   },
   playBtnText: {
     ...btn.primaryText,
